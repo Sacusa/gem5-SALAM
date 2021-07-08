@@ -1,5 +1,5 @@
 #!/bin/bash
-FLAGS="HWACC,CommInterface,LLVMInterface"
+FLAGS="HWACC,CommInterface,LLVMInterface,StreamDma,NoncoherentDma"
 BENCH=""
 DEBUG="false"
 PRINT_TO_FILE="false"
@@ -39,7 +39,7 @@ else
 	BINARY="${M5_PATH}/build/ARM/gem5.opt"
 fi
 
-KERNEL=$M5_PATH/benchmarks/sys_validation/$BENCH/sw/main.elf
+KERNEL=$M5_PATH/benchmarks/$BENCH/sw/main.elf
 SYS_OPTS="--mem-size=4GB \
 		  --mem-type=DDR4_2400_8x8 \
           --kernel=$KERNEL \
@@ -49,11 +49,11 @@ SYS_OPTS="--mem-size=4GB \
           --cpu-type=DerivO3CPU"
 CACHE_OPTS="--caches --l2cache"
 
-OUTDIR=BM_ARM_OUT/sys_validation/$BENCH
+OUTDIR=BM_ARM_OUT/$BENCH
 
 RUN_SCRIPT="$BINARY --debug-flags=$FLAGS --outdir=$OUTDIR \
-			configs/SALAM/sys_validation.py $SYS_OPTS \
-			--accpath=$M5_PATH/benchmarks/sys_validation \
+			configs/SALAM/${BENCH}.py $SYS_OPTS \
+			--accpath=$M5_PATH/benchmarks \
 			--accbench=$BENCH $CACHE_OPTS"
 
 if [ "${PRINT_TO_FILE}" == "true" ]; then
@@ -77,5 +77,3 @@ fi
 # LLVMGEP
 # LLVMRuntime == ComputeNode + LLVMRegister + LLVMOp + LLVMParse
 # NoncoherentDma - bfs, fft, gemm, md-knn, nw, spmv
-
-
