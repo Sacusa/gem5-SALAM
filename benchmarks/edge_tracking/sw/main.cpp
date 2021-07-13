@@ -6,7 +6,7 @@
 #include "../../common/m5ops.h"
 #include "../defines.h"
 
-//#define VERBOSE
+#define VERBOSE
 
 void gen_data(uint32_t*, uint8_t*);
 int test_output(uint8_t*);
@@ -14,7 +14,7 @@ int test_output(uint8_t*);
 int main(void) {
     m5_reset_stats();
 
-    uint32_t base = 0x80200000;
+    uint32_t base = 0x83000000;
     uint32_t *input = (uint32_t*) base;
     uint8_t *output = (uint8_t*) (base + (ROW*COL*4));
 

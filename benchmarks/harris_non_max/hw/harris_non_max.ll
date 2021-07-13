@@ -44,9 +44,9 @@ for.cond4.preheader:                              ; preds = %for.cond4.preheader
 
 for.cond7.preheader:                              ; preds = %for.inc17, %for.cond4.preheader
   %indvars.iv20 = phi i64 [ 0, %for.cond4.preheader ], [ %indvars.iv.next21, %for.inc17 ]
-  %max_value.09 = phi double [ -1.000000e+00, %for.cond4.preheader ], [ %max_value.3.lcssa, %for.inc17 ]
+  %max_i.09 = phi i32 [ -1, %for.cond4.preheader ], [ %max_i.3.lcssa, %for.inc17 ]
   %max_j.08 = phi i32 [ -1, %for.cond4.preheader ], [ %max_j.3.lcssa, %for.inc17 ]
-  %max_i.07 = phi i32 [ -1, %for.cond4.preheader ], [ %max_i.3.lcssa, %for.inc17 ]
+  %max_value.07 = phi float [ -1.000000e+00, %for.cond4.preheader ], [ %max_value.3.lcssa, %for.inc17 ]
   %13 = add nuw nsw i64 %indvars.iv20, %indvars.iv35
   %14 = trunc i64 %13 to i32
   %cmp11 = icmp ult i32 %14, %img_height
@@ -58,9 +58,9 @@ for.cond7.preheader:                              ; preds = %for.inc17, %for.con
 
 for.body9:                                        ; preds = %for.inc, %for.cond7.preheader
   %indvars.iv = phi i64 [ 0, %for.cond7.preheader ], [ %indvars.iv.next, %for.inc ]
-  %max_value.15 = phi double [ %max_value.09, %for.cond7.preheader ], [ %max_value.3, %for.inc ]
+  %max_i.15 = phi i32 [ %max_i.09, %for.cond7.preheader ], [ %max_i.3, %for.inc ]
   %max_j.14 = phi i32 [ %max_j.08, %for.cond7.preheader ], [ %max_j.3, %for.inc ]
-  %max_i.13 = phi i32 [ %max_i.07, %for.cond7.preheader ], [ %max_i.3, %for.inc ]
+  %max_value.13 = phi float [ %max_value.07, %for.cond7.preheader ], [ %max_value.3, %for.inc ]
   %18 = add nuw nsw i64 %indvars.iv, %indvars.iv33
   %19 = trunc i64 %18 to i32
   %cmp12 = icmp ult i32 %19, %img_width
@@ -69,34 +69,34 @@ for.body9:                                        ; preds = %for.inc, %for.cond7
 
 if.then:                                          ; preds = %for.body9
   %20 = add nsw i64 %18, %16
-  %arrayidx = getelementptr inbounds double, double* inttoptr (i64 637534240 to double*), i64 %20
-  %21 = load double, double* %arrayidx, align 8
-  %cmp14 = fcmp ogt double %21, %max_value.15
-  %max_i.2 = select i1 %cmp14, i32 %17, i32 %max_i.13
+  %arrayidx = getelementptr inbounds float, float* inttoptr (i64 637534240 to float*), i64 %20
+  %21 = load float, float* %arrayidx, align 4
+  %cmp14 = fcmp ogt float %21, %max_value.13
+  %max_value.2 = select i1 %cmp14, float %21, float %max_value.13
   %22 = trunc i64 %indvars.iv to i32
   %max_j.2 = select i1 %cmp14, i32 %22, i32 %max_j.14
-  %max_value.2 = select i1 %cmp14, double %21, double %max_value.15
+  %max_i.2 = select i1 %cmp14, i32 %17, i32 %max_i.15
   br label %for.inc
 
 for.inc:                                          ; preds = %for.body9, %if.then
-  %max_i.3 = phi i32 [ %max_i.13, %for.body9 ], [ %max_i.2, %if.then ]
+  %max_value.3 = phi float [ %max_value.13, %for.body9 ], [ %max_value.2, %if.then ]
   %max_j.3 = phi i32 [ %max_j.14, %for.body9 ], [ %max_j.2, %if.then ]
-  %max_value.3 = phi double [ %max_value.15, %for.body9 ], [ %max_value.2, %if.then ]
+  %max_i.3 = phi i32 [ %max_i.15, %for.body9 ], [ %max_i.2, %if.then ]
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond = icmp eq i64 %indvars.iv.next, 3
   br i1 %exitcond, label %for.inc17, label %for.body9, !llvm.loop !1
 
 for.inc17:                                        ; preds = %for.inc
-  %max_value.3.lcssa = phi double [ %max_value.3, %for.inc ]
-  %max_j.3.lcssa = phi i32 [ %max_j.3, %for.inc ]
   %max_i.3.lcssa = phi i32 [ %max_i.3, %for.inc ]
+  %max_j.3.lcssa = phi i32 [ %max_j.3, %for.inc ]
+  %max_value.3.lcssa = phi float [ %max_value.3, %for.inc ]
   %indvars.iv.next21 = add nuw nsw i64 %indvars.iv20, 1
   %exitcond23 = icmp eq i64 %indvars.iv.next21, 3
   br i1 %exitcond23, label %for.body27, label %for.cond7.preheader, !llvm.loop !3
 
 for.body27:                                       ; preds = %for.inc17
-  %max_j.3.lcssa.lcssa = phi i32 [ %max_j.3.lcssa, %for.inc17 ]
   %max_i.3.lcssa.lcssa = phi i32 [ %max_i.3.lcssa, %for.inc17 ]
+  %max_j.3.lcssa.lcssa = phi i32 [ %max_j.3.lcssa, %for.inc17 ]
   %cmp38 = icmp eq i32 %max_i.3.lcssa.lcssa, 0
   %23 = trunc i64 %indvars.iv33 to i32
   %cmp34 = icmp ult i32 %23, %img_width
@@ -107,15 +107,15 @@ if.then35:                                        ; preds = %for.body27
   %24 = add nsw i64 %indvars.iv33, %4
   %25 = or i32 %max_i.3.lcssa.lcssa, %max_j.3.lcssa.lcssa
   %26 = icmp eq i32 %25, 0
-  %arrayidx43 = getelementptr inbounds i64, i64* inttoptr (i64 637665312 to i64*), i64 %24
+  %arrayidx43 = getelementptr inbounds i32, i32* inttoptr (i64 637599776 to i32*), i64 %24
   br i1 %26, label %if.then41, label %if.else
 
 if.then41:                                        ; preds = %if.then35
-  store i64 255, i64* %arrayidx43, align 8
+  store i32 255, i32* %arrayidx43, align 4
   br label %for.inc48
 
 if.else:                                          ; preds = %if.then35
-  store i64 0, i64* %arrayidx43, align 8
+  store i32 0, i32* %arrayidx43, align 4
   br label %for.inc48
 
 for.inc48:                                        ; preds = %for.body27, %if.else, %if.then41
@@ -143,15 +143,15 @@ if.then35.1:                                      ; preds = %for.inc48
   %29 = add nsw i64 %27, %4
   %cmp40.1 = icmp eq i32 %max_j.3.lcssa.lcssa, 1
   %or.cond2.1 = and i1 %cmp38, %cmp40.1
-  %arrayidx43.1 = getelementptr inbounds i64, i64* inttoptr (i64 637665312 to i64*), i64 %29
+  %arrayidx43.1 = getelementptr inbounds i32, i32* inttoptr (i64 637599776 to i32*), i64 %29
   br i1 %or.cond2.1, label %if.then41.1, label %if.else.1
 
 if.else.1:                                        ; preds = %if.then35.1
-  store i64 0, i64* %arrayidx43.1, align 8
+  store i32 0, i32* %arrayidx43.1, align 4
   br label %for.inc48.1
 
 if.then41.1:                                      ; preds = %if.then35.1
-  store i64 255, i64* %arrayidx43.1, align 8
+  store i32 255, i32* %arrayidx43.1, align 4
   br label %for.inc48.1
 
 for.inc48.1:                                      ; preds = %if.then41.1, %if.else.1, %for.inc48
@@ -165,15 +165,15 @@ if.then35.2:                                      ; preds = %for.inc48.1
   %32 = add nsw i64 %30, %4
   %cmp40.2 = icmp eq i32 %max_j.3.lcssa.lcssa, 2
   %or.cond2.2 = and i1 %cmp38, %cmp40.2
-  %arrayidx43.2 = getelementptr inbounds i64, i64* inttoptr (i64 637665312 to i64*), i64 %32
+  %arrayidx43.2 = getelementptr inbounds i32, i32* inttoptr (i64 637599776 to i32*), i64 %32
   br i1 %or.cond2.2, label %if.then41.2, label %if.else.2
 
 if.else.2:                                        ; preds = %if.then35.2
-  store i64 0, i64* %arrayidx43.2, align 8
+  store i32 0, i32* %arrayidx43.2, align 4
   br label %for.body27.1
 
 if.then41.2:                                      ; preds = %if.then35.2
-  store i64 255, i64* %arrayidx43.2, align 8
+  store i32 255, i32* %arrayidx43.2, align 4
   br label %for.body27.1
 
 for.body27.1:                                     ; preds = %for.inc48.1, %if.else.2, %if.then41.2
@@ -187,15 +187,15 @@ if.then35.142:                                    ; preds = %for.body27.1
   %34 = add nsw i64 %indvars.iv33, %8
   %cmp40.139 = icmp eq i32 %max_j.3.lcssa.lcssa, 0
   %or.cond2.140 = and i1 %cmp38.1, %cmp40.139
-  %arrayidx43.141 = getelementptr inbounds i64, i64* inttoptr (i64 637665312 to i64*), i64 %34
+  %arrayidx43.141 = getelementptr inbounds i32, i32* inttoptr (i64 637599776 to i32*), i64 %34
   br i1 %or.cond2.140, label %if.then41.144, label %if.else.143
 
 if.else.143:                                      ; preds = %if.then35.142
-  store i64 0, i64* %arrayidx43.141, align 8
+  store i32 0, i32* %arrayidx43.141, align 4
   br label %for.inc48.145
 
 if.then41.144:                                    ; preds = %if.then35.142
-  store i64 255, i64* %arrayidx43.141, align 8
+  store i32 255, i32* %arrayidx43.141, align 4
   br label %for.inc48.145
 
 for.inc48.145:                                    ; preds = %if.then41.144, %if.else.143, %for.body27.1
@@ -209,15 +209,15 @@ if.then35.1.1:                                    ; preds = %for.inc48.145
   %37 = add nsw i64 %35, %8
   %cmp40.1.1 = icmp eq i32 %max_j.3.lcssa.lcssa, 1
   %or.cond2.1.1 = and i1 %cmp38.1, %cmp40.1.1
-  %arrayidx43.1.1 = getelementptr inbounds i64, i64* inttoptr (i64 637665312 to i64*), i64 %37
+  %arrayidx43.1.1 = getelementptr inbounds i32, i32* inttoptr (i64 637599776 to i32*), i64 %37
   br i1 %or.cond2.1.1, label %if.then41.1.1, label %if.else.1.1
 
 if.else.1.1:                                      ; preds = %if.then35.1.1
-  store i64 0, i64* %arrayidx43.1.1, align 8
+  store i32 0, i32* %arrayidx43.1.1, align 4
   br label %for.inc48.1.1
 
 if.then41.1.1:                                    ; preds = %if.then35.1.1
-  store i64 255, i64* %arrayidx43.1.1, align 8
+  store i32 255, i32* %arrayidx43.1.1, align 4
   br label %for.inc48.1.1
 
 for.inc48.1.1:                                    ; preds = %if.then41.1.1, %if.else.1.1, %for.inc48.145
@@ -231,15 +231,15 @@ if.then35.2.1:                                    ; preds = %for.inc48.1.1
   %40 = add nsw i64 %38, %8
   %cmp40.2.1 = icmp eq i32 %max_j.3.lcssa.lcssa, 2
   %or.cond2.2.1 = and i1 %cmp38.1, %cmp40.2.1
-  %arrayidx43.2.1 = getelementptr inbounds i64, i64* inttoptr (i64 637665312 to i64*), i64 %40
+  %arrayidx43.2.1 = getelementptr inbounds i32, i32* inttoptr (i64 637599776 to i32*), i64 %40
   br i1 %or.cond2.2.1, label %if.then41.2.1, label %if.else.2.1
 
 if.else.2.1:                                      ; preds = %if.then35.2.1
-  store i64 0, i64* %arrayidx43.2.1, align 8
+  store i32 0, i32* %arrayidx43.2.1, align 4
   br label %for.body27.2
 
 if.then41.2.1:                                    ; preds = %if.then35.2.1
-  store i64 255, i64* %arrayidx43.2.1, align 8
+  store i32 255, i32* %arrayidx43.2.1, align 4
   br label %for.body27.2
 
 for.body27.2:                                     ; preds = %for.inc48.1.1, %if.else.2.1, %if.then41.2.1
@@ -253,15 +253,15 @@ if.then35.251:                                    ; preds = %for.body27.2
   %42 = add nsw i64 %indvars.iv33, %12
   %cmp40.248 = icmp eq i32 %max_j.3.lcssa.lcssa, 0
   %or.cond2.249 = and i1 %cmp38.2, %cmp40.248
-  %arrayidx43.250 = getelementptr inbounds i64, i64* inttoptr (i64 637665312 to i64*), i64 %42
+  %arrayidx43.250 = getelementptr inbounds i32, i32* inttoptr (i64 637599776 to i32*), i64 %42
   br i1 %or.cond2.249, label %if.then41.253, label %if.else.252
 
 if.else.252:                                      ; preds = %if.then35.251
-  store i64 0, i64* %arrayidx43.250, align 8
+  store i32 0, i32* %arrayidx43.250, align 4
   br label %for.inc48.254
 
 if.then41.253:                                    ; preds = %if.then35.251
-  store i64 255, i64* %arrayidx43.250, align 8
+  store i32 255, i32* %arrayidx43.250, align 4
   br label %for.inc48.254
 
 for.inc48.254:                                    ; preds = %if.then41.253, %if.else.252, %for.body27.2
@@ -275,15 +275,15 @@ if.then35.1.2:                                    ; preds = %for.inc48.254
   %45 = add nsw i64 %43, %12
   %cmp40.1.2 = icmp eq i32 %max_j.3.lcssa.lcssa, 1
   %or.cond2.1.2 = and i1 %cmp38.2, %cmp40.1.2
-  %arrayidx43.1.2 = getelementptr inbounds i64, i64* inttoptr (i64 637665312 to i64*), i64 %45
+  %arrayidx43.1.2 = getelementptr inbounds i32, i32* inttoptr (i64 637599776 to i32*), i64 %45
   br i1 %or.cond2.1.2, label %if.then41.1.2, label %if.else.1.2
 
 if.else.1.2:                                      ; preds = %if.then35.1.2
-  store i64 0, i64* %arrayidx43.1.2, align 8
+  store i32 0, i32* %arrayidx43.1.2, align 4
   br label %for.inc48.1.2
 
 if.then41.1.2:                                    ; preds = %if.then35.1.2
-  store i64 255, i64* %arrayidx43.1.2, align 8
+  store i32 255, i32* %arrayidx43.1.2, align 4
   br label %for.inc48.1.2
 
 for.inc48.1.2:                                    ; preds = %if.then41.1.2, %if.else.1.2, %for.inc48.254
@@ -297,15 +297,15 @@ if.then35.2.2:                                    ; preds = %for.inc48.1.2
   %48 = add nsw i64 %46, %12
   %cmp40.2.2 = icmp eq i32 %max_j.3.lcssa.lcssa, 2
   %or.cond2.2.2 = and i1 %cmp38.2, %cmp40.2.2
-  %arrayidx43.2.2 = getelementptr inbounds i64, i64* inttoptr (i64 637665312 to i64*), i64 %48
+  %arrayidx43.2.2 = getelementptr inbounds i32, i32* inttoptr (i64 637599776 to i32*), i64 %48
   br i1 %or.cond2.2.2, label %if.then41.2.2, label %if.else.2.2
 
 if.else.2.2:                                      ; preds = %if.then35.2.2
-  store i64 0, i64* %arrayidx43.2.2, align 8
+  store i32 0, i32* %arrayidx43.2.2, align 4
   br label %for.inc48.2.2
 
 if.then41.2.2:                                    ; preds = %if.then35.2.2
-  store i64 255, i64* %arrayidx43.2.2, align 8
+  store i32 255, i32* %arrayidx43.2.2, align 4
   br label %for.inc48.2.2
 
 for.inc48.2.2:                                    ; preds = %if.then41.2.2, %if.else.2.2, %for.inc48.1.2

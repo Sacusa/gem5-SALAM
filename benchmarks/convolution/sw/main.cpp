@@ -6,25 +6,29 @@
 #include "../../common/m5ops.h"
 #include "../defines.h"
 
+#define VERBOSE
+
 void gen_data(float*, float*, float*);
-int test_output(float*, float*, float*);
+int test_output(float*, float*, float*, uint8_t);
 
 int main(void) {
     m5_reset_stats();
 
-    uint32_t base = 0x80100000;
+    uint32_t base = 0x82000000;
     float *input  = (float*) base;
     float *output = (float*) (base + (ROW*COL*4));
     float *kernel = (float*) (base + (ROW*COL*8));
+    uint8_t mod_and_floor = 1;
 
     printf("Generating data\n");
     gen_data(input, kernel, output);
     printf("Data generated\n");
 
     driver((uint32_t)input, (uint32_t)output, (uint32_t)kernel, ROW, COL,
-            KERN_ROW, KERN_COL, 0);
+            KERN_ROW, KERN_COL, mod_and_floor);
 
-    printf("Number of failures = %d\n", test_output(input, kernel, output));
+    printf("Number of failures = %d\n", test_output(input, kernel, output,
+                mod_and_floor));
 
     m5_dump_stats();
     m5_exit();
@@ -44,7 +48,8 @@ void gen_data(float *input, float *kernel, float *output) {
     }
 }
 
-int test_output(float *input_image, float *kernel, float *output_image) {
+int test_output(float *input_image, float *kernel, float *output_image,
+        uint8_t mod_and_floor) {
     int delta_i = (KERN_ROW - 1) / 2;
     int delta_j = (KERN_COL - 1) / 2;
     int num_failures = 0;
@@ -66,9 +71,16 @@ int test_output(float *input_image, float *kernel, float *output_image) {
                 }
             }
 
+            if (mod_and_floor) {
+                partial_sum = partial_sum < 0 ? -partial_sum : partial_sum;
+                partial_sum = (float)(uint8_t) partial_sum;
+            }
+
             if (fabs(partial_sum - output_image[DIM(i, j)]) > 0.0001) {
+#ifdef VERBOSE
                 printf("ERROR at (%d,%d): expected = %f, got = %f\n", i, j,
                         partial_sum, output_image[DIM(i, j)]);
+#endif
                 num_failures++;
             }
         }

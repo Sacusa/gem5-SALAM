@@ -2,9 +2,9 @@
 
 void convolution(uint32_t img_height, uint32_t img_width, uint32_t kern_height,
         uint32_t kern_width, uint8_t mod_and_floor) {
-    volatile float *input_image  = (float*) INPUT_SPM;
-    volatile float *output_image = (float*) OUTPUT_SPM;
-    volatile float *kernel       = (float*) KERNEL_SPM;
+    float *input_image  = (float*) INPUT_SPM;
+    float *output_image = (float*) OUTPUT_SPM;
+    float *kernel       = (float*) KERNEL_SPM;
 
     const int start_in_i = -((kern_height - 1) / 2);
     const int start_in_j = -((kern_width  - 1) / 2);
@@ -37,7 +37,7 @@ void convolution(uint32_t img_height, uint32_t img_width, uint32_t kern_height,
 
             if (mod_and_floor) {
                 partial_sum = partial_sum < 0 ? -partial_sum : partial_sum;
-                output_image[DIM(out_i, out_j)] = (uint8_t)partial_sum;
+                output_image[DIM(out_i, out_j)] = (float)(uint8_t) partial_sum;
             } else {
                 output_image[DIM(out_i, out_j)] = partial_sum;
             }

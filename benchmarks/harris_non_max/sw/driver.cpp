@@ -18,7 +18,7 @@ void harris_non_max_driver(uint32_t input_addr, uint32_t output_addr,
     // DMA transfer for input data
     *DmaRdAddr  = input_addr;
     *DmaWrAddr  = INPUT_SPM;
-    *DmaCopyLen = img_height * img_width * 8;
+    *DmaCopyLen = img_height * img_width * 4;
     *DmaFlags   = DEV_INIT;
     while ((*DmaFlags & DEV_INTR) != DEV_INTR);
 
@@ -40,7 +40,7 @@ void harris_non_max_driver(uint32_t input_addr, uint32_t output_addr,
     // DMA transfer for output data
     *DmaRdAddr  = OUTPUT_SPM;
     *DmaWrAddr  = output_addr;
-    *DmaCopyLen = img_height * img_width * 8;
+    *DmaCopyLen = img_height * img_width * 4;
     *DmaFlags   = DEV_INIT;
     while ((*DmaFlags & DEV_INTR) != DEV_INTR);
 

@@ -78,13 +78,13 @@ for.body16.prol:                                  ; preds = %for.inc.prol, %for.
 if.end26.prol:                                    ; preds = %for.body16.prol
   %add29.prol = add nsw i32 %add17.prol, %mul.prol
   %idxprom.prol = sext i32 %add29.prol to i64
-  %arrayidx.prol = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.prol
-  %7 = load volatile float, float* %arrayidx.prol, align 4
+  %arrayidx.prol = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.prol
+  %7 = load float, float* %arrayidx.prol, align 4
   %8 = trunc i64 %indvars.iv.prol to i32
   %add31.prol = add i32 %8, %mul30.prol
   %idxprom32.prol = zext i32 %add31.prol to i64
-  %arrayidx33.prol = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.prol
-  %9 = load volatile float, float* %arrayidx33.prol, align 4
+  %arrayidx33.prol = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.prol
+  %9 = load float, float* %arrayidx33.prol, align 4
   %mul34.prol = fmul float %7, %9
   %add35.prol = fadd float %partial_sum.12.prol, %mul34.prol
   br label %for.inc.prol
@@ -121,14 +121,14 @@ if.then40.prol:                                   ; preds = %for.end38.prol
   %conv.prol = fptoui float %cond.prol to i8
   %conv43.prol = uitofp i8 %conv.prol to float
   %10 = add nsw i64 %indvars.iv20.prol, %4
-  %arrayidx47.prol = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %10
-  store volatile float %conv43.prol, float* %arrayidx47.prol, align 4
+  %arrayidx47.prol = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %10
+  store float %conv43.prol, float* %arrayidx47.prol, align 4
   br label %for.inc53.prol
 
 if.else.prol:                                     ; preds = %for.end38.prol
   %11 = add nsw i64 %indvars.iv20.prol, %3
-  %arrayidx51.prol = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %11
-  store volatile float %partial_sum.0.lcssa.prol, float* %arrayidx51.prol, align 4
+  %arrayidx51.prol = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %11
+  store float %partial_sum.0.lcssa.prol, float* %arrayidx51.prol, align 4
   br label %for.inc53.prol
 
 for.inc53.prol:                                   ; preds = %if.else.prol, %if.then40.prol
@@ -244,13 +244,13 @@ for.body16:                                       ; preds = %for.inc, %for.body1
 if.end26:                                         ; preds = %for.body16
   %add29 = add nsw i32 %add17, %mul
   %idxprom = sext i32 %add29 to i64
-  %arrayidx = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom
-  %19 = load volatile float, float* %arrayidx, align 4
+  %arrayidx = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom
+  %19 = load float, float* %arrayidx, align 4
   %20 = trunc i64 %indvars.iv to i32
   %add31 = add i32 %20, %mul30
   %idxprom32 = zext i32 %add31 to i64
-  %arrayidx33 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32
-  %21 = load volatile float, float* %arrayidx33, align 4
+  %arrayidx33 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32
+  %21 = load float, float* %arrayidx33, align 4
   %mul34 = fmul float %19, %21
   %add35 = fadd float %partial_sum.12, %mul34
   br label %for.inc
@@ -287,14 +287,14 @@ if.then40:                                        ; preds = %for.end38
   %conv = fptoui float %cond to i8
   %conv43 = uitofp i8 %conv to float
   %22 = add nsw i64 %indvars.iv20, %16
-  %arrayidx47 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %22
-  store volatile float %conv43, float* %arrayidx47, align 4
+  %arrayidx47 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %22
+  store float %conv43, float* %arrayidx47, align 4
   br label %for.inc53
 
 if.else:                                          ; preds = %for.end38
   %23 = add nsw i64 %indvars.iv20, %15
-  %arrayidx51 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %23
-  store volatile float %partial_sum.0.lcssa, float* %arrayidx51, align 4
+  %arrayidx51 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %23
+  store float %partial_sum.0.lcssa, float* %arrayidx51, align 4
   br label %for.inc53
 
 for.inc53:                                        ; preds = %if.then40, %if.else
@@ -360,13 +360,13 @@ for.body16.1:                                     ; preds = %for.inc.1, %for.bod
 if.end26.1:                                       ; preds = %for.body16.1
   %add29.1 = add nsw i32 %add17.1, %mul.1
   %idxprom.1 = sext i32 %add29.1 to i64
-  %arrayidx.1 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.1
-  %30 = load volatile float, float* %arrayidx.1, align 4
+  %arrayidx.1 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.1
+  %30 = load float, float* %arrayidx.1, align 4
   %31 = trunc i64 %indvars.iv.1 to i32
   %add31.1 = add i32 %31, %mul30.1
   %idxprom32.1 = zext i32 %add31.1 to i64
-  %arrayidx33.1 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.1
-  %32 = load volatile float, float* %arrayidx33.1, align 4
+  %arrayidx33.1 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.1
+  %32 = load float, float* %arrayidx33.1, align 4
   %mul34.1 = fmul float %30, %32
   %add35.1 = fadd float %partial_sum.12.1, %mul34.1
   br label %for.inc.1
@@ -403,14 +403,14 @@ if.then40.1:                                      ; preds = %for.end38.1
   %conv.1 = fptoui float %cond.1 to i8
   %conv43.1 = uitofp i8 %conv.1 to float
   %33 = add nsw i64 %indvars.iv20.1, %27
-  %arrayidx47.1 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %33
-  store volatile float %conv43.1, float* %arrayidx47.1, align 4
+  %arrayidx47.1 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %33
+  store float %conv43.1, float* %arrayidx47.1, align 4
   br label %for.inc53.1
 
 if.else.1:                                        ; preds = %for.end38.1
   %34 = add nsw i64 %indvars.iv20.1, %26
-  %arrayidx51.1 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %34
-  store volatile float %partial_sum.0.lcssa.1, float* %arrayidx51.1, align 4
+  %arrayidx51.1 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %34
+  store float %partial_sum.0.lcssa.1, float* %arrayidx51.1, align 4
   br label %for.inc53.1
 
 for.inc53.1:                                      ; preds = %if.else.1, %if.then40.1
@@ -470,13 +470,13 @@ for.body16.2:                                     ; preds = %for.inc.2, %for.bod
 if.end26.2:                                       ; preds = %for.body16.2
   %add29.2 = add nsw i32 %add17.2, %mul.2
   %idxprom.2 = sext i32 %add29.2 to i64
-  %arrayidx.2 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.2
-  %41 = load volatile float, float* %arrayidx.2, align 4
+  %arrayidx.2 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.2
+  %41 = load float, float* %arrayidx.2, align 4
   %42 = trunc i64 %indvars.iv.2 to i32
   %add31.2 = add i32 %42, %mul30.2
   %idxprom32.2 = zext i32 %add31.2 to i64
-  %arrayidx33.2 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.2
-  %43 = load volatile float, float* %arrayidx33.2, align 4
+  %arrayidx33.2 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.2
+  %43 = load float, float* %arrayidx33.2, align 4
   %mul34.2 = fmul float %41, %43
   %add35.2 = fadd float %partial_sum.12.2, %mul34.2
   br label %for.inc.2
@@ -513,14 +513,14 @@ if.then40.2:                                      ; preds = %for.end38.2
   %conv.2 = fptoui float %cond.2 to i8
   %conv43.2 = uitofp i8 %conv.2 to float
   %44 = add nsw i64 %indvars.iv20.2, %38
-  %arrayidx47.2 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %44
-  store volatile float %conv43.2, float* %arrayidx47.2, align 4
+  %arrayidx47.2 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %44
+  store float %conv43.2, float* %arrayidx47.2, align 4
   br label %for.inc53.2
 
 if.else.2:                                        ; preds = %for.end38.2
   %45 = add nsw i64 %indvars.iv20.2, %37
-  %arrayidx51.2 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %45
-  store volatile float %partial_sum.0.lcssa.2, float* %arrayidx51.2, align 4
+  %arrayidx51.2 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %45
+  store float %partial_sum.0.lcssa.2, float* %arrayidx51.2, align 4
   br label %for.inc53.2
 
 for.inc53.2:                                      ; preds = %if.else.2, %if.then40.2
@@ -580,13 +580,13 @@ for.body16.3:                                     ; preds = %for.inc.3, %for.bod
 if.end26.3:                                       ; preds = %for.body16.3
   %add29.3 = add nsw i32 %add17.3, %mul.3
   %idxprom.3 = sext i32 %add29.3 to i64
-  %arrayidx.3 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.3
-  %52 = load volatile float, float* %arrayidx.3, align 4
+  %arrayidx.3 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.3
+  %52 = load float, float* %arrayidx.3, align 4
   %53 = trunc i64 %indvars.iv.3 to i32
   %add31.3 = add i32 %53, %mul30.3
   %idxprom32.3 = zext i32 %add31.3 to i64
-  %arrayidx33.3 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.3
-  %54 = load volatile float, float* %arrayidx33.3, align 4
+  %arrayidx33.3 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.3
+  %54 = load float, float* %arrayidx33.3, align 4
   %mul34.3 = fmul float %52, %54
   %add35.3 = fadd float %partial_sum.12.3, %mul34.3
   br label %for.inc.3
@@ -623,14 +623,14 @@ if.then40.3:                                      ; preds = %for.end38.3
   %conv.3 = fptoui float %cond.3 to i8
   %conv43.3 = uitofp i8 %conv.3 to float
   %55 = add nsw i64 %indvars.iv20.3, %49
-  %arrayidx47.3 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %55
-  store volatile float %conv43.3, float* %arrayidx47.3, align 4
+  %arrayidx47.3 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %55
+  store float %conv43.3, float* %arrayidx47.3, align 4
   br label %for.inc53.3
 
 if.else.3:                                        ; preds = %for.end38.3
   %56 = add nsw i64 %indvars.iv20.3, %48
-  %arrayidx51.3 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %56
-  store volatile float %partial_sum.0.lcssa.3, float* %arrayidx51.3, align 4
+  %arrayidx51.3 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %56
+  store float %partial_sum.0.lcssa.3, float* %arrayidx51.3, align 4
   br label %for.inc53.3
 
 for.inc53.3:                                      ; preds = %if.else.3, %if.then40.3
@@ -690,13 +690,13 @@ for.body16.4:                                     ; preds = %for.inc.4, %for.bod
 if.end26.4:                                       ; preds = %for.body16.4
   %add29.4 = add nsw i32 %add17.4, %mul.4
   %idxprom.4 = sext i32 %add29.4 to i64
-  %arrayidx.4 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.4
-  %63 = load volatile float, float* %arrayidx.4, align 4
+  %arrayidx.4 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.4
+  %63 = load float, float* %arrayidx.4, align 4
   %64 = trunc i64 %indvars.iv.4 to i32
   %add31.4 = add i32 %64, %mul30.4
   %idxprom32.4 = zext i32 %add31.4 to i64
-  %arrayidx33.4 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.4
-  %65 = load volatile float, float* %arrayidx33.4, align 4
+  %arrayidx33.4 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.4
+  %65 = load float, float* %arrayidx33.4, align 4
   %mul34.4 = fmul float %63, %65
   %add35.4 = fadd float %partial_sum.12.4, %mul34.4
   br label %for.inc.4
@@ -733,14 +733,14 @@ if.then40.4:                                      ; preds = %for.end38.4
   %conv.4 = fptoui float %cond.4 to i8
   %conv43.4 = uitofp i8 %conv.4 to float
   %66 = add nsw i64 %indvars.iv20.4, %60
-  %arrayidx47.4 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %66
-  store volatile float %conv43.4, float* %arrayidx47.4, align 4
+  %arrayidx47.4 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %66
+  store float %conv43.4, float* %arrayidx47.4, align 4
   br label %for.inc53.4
 
 if.else.4:                                        ; preds = %for.end38.4
   %67 = add nsw i64 %indvars.iv20.4, %59
-  %arrayidx51.4 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %67
-  store volatile float %partial_sum.0.lcssa.4, float* %arrayidx51.4, align 4
+  %arrayidx51.4 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %67
+  store float %partial_sum.0.lcssa.4, float* %arrayidx51.4, align 4
   br label %for.inc53.4
 
 for.inc53.4:                                      ; preds = %if.else.4, %if.then40.4
@@ -800,13 +800,13 @@ for.body16.5:                                     ; preds = %for.inc.5, %for.bod
 if.end26.5:                                       ; preds = %for.body16.5
   %add29.5 = add nsw i32 %add17.5, %mul.5
   %idxprom.5 = sext i32 %add29.5 to i64
-  %arrayidx.5 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.5
-  %74 = load volatile float, float* %arrayidx.5, align 4
+  %arrayidx.5 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.5
+  %74 = load float, float* %arrayidx.5, align 4
   %75 = trunc i64 %indvars.iv.5 to i32
   %add31.5 = add i32 %75, %mul30.5
   %idxprom32.5 = zext i32 %add31.5 to i64
-  %arrayidx33.5 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.5
-  %76 = load volatile float, float* %arrayidx33.5, align 4
+  %arrayidx33.5 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.5
+  %76 = load float, float* %arrayidx33.5, align 4
   %mul34.5 = fmul float %74, %76
   %add35.5 = fadd float %partial_sum.12.5, %mul34.5
   br label %for.inc.5
@@ -843,14 +843,14 @@ if.then40.5:                                      ; preds = %for.end38.5
   %conv.5 = fptoui float %cond.5 to i8
   %conv43.5 = uitofp i8 %conv.5 to float
   %77 = add nsw i64 %indvars.iv20.5, %71
-  %arrayidx47.5 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %77
-  store volatile float %conv43.5, float* %arrayidx47.5, align 4
+  %arrayidx47.5 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %77
+  store float %conv43.5, float* %arrayidx47.5, align 4
   br label %for.inc53.5
 
 if.else.5:                                        ; preds = %for.end38.5
   %78 = add nsw i64 %indvars.iv20.5, %70
-  %arrayidx51.5 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %78
-  store volatile float %partial_sum.0.lcssa.5, float* %arrayidx51.5, align 4
+  %arrayidx51.5 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %78
+  store float %partial_sum.0.lcssa.5, float* %arrayidx51.5, align 4
   br label %for.inc53.5
 
 for.inc53.5:                                      ; preds = %if.else.5, %if.then40.5
@@ -910,13 +910,13 @@ for.body16.6:                                     ; preds = %for.inc.6, %for.bod
 if.end26.6:                                       ; preds = %for.body16.6
   %add29.6 = add nsw i32 %add17.6, %mul.6
   %idxprom.6 = sext i32 %add29.6 to i64
-  %arrayidx.6 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.6
-  %85 = load volatile float, float* %arrayidx.6, align 4
+  %arrayidx.6 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.6
+  %85 = load float, float* %arrayidx.6, align 4
   %86 = trunc i64 %indvars.iv.6 to i32
   %add31.6 = add i32 %86, %mul30.6
   %idxprom32.6 = zext i32 %add31.6 to i64
-  %arrayidx33.6 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.6
-  %87 = load volatile float, float* %arrayidx33.6, align 4
+  %arrayidx33.6 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.6
+  %87 = load float, float* %arrayidx33.6, align 4
   %mul34.6 = fmul float %85, %87
   %add35.6 = fadd float %partial_sum.12.6, %mul34.6
   br label %for.inc.6
@@ -953,14 +953,14 @@ if.then40.6:                                      ; preds = %for.end38.6
   %conv.6 = fptoui float %cond.6 to i8
   %conv43.6 = uitofp i8 %conv.6 to float
   %88 = add nsw i64 %indvars.iv20.6, %82
-  %arrayidx47.6 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %88
-  store volatile float %conv43.6, float* %arrayidx47.6, align 4
+  %arrayidx47.6 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %88
+  store float %conv43.6, float* %arrayidx47.6, align 4
   br label %for.inc53.6
 
 if.else.6:                                        ; preds = %for.end38.6
   %89 = add nsw i64 %indvars.iv20.6, %81
-  %arrayidx51.6 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %89
-  store volatile float %partial_sum.0.lcssa.6, float* %arrayidx51.6, align 4
+  %arrayidx51.6 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %89
+  store float %partial_sum.0.lcssa.6, float* %arrayidx51.6, align 4
   br label %for.inc53.6
 
 for.inc53.6:                                      ; preds = %if.else.6, %if.then40.6
@@ -1020,13 +1020,13 @@ for.body16.7:                                     ; preds = %for.inc.7, %for.bod
 if.end26.7:                                       ; preds = %for.body16.7
   %add29.7 = add nsw i32 %add17.7, %mul.7
   %idxprom.7 = sext i32 %add29.7 to i64
-  %arrayidx.7 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.7
-  %96 = load volatile float, float* %arrayidx.7, align 4
+  %arrayidx.7 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.7
+  %96 = load float, float* %arrayidx.7, align 4
   %97 = trunc i64 %indvars.iv.7 to i32
   %add31.7 = add i32 %97, %mul30.7
   %idxprom32.7 = zext i32 %add31.7 to i64
-  %arrayidx33.7 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.7
-  %98 = load volatile float, float* %arrayidx33.7, align 4
+  %arrayidx33.7 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.7
+  %98 = load float, float* %arrayidx33.7, align 4
   %mul34.7 = fmul float %96, %98
   %add35.7 = fadd float %partial_sum.12.7, %mul34.7
   br label %for.inc.7
@@ -1063,14 +1063,14 @@ if.then40.7:                                      ; preds = %for.end38.7
   %conv.7 = fptoui float %cond.7 to i8
   %conv43.7 = uitofp i8 %conv.7 to float
   %99 = add nsw i64 %indvars.iv20.7, %93
-  %arrayidx47.7 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %99
-  store volatile float %conv43.7, float* %arrayidx47.7, align 4
+  %arrayidx47.7 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %99
+  store float %conv43.7, float* %arrayidx47.7, align 4
   br label %for.inc53.7
 
 if.else.7:                                        ; preds = %for.end38.7
   %100 = add nsw i64 %indvars.iv20.7, %92
-  %arrayidx51.7 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %100
-  store volatile float %partial_sum.0.lcssa.7, float* %arrayidx51.7, align 4
+  %arrayidx51.7 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %100
+  store float %partial_sum.0.lcssa.7, float* %arrayidx51.7, align 4
   br label %for.inc53.7
 
 for.inc53.7:                                      ; preds = %if.else.7, %if.then40.7
@@ -1130,13 +1130,13 @@ for.body16.8:                                     ; preds = %for.inc.8, %for.bod
 if.end26.8:                                       ; preds = %for.body16.8
   %add29.8 = add nsw i32 %add17.8, %mul.8
   %idxprom.8 = sext i32 %add29.8 to i64
-  %arrayidx.8 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.8
-  %107 = load volatile float, float* %arrayidx.8, align 4
+  %arrayidx.8 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.8
+  %107 = load float, float* %arrayidx.8, align 4
   %108 = trunc i64 %indvars.iv.8 to i32
   %add31.8 = add i32 %108, %mul30.8
   %idxprom32.8 = zext i32 %add31.8 to i64
-  %arrayidx33.8 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.8
-  %109 = load volatile float, float* %arrayidx33.8, align 4
+  %arrayidx33.8 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.8
+  %109 = load float, float* %arrayidx33.8, align 4
   %mul34.8 = fmul float %107, %109
   %add35.8 = fadd float %partial_sum.12.8, %mul34.8
   br label %for.inc.8
@@ -1173,14 +1173,14 @@ if.then40.8:                                      ; preds = %for.end38.8
   %conv.8 = fptoui float %cond.8 to i8
   %conv43.8 = uitofp i8 %conv.8 to float
   %110 = add nsw i64 %indvars.iv20.8, %104
-  %arrayidx47.8 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %110
-  store volatile float %conv43.8, float* %arrayidx47.8, align 4
+  %arrayidx47.8 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %110
+  store float %conv43.8, float* %arrayidx47.8, align 4
   br label %for.inc53.8
 
 if.else.8:                                        ; preds = %for.end38.8
   %111 = add nsw i64 %indvars.iv20.8, %103
-  %arrayidx51.8 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %111
-  store volatile float %partial_sum.0.lcssa.8, float* %arrayidx51.8, align 4
+  %arrayidx51.8 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %111
+  store float %partial_sum.0.lcssa.8, float* %arrayidx51.8, align 4
   br label %for.inc53.8
 
 for.inc53.8:                                      ; preds = %if.else.8, %if.then40.8
@@ -1240,13 +1240,13 @@ for.body16.9:                                     ; preds = %for.inc.9, %for.bod
 if.end26.9:                                       ; preds = %for.body16.9
   %add29.9 = add nsw i32 %add17.9, %mul.9
   %idxprom.9 = sext i32 %add29.9 to i64
-  %arrayidx.9 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.9
-  %118 = load volatile float, float* %arrayidx.9, align 4
+  %arrayidx.9 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.9
+  %118 = load float, float* %arrayidx.9, align 4
   %119 = trunc i64 %indvars.iv.9 to i32
   %add31.9 = add i32 %119, %mul30.9
   %idxprom32.9 = zext i32 %add31.9 to i64
-  %arrayidx33.9 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.9
-  %120 = load volatile float, float* %arrayidx33.9, align 4
+  %arrayidx33.9 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.9
+  %120 = load float, float* %arrayidx33.9, align 4
   %mul34.9 = fmul float %118, %120
   %add35.9 = fadd float %partial_sum.12.9, %mul34.9
   br label %for.inc.9
@@ -1283,14 +1283,14 @@ if.then40.9:                                      ; preds = %for.end38.9
   %conv.9 = fptoui float %cond.9 to i8
   %conv43.9 = uitofp i8 %conv.9 to float
   %121 = add nsw i64 %indvars.iv20.9, %115
-  %arrayidx47.9 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %121
-  store volatile float %conv43.9, float* %arrayidx47.9, align 4
+  %arrayidx47.9 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %121
+  store float %conv43.9, float* %arrayidx47.9, align 4
   br label %for.inc53.9
 
 if.else.9:                                        ; preds = %for.end38.9
   %122 = add nsw i64 %indvars.iv20.9, %114
-  %arrayidx51.9 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %122
-  store volatile float %partial_sum.0.lcssa.9, float* %arrayidx51.9, align 4
+  %arrayidx51.9 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %122
+  store float %partial_sum.0.lcssa.9, float* %arrayidx51.9, align 4
   br label %for.inc53.9
 
 for.inc53.9:                                      ; preds = %if.else.9, %if.then40.9
@@ -1350,13 +1350,13 @@ for.body16.10:                                    ; preds = %for.inc.10, %for.bo
 if.end26.10:                                      ; preds = %for.body16.10
   %add29.10 = add nsw i32 %add17.10, %mul.10
   %idxprom.10 = sext i32 %add29.10 to i64
-  %arrayidx.10 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.10
-  %129 = load volatile float, float* %arrayidx.10, align 4
+  %arrayidx.10 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.10
+  %129 = load float, float* %arrayidx.10, align 4
   %130 = trunc i64 %indvars.iv.10 to i32
   %add31.10 = add i32 %130, %mul30.10
   %idxprom32.10 = zext i32 %add31.10 to i64
-  %arrayidx33.10 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.10
-  %131 = load volatile float, float* %arrayidx33.10, align 4
+  %arrayidx33.10 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.10
+  %131 = load float, float* %arrayidx33.10, align 4
   %mul34.10 = fmul float %129, %131
   %add35.10 = fadd float %partial_sum.12.10, %mul34.10
   br label %for.inc.10
@@ -1393,14 +1393,14 @@ if.then40.10:                                     ; preds = %for.end38.10
   %conv.10 = fptoui float %cond.10 to i8
   %conv43.10 = uitofp i8 %conv.10 to float
   %132 = add nsw i64 %indvars.iv20.10, %126
-  %arrayidx47.10 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %132
-  store volatile float %conv43.10, float* %arrayidx47.10, align 4
+  %arrayidx47.10 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %132
+  store float %conv43.10, float* %arrayidx47.10, align 4
   br label %for.inc53.10
 
 if.else.10:                                       ; preds = %for.end38.10
   %133 = add nsw i64 %indvars.iv20.10, %125
-  %arrayidx51.10 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %133
-  store volatile float %partial_sum.0.lcssa.10, float* %arrayidx51.10, align 4
+  %arrayidx51.10 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %133
+  store float %partial_sum.0.lcssa.10, float* %arrayidx51.10, align 4
   br label %for.inc53.10
 
 for.inc53.10:                                     ; preds = %if.else.10, %if.then40.10
@@ -1460,13 +1460,13 @@ for.body16.11:                                    ; preds = %for.inc.11, %for.bo
 if.end26.11:                                      ; preds = %for.body16.11
   %add29.11 = add nsw i32 %add17.11, %mul.11
   %idxprom.11 = sext i32 %add29.11 to i64
-  %arrayidx.11 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.11
-  %140 = load volatile float, float* %arrayidx.11, align 4
+  %arrayidx.11 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.11
+  %140 = load float, float* %arrayidx.11, align 4
   %141 = trunc i64 %indvars.iv.11 to i32
   %add31.11 = add i32 %141, %mul30.11
   %idxprom32.11 = zext i32 %add31.11 to i64
-  %arrayidx33.11 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.11
-  %142 = load volatile float, float* %arrayidx33.11, align 4
+  %arrayidx33.11 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.11
+  %142 = load float, float* %arrayidx33.11, align 4
   %mul34.11 = fmul float %140, %142
   %add35.11 = fadd float %partial_sum.12.11, %mul34.11
   br label %for.inc.11
@@ -1503,14 +1503,14 @@ if.then40.11:                                     ; preds = %for.end38.11
   %conv.11 = fptoui float %cond.11 to i8
   %conv43.11 = uitofp i8 %conv.11 to float
   %143 = add nsw i64 %indvars.iv20.11, %137
-  %arrayidx47.11 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %143
-  store volatile float %conv43.11, float* %arrayidx47.11, align 4
+  %arrayidx47.11 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %143
+  store float %conv43.11, float* %arrayidx47.11, align 4
   br label %for.inc53.11
 
 if.else.11:                                       ; preds = %for.end38.11
   %144 = add nsw i64 %indvars.iv20.11, %136
-  %arrayidx51.11 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %144
-  store volatile float %partial_sum.0.lcssa.11, float* %arrayidx51.11, align 4
+  %arrayidx51.11 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %144
+  store float %partial_sum.0.lcssa.11, float* %arrayidx51.11, align 4
   br label %for.inc53.11
 
 for.inc53.11:                                     ; preds = %if.else.11, %if.then40.11
@@ -1570,13 +1570,13 @@ for.body16.12:                                    ; preds = %for.inc.12, %for.bo
 if.end26.12:                                      ; preds = %for.body16.12
   %add29.12 = add nsw i32 %add17.12, %mul.12
   %idxprom.12 = sext i32 %add29.12 to i64
-  %arrayidx.12 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.12
-  %151 = load volatile float, float* %arrayidx.12, align 4
+  %arrayidx.12 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.12
+  %151 = load float, float* %arrayidx.12, align 4
   %152 = trunc i64 %indvars.iv.12 to i32
   %add31.12 = add i32 %152, %mul30.12
   %idxprom32.12 = zext i32 %add31.12 to i64
-  %arrayidx33.12 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.12
-  %153 = load volatile float, float* %arrayidx33.12, align 4
+  %arrayidx33.12 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.12
+  %153 = load float, float* %arrayidx33.12, align 4
   %mul34.12 = fmul float %151, %153
   %add35.12 = fadd float %partial_sum.12.12, %mul34.12
   br label %for.inc.12
@@ -1613,14 +1613,14 @@ if.then40.12:                                     ; preds = %for.end38.12
   %conv.12 = fptoui float %cond.12 to i8
   %conv43.12 = uitofp i8 %conv.12 to float
   %154 = add nsw i64 %indvars.iv20.12, %148
-  %arrayidx47.12 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %154
-  store volatile float %conv43.12, float* %arrayidx47.12, align 4
+  %arrayidx47.12 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %154
+  store float %conv43.12, float* %arrayidx47.12, align 4
   br label %for.inc53.12
 
 if.else.12:                                       ; preds = %for.end38.12
   %155 = add nsw i64 %indvars.iv20.12, %147
-  %arrayidx51.12 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %155
-  store volatile float %partial_sum.0.lcssa.12, float* %arrayidx51.12, align 4
+  %arrayidx51.12 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %155
+  store float %partial_sum.0.lcssa.12, float* %arrayidx51.12, align 4
   br label %for.inc53.12
 
 for.inc53.12:                                     ; preds = %if.else.12, %if.then40.12
@@ -1680,13 +1680,13 @@ for.body16.13:                                    ; preds = %for.inc.13, %for.bo
 if.end26.13:                                      ; preds = %for.body16.13
   %add29.13 = add nsw i32 %add17.13, %mul.13
   %idxprom.13 = sext i32 %add29.13 to i64
-  %arrayidx.13 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.13
-  %162 = load volatile float, float* %arrayidx.13, align 4
+  %arrayidx.13 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.13
+  %162 = load float, float* %arrayidx.13, align 4
   %163 = trunc i64 %indvars.iv.13 to i32
   %add31.13 = add i32 %163, %mul30.13
   %idxprom32.13 = zext i32 %add31.13 to i64
-  %arrayidx33.13 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.13
-  %164 = load volatile float, float* %arrayidx33.13, align 4
+  %arrayidx33.13 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.13
+  %164 = load float, float* %arrayidx33.13, align 4
   %mul34.13 = fmul float %162, %164
   %add35.13 = fadd float %partial_sum.12.13, %mul34.13
   br label %for.inc.13
@@ -1723,14 +1723,14 @@ if.then40.13:                                     ; preds = %for.end38.13
   %conv.13 = fptoui float %cond.13 to i8
   %conv43.13 = uitofp i8 %conv.13 to float
   %165 = add nsw i64 %indvars.iv20.13, %159
-  %arrayidx47.13 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %165
-  store volatile float %conv43.13, float* %arrayidx47.13, align 4
+  %arrayidx47.13 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %165
+  store float %conv43.13, float* %arrayidx47.13, align 4
   br label %for.inc53.13
 
 if.else.13:                                       ; preds = %for.end38.13
   %166 = add nsw i64 %indvars.iv20.13, %158
-  %arrayidx51.13 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %166
-  store volatile float %partial_sum.0.lcssa.13, float* %arrayidx51.13, align 4
+  %arrayidx51.13 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %166
+  store float %partial_sum.0.lcssa.13, float* %arrayidx51.13, align 4
   br label %for.inc53.13
 
 for.inc53.13:                                     ; preds = %if.else.13, %if.then40.13
@@ -1790,13 +1790,13 @@ for.body16.14:                                    ; preds = %for.inc.14, %for.bo
 if.end26.14:                                      ; preds = %for.body16.14
   %add29.14 = add nsw i32 %add17.14, %mul.14
   %idxprom.14 = sext i32 %add29.14 to i64
-  %arrayidx.14 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.14
-  %173 = load volatile float, float* %arrayidx.14, align 4
+  %arrayidx.14 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.14
+  %173 = load float, float* %arrayidx.14, align 4
   %174 = trunc i64 %indvars.iv.14 to i32
   %add31.14 = add i32 %174, %mul30.14
   %idxprom32.14 = zext i32 %add31.14 to i64
-  %arrayidx33.14 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.14
-  %175 = load volatile float, float* %arrayidx33.14, align 4
+  %arrayidx33.14 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.14
+  %175 = load float, float* %arrayidx33.14, align 4
   %mul34.14 = fmul float %173, %175
   %add35.14 = fadd float %partial_sum.12.14, %mul34.14
   br label %for.inc.14
@@ -1833,14 +1833,14 @@ if.then40.14:                                     ; preds = %for.end38.14
   %conv.14 = fptoui float %cond.14 to i8
   %conv43.14 = uitofp i8 %conv.14 to float
   %176 = add nsw i64 %indvars.iv20.14, %170
-  %arrayidx47.14 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %176
-  store volatile float %conv43.14, float* %arrayidx47.14, align 4
+  %arrayidx47.14 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %176
+  store float %conv43.14, float* %arrayidx47.14, align 4
   br label %for.inc53.14
 
 if.else.14:                                       ; preds = %for.end38.14
   %177 = add nsw i64 %indvars.iv20.14, %169
-  %arrayidx51.14 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %177
-  store volatile float %partial_sum.0.lcssa.14, float* %arrayidx51.14, align 4
+  %arrayidx51.14 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %177
+  store float %partial_sum.0.lcssa.14, float* %arrayidx51.14, align 4
   br label %for.inc53.14
 
 for.inc53.14:                                     ; preds = %if.else.14, %if.then40.14
@@ -1900,13 +1900,13 @@ for.body16.15:                                    ; preds = %for.inc.15, %for.bo
 if.end26.15:                                      ; preds = %for.body16.15
   %add29.15 = add nsw i32 %add17.15, %mul.15
   %idxprom.15 = sext i32 %add29.15 to i64
-  %arrayidx.15 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.15
-  %184 = load volatile float, float* %arrayidx.15, align 4
+  %arrayidx.15 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.15
+  %184 = load float, float* %arrayidx.15, align 4
   %185 = trunc i64 %indvars.iv.15 to i32
   %add31.15 = add i32 %185, %mul30.15
   %idxprom32.15 = zext i32 %add31.15 to i64
-  %arrayidx33.15 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.15
-  %186 = load volatile float, float* %arrayidx33.15, align 4
+  %arrayidx33.15 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.15
+  %186 = load float, float* %arrayidx33.15, align 4
   %mul34.15 = fmul float %184, %186
   %add35.15 = fadd float %partial_sum.12.15, %mul34.15
   br label %for.inc.15
@@ -1943,14 +1943,14 @@ if.then40.15:                                     ; preds = %for.end38.15
   %conv.15 = fptoui float %cond.15 to i8
   %conv43.15 = uitofp i8 %conv.15 to float
   %187 = add nsw i64 %indvars.iv20.15, %181
-  %arrayidx47.15 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %187
-  store volatile float %conv43.15, float* %arrayidx47.15, align 4
+  %arrayidx47.15 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %187
+  store float %conv43.15, float* %arrayidx47.15, align 4
   br label %for.inc53.15
 
 if.else.15:                                       ; preds = %for.end38.15
   %188 = add nsw i64 %indvars.iv20.15, %180
-  %arrayidx51.15 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %188
-  store volatile float %partial_sum.0.lcssa.15, float* %arrayidx51.15, align 4
+  %arrayidx51.15 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %188
+  store float %partial_sum.0.lcssa.15, float* %arrayidx51.15, align 4
   br label %for.inc53.15
 
 for.inc53.15:                                     ; preds = %if.else.15, %if.then40.15
@@ -2010,13 +2010,13 @@ for.body16.16:                                    ; preds = %for.inc.16, %for.bo
 if.end26.16:                                      ; preds = %for.body16.16
   %add29.16 = add nsw i32 %add17.16, %mul.16
   %idxprom.16 = sext i32 %add29.16 to i64
-  %arrayidx.16 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.16
-  %195 = load volatile float, float* %arrayidx.16, align 4
+  %arrayidx.16 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.16
+  %195 = load float, float* %arrayidx.16, align 4
   %196 = trunc i64 %indvars.iv.16 to i32
   %add31.16 = add i32 %196, %mul30.16
   %idxprom32.16 = zext i32 %add31.16 to i64
-  %arrayidx33.16 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.16
-  %197 = load volatile float, float* %arrayidx33.16, align 4
+  %arrayidx33.16 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.16
+  %197 = load float, float* %arrayidx33.16, align 4
   %mul34.16 = fmul float %195, %197
   %add35.16 = fadd float %partial_sum.12.16, %mul34.16
   br label %for.inc.16
@@ -2053,14 +2053,14 @@ if.then40.16:                                     ; preds = %for.end38.16
   %conv.16 = fptoui float %cond.16 to i8
   %conv43.16 = uitofp i8 %conv.16 to float
   %198 = add nsw i64 %indvars.iv20.16, %192
-  %arrayidx47.16 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %198
-  store volatile float %conv43.16, float* %arrayidx47.16, align 4
+  %arrayidx47.16 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %198
+  store float %conv43.16, float* %arrayidx47.16, align 4
   br label %for.inc53.16
 
 if.else.16:                                       ; preds = %for.end38.16
   %199 = add nsw i64 %indvars.iv20.16, %191
-  %arrayidx51.16 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %199
-  store volatile float %partial_sum.0.lcssa.16, float* %arrayidx51.16, align 4
+  %arrayidx51.16 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %199
+  store float %partial_sum.0.lcssa.16, float* %arrayidx51.16, align 4
   br label %for.inc53.16
 
 for.inc53.16:                                     ; preds = %if.else.16, %if.then40.16
@@ -2120,13 +2120,13 @@ for.body16.17:                                    ; preds = %for.inc.17, %for.bo
 if.end26.17:                                      ; preds = %for.body16.17
   %add29.17 = add nsw i32 %add17.17, %mul.17
   %idxprom.17 = sext i32 %add29.17 to i64
-  %arrayidx.17 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.17
-  %206 = load volatile float, float* %arrayidx.17, align 4
+  %arrayidx.17 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.17
+  %206 = load float, float* %arrayidx.17, align 4
   %207 = trunc i64 %indvars.iv.17 to i32
   %add31.17 = add i32 %207, %mul30.17
   %idxprom32.17 = zext i32 %add31.17 to i64
-  %arrayidx33.17 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.17
-  %208 = load volatile float, float* %arrayidx33.17, align 4
+  %arrayidx33.17 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.17
+  %208 = load float, float* %arrayidx33.17, align 4
   %mul34.17 = fmul float %206, %208
   %add35.17 = fadd float %partial_sum.12.17, %mul34.17
   br label %for.inc.17
@@ -2163,14 +2163,14 @@ if.then40.17:                                     ; preds = %for.end38.17
   %conv.17 = fptoui float %cond.17 to i8
   %conv43.17 = uitofp i8 %conv.17 to float
   %209 = add nsw i64 %indvars.iv20.17, %203
-  %arrayidx47.17 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %209
-  store volatile float %conv43.17, float* %arrayidx47.17, align 4
+  %arrayidx47.17 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %209
+  store float %conv43.17, float* %arrayidx47.17, align 4
   br label %for.inc53.17
 
 if.else.17:                                       ; preds = %for.end38.17
   %210 = add nsw i64 %indvars.iv20.17, %202
-  %arrayidx51.17 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %210
-  store volatile float %partial_sum.0.lcssa.17, float* %arrayidx51.17, align 4
+  %arrayidx51.17 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %210
+  store float %partial_sum.0.lcssa.17, float* %arrayidx51.17, align 4
   br label %for.inc53.17
 
 for.inc53.17:                                     ; preds = %if.else.17, %if.then40.17
@@ -2230,13 +2230,13 @@ for.body16.18:                                    ; preds = %for.inc.18, %for.bo
 if.end26.18:                                      ; preds = %for.body16.18
   %add29.18 = add nsw i32 %add17.18, %mul.18
   %idxprom.18 = sext i32 %add29.18 to i64
-  %arrayidx.18 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.18
-  %217 = load volatile float, float* %arrayidx.18, align 4
+  %arrayidx.18 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.18
+  %217 = load float, float* %arrayidx.18, align 4
   %218 = trunc i64 %indvars.iv.18 to i32
   %add31.18 = add i32 %218, %mul30.18
   %idxprom32.18 = zext i32 %add31.18 to i64
-  %arrayidx33.18 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.18
-  %219 = load volatile float, float* %arrayidx33.18, align 4
+  %arrayidx33.18 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.18
+  %219 = load float, float* %arrayidx33.18, align 4
   %mul34.18 = fmul float %217, %219
   %add35.18 = fadd float %partial_sum.12.18, %mul34.18
   br label %for.inc.18
@@ -2273,14 +2273,14 @@ if.then40.18:                                     ; preds = %for.end38.18
   %conv.18 = fptoui float %cond.18 to i8
   %conv43.18 = uitofp i8 %conv.18 to float
   %220 = add nsw i64 %indvars.iv20.18, %214
-  %arrayidx47.18 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %220
-  store volatile float %conv43.18, float* %arrayidx47.18, align 4
+  %arrayidx47.18 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %220
+  store float %conv43.18, float* %arrayidx47.18, align 4
   br label %for.inc53.18
 
 if.else.18:                                       ; preds = %for.end38.18
   %221 = add nsw i64 %indvars.iv20.18, %213
-  %arrayidx51.18 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %221
-  store volatile float %partial_sum.0.lcssa.18, float* %arrayidx51.18, align 4
+  %arrayidx51.18 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %221
+  store float %partial_sum.0.lcssa.18, float* %arrayidx51.18, align 4
   br label %for.inc53.18
 
 for.inc53.18:                                     ; preds = %if.else.18, %if.then40.18
@@ -2340,13 +2340,13 @@ for.body16.19:                                    ; preds = %for.inc.19, %for.bo
 if.end26.19:                                      ; preds = %for.body16.19
   %add29.19 = add nsw i32 %add17.19, %mul.19
   %idxprom.19 = sext i32 %add29.19 to i64
-  %arrayidx.19 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.19
-  %228 = load volatile float, float* %arrayidx.19, align 4
+  %arrayidx.19 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.19
+  %228 = load float, float* %arrayidx.19, align 4
   %229 = trunc i64 %indvars.iv.19 to i32
   %add31.19 = add i32 %229, %mul30.19
   %idxprom32.19 = zext i32 %add31.19 to i64
-  %arrayidx33.19 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.19
-  %230 = load volatile float, float* %arrayidx33.19, align 4
+  %arrayidx33.19 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.19
+  %230 = load float, float* %arrayidx33.19, align 4
   %mul34.19 = fmul float %228, %230
   %add35.19 = fadd float %partial_sum.12.19, %mul34.19
   br label %for.inc.19
@@ -2383,14 +2383,14 @@ if.then40.19:                                     ; preds = %for.end38.19
   %conv.19 = fptoui float %cond.19 to i8
   %conv43.19 = uitofp i8 %conv.19 to float
   %231 = add nsw i64 %indvars.iv20.19, %225
-  %arrayidx47.19 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %231
-  store volatile float %conv43.19, float* %arrayidx47.19, align 4
+  %arrayidx47.19 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %231
+  store float %conv43.19, float* %arrayidx47.19, align 4
   br label %for.inc53.19
 
 if.else.19:                                       ; preds = %for.end38.19
   %232 = add nsw i64 %indvars.iv20.19, %224
-  %arrayidx51.19 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %232
-  store volatile float %partial_sum.0.lcssa.19, float* %arrayidx51.19, align 4
+  %arrayidx51.19 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %232
+  store float %partial_sum.0.lcssa.19, float* %arrayidx51.19, align 4
   br label %for.inc53.19
 
 for.inc53.19:                                     ; preds = %if.else.19, %if.then40.19
@@ -2450,13 +2450,13 @@ for.body16.20:                                    ; preds = %for.inc.20, %for.bo
 if.end26.20:                                      ; preds = %for.body16.20
   %add29.20 = add nsw i32 %add17.20, %mul.20
   %idxprom.20 = sext i32 %add29.20 to i64
-  %arrayidx.20 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.20
-  %239 = load volatile float, float* %arrayidx.20, align 4
+  %arrayidx.20 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.20
+  %239 = load float, float* %arrayidx.20, align 4
   %240 = trunc i64 %indvars.iv.20 to i32
   %add31.20 = add i32 %240, %mul30.20
   %idxprom32.20 = zext i32 %add31.20 to i64
-  %arrayidx33.20 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.20
-  %241 = load volatile float, float* %arrayidx33.20, align 4
+  %arrayidx33.20 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.20
+  %241 = load float, float* %arrayidx33.20, align 4
   %mul34.20 = fmul float %239, %241
   %add35.20 = fadd float %partial_sum.12.20, %mul34.20
   br label %for.inc.20
@@ -2493,14 +2493,14 @@ if.then40.20:                                     ; preds = %for.end38.20
   %conv.20 = fptoui float %cond.20 to i8
   %conv43.20 = uitofp i8 %conv.20 to float
   %242 = add nsw i64 %indvars.iv20.20, %236
-  %arrayidx47.20 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %242
-  store volatile float %conv43.20, float* %arrayidx47.20, align 4
+  %arrayidx47.20 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %242
+  store float %conv43.20, float* %arrayidx47.20, align 4
   br label %for.inc53.20
 
 if.else.20:                                       ; preds = %for.end38.20
   %243 = add nsw i64 %indvars.iv20.20, %235
-  %arrayidx51.20 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %243
-  store volatile float %partial_sum.0.lcssa.20, float* %arrayidx51.20, align 4
+  %arrayidx51.20 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %243
+  store float %partial_sum.0.lcssa.20, float* %arrayidx51.20, align 4
   br label %for.inc53.20
 
 for.inc53.20:                                     ; preds = %if.else.20, %if.then40.20
@@ -2560,13 +2560,13 @@ for.body16.21:                                    ; preds = %for.inc.21, %for.bo
 if.end26.21:                                      ; preds = %for.body16.21
   %add29.21 = add nsw i32 %add17.21, %mul.21
   %idxprom.21 = sext i32 %add29.21 to i64
-  %arrayidx.21 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.21
-  %250 = load volatile float, float* %arrayidx.21, align 4
+  %arrayidx.21 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.21
+  %250 = load float, float* %arrayidx.21, align 4
   %251 = trunc i64 %indvars.iv.21 to i32
   %add31.21 = add i32 %251, %mul30.21
   %idxprom32.21 = zext i32 %add31.21 to i64
-  %arrayidx33.21 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.21
-  %252 = load volatile float, float* %arrayidx33.21, align 4
+  %arrayidx33.21 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.21
+  %252 = load float, float* %arrayidx33.21, align 4
   %mul34.21 = fmul float %250, %252
   %add35.21 = fadd float %partial_sum.12.21, %mul34.21
   br label %for.inc.21
@@ -2603,14 +2603,14 @@ if.then40.21:                                     ; preds = %for.end38.21
   %conv.21 = fptoui float %cond.21 to i8
   %conv43.21 = uitofp i8 %conv.21 to float
   %253 = add nsw i64 %indvars.iv20.21, %247
-  %arrayidx47.21 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %253
-  store volatile float %conv43.21, float* %arrayidx47.21, align 4
+  %arrayidx47.21 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %253
+  store float %conv43.21, float* %arrayidx47.21, align 4
   br label %for.inc53.21
 
 if.else.21:                                       ; preds = %for.end38.21
   %254 = add nsw i64 %indvars.iv20.21, %246
-  %arrayidx51.21 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %254
-  store volatile float %partial_sum.0.lcssa.21, float* %arrayidx51.21, align 4
+  %arrayidx51.21 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %254
+  store float %partial_sum.0.lcssa.21, float* %arrayidx51.21, align 4
   br label %for.inc53.21
 
 for.inc53.21:                                     ; preds = %if.else.21, %if.then40.21
@@ -2670,13 +2670,13 @@ for.body16.22:                                    ; preds = %for.inc.22, %for.bo
 if.end26.22:                                      ; preds = %for.body16.22
   %add29.22 = add nsw i32 %add17.22, %mul.22
   %idxprom.22 = sext i32 %add29.22 to i64
-  %arrayidx.22 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.22
-  %261 = load volatile float, float* %arrayidx.22, align 4
+  %arrayidx.22 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.22
+  %261 = load float, float* %arrayidx.22, align 4
   %262 = trunc i64 %indvars.iv.22 to i32
   %add31.22 = add i32 %262, %mul30.22
   %idxprom32.22 = zext i32 %add31.22 to i64
-  %arrayidx33.22 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.22
-  %263 = load volatile float, float* %arrayidx33.22, align 4
+  %arrayidx33.22 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.22
+  %263 = load float, float* %arrayidx33.22, align 4
   %mul34.22 = fmul float %261, %263
   %add35.22 = fadd float %partial_sum.12.22, %mul34.22
   br label %for.inc.22
@@ -2713,14 +2713,14 @@ if.then40.22:                                     ; preds = %for.end38.22
   %conv.22 = fptoui float %cond.22 to i8
   %conv43.22 = uitofp i8 %conv.22 to float
   %264 = add nsw i64 %indvars.iv20.22, %258
-  %arrayidx47.22 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %264
-  store volatile float %conv43.22, float* %arrayidx47.22, align 4
+  %arrayidx47.22 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %264
+  store float %conv43.22, float* %arrayidx47.22, align 4
   br label %for.inc53.22
 
 if.else.22:                                       ; preds = %for.end38.22
   %265 = add nsw i64 %indvars.iv20.22, %257
-  %arrayidx51.22 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %265
-  store volatile float %partial_sum.0.lcssa.22, float* %arrayidx51.22, align 4
+  %arrayidx51.22 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %265
+  store float %partial_sum.0.lcssa.22, float* %arrayidx51.22, align 4
   br label %for.inc53.22
 
 for.inc53.22:                                     ; preds = %if.else.22, %if.then40.22
@@ -2780,13 +2780,13 @@ for.body16.23:                                    ; preds = %for.inc.23, %for.bo
 if.end26.23:                                      ; preds = %for.body16.23
   %add29.23 = add nsw i32 %add17.23, %mul.23
   %idxprom.23 = sext i32 %add29.23 to i64
-  %arrayidx.23 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.23
-  %272 = load volatile float, float* %arrayidx.23, align 4
+  %arrayidx.23 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.23
+  %272 = load float, float* %arrayidx.23, align 4
   %273 = trunc i64 %indvars.iv.23 to i32
   %add31.23 = add i32 %273, %mul30.23
   %idxprom32.23 = zext i32 %add31.23 to i64
-  %arrayidx33.23 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.23
-  %274 = load volatile float, float* %arrayidx33.23, align 4
+  %arrayidx33.23 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.23
+  %274 = load float, float* %arrayidx33.23, align 4
   %mul34.23 = fmul float %272, %274
   %add35.23 = fadd float %partial_sum.12.23, %mul34.23
   br label %for.inc.23
@@ -2823,14 +2823,14 @@ if.then40.23:                                     ; preds = %for.end38.23
   %conv.23 = fptoui float %cond.23 to i8
   %conv43.23 = uitofp i8 %conv.23 to float
   %275 = add nsw i64 %indvars.iv20.23, %269
-  %arrayidx47.23 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %275
-  store volatile float %conv43.23, float* %arrayidx47.23, align 4
+  %arrayidx47.23 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %275
+  store float %conv43.23, float* %arrayidx47.23, align 4
   br label %for.inc53.23
 
 if.else.23:                                       ; preds = %for.end38.23
   %276 = add nsw i64 %indvars.iv20.23, %268
-  %arrayidx51.23 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %276
-  store volatile float %partial_sum.0.lcssa.23, float* %arrayidx51.23, align 4
+  %arrayidx51.23 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %276
+  store float %partial_sum.0.lcssa.23, float* %arrayidx51.23, align 4
   br label %for.inc53.23
 
 for.inc53.23:                                     ; preds = %if.else.23, %if.then40.23
@@ -2890,13 +2890,13 @@ for.body16.24:                                    ; preds = %for.inc.24, %for.bo
 if.end26.24:                                      ; preds = %for.body16.24
   %add29.24 = add nsw i32 %add17.24, %mul.24
   %idxprom.24 = sext i32 %add29.24 to i64
-  %arrayidx.24 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.24
-  %283 = load volatile float, float* %arrayidx.24, align 4
+  %arrayidx.24 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.24
+  %283 = load float, float* %arrayidx.24, align 4
   %284 = trunc i64 %indvars.iv.24 to i32
   %add31.24 = add i32 %284, %mul30.24
   %idxprom32.24 = zext i32 %add31.24 to i64
-  %arrayidx33.24 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.24
-  %285 = load volatile float, float* %arrayidx33.24, align 4
+  %arrayidx33.24 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.24
+  %285 = load float, float* %arrayidx33.24, align 4
   %mul34.24 = fmul float %283, %285
   %add35.24 = fadd float %partial_sum.12.24, %mul34.24
   br label %for.inc.24
@@ -2933,14 +2933,14 @@ if.then40.24:                                     ; preds = %for.end38.24
   %conv.24 = fptoui float %cond.24 to i8
   %conv43.24 = uitofp i8 %conv.24 to float
   %286 = add nsw i64 %indvars.iv20.24, %280
-  %arrayidx47.24 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %286
-  store volatile float %conv43.24, float* %arrayidx47.24, align 4
+  %arrayidx47.24 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %286
+  store float %conv43.24, float* %arrayidx47.24, align 4
   br label %for.inc53.24
 
 if.else.24:                                       ; preds = %for.end38.24
   %287 = add nsw i64 %indvars.iv20.24, %279
-  %arrayidx51.24 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %287
-  store volatile float %partial_sum.0.lcssa.24, float* %arrayidx51.24, align 4
+  %arrayidx51.24 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %287
+  store float %partial_sum.0.lcssa.24, float* %arrayidx51.24, align 4
   br label %for.inc53.24
 
 for.inc53.24:                                     ; preds = %if.else.24, %if.then40.24
@@ -3000,13 +3000,13 @@ for.body16.25:                                    ; preds = %for.inc.25, %for.bo
 if.end26.25:                                      ; preds = %for.body16.25
   %add29.25 = add nsw i32 %add17.25, %mul.25
   %idxprom.25 = sext i32 %add29.25 to i64
-  %arrayidx.25 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.25
-  %294 = load volatile float, float* %arrayidx.25, align 4
+  %arrayidx.25 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.25
+  %294 = load float, float* %arrayidx.25, align 4
   %295 = trunc i64 %indvars.iv.25 to i32
   %add31.25 = add i32 %295, %mul30.25
   %idxprom32.25 = zext i32 %add31.25 to i64
-  %arrayidx33.25 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.25
-  %296 = load volatile float, float* %arrayidx33.25, align 4
+  %arrayidx33.25 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.25
+  %296 = load float, float* %arrayidx33.25, align 4
   %mul34.25 = fmul float %294, %296
   %add35.25 = fadd float %partial_sum.12.25, %mul34.25
   br label %for.inc.25
@@ -3043,14 +3043,14 @@ if.then40.25:                                     ; preds = %for.end38.25
   %conv.25 = fptoui float %cond.25 to i8
   %conv43.25 = uitofp i8 %conv.25 to float
   %297 = add nsw i64 %indvars.iv20.25, %291
-  %arrayidx47.25 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %297
-  store volatile float %conv43.25, float* %arrayidx47.25, align 4
+  %arrayidx47.25 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %297
+  store float %conv43.25, float* %arrayidx47.25, align 4
   br label %for.inc53.25
 
 if.else.25:                                       ; preds = %for.end38.25
   %298 = add nsw i64 %indvars.iv20.25, %290
-  %arrayidx51.25 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %298
-  store volatile float %partial_sum.0.lcssa.25, float* %arrayidx51.25, align 4
+  %arrayidx51.25 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %298
+  store float %partial_sum.0.lcssa.25, float* %arrayidx51.25, align 4
   br label %for.inc53.25
 
 for.inc53.25:                                     ; preds = %if.else.25, %if.then40.25
@@ -3110,13 +3110,13 @@ for.body16.26:                                    ; preds = %for.inc.26, %for.bo
 if.end26.26:                                      ; preds = %for.body16.26
   %add29.26 = add nsw i32 %add17.26, %mul.26
   %idxprom.26 = sext i32 %add29.26 to i64
-  %arrayidx.26 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.26
-  %305 = load volatile float, float* %arrayidx.26, align 4
+  %arrayidx.26 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.26
+  %305 = load float, float* %arrayidx.26, align 4
   %306 = trunc i64 %indvars.iv.26 to i32
   %add31.26 = add i32 %306, %mul30.26
   %idxprom32.26 = zext i32 %add31.26 to i64
-  %arrayidx33.26 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.26
-  %307 = load volatile float, float* %arrayidx33.26, align 4
+  %arrayidx33.26 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.26
+  %307 = load float, float* %arrayidx33.26, align 4
   %mul34.26 = fmul float %305, %307
   %add35.26 = fadd float %partial_sum.12.26, %mul34.26
   br label %for.inc.26
@@ -3153,14 +3153,14 @@ if.then40.26:                                     ; preds = %for.end38.26
   %conv.26 = fptoui float %cond.26 to i8
   %conv43.26 = uitofp i8 %conv.26 to float
   %308 = add nsw i64 %indvars.iv20.26, %302
-  %arrayidx47.26 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %308
-  store volatile float %conv43.26, float* %arrayidx47.26, align 4
+  %arrayidx47.26 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %308
+  store float %conv43.26, float* %arrayidx47.26, align 4
   br label %for.inc53.26
 
 if.else.26:                                       ; preds = %for.end38.26
   %309 = add nsw i64 %indvars.iv20.26, %301
-  %arrayidx51.26 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %309
-  store volatile float %partial_sum.0.lcssa.26, float* %arrayidx51.26, align 4
+  %arrayidx51.26 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %309
+  store float %partial_sum.0.lcssa.26, float* %arrayidx51.26, align 4
   br label %for.inc53.26
 
 for.inc53.26:                                     ; preds = %if.else.26, %if.then40.26
@@ -3220,13 +3220,13 @@ for.body16.27:                                    ; preds = %for.inc.27, %for.bo
 if.end26.27:                                      ; preds = %for.body16.27
   %add29.27 = add nsw i32 %add17.27, %mul.27
   %idxprom.27 = sext i32 %add29.27 to i64
-  %arrayidx.27 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.27
-  %316 = load volatile float, float* %arrayidx.27, align 4
+  %arrayidx.27 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.27
+  %316 = load float, float* %arrayidx.27, align 4
   %317 = trunc i64 %indvars.iv.27 to i32
   %add31.27 = add i32 %317, %mul30.27
   %idxprom32.27 = zext i32 %add31.27 to i64
-  %arrayidx33.27 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.27
-  %318 = load volatile float, float* %arrayidx33.27, align 4
+  %arrayidx33.27 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.27
+  %318 = load float, float* %arrayidx33.27, align 4
   %mul34.27 = fmul float %316, %318
   %add35.27 = fadd float %partial_sum.12.27, %mul34.27
   br label %for.inc.27
@@ -3263,14 +3263,14 @@ if.then40.27:                                     ; preds = %for.end38.27
   %conv.27 = fptoui float %cond.27 to i8
   %conv43.27 = uitofp i8 %conv.27 to float
   %319 = add nsw i64 %indvars.iv20.27, %313
-  %arrayidx47.27 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %319
-  store volatile float %conv43.27, float* %arrayidx47.27, align 4
+  %arrayidx47.27 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %319
+  store float %conv43.27, float* %arrayidx47.27, align 4
   br label %for.inc53.27
 
 if.else.27:                                       ; preds = %for.end38.27
   %320 = add nsw i64 %indvars.iv20.27, %312
-  %arrayidx51.27 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %320
-  store volatile float %partial_sum.0.lcssa.27, float* %arrayidx51.27, align 4
+  %arrayidx51.27 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %320
+  store float %partial_sum.0.lcssa.27, float* %arrayidx51.27, align 4
   br label %for.inc53.27
 
 for.inc53.27:                                     ; preds = %if.else.27, %if.then40.27
@@ -3330,13 +3330,13 @@ for.body16.28:                                    ; preds = %for.inc.28, %for.bo
 if.end26.28:                                      ; preds = %for.body16.28
   %add29.28 = add nsw i32 %add17.28, %mul.28
   %idxprom.28 = sext i32 %add29.28 to i64
-  %arrayidx.28 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.28
-  %327 = load volatile float, float* %arrayidx.28, align 4
+  %arrayidx.28 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.28
+  %327 = load float, float* %arrayidx.28, align 4
   %328 = trunc i64 %indvars.iv.28 to i32
   %add31.28 = add i32 %328, %mul30.28
   %idxprom32.28 = zext i32 %add31.28 to i64
-  %arrayidx33.28 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.28
-  %329 = load volatile float, float* %arrayidx33.28, align 4
+  %arrayidx33.28 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.28
+  %329 = load float, float* %arrayidx33.28, align 4
   %mul34.28 = fmul float %327, %329
   %add35.28 = fadd float %partial_sum.12.28, %mul34.28
   br label %for.inc.28
@@ -3373,14 +3373,14 @@ if.then40.28:                                     ; preds = %for.end38.28
   %conv.28 = fptoui float %cond.28 to i8
   %conv43.28 = uitofp i8 %conv.28 to float
   %330 = add nsw i64 %indvars.iv20.28, %324
-  %arrayidx47.28 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %330
-  store volatile float %conv43.28, float* %arrayidx47.28, align 4
+  %arrayidx47.28 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %330
+  store float %conv43.28, float* %arrayidx47.28, align 4
   br label %for.inc53.28
 
 if.else.28:                                       ; preds = %for.end38.28
   %331 = add nsw i64 %indvars.iv20.28, %323
-  %arrayidx51.28 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %331
-  store volatile float %partial_sum.0.lcssa.28, float* %arrayidx51.28, align 4
+  %arrayidx51.28 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %331
+  store float %partial_sum.0.lcssa.28, float* %arrayidx51.28, align 4
   br label %for.inc53.28
 
 for.inc53.28:                                     ; preds = %if.else.28, %if.then40.28
@@ -3440,13 +3440,13 @@ for.body16.29:                                    ; preds = %for.inc.29, %for.bo
 if.end26.29:                                      ; preds = %for.body16.29
   %add29.29 = add nsw i32 %add17.29, %mul.29
   %idxprom.29 = sext i32 %add29.29 to i64
-  %arrayidx.29 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.29
-  %338 = load volatile float, float* %arrayidx.29, align 4
+  %arrayidx.29 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.29
+  %338 = load float, float* %arrayidx.29, align 4
   %339 = trunc i64 %indvars.iv.29 to i32
   %add31.29 = add i32 %339, %mul30.29
   %idxprom32.29 = zext i32 %add31.29 to i64
-  %arrayidx33.29 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.29
-  %340 = load volatile float, float* %arrayidx33.29, align 4
+  %arrayidx33.29 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.29
+  %340 = load float, float* %arrayidx33.29, align 4
   %mul34.29 = fmul float %338, %340
   %add35.29 = fadd float %partial_sum.12.29, %mul34.29
   br label %for.inc.29
@@ -3483,14 +3483,14 @@ if.then40.29:                                     ; preds = %for.end38.29
   %conv.29 = fptoui float %cond.29 to i8
   %conv43.29 = uitofp i8 %conv.29 to float
   %341 = add nsw i64 %indvars.iv20.29, %335
-  %arrayidx47.29 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %341
-  store volatile float %conv43.29, float* %arrayidx47.29, align 4
+  %arrayidx47.29 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %341
+  store float %conv43.29, float* %arrayidx47.29, align 4
   br label %for.inc53.29
 
 if.else.29:                                       ; preds = %for.end38.29
   %342 = add nsw i64 %indvars.iv20.29, %334
-  %arrayidx51.29 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %342
-  store volatile float %partial_sum.0.lcssa.29, float* %arrayidx51.29, align 4
+  %arrayidx51.29 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %342
+  store float %partial_sum.0.lcssa.29, float* %arrayidx51.29, align 4
   br label %for.inc53.29
 
 for.inc53.29:                                     ; preds = %if.else.29, %if.then40.29
@@ -3550,13 +3550,13 @@ for.body16.30:                                    ; preds = %for.inc.30, %for.bo
 if.end26.30:                                      ; preds = %for.body16.30
   %add29.30 = add nsw i32 %add17.30, %mul.30
   %idxprom.30 = sext i32 %add29.30 to i64
-  %arrayidx.30 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.30
-  %349 = load volatile float, float* %arrayidx.30, align 4
+  %arrayidx.30 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.30
+  %349 = load float, float* %arrayidx.30, align 4
   %350 = trunc i64 %indvars.iv.30 to i32
   %add31.30 = add i32 %350, %mul30.30
   %idxprom32.30 = zext i32 %add31.30 to i64
-  %arrayidx33.30 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.30
-  %351 = load volatile float, float* %arrayidx33.30, align 4
+  %arrayidx33.30 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.30
+  %351 = load float, float* %arrayidx33.30, align 4
   %mul34.30 = fmul float %349, %351
   %add35.30 = fadd float %partial_sum.12.30, %mul34.30
   br label %for.inc.30
@@ -3593,14 +3593,14 @@ if.then40.30:                                     ; preds = %for.end38.30
   %conv.30 = fptoui float %cond.30 to i8
   %conv43.30 = uitofp i8 %conv.30 to float
   %352 = add nsw i64 %indvars.iv20.30, %346
-  %arrayidx47.30 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %352
-  store volatile float %conv43.30, float* %arrayidx47.30, align 4
+  %arrayidx47.30 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %352
+  store float %conv43.30, float* %arrayidx47.30, align 4
   br label %for.inc53.30
 
 if.else.30:                                       ; preds = %for.end38.30
   %353 = add nsw i64 %indvars.iv20.30, %345
-  %arrayidx51.30 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %353
-  store volatile float %partial_sum.0.lcssa.30, float* %arrayidx51.30, align 4
+  %arrayidx51.30 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %353
+  store float %partial_sum.0.lcssa.30, float* %arrayidx51.30, align 4
   br label %for.inc53.30
 
 for.inc53.30:                                     ; preds = %if.else.30, %if.then40.30
@@ -3660,13 +3660,13 @@ for.body16.31:                                    ; preds = %for.inc.31, %for.bo
 if.end26.31:                                      ; preds = %for.body16.31
   %add29.31 = add nsw i32 %add17.31, %mul.31
   %idxprom.31 = sext i32 %add29.31 to i64
-  %arrayidx.31 = getelementptr inbounds float, float* inttoptr (i64 537919520 to float*), i64 %idxprom.31
-  %360 = load volatile float, float* %arrayidx.31, align 4
+  %arrayidx.31 = getelementptr inbounds float, float* inttoptr (i64 570425376 to float*), i64 %idxprom.31
+  %360 = load float, float* %arrayidx.31, align 4
   %361 = trunc i64 %indvars.iv.31 to i32
   %add31.31 = add i32 %361, %mul30.31
   %idxprom32.31 = zext i32 %add31.31 to i64
-  %arrayidx33.31 = getelementptr inbounds float, float* inttoptr (i64 538050592 to float*), i64 %idxprom32.31
-  %362 = load volatile float, float* %arrayidx33.31, align 4
+  %arrayidx33.31 = getelementptr inbounds float, float* inttoptr (i64 570556448 to float*), i64 %idxprom32.31
+  %362 = load float, float* %arrayidx33.31, align 4
   %mul34.31 = fmul float %360, %362
   %add35.31 = fadd float %partial_sum.12.31, %mul34.31
   br label %for.inc.31
@@ -3703,14 +3703,14 @@ if.then40.31:                                     ; preds = %for.end38.31
   %conv.31 = fptoui float %cond.31 to i8
   %conv43.31 = uitofp i8 %conv.31 to float
   %363 = add nsw i64 %indvars.iv20.31, %357
-  %arrayidx47.31 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %363
-  store volatile float %conv43.31, float* %arrayidx47.31, align 4
+  %arrayidx47.31 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %363
+  store float %conv43.31, float* %arrayidx47.31, align 4
   br label %for.inc53.31
 
 if.else.31:                                       ; preds = %for.end38.31
   %364 = add nsw i64 %indvars.iv20.31, %356
-  %arrayidx51.31 = getelementptr inbounds float, float* inttoptr (i64 537985056 to float*), i64 %364
-  store volatile float %partial_sum.0.lcssa.31, float* %arrayidx51.31, align 4
+  %arrayidx51.31 = getelementptr inbounds float, float* inttoptr (i64 570490912 to float*), i64 %364
+  store float %partial_sum.0.lcssa.31, float* %arrayidx51.31, align 4
   br label %for.inc53.31
 
 for.inc53.31:                                     ; preds = %if.else.31, %if.then40.31

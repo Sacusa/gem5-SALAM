@@ -13,23 +13,27 @@ for.body.preheader:                               ; preds = %entry
 
 for.body:                                         ; preds = %for.body.preheader, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.body.preheader ]
-  %0 = load volatile i8, i8* inttoptr (i64 541065248 to i8*), align 32
-  %1 = load volatile i8, i8* inttoptr (i64 541065248 to i8*), align 32
-  %2 = load volatile i8, i8* inttoptr (i64 541065248 to i8*), align 32
-  %conv2 = uitofp i8 %0 to float
-  %conv3 = fpext float %conv2 to double
-  %mul = fmul double %conv3, 2.126000e-01
-  %conv4 = uitofp i8 %1 to float
-  %conv5 = fpext float %conv4 to double
-  %mul6 = fmul double %conv5, 7.152000e-01
-  %add = fadd double %mul, %mul6
-  %conv7 = uitofp i8 %2 to float
-  %conv8 = fpext float %conv7 to double
-  %mul9 = fmul double %conv8, 7.220000e-02
-  %add10 = fadd double %add, %mul9
-  %conv11 = fptoui double %add10 to i8
-  %conv12 = uitofp i8 %conv11 to float
-  store volatile float %conv12, float* inttoptr (i64 541065248 to float*), align 32
+  %0 = mul nuw nsw i64 %indvars.iv, 3
+  %arrayidx = getelementptr inbounds i8, i8* inttoptr (i64 620757024 to i8*), i64 %0
+  %1 = load i8, i8* %arrayidx, align 1
+  %2 = add nuw nsw i64 %0, 1
+  %arrayidx3 = getelementptr inbounds i8, i8* inttoptr (i64 620757024 to i8*), i64 %2
+  %3 = load i8, i8* %arrayidx3, align 1
+  %4 = add nuw nsw i64 %0, 2
+  %arrayidx6 = getelementptr inbounds i8, i8* inttoptr (i64 620757024 to i8*), i64 %4
+  %5 = load i8, i8* %arrayidx6, align 1
+  %conv8 = uitofp i8 %1 to float
+  %mul9 = fmul float %conv8, 0x3FCB367A00000000
+  %conv11 = uitofp i8 %3 to float
+  %mul12 = fmul float %conv11, 0x3FE6E2EB20000000
+  %add13 = fadd float %mul9, %mul12
+  %conv15 = uitofp i8 %5 to float
+  %mul16 = fmul float %conv15, 0x3FB27BB300000000
+  %add17 = fadd float %add13, %mul16
+  %conv18 = fptoui float %add17 to i8
+  %conv19 = uitofp i8 %conv18 to float
+  %arrayidx21 = getelementptr inbounds float, float* inttoptr (i64 620806176 to float*), i64 %indvars.iv
+  store float %conv19, float* %arrayidx21, align 4
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond = icmp eq i64 %indvars.iv.next, %num_elems
   br i1 %exitcond, label %for.end.loopexit, label %for.body, !llvm.loop !1

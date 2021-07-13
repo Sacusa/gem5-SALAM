@@ -5,6 +5,7 @@
 #define ROW 64
 #define COL 64
 #define DIM(x,y) (((x) * COL) + (y))
+#define LOOP_UNROLL 32
 
 void canny_non_max_driver(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
 

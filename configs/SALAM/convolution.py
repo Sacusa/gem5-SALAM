@@ -87,8 +87,8 @@ def makeHWAcc(options, system):
     ############################# Creating the Accelerator Cluster #################################
     # Create a new Accelerator Cluster
     system.acctest  = AccCluster()
-    local_low       = 0x20100000
-    local_high      = 0x201FFFFF
+    local_low       = 0x22000000
+    local_high      = 0x22FFFFFF
     local_range     = AddrRange(local_low, local_high)
     external_range  = [AddrRange(0x00000000, local_low-1),
                        AddrRange(local_high+1, 0xFFFFFFFF)]
@@ -111,7 +111,7 @@ def makeHWAcc(options, system):
     system.acctest._connect_spm(system.acctest.spm)
 
     # Add the cluster DMA
-    system.acctest.dma = NoncoherentDma(pio_addr=0x20100000, pio_size=21, gic=gic, int_num=98)
+    system.acctest.dma = NoncoherentDma(pio_addr=0x22000000, pio_size=21, gic=gic, int_num=98)
     system.acctest.dma.cluster_dma = system.acctest.local_bus.slave
     system.acctest.dma.max_req_size = 1
     system.acctest.dma.buffer_size = 128

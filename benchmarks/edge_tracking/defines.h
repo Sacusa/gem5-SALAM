@@ -19,10 +19,11 @@ void edge_tracking_driver(uint32_t, uint32_t, uint32_t, uint32_t, float,
 #define DEV_INTR    0x04
 
 // MMR addresses
-#define EDGE_TRACKING_BASE_ADDR 0x20200000
+#define EDGE_TRACKING_BASE_ADDR 0x23000000
 #define EDGE_TRACKING_DMA       EDGE_TRACKING_BASE_ADDR // 21 B
-#define INPUT_SPM               0x20200020              // 64 KB
-#define OUTPUT_SPM              0x20210020              // 16 KB
-#define EDGE_TRACKING_MMR       0x20214020              // 9 B
+#define INPUT_SPM               0x23000020              // 64 KB
+#define OUTPUT_SPM              0x23010020              // 16 KB
+#define LOCAL_MAXIMA_SPM        0x23014020              // 128 B
+#define EDGE_TRACKING_MMR       0x230140a0              // 9 B
 
 #endif

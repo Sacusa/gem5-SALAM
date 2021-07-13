@@ -87,8 +87,8 @@ def makeHWAcc(options, system):
     ############################# Creating the Accelerator Cluster #################################
     # Create a new Accelerator Cluster
     system.acctest  = AccCluster()
-    local_low       = 0x20300000
-    local_high      = 0x203FFFFF
+    local_low       = 0x24000000
+    local_high      = 0x24FFFFFF
     local_range     = AddrRange(local_low, local_high)
     external_range  = [AddrRange(0x00000000, local_low-1),
                        AddrRange(local_high+1, 0xFFFFFFFF)]
@@ -97,26 +97,6 @@ def makeHWAcc(options, system):
     gic = system.realview.gic
 
     ############################# Adding Devices to Cluster ##################################
-    # Add stream DMAs
-    addr = 0x20300000
-    system.acctest.arg1_result_stream = StreamDma(pio_addr=addr, pio_size=32, gic=gic,
-            max_pending=32)
-    system.acctest.arg1_result_stream.stream_addr=addr+32
-    system.acctest.arg1_result_stream.stream_size=4
-    system.acctest.arg1_result_stream.pio_delay='1ns'
-    system.acctest.arg1_result_stream.rd_int = 210
-    system.acctest.arg1_result_stream.wr_int = 211
-    system.acctest._connect_dma(system, system.acctest.arg1_result_stream)
-
-    addr = 0x20300040
-    system.acctest.arg2_stream = StreamDma(pio_addr=addr, pio_size=32, gic=gic, max_pending=32)
-    system.acctest.arg2_stream.stream_addr=addr+32
-    system.acctest.arg2_stream.stream_size=4
-    system.acctest.arg2_stream.pio_delay='1ns'
-    system.acctest.arg2_stream.rd_int = 212
-    system.acctest.arg2_stream.wr_int = 213
-    system.acctest._connect_dma(system, system.acctest.arg2_stream)
-
     # Add the benchmark function
     acc = options.accbench
     config = hw_path + acc + ".ini"
@@ -125,10 +105,17 @@ def makeHWAcc(options, system):
     AccConfig(system.acctest.elem_matrix, config, ir)
     system.acctest._connect_hwacc(system.acctest.elem_matrix)
     system.acctest.elem_matrix.local = system.acctest.local_bus.slave
-    system.acctest.elem_matrix.stream = system.acctest.arg1_result_stream.stream_in
-    system.acctest.elem_matrix.stream = system.acctest.arg1_result_stream.stream_out
-    system.acctest.elem_matrix.stream = system.acctest.arg2_stream.stream_out
-    #system.acctest.elem_matrix.enable_debug_msgs = True
+
+    system.acctest.spm = ScratchpadMemory()
+    AccSPMConfig(system.acctest.elem_matrix, system.acctest.spm, config)
+    system.acctest._connect_spm(system.acctest.spm)
+
+    # Add the cluster DMA
+    system.acctest.dma = NoncoherentDma(pio_addr=0x24000000, pio_size=21, gic=gic, int_num=98)
+    system.acctest.dma.cluster_dma = system.acctest.local_bus.slave
+    system.acctest.dma.max_req_size = 1
+    system.acctest.dma.buffer_size = 128
+    system.acctest._connect_dma(system, system.acctest.dma);
 
 def build_test_system(np):
     cmdline = cmd_line_template()

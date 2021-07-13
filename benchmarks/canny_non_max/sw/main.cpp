@@ -15,9 +15,9 @@ int main(void) {
     m5_reset_stats();
 
     uint32_t base = 0x81000000;
-    float *hypotenuse = (float *)(base);
-    float *theta      = (float *)(base + 4*ROW*COL);
-    uint32_t *result  = (uint32_t *)(base + 8*ROW*COL);
+    float *hypotenuse    = (float *)(base);
+    float *theta         = (float *)(base + 4*ROW*COL);
+    uint32_t *result     = (uint32_t *)(base + 8*ROW*COL);
 
     printf("Generating data\n");
     gen_data(hypotenuse, theta, result);
@@ -33,9 +33,8 @@ int main(void) {
 }
 
 void gen_data(float *hypotenuse, float *theta, uint32_t *result) {
-    //float angles[] = {0.349, 0.698, 1.396, 2.094, 2.967};
-    float angles[] = {0.349};
-    int angles_size = 1, angles_index = 0, hypo = 0;
+    float angles[] = {0.349, 0.698, 1.396, 2.094, 2.967};
+    int angles_size = 5, angles_index = 0, hypo = 0;
 
     for (int i = 0; i < ROW; i++) {
         angles_index = i % angles_size;
@@ -102,10 +101,6 @@ int check_output(float *hypotenuse, float *theta, uint32_t *result) {
                     expected_value = 0;
                 }
             }
-
-            float result_float;
-            memcpy(&result_float, &(result[index]), 4);
-            result[index] = result_float;
 
             if (result[index] != expected_value) {
                 num_failures++;

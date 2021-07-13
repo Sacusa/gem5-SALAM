@@ -25,11 +25,11 @@ void driver(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t,
 #define STR_DMA_WR_RUNNING  0x06
 
 // MMR addresses
-#define CONVOLUTION_BASE_ADDR   0x20100000
+#define CONVOLUTION_BASE_ADDR   0x22000000
 #define CONVOLUTION_DMA         CONVOLUTION_BASE_ADDR   // 21 B
-#define INPUT_SPM               0x20100020              // 64 KB
-#define OUTPUT_SPM              0x20110020              // 64 KB
-#define KERNEL_SPM              0x20120020              // 100 B
-#define CONVOLUTION_MMR         0x201200a0              // 41 B
+#define INPUT_SPM               0x22000020              // 64 KB
+#define OUTPUT_SPM              0x22010020              // 64 KB
+#define KERNEL_SPM              0x22020020              // 100 B
+#define CONVOLUTION_MMR         0x220200a0              // 41 B
 
 #endif

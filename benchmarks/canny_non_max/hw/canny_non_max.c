@@ -1,7 +1,5 @@
 #include "hw_defines.h"
 
-inline uint32_t float_to_int(uint32_t);
-
 void canny_non_max(uint32_t img_height, uint32_t img_width) {
     float *hypotenuse = (float*) HYPO_SPAD;
     float *theta = (float*) THETA_SPAD;
@@ -9,7 +7,7 @@ void canny_non_max(uint32_t img_height, uint32_t img_width) {
 
     int max_height = img_height - 1, max_width = img_width - 1;
 
-    #pragma clang loop unroll(disable)
+    #pragma clang loop unroll_count(32)
     for (int i = 0; i < img_height; i++) {
         #pragma clang loop unroll(disable)
         for (int j = 0; j < img_width; j++) {
@@ -58,34 +56,4 @@ void canny_non_max(uint32_t img_height, uint32_t img_width) {
             }
         }
     }
-}
-
-inline uint32_t float_to_int(uint32_t input) {
-    uint8_t sign = input >> 31;
-    uint32_t exponent = (input >> 23) & 0x0ff;
-    uint32_t mantissa = (input & 0x07fffff) | 0x800000;
-    uint32_t result;
-
-    if (exponent < 127) {
-        result = 0;
-    }
-    else {
-        exponent -= 127;
-
-        if (exponent == 23) {
-            result = mantissa;
-        }
-        else if (exponent < 23) {
-            result = mantissa >> (23 - exponent);
-        }
-        else {
-            result = mantissa << (exponent - 23);
-        }
-    }
-
-    if (sign) {
-        result = -result;
-    }
-
-    return result;
 }

@@ -87,8 +87,8 @@ def makeHWAcc(options, system):
     ############################# Creating the Accelerator Cluster #################################
     # Create a new Accelerator Cluster
     system.acctest  = AccCluster()
-    local_low       = 0x20200000
-    local_high      = 0x202FFFFF
+    local_low       = 0x23000000
+    local_high      = 0x23FFFFFF
     local_range     = AddrRange(local_low, local_high)
     external_range  = [AddrRange(0x00000000, local_low-1),
                        AddrRange(local_high+1, 0xFFFFFFFF)]
@@ -101,17 +101,18 @@ def makeHWAcc(options, system):
     acc = options.accbench
     config = hw_path + acc + ".ini"
     ir = hw_path + acc + ".ll"
-    system.acctest.convolution = CommInterface(devicename=acc, gic=gic)
-    AccConfig(system.acctest.convolution, config, ir)
-    system.acctest._connect_hwacc(system.acctest.convolution)
-    system.acctest.convolution.local = system.acctest.local_bus.slave
+    system.acctest.edge_tracking = CommInterface(devicename=acc, gic=gic)
+    AccConfig(system.acctest.edge_tracking, config, ir)
+    system.acctest._connect_hwacc(system.acctest.edge_tracking)
+    system.acctest.edge_tracking.local = system.acctest.local_bus.slave
+    #system.acctest.edge_tracking.enable_debug_msgs = True
 
     system.acctest.spm = ScratchpadMemory()
-    AccSPMConfig(system.acctest.convolution, system.acctest.spm, config)
+    AccSPMConfig(system.acctest.edge_tracking, system.acctest.spm, config)
     system.acctest._connect_spm(system.acctest.spm)
 
     # Add the cluster DMA
-    system.acctest.dma = NoncoherentDma(pio_addr=0x20200000, pio_size=21, gic=gic, int_num=98)
+    system.acctest.dma = NoncoherentDma(pio_addr=0x23000000, pio_size=21, gic=gic, int_num=98)
     system.acctest.dma.cluster_dma = system.acctest.local_bus.slave
     system.acctest.dma.max_req_size = 1
     system.acctest.dma.buffer_size = 128

@@ -12,9 +12,9 @@ void edge_tracking_driver(uint32_t input_addr, uint32_t output_addr,
         float thr_strong_ratio) {
     // DMA flags
     volatile uint8_t  * DmaFlags   = (uint8_t  *)(EDGE_TRACKING_DMA);
-    volatile uint64_t * DmaRdAddr  = (uint64_t *)(EDGE_TRACKING_DMA+1);
-    volatile uint64_t * DmaWrAddr  = (uint64_t *)(EDGE_TRACKING_DMA+9);
-    volatile uint32_t * DmaCopyLen = (uint32_t *)(EDGE_TRACKING_DMA+17);
+    volatile uint64_t * DmaRdAddr  = (uint64_t *)(EDGE_TRACKING_DMA + 1);
+    volatile uint64_t * DmaWrAddr  = (uint64_t *)(EDGE_TRACKING_DMA + 9);
+    volatile uint32_t * DmaCopyLen = (uint32_t *)(EDGE_TRACKING_DMA + 17);
 
     // DMA transfer for input data
     *DmaRdAddr  = input_addr;

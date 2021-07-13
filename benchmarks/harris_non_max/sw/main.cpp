@@ -8,16 +8,16 @@
 
 #define VERBOSE
 
-void gen_data(double*, uint64_t*, uint64_t*);
-int test_output(double*, uint64_t*, uint64_t*);
+void gen_data(float*, uint32_t*, uint32_t*);
+int test_output(float*, uint32_t*, uint32_t*);
 
 int main(void) {
     m5_reset_stats();
 
     uint32_t base = 0x86000000;
-    double *input  = (double*) base;
-    uint64_t *output = (uint64_t*) (base + (ROW*COL*8));
-    uint64_t *expected = (uint64_t*) (base + (ROW*COL*16));
+    float *input  = (float*) base;
+    uint32_t *output = (uint32_t*) (base + (ROW*COL*4));
+    uint32_t *expected = (uint32_t*) (base + (ROW*COL*8));
 
     printf("Generating data\n");
     gen_data(input, output, expected);
@@ -31,8 +31,8 @@ int main(void) {
     m5_exit();
 }
 
-void gen_data(double *input, uint64_t *output, uint64_t *expected) {
-    double max_val = ROW * COL * 2;
+void gen_data(float *input, uint32_t *output, uint32_t *expected) {
+    float max_val = ROW * COL * 2;
     int max_val_index = 0;
 
     for (int i = 0; i < ROW; i += 3) {
@@ -71,7 +71,7 @@ void gen_data(double *input, uint64_t *output, uint64_t *expected) {
     }
 }
 
-int test_output(double *input, uint64_t *output, uint64_t *expected) {
+int test_output(float *input, uint32_t *output, uint32_t *expected) {
     int max_val_index = 0, num_failures = 0;
 
     /*
