@@ -10,9 +10,9 @@ Add::compute() {
     // <result> = add nsw <ty> <op1>, <op2>; yields ty : result
     // <result> = add nuw nsw <ty> <op1>, <op2>; yields ty : result
     if (_debug) DPRINTF(LLVMOp, "Performing %s Operation (%s)\n", _OpCode, _ReturnRegister->getName());
-    if(_ReturnType == "i32") {
+    if (_ReturnType == "i32") {
         if (_Operands.size() == 1) {
-            //if(0x80000000 & _Ops.at(0)) { }
+            //if (0x80000000 & _Ops.at(0)) { }
             _Ops.at(0) = (int32_t) _Ops.at(0);
         } else {
             _Ops.at(0) = (int32_t) _Ops.at(0);
@@ -21,7 +21,7 @@ Add::compute() {
     }
 
     if (_Operands.size() == 1) {
-        if(_ImmFirst) _Result = _Operand + _Ops.at(0);
+        if (_ImmFirst) _Result = _Operand + _Ops.at(0);
         else _Result = _Ops.at(0) + _Operand;
     } else {
         _Result = _Ops.at(0) + _Ops.at(1);
@@ -40,9 +40,9 @@ Sub::compute() {
     // <result> = sub nsw <ty> <op1>, <op2>; yields ty : result
     // <result> = sub nuw nsw <ty> <op1>, <op2>; yields ty : result
     if (_debug) DPRINTF(LLVMOp, "Performing %s Operation\n", _OpCode);
-        if(_ReturnType == "i32") {
+        if (_ReturnType == "i32") {
         if (_Operands.size() == 1) {
-            //if(0x80000000 & _Ops.at(0)) { }
+            //if (0x80000000 & _Ops.at(0)) { }
             _Ops.at(0) = (int32_t) _Ops.at(0);
         } else {
             _Ops.at(0) = (int32_t) _Ops.at(0);
@@ -50,7 +50,7 @@ Sub::compute() {
         }
     }
     if (_Operands.size() == 1) {
-        if(_ImmFirst) _Result = _Operand - _Ops.at(0);
+        if (_ImmFirst) _Result = _Operand - _Ops.at(0);
         else _Result = _Ops.at(0) - _Operand;
     }
     else _Result = _Ops.at(0) - _Ops.at(1);
@@ -67,9 +67,9 @@ Mul::compute() {
     // <result> = mul nsw <ty> <op1>, <op2>; yields ty : result
     // <result> = mul nuw nsw <ty> <op1>, <op2>; yields ty : result
         if (_debug) DPRINTF(LLVMOp, "Performing %s Operation\n", _OpCode);
-    if(_ReturnType == "i32") {
+    if (_ReturnType == "i32") {
         if (_Operands.size() == 1) {
-            //if(0x80000000 & _Ops.at(0)) { }
+            //if (0x80000000 & _Ops.at(0)) { }
             _Ops.at(0) = (int32_t) _Ops.at(0);
         } else {
             _Ops.at(0) = (int32_t) _Ops.at(0);
@@ -77,7 +77,7 @@ Mul::compute() {
         }
     }
     if (_Operands.size() == 1) {
-        if(_ImmFirst) _Result = _Operand * _Ops.at(0);
+        if (_ImmFirst) _Result = _Operand * _Ops.at(0);
         else _Result = _Ops.at(0) * _Operand;
     }
     else _Result = _Ops.at(0) * _Ops.at(1);
@@ -90,9 +90,9 @@ void
 UDiv::compute() {
     // Unsigned Division
     if (_debug) DPRINTF(LLVMOp, "Performing %s Operation\n", _OpCode);
-        if(_ReturnType == "i32") {
+        if (_ReturnType == "i32") {
         if (_Operands.size() == 1) {
-            //if(0x80000000 & _Ops.at(0)) { }
+            //if (0x80000000 & _Ops.at(0)) { }
             _Ops.at(0) = (uint32_t) _Ops.at(0);
         } else {
             _Ops.at(0) = (uint32_t) _Ops.at(0);
@@ -100,7 +100,7 @@ UDiv::compute() {
         }
     }
     if (_Operands.size() == 1) {
-        if(_ImmFirst) _Result = _UOperand / _Ops.at(0);
+        if (_ImmFirst) _Result = _UOperand / _Ops.at(0);
         else _Result = _Ops.at(0) / _UOperand;
     }
     else _Result = _Ops.at(0) / _Ops.at(1);
@@ -113,9 +113,9 @@ void
 SDiv::compute() {
     // Signed Division
     if (_debug) DPRINTF(LLVMOp, "Performing %s Operation\n", _OpCode);
-    if(_ReturnType == "i32") {
+    if (_ReturnType == "i32") {
         if (_Operands.size() == 1) {
-            //if(0x80000000 & _Ops.at(0)) { }
+            //if (0x80000000 & _Ops.at(0)) { }
             _Ops.at(0) = (int32_t) _Ops.at(0);
         } else {
             _Ops.at(0) = (int32_t) _Ops.at(0);
@@ -123,7 +123,7 @@ SDiv::compute() {
         }
     }
     if (_Operands.size() == 1) {
-        if(_ImmFirst) _Result = _Operand / _Ops.at(0);
+        if (_ImmFirst) _Result = _Operand / _Ops.at(0);
         else _Result = _Ops.at(0) / _Operand;
     }
     else _Result = _Ops.at(0) / _Ops.at(1);
@@ -136,9 +136,9 @@ void
 URem::compute() {
     //Unsigned modulo division
     if (_debug) DPRINTF(LLVMOp, "Performing %s Operation\n", _OpCode);
-    if(_ReturnType == "i32") {
+    if (_ReturnType == "i32") {
         if (_Operands.size() == 1) {
-            //if(0x80000000 & _Ops.at(0)) { }
+            //if (0x80000000 & _Ops.at(0)) { }
             _Ops.at(0) = (uint32_t) _Ops.at(0);
         } else {
             _Ops.at(0) = (uint32_t) _Ops.at(0);
@@ -146,7 +146,7 @@ URem::compute() {
         }
     }
     if (_Operands.size() == 1) {
-        if(_ImmFirst) _Result = _Operand % _Ops.at(0);
+        if (_ImmFirst) _Result = _Operand % _Ops.at(0);
         else _Result = _Ops.at(0) % _Operand;
     }
     else _Result = _Ops.at(0) % _Ops.at(1);
@@ -159,9 +159,9 @@ void
 SRem::compute() {
     //Signed modulo division
     if (_debug) DPRINTF(LLVMOp, "Performing %s Operation\n", _OpCode);
-    if(_ReturnType == "i32") {
+    if (_ReturnType == "i32") {
         if (_Operands.size() == 1) {
-            //if(0x80000000 & _Ops.at(0)) { }
+            //if (0x80000000 & _Ops.at(0)) { }
             _Ops.at(0) = (int32_t) _Ops.at(0);
         } else {
             _Ops.at(0) = (int32_t) _Ops.at(0);
@@ -169,7 +169,7 @@ SRem::compute() {
         }
     }
     if (_Operands.size() == 1) {
-        if(_ImmFirst) _Result = _Operand % _Ops.at(0);
+        if (_ImmFirst) _Result = _Operand % _Ops.at(0);
         else _Result = _Ops.at(0) % _Operand;
     }
     else _Result = _Ops.at(0) % _Ops.at(1);
@@ -192,10 +192,10 @@ FAdd::compute() {
         if (_Operands.size() == 1) {
             uint64_t OP1 = _Ops.at(0);
             op1 = *(double *)&OP1;
-            if(_ImmFirst) result = _OperandDP + op1;
+            if (_ImmFirst) result = _OperandDP + op1;
             else result = op1 + _OperandDP;
             setResult(&result);
-            if(_ImmFirst) {
+            if (_ImmFirst) {
                 if (_debug) DPRINTF(LLVMOp, "Op1: %f, Op2: %f, Result: %f\n", _OperandDP, op1, result);
             } else {
                 if (_debug) DPRINTF(LLVMOp, "Op1: %f, Op2: %f, Result: %f\n", _OperandDP, op1, result);
@@ -213,11 +213,11 @@ FAdd::compute() {
         if (_Operands.size() == 1) {
             uint64_t OP1 = _Ops.at(0);
             op1 = *(float *)&OP1;
-            if(_ImmFirst) result = _OperandSP + op1;
+            if (_ImmFirst) result = _OperandSP + op1;
             else result = op1 + _OperandSP;
             fresult = (float) result;
             setResult(&fresult);
-            if(_ImmFirst) {
+            if (_ImmFirst) {
                 if (_debug) DPRINTF(LLVMOp, "Op1: %f, Op2: %f, Result: %f\n", _OperandSP, op1, fresult);
             } else {
                 if (_debug) DPRINTF(LLVMOp, "Op1: %f, Op2: %f, Result: %f\n", _OperandSP, op1, fresult);
@@ -249,10 +249,10 @@ FSub::compute() {
         if (_Operands.size() == 1) {
             uint64_t OP1 = _Ops.at(0);
             op1 = *(double *)&OP1;
-            if(_ImmFirst) result = _OperandDP - op1;
+            if (_ImmFirst) result = _OperandDP - op1;
             else result = op1 - _OperandDP;
             setResult(&result);
-            if(_ImmFirst) {
+            if (_ImmFirst) {
                 if (_debug) DPRINTF(LLVMOp, "Op1: %f, Op2: %f, Result: %f\n", _OperandDP, op1, result);
             } else {
                 if (_debug) DPRINTF(LLVMOp, "Op1: %f, Op2: %f, Result: %f\n", _OperandDP, op1, result);
@@ -270,11 +270,11 @@ FSub::compute() {
         if (_Operands.size() == 1) {
             uint64_t OP1 = _Ops.at(0);
             op1 = *(float *)&OP1;
-            if(_ImmFirst) result = _OperandSP - op1;
+            if (_ImmFirst) result = _OperandSP - op1;
             else result = op1 - _OperandSP;
             fresult = (float) result;
             setResult(&fresult);
-            if(_ImmFirst) {
+            if (_ImmFirst) {
                 if (_debug) DPRINTF(LLVMOp, "Op1: %f, Op2: %f, Result: %f\n", _OperandSP, op1, fresult);
             } else {
                 if (_debug) DPRINTF(LLVMOp, "Op1: %f, Op2: %f, Result: %f\n", _OperandSP, op1, fresult);
@@ -306,10 +306,10 @@ FMul::compute() {
         if (_Operands.size() == 1) {
             uint64_t OP1 = _Ops.at(0);
             op1 = *(double *)&OP1;
-            if(_ImmFirst) result = _OperandDP * op1;
+            if (_ImmFirst) result = _OperandDP * op1;
             else result = op1 * _OperandDP;
             setResult(&result);
-            if(_ImmFirst) {
+            if (_ImmFirst) {
                 if (_debug) DPRINTF(LLVMOp, "Op1: %f, Op2: %f, Result: %f\n", _OperandDP, op1, result);
             } else {
                 if (_debug) DPRINTF(LLVMOp, "Op1: %f, Op2: %f, Result: %f\n", _OperandDP, op1, result);
@@ -327,11 +327,11 @@ FMul::compute() {
         if (_Operands.size() == 1) {
             uint64_t OP1 = _Ops.at(0);
             op1 = *(float *)&OP1;
-            if(_ImmFirst) result = _OperandSP * op1;
+            if (_ImmFirst) result = _OperandSP * op1;
             else result = op1 * _OperandSP;
             fresult = (float) result;
             setResult(&fresult);
-            if(_ImmFirst) {
+            if (_ImmFirst) {
                 if (_debug) DPRINTF(LLVMOp, "Op1: %f, Op2: %f, Result: %f\n", _OperandSP, op1, fresult);
             } else {
                 if (_debug) DPRINTF(LLVMOp, "Op1: %f, Op2: %f, Result: %f\n", _OperandSP, op1, fresult);
@@ -363,10 +363,10 @@ FDiv::compute() {
         if (_Operands.size() == 1) {
             uint64_t OP1 = _Ops.at(0);
             op1 = *(double *)&OP1;
-            if(_ImmFirst) result = _OperandDP / op1;
+            if (_ImmFirst) result = _OperandDP / op1;
             else result = op1 / _OperandDP;
             setResult(&result);
-            if(_ImmFirst) {
+            if (_ImmFirst) {
                 if (_debug) DPRINTF(LLVMOp, "Op1: %f, Op2: %f, Result: %f\n", _OperandDP, op1, result);
             } else {
                 if (_debug) DPRINTF(LLVMOp, "Op1: %f, Op2: %f, Result: %f\n", _OperandDP, op1, result);
@@ -384,11 +384,11 @@ FDiv::compute() {
         if (_Operands.size() == 1) {
             uint64_t OP1 = _Ops.at(0);
             op1 = *(float *)&OP1;
-            if(_ImmFirst) result = _OperandSP / op1;
+            if (_ImmFirst) result = _OperandSP / op1;
             else result = op1 / _OperandSP;
             fresult = (float) result;
             setResult(&fresult);
-            if(_ImmFirst) {
+            if (_ImmFirst) {
                 if (_debug) DPRINTF(LLVMOp, "Op1: %f, Op2: %f, Result: %f\n", _OperandSP, op1, fresult);
             } else {
                 if (_debug) DPRINTF(LLVMOp, "Op1: %f, Op2: %f, Result: %f\n", _OperandSP, op1, fresult);
@@ -417,7 +417,7 @@ Shl::compute() {
     // <result> = shl nsw <ty> <op1>, <op2>; yields ty : result
     // <result> = shl nuw nsw <ty> <op1>, <op2>; yields ty : result
     if (_debug) DPRINTF(LLVMOp, "Performing %s Operation\n", _OpCode);
-    if(_ReturnType == "i32") {
+    if (_ReturnType == "i32") {
         if (_Operands.size() == 1) {
             _Ops.at(0) = (int32_t) _Ops.at(0);
         } else {
@@ -426,7 +426,7 @@ Shl::compute() {
         }
     }
     if (_Operands.size() == 1) {
-        if(_ImmFirst) _Result = _Operand << _Ops.at(0);
+        if (_ImmFirst) _Result = _Operand << _Ops.at(0);
         else _Result = _Ops.at(0) << _Operand;
         if (_debug) DPRINTF(LLVMOp, "%d << %d\n", _Ops.at(0), _Operand);
     } else {
@@ -442,7 +442,7 @@ Shl::compute() {
 void
 LShr::compute() {
     if (_debug) DPRINTF(LLVMOp, "Performing %s Operation\n", _OpCode);
-    if(_ReturnType == "i32") {
+    if (_ReturnType == "i32") {
         if (_Operands.size() == 1) {
             _Ops.at(0) = (int32_t) _Ops.at(0);
         } else {
@@ -451,7 +451,7 @@ LShr::compute() {
         }
     }
     if (_Operands.size() == 1) {
-        if(_ImmFirst) _Result = _Operand >> _Ops.at(0);
+        if (_ImmFirst) _Result = _Operand >> _Ops.at(0);
         else _Result = _Ops.at(0) >> _Operand;
         if (_debug) DPRINTF(LLVMOp, "%d >> %d\n", _Ops.at(0), _Operand);
     } else {
@@ -469,7 +469,7 @@ AShr::compute() {
     // <result> = ashr <ty> <op1>, <op2>; yields ty : result
     // <result> = ashr exact <ty> <op1>, <op2>; yields ty : result
     if (_debug) DPRINTF(LLVMOp, "Performing %s Operation\n", _OpCode);
-    if(_ReturnType == "i32") {
+    if (_ReturnType == "i32") {
         if (_Operands.size() == 1) {
             _Ops.at(0) = (int32_t) _Ops.at(0);
         } else {
@@ -478,7 +478,7 @@ AShr::compute() {
         }
     }
     if (_Operands.size() == 1) {
-        if(_ImmFirst) _Result = _Operand >> _Ops.at(0);
+        if (_ImmFirst) _Result = _Operand >> _Ops.at(0);
         else _Result = _Ops.at(0) >> _Operand;
         if (_debug) DPRINTF(LLVMOp, "%d >> %d\n", _Ops.at(0), _Operand);
     } else {
@@ -495,7 +495,7 @@ And::compute() {
     // And Operation
     // <result> = and <ty> <op1>, <op2>; yields ty : result
     if (_debug) DPRINTF(LLVMOp, "Performing %s Operation\n", _OpCode);
-    if(_ReturnType == "i32") {
+    if (_ReturnType == "i32") {
         if (_Operands.size() == 1) {
             _Ops.at(0) = (int32_t) _Ops.at(0);
         } else {
@@ -504,7 +504,7 @@ And::compute() {
         }
     }
     if (_Operands.size() == 1) {
-        if(_ImmFirst) _Result = _Operand & _Ops.at(0);
+        if (_ImmFirst) _Result = _Operand & _Ops.at(0);
         else _Result = _Ops.at(0) & _Operand;
         if (_debug) DPRINTF(LLVMOp, "%d & %d\n", _Ops.at(0), _Operand);
     } else {
@@ -521,7 +521,7 @@ Or::compute() {
     // Or Operation
     // <result> = or <ty> <op1>, <op2>; yields ty : result
     if (_debug) DPRINTF(LLVMOp, "Performing %s Operation\n", _OpCode);
-    if(_ReturnType == "i32") {
+    if (_ReturnType == "i32") {
         if (_Operands.size() == 1) {
             _Ops.at(0) = (int32_t) _Ops.at(0);
         } else {
@@ -530,7 +530,7 @@ Or::compute() {
         }
     }
     if (_Operands.size() == 1) {
-        if(_ImmFirst) _Result = _Operand | _Ops.at(0);
+        if (_ImmFirst) _Result = _Operand | _Ops.at(0);
         else _Result = _Ops.at(0) | _Operand;
         if (_debug) DPRINTF(LLVMOp, "%d | %d\n", _Ops.at(0), _Operand);
     } else {
@@ -547,7 +547,7 @@ Xor::compute() {
     // Xor Operation
     // <result> = xor <ty> <op1>, <op2>; yields ty : result
     if (_debug) DPRINTF(LLVMOp, "Performing %s Operation\n", _OpCode);
-    if(_ReturnType == "i32") {
+    if (_ReturnType == "i32") {
         if (_Operands.size() == 1) {
             _Ops.at(0) = (int32_t) _Ops.at(0);
         } else {
@@ -556,7 +556,7 @@ Xor::compute() {
         }
     }
     if (_Operands.size() == 1) {
-        if(_ImmFirst) _Result = _Operand ^ _Ops.at(0);
+        if (_ImmFirst) _Result = _Operand ^ _Ops.at(0);
         else _Result = _Ops.at(0) ^ _Operand;
         if (_debug) DPRINTF(LLVMOp, "%d ^ %d\n", _Ops.at(0), _Operand);
     } else {
@@ -571,7 +571,7 @@ Xor::compute() {
 
 void
 Load::compute() {
-    if(_Pointer->isGlobal()) setGlobal(true);
+    if (_Pointer->isGlobal()) setGlobal(true);
     else setGlobal(false);
     uint64_t src = _Ops.at(0);
     _ReturnRegister->setSize(_ReturnType);
@@ -585,10 +585,10 @@ Store::compute() {
     uint64_t data;
     uint64_t size = 0;
     uint64_t dst = _Ops.at(0);
-    if(_Pointer->isGlobal()) setGlobal(true);
+    if (_Pointer->isGlobal()) setGlobal(true);
     else setGlobal(false);
     if (_debug) DPRINTF(LLVMOp, "Starting Store!\n");
-    if(_ImmVal) {
+    if (_ImmVal) {
         data = (uint64_t) _Imm;
         size = ((std::stoi(_ReturnType.substr(1))-1)/8)+1;
         _Req = new MemoryRequest((Addr)dst, (uint8_t *)(&data), size);
@@ -629,16 +629,16 @@ LLVMSwitch::compute() {
     uint64_t mainValue = _Ops.at(0);
     bool found = false;
     if (_debug) DPRINTF(LLVMOp, "Register Name: %s\n", _Condition->getName());
-    for(int i = 1; i < _Branches.size(); i++) {
+    for (int i = 1; i < _Branches.size(); i++) {
         if (_debug) DPRINTF(LLVMOp, "Comparing main value %d to case value %d: \n", mainValue, _CaseValues.at(i));
-        if(mainValue == _CaseValues.at(i)){
+        if (mainValue == _CaseValues.at(i)){
             _Dest = _Branches.at(i);
             if (_debug) DPRINTF(LLVMOp, "Found!\n");
             found = true;
             return;
         }
     }
-    if(!found) _Dest = _Branches.at(0);
+    if (!found) _Dest = _Branches.at(0);
     if (_debug) DPRINTF(LLVMOp, "Switch selected, destination is %s!\n",_Dest);
 }
 
@@ -660,21 +660,21 @@ GetElementPtr::compute() {
 
     int j = 0;
     // Initialize array values
-    for(int i = 0; i<_Dependencies.size(); i++) {
+    for (int i = 0; i<_Dependencies.size(); i++) {
         currentValue[i] = 0;
         size[i] = 1;
         elements[i] = 1;
     }
 
-    if(_Pty[0] == '%') { // Return Type is a custom data type
-        if(_LLVMType != NULL) {
+    if (_Pty[0] == '%') { // Return Type is a custom data type
+        if (_LLVMType != NULL) {
             dataSize = _LLVMType->getSize();
             if (_debug) DPRINTF(LLVMOp, "Custom Return Type: Size = %d\n", dataSize);
             j++;
         }
-    for(int i = 0; i <= j; i++){
-            if(_Dependencies.at(i) == NULL) {  // Immediate Values
-                if(i == j) {
+    for (int i = 0; i <= j; i++){
+            if (_Dependencies.at(i) == NULL) {  // Immediate Values
+                if (i == j) {
                     // Final offset variable
                     totalElements*=(_ImmIdx.at(i));
                 } else {
@@ -682,7 +682,7 @@ GetElementPtr::compute() {
                 totalElements*=(dataSize*_ImmIdx.at(i));
                 }
             } else { // Register loaded values
-                if(i == j) {
+                if (i == j) {
                     // Final offset variable
                     totalElements*=(_Ops.at(i));
                 } else {
@@ -692,23 +692,23 @@ GetElementPtr::compute() {
             finalCount += totalElements;
             totalElements = 1;
         }
-        if(_LLVMType != NULL) finalCount *=8; // Final offset calculation, total elements * memory size in bytes
+        if (_LLVMType != NULL) finalCount *=8; // Final offset calculation, total elements * memory size in bytes
         else finalCount *=4;
         newAddress += (_ActivePtr + finalCount);
         setResult(&newAddress);
         ////////////////////////////////////////
-    } else if(_Pty[0] == '[') { // Return type is a struct
+    } else if (_Pty[0] == '[') { // Return type is a struct
         if (_debug) DPRINTF(LLVMOp, "Struct Type GEP\n");
         int previousIndex = 0;
-        for(int i = 0; i < _Pty.size(); i++){
-            if(_Pty[i] == '[') {
+        for (int i = 0; i < _Pty.size(); i++){
+            if (_Pty[i] == '[') {
                 // Find the next integer value Ex: [A x [B x [C x dataSize]]] returns A, B, C
                 elements[j] = stoi(_Pty.substr(i+1, _Pty.find(' ', i)-i-1));
                 j++;
                 previousIndex = i;
             }
-            if(_Pty[i] == ']') {
-                if(_LLVMType != NULL) {
+            if (_Pty[i] == ']') {
+                if (_LLVMType != NULL) {
                     // TODO: Where the 8 is multiplied below should be a value that is parsed, currently
                     // getSize returns the number of elements in the custom data type, but no where is the
                     // size of each element stored, which is what this should return instead. Also confirm
@@ -731,25 +731,25 @@ GetElementPtr::compute() {
             break;
             }
         }
-        // if(_LLVMType != NULL) {
+        // if (_LLVMType != NULL) {
         // dataSize = _LLVMType->getSize();
         // j++;
         // } else {
         //     // Determine the dataSize of the struct elements
         //     dataSize = 1;
         // }
-        for(int i = 0; i <= j; i++){
-            for(int k = 0; k <= j; k++){
+        for (int i = 0; i <= j; i++){
+            for (int k = 0; k <= j; k++){
                 totalElements*=elements[k];
             }
-            if(_Dependencies.at(i) == NULL) {
-                if(i == j) {
+            if (_Dependencies.at(i) == NULL) {
+                if (i == j) {
                     totalElements*=(_ImmIdx.at(i));
                 } else {
                 totalElements*=(_ImmIdx.at(i));
                 }
             } else {
-                if(i == j) {
+                if (i == j) {
                     totalElements*=(_Ops.at(i));
                 } else {
                 totalElements*=(_Ops.at(i));
@@ -764,7 +764,7 @@ GetElementPtr::compute() {
         setResult(&newAddress);
     } else { // GEP With Imm and no structs
         if (_debug) DPRINTF(LLVMOp, "DepSize: %d, Index: %d\n",_Dependencies.size(), _Index);
-        for(int i = 0; i < _Dependencies.size(); i++) {
+        for (int i = 0; i < _Dependencies.size(); i++) {
             if (_Pty[0] == 'i') {
                 size[i] = (stoi(_Pty.substr(1))) / 8;
             } else if (_Pty.find("double") == 0) {
@@ -775,7 +775,7 @@ GetElementPtr::compute() {
             }
         }
         for (int i = 0; i < _Index; i++) {
-            if(_Dependencies.at(i) != NULL) currentValue[i] = _Ops.at(i);
+            if (_Dependencies.at(i) != NULL) currentValue[i] = _Ops.at(i);
             else {
                 currentValue[i] = _ImmIdx.at(i);
             }
@@ -797,7 +797,7 @@ Trunc::compute() {
     else if (_OriginalType == "i16") _Result = 0xffff & _Ops.at(0);
     else if (_OriginalType == "i8") _Result = 0xff & _Ops.at(0);
     else if (_OriginalType == "i1") {
-        if(_Ops.at(0)) _Result = 1;
+        if (_Ops.at(0)) _Result = 1;
         else _Result = 0;
     }
     setResult(&_Result);
@@ -811,7 +811,7 @@ ZExt::compute() {
     else if (_OriginalType == "i16") _Result = (uint16_t) _Ops.at(0);
     else if (_OriginalType == "i8") _Result = (uint8_t) _Ops.at(0);
     else if (_OriginalType == "i1") {
-        if(_Ops.at(0)) _Result = 1;
+        if (_Ops.at(0)) _Result = 1;
         else _Result = 0;
     }
     setResult(&_Result);
@@ -825,7 +825,7 @@ SExt::compute() {
     else if (_OriginalType == "i16") _Result = (int16_t) _Ops.at(0);
     else if (_OriginalType == "i8") _Result = (int8_t) _Ops.at(0);
     else if (_OriginalType == "i1") {
-        if(_Ops.at(0)) _Result = 1;
+        if (_Ops.at(0)) _Result = 1;
         else _Result = 0;
     }
     setResult(&_Result);
@@ -844,7 +844,7 @@ FPToUI::compute() {
     else if (_OriginalType == "i16") _Result = (uint16_t) OriginalVal;
     else if (_OriginalType == "i8") _Result = (uint8_t) OriginalVal;
     else if (_OriginalType == "i1") {
-        if(_Ops.at(0)) _Result = 1;
+        if (_Ops.at(0)) _Result = 1;
         else _Result = 0;
     }
     setResult(&_Result);
@@ -883,7 +883,7 @@ FPToSI::compute() {
                 ResultVal, OriginalVal);
     }
     else if (_OriginalType == "i1") {
-        if(_Ops.at(0)) _Result = 1;
+        if (_Ops.at(0)) _Result = 1;
         else _Result = 0;
         if (_debug) DPRINTF(LLVMOp, "FPToSI:(%s) %d from %f\n", _OriginalType,
                 _Result, OriginalVal);
@@ -1025,9 +1025,9 @@ FCmp::compute() {
 void
 ICmp::compute() {
     if (_debug) DPRINTF(LLVMOp, "Performing %s Operation (%x)\n", _OpCode, _Flags);
-    if(_ReturnType == "i32") {
+    if (_ReturnType == "i32") {
         if (_Operands.size() == 1) {
-            //if(0x80000000 & _Ops.at(0)) { }
+            //if (0x80000000 & _Ops.at(0)) { }
             _Ops.at(0) = (int32_t) _Ops.at(0);
         } else {
             _Ops.at(0) = (int32_t) _Ops.at(0);
@@ -1035,28 +1035,28 @@ ICmp::compute() {
         }
     }
     if (_Ops.size() == 1) {
-        if(_Flags & EQ) _Result = (_Ops.at(0) == _Operand);
-        else if(_Flags & NE) _Result = (_Ops.at(0) != _Operand);
-        else if(_Flags & UGT) _Result = ((uint64_t)_Ops.at(0) > _UOperand);
-        else if(_Flags & UGE) _Result = ((uint64_t)_Ops.at(0) >= _UOperand);
-        else if(_Flags & ULT) _Result = ((uint64_t)_Ops.at(0) < _UOperand);
-        else if(_Flags & ULE) _Result = ((uint64_t)_Ops.at(0) <= _UOperand);
-        else if(_Flags & SGT) _Result = (_Ops.at(0) > _SOperand);
-        else if(_Flags & SGE) _Result = (_Ops.at(0) >= _SOperand);
-        else if(_Flags & SLT) _Result = (_Ops.at(0) < _SOperand);
-        else if(_Flags & SLE) _Result = (_Ops.at(0) <= _SOperand);
+        if (_Flags & EQ) _Result = (_Ops.at(0) == _Operand);
+        else if (_Flags & NE) _Result = (_Ops.at(0) != _Operand);
+        else if (_Flags & UGT) _Result = ((uint64_t)_Ops.at(0) > _UOperand);
+        else if (_Flags & UGE) _Result = ((uint64_t)_Ops.at(0) >= _UOperand);
+        else if (_Flags & ULT) _Result = ((uint64_t)_Ops.at(0) < _UOperand);
+        else if (_Flags & ULE) _Result = ((uint64_t)_Ops.at(0) <= _UOperand);
+        else if (_Flags & SGT) _Result = (_Ops.at(0) > _SOperand);
+        else if (_Flags & SGE) _Result = (_Ops.at(0) >= _SOperand);
+        else if (_Flags & SLT) _Result = (_Ops.at(0) < _SOperand);
+        else if (_Flags & SLE) _Result = (_Ops.at(0) <= _SOperand);
         if (_debug) DPRINTF(LLVMOp, "%u compared to %u\n", _Ops.at(0), _Operand);
     } else {
-        if(_Flags & EQ) _Result = (_Ops.at(0) == _Ops.at(1));
-        else if(_Flags & NE) _Result = (_Ops.at(0) != _Ops.at(1));
-        else if(_Flags & UGT) _Result = ((uint64_t)_Ops.at(0) > (uint64_t)_Ops.at(1));
-        else if(_Flags & UGE) _Result = ((uint64_t)_Ops.at(0) >= (uint64_t)_Ops.at(1));
-        else if(_Flags & ULT) _Result = ((uint64_t)_Ops.at(0) < (uint64_t)_Ops.at(1));
-        else if(_Flags & ULE) _Result = ((uint64_t)_Ops.at(0) <= (uint64_t)_Ops.at(1));
-        else if(_Flags & SGT) _Result = (_Ops.at(0) > _Ops.at(1));
-        else if(_Flags & SGE) _Result = (_Ops.at(0) >= _Ops.at(1));
-        else if(_Flags & SLT) _Result = (_Ops.at(0) < _Ops.at(1));
-        else if(_Flags & SLE) _Result = (_Ops.at(0) <= _Ops.at(1));
+        if (_Flags & EQ) _Result = (_Ops.at(0) == _Ops.at(1));
+        else if (_Flags & NE) _Result = (_Ops.at(0) != _Ops.at(1));
+        else if (_Flags & UGT) _Result = ((uint64_t)_Ops.at(0) > (uint64_t)_Ops.at(1));
+        else if (_Flags & UGE) _Result = ((uint64_t)_Ops.at(0) >= (uint64_t)_Ops.at(1));
+        else if (_Flags & ULT) _Result = ((uint64_t)_Ops.at(0) < (uint64_t)_Ops.at(1));
+        else if (_Flags & ULE) _Result = ((uint64_t)_Ops.at(0) <= (uint64_t)_Ops.at(1));
+        else if (_Flags & SGT) _Result = (_Ops.at(0) > _Ops.at(1));
+        else if (_Flags & SGE) _Result = (_Ops.at(0) >= _Ops.at(1));
+        else if (_Flags & SLT) _Result = (_Ops.at(0) < _Ops.at(1));
+        else if (_Flags & SLE) _Result = (_Ops.at(0) <= _Ops.at(1));
         if (_debug) DPRINTF(LLVMOp, "%u compared to %u\n", _Ops.at(0), _Ops.at(1));
     }
     // Store result in return register
@@ -1070,12 +1070,12 @@ void
 Phi::compute() {
     // <result> = phi <ty> [ <val0>, <label0>], ...
     if (_debug) DPRINTF(LLVMOp, "Performing %s Operation, Previous BB was #%s\n", _OpCode, _PrevBB);
-    for(auto i = 0; i < _PhiVal.size(); ++i) {
+    for (auto i = 0; i < _PhiVal.size(); ++i) {
         if (_PhiLabel.at(i) == _PrevBB) {
-            if(_PhiVal.at(i) == "reg") {
+            if (_PhiVal.at(i) == "reg") {
                 _Result = _PhiReg.at(i)->getValue();
                 break;
-            } else if(_ReturnType[0] == 'i') {
+            } else if (_ReturnType[0] == 'i') {
                 _Result = std::stoi(_PhiVal.at(i));
                 break;
             }
@@ -1089,9 +1089,9 @@ std::vector<Register*>
 Phi::runtimeDependencies(std::string PrevBB) {
     std::vector<Register*> dependencies;
     _PrevBB = PrevBB;
-    for(auto i = 0; i < _PhiVal.size(); ++i) {
+    for (auto i = 0; i < _PhiVal.size(); ++i) {
         if (_PhiLabel.at(i) == _PrevBB) {
-            if(_PhiVal.at(i) == "reg") dependencies.push_back(_PhiReg.at(i));
+            if (_PhiVal.at(i) == "reg") dependencies.push_back(_PhiReg.at(i));
         }
     }
     return dependencies;

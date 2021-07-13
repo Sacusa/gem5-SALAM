@@ -41,7 +41,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         // Check if register already exists
         std::string ret_name = line.substr((line.find("%") + 1), returnChk - 3); // Set return register name
         ret_reg = list->findRegister(ret_name); // Ensure the return register isnt already in the list
-        if(ret_reg == NULL) {
+        if (ret_reg == NULL) {
             // Create new pointer to the return register
             ret_reg = new Register(ret_name);
             list->addRegister(ret_reg);
@@ -270,11 +270,11 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         int i = 1;
         setRegister(parameters[2], condition, dependencies, list, parameters);
         // Determine the number of case statements
-        for(int k = 0; k < parameters[5].size(); k++) {
-            if(parameters[5][k] == '%') statements++;
+        for (int k = 0; k < parameters[5].size(); k++) {
+            if (parameters[5][k] == '%') statements++;
         }
         // Set the value and location of each case statement
-        while(i <= statements) {
+        while (i <= statements) {
             location = parameters[5].find_first_of('i', location);
             location = parameters[5].find_first_of(' ', location) + 1;
             length = parameters[5].find_first_of(',', location) - location;
@@ -337,7 +337,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         std::vector<std::string> immOps = setImmOperands(list, parameters, dependencies, instructionType);
         immFirst = immPosition(parameters);
         int64_t immOp = 0;
-        if(immOps.size() != 0) {
+        if (immOps.size() != 0) {
             immOp = atol(immOps.at(0).c_str());
             maxCycles = cycles->counter_inst;
             instructionType = "Counter";
@@ -369,10 +369,10 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         std::vector<Register*> regOps = setRegOperands(list, parameters, dependencies, instructionType);
         std::vector<std::string> immOps = setImmOperands(list, parameters, dependencies, instructionType);
         immFirst = immPosition(parameters);
-        if(returnType == "double") functionalUnit = FPDPADDER;
+        if (returnType == "double") functionalUnit = FPDPADDER;
         else functionalUnit = FPSPADDER;
         double immOp = 0;
-        if(immOps.size() != 0) {
+        if (immOps.size() != 0) {
             immOp = stod(convertImmediate(returnType, immOps.at(0)));
         }
         auto fadd = std::make_shared<FAdd>(    lineCpy,
@@ -389,7 +389,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
                                             immFirst,
                                             functionalUnit );
         // Multi Stage Instruction
-        if(pipelined) fadd->pipelined();
+        if (pipelined) fadd->pipelined();
         addNode(fadd);
         break;
     }
@@ -409,7 +409,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         std::vector<std::string> immOps = setImmOperands(list, parameters, dependencies, instructionType);
         immFirst = immPosition(parameters);
         int64_t immOp = 0;
-        if(immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
+        if (immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
         auto sub = std::make_shared<Sub>(    lineCpy,
                                             opCode,
                                             returnType,
@@ -435,10 +435,10 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         std::vector<Register*> regOps = setRegOperands(list, parameters, dependencies, instructionType);
         std::vector<std::string> immOps = setImmOperands(list, parameters, dependencies, instructionType);
         immFirst = immPosition(parameters);
-        if(returnType == "double") functionalUnit = FPDPADDER;
+        if (returnType == "double") functionalUnit = FPDPADDER;
         else functionalUnit = FPSPADDER;
         double immOp = 0;
-        if(immOps.size() != 0) immOp = stod(convertImmediate(returnType, immOps.at(0)));
+        if (immOps.size() != 0) immOp = stod(convertImmediate(returnType, immOps.at(0)));
         auto fsub = std::make_shared<FSub>(    lineCpy,
                                             opCode,
                                             returnType,
@@ -453,7 +453,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
                                             immFirst,
                                             functionalUnit );
         // Multi Stage Instruction
-        if(pipelined) fsub->pipelined();
+        if (pipelined) fsub->pipelined();
         addNode(fsub);
         break;
     }
@@ -471,7 +471,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         std::vector<std::string> immOps = setImmOperands(list, parameters, dependencies, instructionType);
         immFirst = immPosition(parameters);
         int64_t immOp = 0;
-        if(immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
+        if (immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
         auto mul = std::make_shared<Mul>(    lineCpy,
                                             opCode,
                                             returnType,
@@ -498,9 +498,9 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         std::vector<std::string> immOps = setImmOperands(list, parameters, dependencies, instructionType);
         immFirst = immPosition(parameters);
         double immOp = 0;
-        if(returnType == "double") functionalUnit = FPDPMULTI;
+        if (returnType == "double") functionalUnit = FPDPMULTI;
         else functionalUnit = FPSPMULTI;
-        if(immOps.size() != 0) {
+        if (immOps.size() != 0) {
             immOp = stod(convertImmediate(returnType, immOps.at(0)));
         }
         auto fmul = std::make_shared<FMul>(    lineCpy,
@@ -517,7 +517,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
                                             immFirst,
                                             functionalUnit );
         // Multi Stage Instruction
-        if(pipelined) fmul->pipelined();
+        if (pipelined) fmul->pipelined();
         addNode(fmul);
         break;
     }
@@ -533,7 +533,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         std::vector<std::string> immOps = setImmOperands(list, parameters, dependencies, instructionType);
         immFirst = immPosition(parameters);
         int64_t immOp = 0;
-        if(immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
+        if (immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
         auto udiv = std::make_shared<UDiv>(    lineCpy,
                                             opCode,
                                             returnType,
@@ -562,7 +562,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         std::vector<std::string> immOps = setImmOperands(list, parameters, dependencies, instructionType);
         immFirst = immPosition(parameters);
         int64_t immOp = 0;
-        if(immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
+        if (immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
         auto sdiv = std::make_shared<SDiv>(    lineCpy,
                                             opCode,
                                             returnType,
@@ -588,10 +588,10 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         std::vector<Register*> regOps = setRegOperands(list, parameters, dependencies, instructionType);
         std::vector<std::string> immOps = setImmOperands(list, parameters, dependencies, instructionType);
         immFirst = immPosition(parameters);
-        if(returnType == "double") functionalUnit = FPDPDIVID;
+        if (returnType == "double") functionalUnit = FPDPDIVID;
         else functionalUnit = FPSPDIVID;
         double immOp = 0;
-        if(immOps.size() != 0) immOp = stod(convertImmediate(returnType, immOps.at(0)));
+        if (immOps.size() != 0) immOp = stod(convertImmediate(returnType, immOps.at(0)));
         auto fdiv = std::make_shared<FDiv>(    lineCpy,
                                             opCode,
                                             returnType,
@@ -606,7 +606,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
                                             immFirst,
                                             functionalUnit );
         // Multi Stage Instruction
-        if(pipelined) fdiv->pipelined();
+        if (pipelined) fdiv->pipelined();
         addNode(fdiv);
         break;
     }
@@ -620,7 +620,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         std::vector<std::string> immOps = setImmOperands(list, parameters, dependencies, instructionType);
         immFirst = immPosition(parameters);
         int64_t immOp = 0;
-        if(immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
+        if (immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
         functionalUnit = INTMULTI;
         auto urem = std::make_shared<URem>(    lineCpy,
                                             opCode,
@@ -648,7 +648,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         std::vector<std::string> immOps = setImmOperands(list, parameters, dependencies, instructionType);
         immFirst = immPosition(parameters);
         int64_t immOp = 0;
-        if(immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
+        if (immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
         functionalUnit = INTMULTI;
         auto srem = std::make_shared<SRem>(    lineCpy,
                                             opCode,
@@ -675,10 +675,10 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         std::vector<Register*> regOps = setRegOperands(list, parameters, dependencies, instructionType);
         std::vector<std::string> immOps = setImmOperands(list, parameters, dependencies, instructionType);
         immFirst = immPosition(parameters);
-        if(returnType == "double") functionalUnit = FPDPDIVID;
+        if (returnType == "double") functionalUnit = FPDPDIVID;
         else functionalUnit = FPSPDIVID;
         double immOp = 0;
-        if(immOps.size() != 0) immOp = stod(convertImmediate(returnType, immOps.at(0)));
+        if (immOps.size() != 0) immOp = stod(convertImmediate(returnType, immOps.at(0)));
         auto frem = std::make_shared<FRem>(    lineCpy,
                                             opCode,
                                             returnType,
@@ -693,7 +693,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
                                             immFirst,
                                             functionalUnit );
         // Multi Stage Instruction
-        if(pipelined) frem->pipelined();
+        if (pipelined) frem->pipelined();
         addNode(frem);
         break;
     }
@@ -712,7 +712,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         std::vector<std::string> immOps = setImmOperands(list, parameters, dependencies, instructionType);
         immFirst = immPosition(parameters);
         int64_t immOp = 0;
-        if(immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
+        if (immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
         auto shl = std::make_shared<Shl>(    lineCpy,
                                             opCode,
                                             returnType,
@@ -741,7 +741,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         std::vector<std::string> immOps = setImmOperands(list, parameters, dependencies, instructionType);
         immFirst = immPosition(parameters);
         int64_t immOp = 0;
-        if(immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
+        if (immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
         auto lshr = std::make_shared<LShr>(    lineCpy,
                                             opCode,
                                             returnType,
@@ -770,7 +770,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         std::vector<std::string> immOps = setImmOperands(list, parameters, dependencies, instructionType);
         immFirst = immPosition(parameters);
         int64_t immOp = 0;
-        if(immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
+        if (immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
         auto ashr = std::make_shared<AShr>(    lineCpy,
                                             opCode,
                                             returnType,
@@ -798,7 +798,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         std::vector<std::string> immOps = setImmOperands(list, parameters, dependencies, instructionType);
         immFirst = immPosition(parameters);
         int64_t immOp = 0;
-        if(immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
+        if (immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
         auto andoc = std::make_shared<And>(    lineCpy,
                                             opCode,
                                             returnType,
@@ -827,7 +827,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         std::vector<std::string> immOps = setImmOperands(list, parameters, dependencies, instructionType);
         immFirst = immPosition(parameters);
         int64_t immOp = 0;
-        if(immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
+        if (immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
         auto oroc = std::make_shared<Or>(    lineCpy,
                                             opCode,
                                             returnType,
@@ -855,7 +855,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         std::vector<std::string> immOps = setImmOperands(list, parameters, dependencies, instructionType);
         immFirst = immPosition(parameters);
         int64_t immOp = 0;
-        if(immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
+        if (immOps.size() != 0) immOp = atol(immOps.at(0).c_str());
         auto xoroc = std::make_shared<Xor>(    lineCpy,
                                             opCode,
                                             returnType,
@@ -903,7 +903,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
             align++;
         // Check if load contains inttoptr direct address
         Register* pointer;
-        if((parameters[align - 2].find("inttoptr")) != std::string::npos) {
+        if ((parameters[align - 2].find("inttoptr")) != std::string::npos) {
             // Substring (i## pointervalue to i##*)
             std::istringstream iss(parameters[align -1]);
             std::vector<std::string> substring(std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>());
@@ -913,7 +913,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
             // Address should be in value variable below
             uint64_t address = std::atol(substring[1].c_str());
             pointer->setValue(&address);
-        } else if(isRegister(parameters[align - 1])) {
+        } else if (isRegister(parameters[align - 1])) {
             setRegister(parameters[align - 1], pointer, dependencies, list, parameters);
         }
         // Set value for alignment
@@ -949,7 +949,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         Register* pointer;
         Register* value;
 
-        if((parameters[index + 3].find("inttoptr")) != std::string::npos) {
+        if ((parameters[index + 3].find("inttoptr")) != std::string::npos) {
             // Substring (i## pointervalue to i##*)
             std::istringstream iss(parameters[index + 4]);
             std::vector<std::string> substring(std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>());
@@ -959,13 +959,13 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
             // Address should be in value variable below
             uint64_t address = std::atol(substring[1].c_str());
             pointer->setValue(&address);
-        } else if(isRegister(parameters[index + 3])) {
+        } else if (isRegister(parameters[index + 3])) {
             setRegister(parameters[index + 3], pointer, dependencies, list, parameters);
             align = std::atol(parameters[index + 5].c_str());
         }
 
 
-        if(isRegister(parameters[index + 1])) {
+        if (isRegister(parameters[index + 1])) {
             setRegister(parameters[index + 1], value, dependencies, list, parameters);
             value->setSize(returnType);
         } else {
@@ -1027,7 +1027,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
                 // Address should be in value variable below
                 uint64_t address = std::atol(substring[1].c_str());
                 ptrval->setValue(&address);
-                if(parameters[1].back() != '*')
+                if (parameters[1].back() != '*')
                     // GEPs with embedded inttoptr have an extra parameter
                     index = 4;
                 else
@@ -1036,13 +1036,13 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
             } else if (list->findRegister(parameters[3].substr(1)) == NULL) {
                 ptrval = new Register(parameters[3]);
                 list->addRegister(ptrval);
-                if(parameters[1].back() != '*')
+                if (parameters[1].back() != '*')
                     index = 3;
                 else
                     index = 2;
             } else {
                 ptrval = list->findRegister(parameters[3].substr(1));
-                if(parameters[1].back() != '*')
+                if (parameters[1].back() != '*')
                     index = 3;
                 else
                     index = 2;
@@ -1075,22 +1075,22 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
             ret_reg->setGlobal();
         }
         // Additional return register setup for structs and custom data types
-        if(pty[0] == '[') { // Return type is a struct
+        if (pty[0] == '[') { // Return type is a struct
                 int stringLength = (pty.find_first_of(']') - pty.find('%')-1);
                 customDataType = pty.substr(pty.find('%')+1, stringLength);
                 llvmtype = typeList->findType(customDataType);
-            if(llvmtype != NULL) {
+            if (llvmtype != NULL) {
                 if (_debug) DPRINTF(LLVMGEP, "Custom Data Type = %s\n", customDataType);
             } else {
                 customDataType = "none";
                 if (_debug) DPRINTF(LLVMGEP, "No Custom Data Types Found!\n");
             }
         }
-        if(pty[0] == '%') { // Return type is a custom data type
+        if (pty[0] == '%') { // Return type is a custom data type
                 int stringLength = (pty.find_first_of(' ') - pty.find('%')-1);
                 customDataType = pty.substr(pty.find('%')+1, stringLength);
                 llvmtype = typeList->findType(customDataType);
-            if(llvmtype != NULL) {
+            if (llvmtype != NULL) {
                 if (_debug) DPRINTF(LLVMGEP, "Custom Data Type = %s\n", customDataType);
             } else {
                 customDataType = "none";
@@ -1103,7 +1103,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         // It finds all offsets, and determines if the value is stored or immediate
         for (int i = 1; i + index <= last; i+=2) {
             ty.push_back(parameters[index+i]);
-            if(isRegister(parameters[index+i+1])) {
+            if (isRegister(parameters[index+i+1])) {
                 setRegister(parameters[index+i+1], tempReg, dependencies, list, parameters);
                 idx.push_back(tempReg);
                 immdx.push_back(0);
@@ -1162,7 +1162,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         returnType = parameters[0];
         std::string originalType = parameters[3];
         Register* operand = NULL;
-        if(isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
+        if (isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
         auto trnc = std::make_shared<Trunc>(    lineCpy,
                                                 opCode,
                                                 returnType,
@@ -1185,7 +1185,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         returnType = parameters[0];
         std::string originalType = parameters[3];
         Register* operand = NULL;
-        if(isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
+        if (isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
         auto zext = std::make_shared<ZExt>(    lineCpy,
                                                 opCode,
                                                 returnType,
@@ -1208,7 +1208,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         returnType = parameters[0];
         std::string originalType = parameters[3];
         Register* operand = NULL;
-        if(isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
+        if (isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
         auto sext = std::make_shared<SExt>(    lineCpy,
                                                 opCode,
                                                 returnType,
@@ -1231,7 +1231,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         returnType = parameters[0];
         std::string originalType = parameters[3];
         Register* operand = NULL;
-        if(isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
+        if (isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
         auto fptoui = std::make_shared<FPToUI>(    lineCpy,
                                                 opCode,
                                                 returnType,
@@ -1254,7 +1254,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         returnType = parameters[0];
         std::string originalType = parameters[3];
         Register* operand = NULL;
-        if(isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
+        if (isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
         auto fptosi = std::make_shared<FPToSI>(    lineCpy,
                                                 opCode,
                                                 returnType,
@@ -1277,7 +1277,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         returnType = parameters[0];
         std::string originalType = parameters[3];
         Register* operand = NULL;
-        if(isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
+        if (isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
         auto uitofp = std::make_shared<UIToFP>(    lineCpy,
                                                 opCode,
                                                 returnType,
@@ -1300,7 +1300,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         returnType = parameters[0];
         std::string originalType = parameters[3];
         Register* operand = NULL;
-        if(isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
+        if (isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
         auto sitofp = std::make_shared<SIToFP>(    lineCpy,
                                                 opCode,
                                                 returnType,
@@ -1323,7 +1323,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         returnType = parameters[0];
         std::string originalType = parameters[3];
         Register* operand = NULL;
-        if(isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
+        if (isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
         auto fptrunc = std::make_shared<FPTrunc>(    lineCpy,
                                                 opCode,
                                                 returnType,
@@ -1346,7 +1346,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         returnType = parameters[0];
         std::string originalType = parameters[3];
         Register* operand = NULL;
-        if(isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
+        if (isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
         auto fpext = std::make_shared<FPExt>(    lineCpy,
                                                 opCode,
                                                 returnType,
@@ -1369,7 +1369,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         returnType = parameters[0];
         std::string originalType = parameters[3];
         Register* operand = NULL;
-        if(isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
+        if (isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
         auto ptrtoint = std::make_shared<PtrToInt>(    lineCpy,
                                                 opCode,
                                                 returnType,
@@ -1392,7 +1392,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         returnType = parameters[0];
         std::string originalType = parameters[3];
         Register* operand = NULL;
-        if(isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
+        if (isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
         auto inttoptr = std::make_shared<IntToPtr>(    lineCpy,
                                                 opCode,
                                                 returnType,
@@ -1415,7 +1415,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         returnType = parameters[0];
         std::string originalType = parameters[3];
         Register* operand = NULL;
-        if(isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
+        if (isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
         auto bitcast = std::make_shared<BitCast>(    lineCpy,
                                                 opCode,
                                                 returnType,
@@ -1438,7 +1438,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         returnType = parameters[0];
         std::string originalType = parameters[3];
         Register* operand = NULL;
-        if(isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
+        if (isRegister(parameters[1])) setRegister(parameters[1], operand, dependencies, list, parameters);
         auto addrspacecast = std::make_shared<AddrSpaceCast>(    lineCpy,
                                                                 opCode,
                                                                 returnType,
@@ -1466,12 +1466,12 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         Register* op1;
         Register* op2;
         // Check if adding from register or immediate value
-        if(isRegister(parameters[last-1])) {
+        if (isRegister(parameters[last-1])) {
             setRegister(parameters[last-1], op1, dependencies, list, parameters);
             regOps.push_back(op1);
         } else immOp = atol(parameters[last-1].c_str());
         // Check if value is from register or immediate value
-        if(isRegister(parameters[last])) {
+        if (isRegister(parameters[last])) {
             setRegister(parameters[last], op2, dependencies, list, parameters);
             regOps.push_back(op2);
         } else immOp = atol(parameters[last].c_str());
@@ -1512,12 +1512,12 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         Register* op1;
         Register* op2;
         // Check if adding from register or immediate value
-        if(isRegister(parameters[last-1])) {
+        if (isRegister(parameters[last-1])) {
             setRegister(parameters[last-1], op1, dependencies, list, parameters);
             regOps.push_back(op1);
         }
         // Check if value is from register or immediate value
-        if(isRegister(parameters[last])) {
+        if (isRegister(parameters[last])) {
             setRegister(parameters[last], op2, dependencies, list, parameters);
             regOps.push_back(op2);
         } else immOp = stod(convertImmediate(returnType, parameters[last]));
@@ -1577,7 +1577,7 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
             labelLength = phiVal.at(i - 1).find(',');
             labelLength = phiVal.at(i - 1).find(']') - labelLength;
             label[i - 1] = phiVal.at(i - 1).substr((phiVal.at(i - 1).find(',')) + 3, labelLength - 4);
-            if(isRegister(val[i-1])) {
+            if (isRegister(val[i-1])) {
                 setRegister(val[i-1], tempReg, dependencies, list, parameters);
                 phiVal.at(i - 1) = "reg";
                 phiReg.push_back(tempReg);
@@ -1634,14 +1634,14 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
         std::vector<bool> imm;
         imm.push_back(false);
         imm.push_back(false);
-        if(isRegister(parameters[1])) {
+        if (isRegister(parameters[1])) {
             setRegister(parameters[1], condition, dependencies, list, parameters);
             regvalues.push_back(tempReg);
         } else {
-            if(parameters[1] == "true") condition = list->findRegister("alwaysTrue");
+            if (parameters[1] == "true") condition = list->findRegister("alwaysTrue");
             else condition = list->findRegister("alwaysFalse");
         }
-        if(isRegister(parameters[3])) {
+        if (isRegister(parameters[3])) {
             setRegister(parameters[3], tempReg, dependencies, list, parameters);
             regvalues.push_back(tempReg);
         } else {
@@ -1649,12 +1649,12 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
             immvalues.push_back(atol(parameters[3].c_str()));
             imm.at(0) = true;
             ///////////////////////////////////
-            if(parameters[2][0] == 'i') {
-            } else if(parameters[2] == "float") {
-            } else if(parameters[2] == "double") {
+            if (parameters[2][0] == 'i') {
+            } else if (parameters[2] == "float") {
+            } else if (parameters[2] == "double") {
             } else { }
         }
-        if(isRegister(parameters[5])) {
+        if (isRegister(parameters[5])) {
             setRegister(parameters[5], tempReg, dependencies, list, parameters);
             regvalues.push_back(tempReg);
         } else {
@@ -1662,9 +1662,9 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
             immvalues.push_back(atol(parameters[5].c_str()));
             imm.at(1) = true;
             ////////////////////////////
-            if(parameters[4][0] == 'i') { if (_debug) DPRINTF(LLVMParse, "\n\n !!! --- Undefined Condition --- !!! \n\n");
-            } else if(parameters[2] == "float") { if (_debug) DPRINTF(LLVMParse, "\n\n !!! --- Undefined Condition --- !!! \n\n");
-            } else if(parameters[2] == "double") { if (_debug) DPRINTF(LLVMParse, "\n\n !!! --- Undefined Condition --- !!! \n\n");
+            if (parameters[4][0] == 'i') { if (_debug) DPRINTF(LLVMParse, "\n\n !!! --- Undefined Condition --- !!! \n\n");
+            } else if (parameters[2] == "float") { if (_debug) DPRINTF(LLVMParse, "\n\n !!! --- Undefined Condition --- !!! \n\n");
+            } else if (parameters[2] == "double") { if (_debug) DPRINTF(LLVMParse, "\n\n !!! --- Undefined Condition --- !!! \n\n");
             } else { if (_debug) DPRINTF(LLVMParse, "\n\n !!! --- Undefined Condition --- !!! \n\n"); }
         }
         auto select = std::make_shared<Select>(    lineCpy,
@@ -1733,7 +1733,7 @@ BasicBlock::dependencyList(std::vector<std::string> &parameters, int dependencie
     /*
     if (_debug) DPRINTF(ComputeNode, "\n");
     if (_debug) DPRINTF(ComputeNode, "Dependencies List: \n");
-    if(dependencies == 0) {
+    if (dependencies == 0) {
         if (_debug) DPRINTF(ComputeNode, "No Dependencies!\n\n");
     } else {
         for (int i = 0; i < dependencies; i++) {
@@ -1771,14 +1771,14 @@ BasicBlock::convertImmediate(std::string dataType, std::string immediateValue) {
     char *array = &immediateValue[0];
     char *end;
     if (_debug) DPRINTF(LLVMParse, "Type: %s, Value: %s\n",dataType, immediateValue);
-    if(dataType.compare("double") == 0) {
-        if(immediateValue[1] == 'x') {
+    if (dataType.compare("double") == 0) {
+        if (immediateValue[1] == 'x') {
             uint64_t doub_hex = strtoll(array, &end, 16);
             memcpy(&doub, &doub_hex, 8);
                         temp = std::to_string(doub);
         } else temp = sciToDecimal(immediateValue);
-    } else if(dataType.compare("float") == 0) {
-        if(immediateValue[1] == 'x') {
+    } else if (dataType.compare("float") == 0) {
+        if (immediateValue[1] == 'x') {
             // LLVM stores immediate arguments as double-precision values,
             // even for single-precision arithmetic.
             uint64_t doub_hex = strtoll(array, &end, 16);
@@ -1787,7 +1787,7 @@ BasicBlock::convertImmediate(std::string dataType, std::string immediateValue) {
                         temp = std::to_string(flt);
         } else temp = sciToDecimal(immediateValue);
     } else { // Integer Value
-        if(immediateValue[1] == 'x') {
+        if (immediateValue[1] == 'x') {
             integer = strtol(array, &end, 0);
             temp = std::to_string(integer);
         } else temp = sciToDecimal(immediateValue);
@@ -1803,7 +1803,7 @@ BasicBlock::sciToDecimal(std::string immediateValue) {
     int sign;
     int magnitude = 0;
 
-    for(int i = 0; i < immediateValue.length()-1; i++) {
+    for (int i = 0; i < immediateValue.length()-1; i++) {
         if (immediateValue[i] == '.') decimalLocation = i;
         if (immediateValue[i] == 'e') {
             magnitudeLoc = i;
@@ -1850,7 +1850,7 @@ BasicBlock::debugParams(std::vector<std::string> &parameters) {
 uint64_t
 BasicBlock::setFlags(std::vector<std::string> &parameters) {
     /*
-    for(int i = 0; i < parameters.size(); i++){
+    for (int i = 0; i < parameters.size(); i++){
         if (parameters[i] == "nuw") instruction.flags.nuw = true;
         else if (parameters[i] == "nsw") instruction.flags.nsw = true;
         else if (parameters[i] == "nnan") instruction.flags.nnan = true;
@@ -1869,7 +1869,7 @@ BasicBlock::setFlags(std::vector<std::string> &parameters) {
 
 bool
 BasicBlock::isRegister(std::string data){
-    if(data[0] == '%') return true;
+    if (data[0] == '%') return true;
     return false;
 }
 
@@ -1889,13 +1889,13 @@ BasicBlock::setRegister(std::string data, Register *&reg, std::vector<Register*>
 void
 BasicBlock::initializeReturnRegister(std::vector<std::string> &parameters, Register *&reg , std::string &returnType, const std::string &instructionType ){
     int last = parameters.size() - 1;
-    if(!(instructionType.compare("Binary"))){
+    if (!(instructionType.compare("Binary"))){
         // Set instruction return type <ty>
         returnType = parameters[last - 2];
         // Set size of return register to match instruction return type
         reg->setSize(returnType);
     }
-    else if(!(instructionType.compare("Bitwise"))){
+    else if (!(instructionType.compare("Bitwise"))){
         // Set instruction return type <ty>
         returnType = parameters[last - 2];
         // Set size of return register to match instruction return type
@@ -1908,29 +1908,29 @@ BasicBlock::setRegOperands(RegisterList *list, std::vector<std::string> &paramet
     int last = parameters.size() - 1;
     Register* op;
     std::vector<Register*> operands;
-    if(!(instructionType.compare("Binary"))){
+    if (!(instructionType.compare("Binary"))){
         // Operand 2
         // Check if adding from register or immediate value
-        if(isRegister(parameters[last-1])) {
+        if (isRegister(parameters[last-1])) {
             setRegister(parameters[last-1], op, dependencies, list, parameters);
             operands.push_back(op);
         }
         // Operand 1
         // Check if value is from register or immediate value
-        if(isRegister(parameters[last])) {
+        if (isRegister(parameters[last])) {
             setRegister(parameters[last], op, dependencies, list, parameters);
             operands.push_back(op);
         }
-    } else if(!(instructionType.compare("Bitwise"))) {
+    } else if (!(instructionType.compare("Bitwise"))) {
         // Operand 2
         // Check if adding from register or immediate value
-        if(isRegister(parameters[last-1])) {
+        if (isRegister(parameters[last-1])) {
             setRegister(parameters[last-1], op, dependencies, list, parameters);
             operands.push_back(op);
         }
         // Operand 1
         // Check if value is from register or immediate value
-        if(isRegister(parameters[last])) {
+        if (isRegister(parameters[last])) {
             setRegister(parameters[last], op, dependencies, list, parameters);
             operands.push_back(op);
         }
@@ -1943,32 +1943,32 @@ std::vector<std::string>
 BasicBlock::setImmOperands(RegisterList *list, std::vector<std::string> &parameters, std::vector<Register*> &dependencies, const std::string& instructionType) {
     int last = parameters.size() - 1;
     std::vector<std::string> operands;
-    if(!(instructionType.compare("Binary"))){
+    if (!(instructionType.compare("Binary"))){
         // Operand 2
         // Check if adding from register or immediate value
-        if(!(isRegister(parameters[last-1]))) {
+        if (!(isRegister(parameters[last-1]))) {
             // Operation uses immediate value
             // Load string representation of immediate value
             operands.push_back(parameters[last-1]);
         }
         // Operand 1
         // Check if value is from register or immediate value
-        if(!(isRegister(parameters[last])))  {
+        if (!(isRegister(parameters[last])))  {
             // Operation uses immediate value
             // Load string representation of immediate value
             operands.push_back(parameters[last]);
         }
-    } else if(!(instructionType.compare("Bitwise"))) {
+    } else if (!(instructionType.compare("Bitwise"))) {
         // Operand 2
         // Check if adding from register or immediate value
-        if(!(isRegister(parameters[last-1]))) {
+        if (!(isRegister(parameters[last-1]))) {
             // Operation uses immediate value
             // Load string representation of immediate value
             operands.push_back(parameters[last-1]);
         }
         // Operand 1
         // Check if value is from register or immediate value
-        if(!(isRegister(parameters[last])))  {
+        if (!(isRegister(parameters[last])))  {
             // Operation uses immediate value
             // Load string representation of immediate value
             operands.push_back(parameters[last]);
@@ -2015,9 +2015,9 @@ BasicBlock::setSize(std::string dataType) {
 void
 BasicBlock::printNodes() {
     std::cout << "Nodes for " << _Name << " Size: " << _Nodes.size() << std::endl;
-    for(auto i=0; i<_Nodes.size(); i++) {
+    for (auto i=0; i<_Nodes.size(); i++) {
         std::cout << _Nodes.at(i)->_OpCode << " Dependencies" << std::endl;
-        for(auto j = 0; j<_Nodes.at(i)->_Dependencies.size(); j++) {
+        for (auto j = 0; j<_Nodes.at(i)->_Dependencies.size(); j++) {
             std::cout << _Nodes.at(i)->_Dependencies.at(j)->getName() << std::endl;
         }
 
@@ -2027,7 +2027,7 @@ BasicBlock::printNodes() {
 // Returns true if the first operand is an immediate value, false if its the second.
 bool BasicBlock::immPosition(std::vector<std::string> &parameters) {
     int last = parameters.size()-1;
-    if(parameters[last-1][0] != '%') return true;
+    if (parameters[last-1][0] != '%') return true;
     return false;
 }
 
