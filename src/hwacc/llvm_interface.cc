@@ -106,7 +106,7 @@ LLVMInterface::tick() {
                     i = std::distance(computeQueue.begin(), it);
                 } else i++;
             } else i++;
-        } else { 
+        } else {
             if(unlimitedFU) {
                 updateFU(reservation.at(i)->_FunctionalUnit);
                 if(computeQueue.at(i)->commit()) {
@@ -142,13 +142,13 @@ LLVMInterface::tick() {
                 if (dbg) DPRINTF(RuntimeQueues, "Checking if %s returning to %s can launch\n", reservation.at(i)->_OpCode, reservation.at(i)->_ReturnRegister->getName());
             }
             if (reservation.at(i)->_ActiveParents == 0) {
-                if(!(reservation.at(i)->_Terminator)) { 
+                if(!(reservation.at(i)->_Terminator)) {
                         if(reservation.at(i)->_OpCode == "load") {
                             loadOpScheduled = true;
                             readQueue.push_back(reservation.at(i));
                             reservation.at(i)->compute();
                             if(reservation.at(i)->_Global) dma_loads++;
-                            else memory_loads++; 
+                            else memory_loads++;
                             if(unlimitedFU) updateFU(reservation.at(i)->_FunctionalUnit);
                             scheduled = true;
                             //  reservation.at(i)->removeParents();
@@ -167,7 +167,7 @@ LLVMInterface::tick() {
                             i = std::distance(reservation.begin(), it);
                         } else if(reservation.at(i)->_MaxCycle==0) {
                             reservation.at(i)->compute();
-                            reservation.at(i)->commit(); 
+                            reservation.at(i)->commit();
                             if(unlimitedFU) updateFU(reservation.at(i)->_FunctionalUnit);
                             scheduled = true; compOpScheduled = true;
                             reservation.at(i)->removeParents();
@@ -199,7 +199,7 @@ LLVMInterface::tick() {
                     if (reservation.size() < scheduling_threshold) {
                         if(unlimitedFU) updateFU(reservation.at(i)->_FunctionalUnit);
                         prevBB = currBB; // Store current BB as previous BB for use with Phi instructions
-                        reservation.at(i)->compute(); // Send instruction to runtime computation simulator 
+                        reservation.at(i)->compute(); // Send instruction to runtime computation simulator
                         currBB = findBB(reservation.at(i)->_Dest); // Set pointer to next basic block
                         //  reservation.at(i)->removeParents();
                         auto it = reservation.erase(reservation.begin()+i); // Remove instruction from reservation table
@@ -211,6 +211,7 @@ LLVMInterface::tick() {
                 if (reservation.at(i)->_OpCode == "ret"){
                     if (i==0 && computeQueue.empty() && readQueue.empty() && writeQueue.empty()) {
                         if (dbg) DPRINTF(LLVMInterface, "Simulation Complete \n");
+                        reservation.clear();
                         running = false;
                         finalize();
                         comm->finish();
@@ -582,10 +583,10 @@ LLVMInterface::initialize() {
     loadComp = 0;
     loadStoreComp = 0;
     storeComp = 0;
-    loadOnlyStall = 0; 
-    storeOnlyStall = 0; 
-    compOnlyStall = 0; 
-    loadStoreStall = 0; 
+    loadOnlyStall = 0;
+    storeOnlyStall = 0;
+    compOnlyStall = 0;
+    loadStoreStall = 0;
     loadCompStall = 0;
     loadStoreCompStall = 0;
     storeCompStall = 0;
@@ -689,25 +690,25 @@ LLVMInterface::finalize() {
     execnodes = cycle-stalls-1;
     AverageOccupancy();
     pwrUtil->finalPowerUsage(_MaxFU, cycle);
-   
+
     /*
     // Experimental
     // getCactiResults(int cache_size, int word_size, int ports, int type)
-    // SPM cache_type = 0  
+    // SPM cache_type = 0
     _SPM.opt = pwrUtil->getCactiResults(regList->count()*(read_bus_width), (read_bus_width/8), (read_ports+write_ports), 0);
     _SPM.leakage = pwrUtil->getCactiResults(spm_size, (read_bus_width/8), (read_ports+write_ports), 0);
-    _SPM.dyn_read = pwrUtil->getCactiResults((int) (dma_loads*(read_bus_width/8)), (read_bus_width/8), (read_ports), 0); 
-    _SPM.dyn_write = pwrUtil->getCactiResults((int) (dma_stores*(write_bus_width/8)), (read_bus_width/8), (write_ports), 0); 
+    _SPM.dyn_read = pwrUtil->getCactiResults((int) (dma_loads*(read_bus_width/8)), (read_bus_width/8), (read_ports), 0);
+    _SPM.dyn_write = pwrUtil->getCactiResults((int) (dma_stores*(write_bus_width/8)), (read_bus_width/8), (write_ports), 0);
 
     // Experimental
     // Cache cache_type = 1
     _Cache.leakage = pwrUtil->getCactiResults(cache_size, (read_bus_width/8), cache_ports, 1);
     _Cache.dyn_read = pwrUtil->getCactiResults(dma_loads*(read_bus_width/8), (read_bus_width/8), cache_ports, 1);
     _Cache.dyn_write = pwrUtil->getCactiResults(dma_stores*(read_bus_width/8), (read_bus_width/8), cache_ports, 1);
-    
+
     */
     printPerformanceResults();
-    // comm->printResults() 
+    // comm->printResults()
     // hardware->printResults();
 }
 
@@ -770,29 +771,29 @@ LLVMInterface::printPerformanceResults() {
                             _Cache.dyn_read.power.readOp.dynamic*exponential,
                             _Cache.dyn_write.power.writeOp.dynamic*exponential,
                             _Cache.leakage.area,
-                            _MaxFU.counter_units, 
+                            _MaxFU.counter_units,
                             _RunningAverageOccupancy.counter_units,
-                            _MaxFU.int_adder_units, 
+                            _MaxFU.int_adder_units,
                             _RunningAverageOccupancy.int_adder_units,
-                            _MaxFU.int_multiply_units, 
+                            _MaxFU.int_multiply_units,
                             _RunningAverageOccupancy.int_multiply_units,
-                            _MaxFU.int_shifter_units, 
+                            _MaxFU.int_shifter_units,
                             _RunningAverageOccupancy.int_shifter_units,
-                            _MaxFU.int_bit_units, 
+                            _MaxFU.int_bit_units,
                             _RunningAverageOccupancy.int_bit_units,
-                            _MaxFU.fp_sp_adder, 
+                            _MaxFU.fp_sp_adder,
                             _RunningAverageOccupancy.fp_sp_adder,
-                            _MaxFU.fp_dp_adder, 
+                            _MaxFU.fp_dp_adder,
                             _RunningAverageOccupancy.fp_dp_adder,
-                            _MaxFU.fp_sp_multiply, 
+                            _MaxFU.fp_sp_multiply,
                             _RunningAverageOccupancy.fp_sp_multiply,
-                            _MaxFU.fp_dp_multiply, 
+                            _MaxFU.fp_dp_multiply,
                             _RunningAverageOccupancy.fp_dp_multiply,
-                            _MaxFU.compare, 
+                            _MaxFU.compare,
                             _RunningAverageOccupancy.compare,
-                            _MaxFU.gep, 
+                            _MaxFU.gep,
                             _RunningAverageOccupancy.gep,
-                            _MaxFU.conversion, 
+                            _MaxFU.conversion,
                             _RunningAverageOccupancy.conversion,
                             _MaxParsed.counter_units,
                             _MaxParsed.int_adder_units,
@@ -1094,123 +1095,123 @@ bool
 LLVMInterface::limitedFU(int8_t FU) {
     bool available = false;
     switch(FU) {
-        case COUNTER: { 
+        case COUNTER: {
             if(counter_units == -1) {
-                _FunctionalUnits.counter_units++; 
+                _FunctionalUnits.counter_units++;
                 available = true;
             } else if(_FunctionalUnits.counter_units < counter_units) {
-                _FunctionalUnits.counter_units++; 
-                available = true; 
+                _FunctionalUnits.counter_units++;
+                available = true;
             }
             break;
         }
         case INTADDER: {
             if(int_adder_units == -1) {
-                _FunctionalUnits.int_adder_units++; 
+                _FunctionalUnits.int_adder_units++;
                 available = true;
             } else if(_FunctionalUnits.int_adder_units < int_adder_units) {
-                _FunctionalUnits.int_adder_units++; 
-                available = true; 
+                _FunctionalUnits.int_adder_units++;
+                available = true;
             }
             break;
         }
         case INTMULTI: {
             if(int_multiply_units == -1) {
-                _FunctionalUnits.int_multiply_units++; 
+                _FunctionalUnits.int_multiply_units++;
                 available = true;
             } else if(_FunctionalUnits.int_multiply_units < int_multiply_units) {
-                _FunctionalUnits.int_multiply_units++; 
-                available = true; 
+                _FunctionalUnits.int_multiply_units++;
+                available = true;
             }
             break;
         }
         case INTSHIFTER: {
             if(int_shifter_units == -1) {
-                _FunctionalUnits.int_shifter_units++; 
+                _FunctionalUnits.int_shifter_units++;
                 available = true;
             } else if(_FunctionalUnits.int_shifter_units < int_shifter_units) {
-                _FunctionalUnits.int_shifter_units++; 
-                available = true; 
+                _FunctionalUnits.int_shifter_units++;
+                available = true;
             }
             break;
         }
         case INTBITWISE: {
             if(int_bit_units == -1) {
-                _FunctionalUnits.int_bit_units++; 
+                _FunctionalUnits.int_bit_units++;
                 available = true;
             } else if(_FunctionalUnits.int_bit_units < int_bit_units) {
-                _FunctionalUnits.int_bit_units++; 
-                available = true; 
+                _FunctionalUnits.int_bit_units++;
+                available = true;
             }
             break;
         }
         case FPSPADDER: {
             if(fp_sp_adder == -1) {
-                _FunctionalUnits.fp_sp_adder++; 
+                _FunctionalUnits.fp_sp_adder++;
                 available = true;
             } else if(_FunctionalUnits.fp_sp_adder < fp_sp_adder) {
-                _FunctionalUnits.fp_sp_adder++; 
-                available = true; 
+                _FunctionalUnits.fp_sp_adder++;
+                available = true;
             }
             break;
         }
         case FPDPADDER: {
             if(fp_dp_adder == -1) {
-                _FunctionalUnits.fp_dp_adder++; 
+                _FunctionalUnits.fp_dp_adder++;
                 available = true;
             } else if(_FunctionalUnits.fp_dp_adder < fp_dp_adder) {
-                _FunctionalUnits.fp_dp_adder++; 
-                available = true; 
+                _FunctionalUnits.fp_dp_adder++;
+                available = true;
             }
             break;
         }
         case FPSPMULTI: {
             if(fp_sp_multiply == -1) {
-                _FunctionalUnits.fp_sp_multiply++; 
+                _FunctionalUnits.fp_sp_multiply++;
                 available = true;
             } else if(_FunctionalUnits.fp_sp_multiply < fp_sp_multiply) {
-                _FunctionalUnits.fp_sp_multiply++; 
-                available = true; 
+                _FunctionalUnits.fp_sp_multiply++;
+                available = true;
             }
             break;
         }
         case FPDPMULTI: {
             if(fp_dp_multiply == -1) {
-                _FunctionalUnits.fp_dp_multiply++; 
+                _FunctionalUnits.fp_dp_multiply++;
                 available = true;
             } else if(_FunctionalUnits.fp_dp_multiply < fp_dp_multiply) {
-                _FunctionalUnits.fp_dp_multiply++; 
-                available = true; 
+                _FunctionalUnits.fp_dp_multiply++;
+                available = true;
             }
             break;
         }
         case COMPARE: {
             if(compare == -1) {
-                _FunctionalUnits.compare++; 
+                _FunctionalUnits.compare++;
                 available = true;
             } else if(_FunctionalUnits.compare < compare) {
-                _FunctionalUnits.compare++; 
-                available = true; 
+                _FunctionalUnits.compare++;
+                available = true;
             }
             break;
         }
         case GETELEMENTPTR: {
             if(gep == -1) {
-                _FunctionalUnits.gep++; 
+                _FunctionalUnits.gep++;
                 available = true;
             } else if(_FunctionalUnits.gep < gep) {
-                _FunctionalUnits.gep++; 
-                available = true; 
+                _FunctionalUnits.gep++;
+                available = true;
             }
             break;
         }
         case CONVERSION: {
             if(conversion == -1) {
-                _FunctionalUnits.conversion++; 
+                _FunctionalUnits.conversion++;
                 available = true;
             } else if(_FunctionalUnits.conversion < conversion) {
-                _FunctionalUnits.conversion++; 
-                available = true; 
+                _FunctionalUnits.conversion++;
+                available = true;
             }
             break;
         }
