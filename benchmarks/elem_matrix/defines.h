@@ -1,8 +1,6 @@
 #ifndef __DEFINES_H__
 #define __DEFINES_H__
 
-//#define VERBOSE
-
 #define ROW 64
 #define COL 64
 
@@ -23,20 +21,12 @@ void elem_matrix_driver(uint32_t, uint32_t, uint32_t, uint32_t, uint8_t,
 #define DEV_INIT    0x01
 #define DEV_INTR    0x04
 
-#define STR_DMA_INIT_RD     0x01
-#define STR_DMA_INIT_WR     0x02
-#define STR_DMA_RD_RUNNING  0x04
-#define STR_DMA_WR_RUNNING  0x06
-
-// CommInterface addresses
-#define EM_BASE_ADDR        0x20300000
-#define ARG1_RESULT_STR_MMR EM_BASE_ADDR    // 32 bytes
-#define ARG1_STR            0x20300020      // 32 bytes
-#define ARG2_STR_MMR        0x20300040      // 32 bytes
-#define ARG2_STR            0x20300060      // 32 bytes
-#define RESULT_STR          ARG1_STR
-
-// Accelerator addresses
-#define ELEM_MATRIX_MMR     0x20300080  // 33 bytes
+// Memory mapped I/O
+#define EM_BASE_ADDR        0x24000000
+#define ELEM_MATRIX_DMA     EM_BASE_ADDR    // 21 B
+#define ARG1_SPM            0x24000020      // 64 KB
+#define ARG2_SPM            0x24010020      // 64 KB
+#define RESULT_SPM          0x24020020      // 64 KB
+#define ELEM_MATRIX_MMR     0x24030020
 
 #endif

@@ -1,15 +1,15 @@
 #include "hw_defines.h"
 
 // Helper method declarations
-inline float em_sqrt(float x);
-inline float em_atan2(float y, float x);
-inline float em_exp(float x);
+static inline float em_sqrt(float x);
+static inline float em_atan2(float y, float x);
+static inline float em_exp(float x);
 
-void elem_matrix(uint64_t num_elems, uint64_t op, uint64_t is_arg2_scalar,
-        uint64_t do_one_minus) {
-    volatile float *arg1   = (float*) ARG1_STR;
-    volatile float *arg2   = (float*) ARG2_STR;
-    volatile float *result = (float*) RESULT_STR;
+void elem_matrix(uint32_t num_elems, uint8_t op, uint8_t is_arg2_scalar,
+        uint8_t do_one_minus) {
+    float *arg1   = (float*) ARG1_SPM;
+    float *arg2   = (float*) ARG2_SPM;
+    float *result = (float*) RESULT_SPM;
 
     float arg2_val;
 
@@ -18,73 +18,79 @@ void elem_matrix(uint64_t num_elems, uint64_t op, uint64_t is_arg2_scalar,
         case SUB:
         case MUL:
         case DIV:
-        case ATAN2: if (is_arg2_scalar) { arg2_val = *arg2; }
+        case ATAN2: if (is_arg2_scalar) { arg2_val = arg2[0]; }
     }
 
     #pragma clang loop unroll_count(64)
     for (int i = 0; i < num_elems; i++) {
-        float arg1_val = *arg1;
-
         switch (op) {
-            case ADD:
-                if (!is_arg2_scalar) { arg2_val = *arg2; }
+            case ADD: {
+                if (!is_arg2_scalar) { arg2_val = arg2[i]; }
 
-                if (do_one_minus) { *result = arg1_val + (1 - arg2_val); }
-                else              { *result = arg1_val + arg2_val;  }
+                if (do_one_minus) { result[i] = arg1[i] + (1 - arg2_val); }
+                else              { result[i] = arg1[i] + arg2_val;  }
                 break;
+            }
 
-            case SUB:
-                if (!is_arg2_scalar) { arg2_val = *arg2; }
+            case SUB: {
+                if (!is_arg2_scalar) { arg2_val = arg2[i]; }
 
-                if (do_one_minus) { *result = arg1_val - (1 - arg2_val); }
-                else              { *result = arg1_val - arg2_val;  }
+                if (do_one_minus) { result[i] = arg1[i] - (1 - arg2_val); }
+                else              { result[i] = arg1[i] - arg2_val;  }
                 break;
+            }
 
-            case MUL:
-                if (!is_arg2_scalar) { arg2_val = *arg2; }
+            case MUL: {
+                if (!is_arg2_scalar) { arg2_val = arg2[i]; }
 
-                if (do_one_minus) { *result = arg1_val * (1 - arg2_val); }
-                else              { *result = arg1_val * arg2_val;  }
+                if (do_one_minus) { result[i] = arg1[i] * (1 - arg2_val); }
+                else              { result[i] = arg1[i] * arg2_val;  }
                 break;
+            }
 
-            case DIV:
-                if (!is_arg2_scalar) { arg2_val = *arg2; }
+            case DIV: {
+                if (!is_arg2_scalar) { arg2_val = arg2[i]; }
 
-                if (do_one_minus) { *result = arg1_val / (1 - arg2_val); }
-                else              { *result = arg1_val / arg2_val;  }
+                if (do_one_minus) { result[i] = arg1[i] / (1 - arg2_val); }
+                else              { result[i] = arg1[i] / arg2_val;  }
                 break;
+            }
 
-            case SQR:
-                *result = arg1_val * arg1_val;
+            case SQR: {
+                result[i] = arg1[i] * arg1[i];
                 break;
+            }
 
-            case SQRT:
-                *result = em_sqrt(arg1_val);
+            case SQRT: {
+                result[i] = em_sqrt(arg1[i]);
                 break;
+            }
 
-            case ATAN2:
-                if (!is_arg2_scalar) { arg2_val = *arg2; }
+            case ATAN2: {
+                if (!is_arg2_scalar) { arg2_val = arg2[i]; }
 
-                if (do_one_minus) { *result = em_atan2(1-arg2_val, arg1_val); }
-                else              { *result = em_atan2(arg2_val, arg1_val); }
+                if (do_one_minus) { result[i] = em_atan2(1-arg2_val, arg1[i]); }
+                else              { result[i] = em_atan2(arg2_val, arg1[i]); }
                 break;
+            }
 
             case TANH: {
-                float my_exp = em_exp(arg1_val);
+                float my_exp = em_exp(arg1[i]);
                 float my_exp_sqr = my_exp * my_exp;
-                *result = (my_exp_sqr - 1) / (my_exp_sqr + 1);
+                result[i] = (my_exp_sqr - 1) / (my_exp_sqr + 1);
                 break;
             }
 
             case SIGMOID: {
-                float my_exp = em_exp(arg1_val);
-                *result = my_exp / (my_exp + 1);
+                float my_exp = em_exp(arg1[i]);
+                result[i] = my_exp / (my_exp + 1);
                 break;
             }
 
-            default:
-                *result = -100;
+            default: {
+                result[i] = -100;
                 break;
+            }
         }
     }
 }
@@ -93,7 +99,7 @@ void elem_matrix(uint64_t num_elems, uint64_t op, uint64_t is_arg2_scalar,
  * Helper methods definitions
  */
 
-inline float em_sqrt(float x) {
+static inline __attribute__((always_inline)) float em_sqrt(float x) {
     const float threehalfs = 1.5F;
 
     union sqrt_t {
@@ -110,7 +116,7 @@ inline float em_sqrt(float x) {
     return 1/conv.f;
 }
 
-inline float em_atan2(float y, float x) {
+static inline __attribute__((always_inline)) float em_atan2(float y, float x) {
     float a, r, s, t, c, q, ax, ay, mx, mn;
     ax = x < 0 ? -x : x;
     ay = y < 0 ? -y : y;
@@ -132,7 +138,7 @@ inline float em_atan2(float y, float x) {
     return r;
 }
 
-inline float em_exp(float x) {
+static inline __attribute__((always_inline)) float em_exp(float x) {
     union { float f; int i; } u, v;
     u.i = (long long) (6051102 * x + 1056478197);
     v.i = (long long) (1056478197 - 6051102 * x);

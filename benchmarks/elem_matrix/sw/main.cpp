@@ -6,13 +6,15 @@
 #include "../../common/m5ops.h"
 #include "../defines.h"
 
+//#define VERBOSE
+
 void gen_data(float*, float*, float*);
 void run_and_check(float*, float*, float*, uint8_t);
 
 int main(void) {
     m5_reset_stats();
 
-    uint32_t base = 0x80300000;
+    uint32_t base = 0x84000000;
     float *arg1   = (float *)(base);
     float *arg2   = (float *)(base + 4*ROW*COL);
     float *result = (float *)(base + 8*ROW*COL);
@@ -21,7 +23,8 @@ int main(void) {
     gen_data(arg1, arg2, result);
     printf("Data generated\n");
 
-    for (int i = 0; i < 5; i++) {
+    //for (int i = 0; i < NUM_OPS; i++) {
+    for (int i = 5; i < NUM_OPS; i++) {
         run_and_check(arg1, arg2, result, i);
     }
 

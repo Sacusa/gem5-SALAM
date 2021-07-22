@@ -105,6 +105,7 @@ def makeHWAcc(options, system):
     AccConfig(system.acctest.elem_matrix, config, ir)
     system.acctest._connect_hwacc(system.acctest.elem_matrix)
     system.acctest.elem_matrix.local = system.acctest.local_bus.slave
+    #system.acctest.elem_matrix.enable_debug_msgs = True
 
     system.acctest.spm = ScratchpadMemory()
     AccSPMConfig(system.acctest.elem_matrix, system.acctest.spm, config)
