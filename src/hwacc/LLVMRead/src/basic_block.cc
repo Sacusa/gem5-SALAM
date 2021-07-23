@@ -263,28 +263,24 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
 		Register* condition;
 		branches.push_back(parameters[4].substr(1)); // Default Destination [0]
 		caseValues.push_back(0); // Initialize first location of case values for Index Matching
-		// Derive case statements
-		int location = 0;
-		int length = 0;
-		int statements = 0;
-		int i = 1;
 		setRegister(parameters[2], condition, dependencies, list, parameters);
-		// Determine the number of case statements
-		for(int k = 0; k < parameters[5].size(); k++) {
-			if(parameters[5][k] == '%') statements++;
-		}
-		// Set the value and location of each case statement
-		while(i <= statements) {
-			location = parameters[5].find_first_of('i', location);
-			location = parameters[5].find_first_of(' ', location) + 1;
-			length = parameters[5].find_first_of(',', location) - location;
-			caseValues.push_back(atol(parameters[5].substr(location, length).c_str()));
-			location = parameters[5].find_first_of('%', location)+1;
-			length = parameters[5].find_first_of(' ', location) - location;
-			branches.push_back(parameters[5].substr(location, length));
-			if (_debug) DPRINTF(ComputeNode, "Value %d, Dest: %s\n", caseValues.at(i), branches.at(i));
-			i++;
-		}
+
+        // Set the value and location of each case statement
+        char *token = strtok((char*) parameters[5].c_str(), " ");
+        token = strtok(NULL, " ");
+
+        while (strcmp(token, "]")) {
+            char *value = strtok(NULL, " ");    // case value
+            token = strtok(NULL, " ");          // keyword "label"
+            char *location = strtok(NULL, " "); // case location
+            location += 1;                      // ignore the leading "%"
+
+            caseValues.push_back(atol(value));
+            branches.push_back(std::string(location));
+
+            token = strtok(NULL, " ");
+        }
+
 		auto llswtch = std::make_shared<LLVMSwitch>(	lineCpy,
 												opCode,
 												returnType,
@@ -1800,7 +1796,7 @@ std::string
 BasicBlock::sciToDecimal(std::string immediateValue) {
     int decimalLocation = 0;
     int magnitudeLoc = 0;
-    int sign;
+    int sign = 0;
     int magnitude = 0;
 
     for (int i = 0; i < immediateValue.length()-1; i++) {

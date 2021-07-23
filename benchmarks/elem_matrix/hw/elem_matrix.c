@@ -139,8 +139,8 @@ static inline __attribute__((always_inline)) float em_atan2(float y, float x) {
 }
 
 static inline __attribute__((always_inline)) float em_exp(float x) {
-    union { float f; int i; } u, v;
-    u.i = (long long) (6051102 * x + 1056478197);
-    v.i = (long long) (1056478197 - 6051102 * x);
+    union { float f; uint32_t i; } u, v;
+    u.i = (uint32_t) (6051102 * x + 1056478197);
+    v.i = (uint32_t) (1056478197 - 6051102 * x);
     return u.f / v.f;
 }

@@ -6,7 +6,7 @@
 #include "../../common/m5ops.h"
 #include "../defines.h"
 
-//#define VERBOSE
+#define VERBOSE
 
 void gen_data(float*, float*, float*);
 void run_and_check(float*, float*, float*, uint8_t);
@@ -23,8 +23,7 @@ int main(void) {
     gen_data(arg1, arg2, result);
     printf("Data generated\n");
 
-    //for (int i = 0; i < NUM_OPS; i++) {
-    for (int i = 5; i < NUM_OPS; i++) {
+    for (int i = 0; i < NUM_OPS; i++) {
         run_and_check(arg1, arg2, result, i);
     }
 
@@ -36,7 +35,7 @@ void gen_data(float *arg1, float *arg2, float *result) {
     int num_elems = ROW * COL;
 
     for (int i = 0; i < num_elems; i++) {
-        arg1[i] = i + 1;
+        arg1[i] = (i % 128) + 1;
         arg2[i] = num_elems - i;
         result[i] = -1;
     }
