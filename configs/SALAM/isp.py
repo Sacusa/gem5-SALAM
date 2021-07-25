@@ -109,7 +109,7 @@ def makeHWAcc(options, system):
     system.acctest.spm = ScratchpadMemory()
     AccSPMConfig(system.acctest.isp, system.acctest.spm, config)
     system.acctest._connect_spm(system.acctest.spm)
-    system.acctest.isp.enable_debug_msgs = True
+    #system.acctest.isp.enable_debug_msgs = True
 
     # Add the cluster DMA
     system.acctest.dma = NoncoherentDma(pio_addr=0x27000000, pio_size=21, gic=gic, int_num=98)
