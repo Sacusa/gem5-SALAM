@@ -1,0 +1,65 @@
+/usr/bin/arm-none-eabi-g++ -g -O3 -lunistd -I . -fno-exceptions   -c -o driver.o driver.cpp
+/usr/bin/arm-none-eabi-gcc -g -O3 -lunistd -I .   -c -o scheduler.o scheduler.c
+/usr/bin/arm-none-eabi-g++ -g -O3 -lunistd -I . -fno-exceptions   -c -o test.o test.cpp
+/usr/bin/arm-none-eabi-gcc -nostartfiles -Xlinker -Tboot.ld -o test.elf ../../common/syscalls.o boot.o driver.o scheduler.o test.o -nostartfiles -lm
+scheduler.o: In function `run_isp':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:262: undefined reference to `isp_driver'
+scheduler.o: In function `run_canny_non_max':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:109: undefined reference to `canny_non_max_driver'
+scheduler.o: In function `run_convolution':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:136: undefined reference to `convolution_driver'
+scheduler.o: In function `run_edge_tracking':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:159: undefined reference to `edge_tracking_driver'
+scheduler.o: In function `run_elem_matrix':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:190: undefined reference to `elem_matrix_driver'
+scheduler.o: In function `run_grayscale':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:218: undefined reference to `grayscale_driver'
+scheduler.o: In function `run_harris_non_max':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:240: undefined reference to `harris_non_max_driver'
+scheduler.o: In function `run_canny_non_max':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:109: undefined reference to `canny_non_max_driver'
+scheduler.o: In function `run_convolution':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:136: undefined reference to `convolution_driver'
+scheduler.o: In function `run_edge_tracking':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:159: undefined reference to `edge_tracking_driver'
+scheduler.o: In function `run_elem_matrix':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:190: undefined reference to `elem_matrix_driver'
+scheduler.o: In function `run_grayscale':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:218: undefined reference to `grayscale_driver'
+scheduler.o: In function `run_harris_non_max':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:240: undefined reference to `harris_non_max_driver'
+scheduler.o: In function `run_isp':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:262: undefined reference to `isp_driver'
+scheduler.o: In function `finish_canny_non_max':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:312: undefined reference to `canny_non_max_driver'
+scheduler.o: In function `finish_convolution':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:319: undefined reference to `convolution_driver'
+scheduler.o: In function `finish_edge_tracking':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:326: undefined reference to `edge_tracking_driver'
+scheduler.o: In function `finish_elem_matrix':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:333: undefined reference to `elem_matrix_driver'
+scheduler.o: In function `finish_grayscale':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:340: undefined reference to `grayscale_driver'
+scheduler.o: In function `finish_harris_non_max':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:347: undefined reference to `harris_non_max_driver'
+scheduler.o: In function `finish_isp':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:354: undefined reference to `isp_driver'
+scheduler.o: In function `finish_canny_non_max':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:312: undefined reference to `canny_non_max_driver'
+scheduler.o: In function `finish_convolution':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:319: undefined reference to `convolution_driver'
+scheduler.o: In function `finish_edge_tracking':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:326: undefined reference to `edge_tracking_driver'
+scheduler.o: In function `finish_elem_matrix':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:333: undefined reference to `elem_matrix_driver'
+scheduler.o: In function `finish_grayscale':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:340: undefined reference to `grayscale_driver'
+scheduler.o: In function `finish_harris_non_max':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:347: undefined reference to `harris_non_max_driver'
+scheduler.o: In function `finish_isp':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:354: undefined reference to `isp_driver'
+test.o: In function `test_canny_non_max()':
+/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/test.cpp:64: undefined reference to `schedule(task_struct_t* (*) [10][100], int (*) [10])'
+collect2: error: ld returned 1 exit status
+make: *** [Makefile:42: test.elf] Error 1
+rm driver.o test.o scheduler.o
