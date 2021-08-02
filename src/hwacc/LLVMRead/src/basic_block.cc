@@ -1630,39 +1630,59 @@ BasicBlock::parse(std::string line, RegisterList *list, std::string prev, CommIn
 		std::vector<bool> imm;
 		imm.push_back(false);
 		imm.push_back(false);
+
+        int true_val_index = 3, false_val_index = 5;
+
+        // parse the condition register/value
 		if(isRegister(parameters[1])) {
-			setRegister(parameters[1], condition, dependencies, list, parameters);
+			setRegister(parameters[1], condition, dependencies, list,
+                    parameters);
 			regvalues.push_back(tempReg);
 		} else {
-			if(parameters[1] == "true") condition = list->findRegister("alwaysTrue");
+			if(parameters[1] == "true") condition =
+                list->findRegister("alwaysTrue");
 			else condition = list->findRegister("alwaysFalse");
 		}
-		if(isRegister(parameters[3])) {
-			setRegister(parameters[3], tempReg, dependencies, list, parameters);
+
+        // parse the value for true
+		if(isRegister(parameters[true_val_index])) {
+			setRegister(parameters[true_val_index], tempReg, dependencies,
+                    list, parameters);
 			regvalues.push_back(tempReg);
-		} else {
-			///////////////////////////////////
-			immvalues.push_back(atol(parameters[3].c_str()));
+        } else if (parameters[true_val_index] == "inttoptr") {
+            true_val_index++;
+            false_val_index++;
+
+            char *token = strtok((char*) parameters[true_val_index].c_str(),
+                    " ");   // ignore the first token
+            token = strtok(NULL, " ");  // this is the value
+
+			immvalues.push_back(atol(token));
 			imm.at(0) = true;
-			///////////////////////////////////
-			if(parameters[2][0] == 'i') {
-			} else if(parameters[2] == "float") {
-			} else if(parameters[2] == "double") {
-			} else { }
+        } else {
+			immvalues.push_back(atol(parameters[true_val_index].c_str()));
+			imm.at(0) = true;
 		}
-		if(isRegister(parameters[5])) {
-			setRegister(parameters[5], tempReg, dependencies, list, parameters);
+
+        // parse the value for false
+		if(isRegister(parameters[false_val_index])) {
+			setRegister(parameters[false_val_index], tempReg, dependencies,
+                    list, parameters);
 			regvalues.push_back(tempReg);
-		} else {
-			////////////////////////////////
-			immvalues.push_back(atol(parameters[5].c_str()));
+        } else if (parameters[false_val_index] == "inttoptr") {
+            false_val_index++;
+
+            char *token = strtok((char*) parameters[false_val_index].c_str(),
+                    " ");   // ignore the first token
+            token = strtok(NULL, " ");  // this is the value
+
+			immvalues.push_back(atol(token));
 			imm.at(1) = true;
-			////////////////////////////
-			if(parameters[4][0] == 'i') { if (_debug) DPRINTF(LLVMParse, "\n\n !!! --- Undefined Condition --- !!! \n\n");
-			} else if(parameters[2] == "float") { if (_debug) DPRINTF(LLVMParse, "\n\n !!! --- Undefined Condition --- !!! \n\n");
-			} else if(parameters[2] == "double") { if (_debug) DPRINTF(LLVMParse, "\n\n !!! --- Undefined Condition --- !!! \n\n");
-			} else { if (_debug) DPRINTF(LLVMParse, "\n\n !!! --- Undefined Condition --- !!! \n\n"); }
+        } else {
+			immvalues.push_back(atol(parameters[false_val_index].c_str()));
+			imm.at(1) = true;
 		}
+
 		auto select = std::make_shared<Select>(	lineCpy,
 												opCode,
 												returnType,
