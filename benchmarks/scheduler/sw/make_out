@@ -1,65 +1,51 @@
-/usr/bin/arm-none-eabi-g++ -g -O3 -lunistd -I . -fno-exceptions   -c -o driver.o driver.cpp
+/usr/bin/arm-none-eabi-gcc -g -O3 -lunistd -I .   -c -o driver.o driver.c
+/usr/bin/arm-none-eabi-gcc -g -O3 -lunistd -I .   -c -o mem_manage.o mem_manage.c
 /usr/bin/arm-none-eabi-gcc -g -O3 -lunistd -I .   -c -o scheduler.o scheduler.c
-/usr/bin/arm-none-eabi-g++ -g -O3 -lunistd -I . -fno-exceptions   -c -o test.o test.cpp
-/usr/bin/arm-none-eabi-gcc -nostartfiles -Xlinker -Tboot.ld -o test.elf ../../common/syscalls.o boot.o driver.o scheduler.o test.o -nostartfiles -lm
-scheduler.o: In function `run_isp':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:262: undefined reference to `isp_driver'
-scheduler.o: In function `run_canny_non_max':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:109: undefined reference to `canny_non_max_driver'
-scheduler.o: In function `run_convolution':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:136: undefined reference to `convolution_driver'
-scheduler.o: In function `run_edge_tracking':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:159: undefined reference to `edge_tracking_driver'
-scheduler.o: In function `run_elem_matrix':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:190: undefined reference to `elem_matrix_driver'
-scheduler.o: In function `run_grayscale':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:218: undefined reference to `grayscale_driver'
-scheduler.o: In function `run_harris_non_max':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:240: undefined reference to `harris_non_max_driver'
-scheduler.o: In function `run_canny_non_max':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:109: undefined reference to `canny_non_max_driver'
-scheduler.o: In function `run_convolution':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:136: undefined reference to `convolution_driver'
-scheduler.o: In function `run_edge_tracking':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:159: undefined reference to `edge_tracking_driver'
-scheduler.o: In function `run_elem_matrix':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:190: undefined reference to `elem_matrix_driver'
-scheduler.o: In function `run_grayscale':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:218: undefined reference to `grayscale_driver'
-scheduler.o: In function `run_harris_non_max':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:240: undefined reference to `harris_non_max_driver'
-scheduler.o: In function `run_isp':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:262: undefined reference to `isp_driver'
-scheduler.o: In function `finish_canny_non_max':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:312: undefined reference to `canny_non_max_driver'
-scheduler.o: In function `finish_convolution':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:319: undefined reference to `convolution_driver'
-scheduler.o: In function `finish_edge_tracking':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:326: undefined reference to `edge_tracking_driver'
-scheduler.o: In function `finish_elem_matrix':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:333: undefined reference to `elem_matrix_driver'
-scheduler.o: In function `finish_grayscale':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:340: undefined reference to `grayscale_driver'
-scheduler.o: In function `finish_harris_non_max':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:347: undefined reference to `harris_non_max_driver'
-scheduler.o: In function `finish_isp':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:354: undefined reference to `isp_driver'
-scheduler.o: In function `finish_canny_non_max':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:312: undefined reference to `canny_non_max_driver'
-scheduler.o: In function `finish_convolution':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:319: undefined reference to `convolution_driver'
-scheduler.o: In function `finish_edge_tracking':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:326: undefined reference to `edge_tracking_driver'
-scheduler.o: In function `finish_elem_matrix':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:333: undefined reference to `elem_matrix_driver'
-scheduler.o: In function `finish_grayscale':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:340: undefined reference to `grayscale_driver'
-scheduler.o: In function `finish_harris_non_max':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:347: undefined reference to `harris_non_max_driver'
-scheduler.o: In function `finish_isp':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/scheduler.c:354: undefined reference to `isp_driver'
-test.o: In function `test_canny_non_max()':
-/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/test.cpp:64: undefined reference to `schedule(task_struct_t* (*) [10][100], int (*) [10])'
-collect2: error: ld returned 1 exit status
-make: *** [Makefile:42: test.elf] Error 1
-rm driver.o test.o scheduler.o
+/usr/bin/arm-none-eabi-gcc -g -O3 -lunistd -I .   -c -o test.o test.c
+/usr/bin/arm-none-eabi-gcc -g -O3 -lunistd -I .   -c -o canny.o canny.c
+canny.c: In function 'process_raw':
+canny.c:42:52: error: 'is_args' undeclared (first use in this function); did you mean 'isp_args'?
+     isp_args *args = (isp_args*) get_memory(sizeof(is_args));
+                                                    ^~~~~~~
+                                                    isp_args
+canny.c:42:52: note: each undeclared identifier is reported only once for each function it appears in
+canny.c: In function 'convert_to_grayscale':
+canny.c:80:11: error: 'task_struct_t {aka struct task_struct_t}' has no member named 'state'; did you mean 'status'?
+     task->state = REQ_STATUS_WAITING;
+           ^~~~~
+           status
+canny.c: In function 'noise_reduction':
+canny.c:128:11: error: 'task_struct_t {aka struct task_struct_t}' has no member named 'state'; did you mean 'status'?
+     task->state = REQ_STATUS_WAITING;
+           ^~~~~
+           status
+canny.c: In function 'gradient_calculation':
+canny.c:147:16: error: assignment to expression with array type
+         c_args = (convolution_args*) get_memory(sizeof(convolution_args));
+                ^
+canny.c:150:17: error: assignment to expression with array type
+         em_args = (elem_matrix_args*) get_memory(sizeof(elem_matrix_args));
+                 ^
+canny.c:226:18: error: 'task_struct_t {aka struct task_struct_t}' has no member named 'state'; did you mean 'status'?
+         task[i]->state = REQ_STATUS_WAITING;
+                  ^~~~~
+                  status
+canny.c:234:18: error: 'task_struct_t {aka struct task_struct_t}' has no member named 'state'; did you mean 'status'?
+         task[i]->state = REQ_STATUS_WAITING;
+                  ^~~~~
+                  status
+canny.c: In function 'non_max_suppression':
+canny.c:276:21: warning: assignment makes pointer from integer without a cast [-Wint-conversion]
+     img->max_values = (uint32_t) get_memory(NUM_PIXELS * 4);
+                     ^
+canny.c:288:11: error: 'task_struct_t {aka struct task_struct_t}' has no member named 'state'; did you mean 'status'?
+     task->state = REQ_STATUS_WAITING;
+           ^~~~~
+           status
+canny.c: In function 'thr_and_edge_tracking':
+canny.c:315:11: error: 'task_struct_t {aka struct task_struct_t}' has no member named 'state'; did you mean 'status'?
+     task->state = REQ_STATUS_WAITING;
+           ^~~~~
+           status
+make: *** [<builtin>: canny.o] Error 1
+rm driver.o mem_manage.o test.o scheduler.o

@@ -4,7 +4,7 @@ void grayscale(uint64_t num_elems) {
     uint8_t *input_image  = (uint8_t*) INPUT_SPM;
     float   *output_image = (float*)   OUTPUT_SPM;
 
-    #pragma clang loop unroll(disable)
+    #pragma clang loop unroll_count(32)
     for (int i = 0; i < num_elems; i++) {
         int ii = i * 3;
         uint8_t r = input_image[ii];

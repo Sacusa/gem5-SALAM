@@ -5,8 +5,8 @@
 void harris_non_max_driver(uint32_t, uint32_t, uint32_t, uint32_t);
 
 // Function specific definitions
-#define ROW 64
-#define COL 64
+#define ROW 128
+#define COL 128
 #define DIM(x,y) (((x)*COL) + (y))
 
 // Device flags

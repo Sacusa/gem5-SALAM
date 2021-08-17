@@ -3,8 +3,8 @@
 
 #define CHECK
 
-#define ROW 64
-#define COL 64
+#define ROW 128
+#define COL 128
 
 void grayscale_driver(uint32_t, uint32_t, uint32_t);
 

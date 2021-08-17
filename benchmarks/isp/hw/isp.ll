@@ -44,7 +44,7 @@ for.body3.lr.ph.prol:                             ; preds = %for.cond1.preheader
   %mul54.prol = mul i32 %9, %add4
   %add55.prol = add i32 %mul54.prol, %add
   %10 = trunc i64 %indvars.iv80.prol to i32
-  %mul118.prol = shl nsw i32 %10, 6
+  %mul118.prol = shl nsw i32 %10, 7
   %11 = add i64 %7, 4294967295
   %12 = trunc i64 %11 to i32
   %mul309.prol = mul i32 %12, %add4
@@ -54,7 +54,7 @@ for.body3.lr.ph.prol:                             ; preds = %for.cond1.preheader
   %mul318.prol = mul i32 %14, %add4
   %add319.prol = add i32 %mul318.prol, %add
   %15 = trunc i64 %7 to i32
-  %mul358.prol = shl nsw i32 %15, 6
+  %mul358.prol = shl nsw i32 %15, 7
   br label %for.body3.prol
 
 for.body3.prol:                                   ; preds = %for.body3.prol, %for.body3.lr.ph.prol
@@ -611,7 +611,7 @@ for.body3.lr.ph:                                  ; preds = %for.cond1.preheader
   %mul54 = mul i32 %73, %add4
   %add55 = add i32 %mul54, %add
   %74 = trunc i64 %indvars.iv80 to i32
-  %mul118 = shl nsw i32 %74, 6
+  %mul118 = shl nsw i32 %74, 7
   %75 = add i64 %71, 4294967295
   %76 = trunc i64 %75 to i32
   %mul309 = mul i32 %76, %add4
@@ -621,7 +621,7 @@ for.body3.lr.ph:                                  ; preds = %for.cond1.preheader
   %mul318 = mul i32 %78, %add4
   %add319 = add i32 %mul318, %add
   %79 = trunc i64 %71 to i32
-  %mul358 = shl nsw i32 %79, 6
+  %mul358 = shl nsw i32 %79, 7
   br label %for.body3
 
 for.body3:                                        ; preds = %for.body3.lr.ph, %for.body3
@@ -1163,7 +1163,7 @@ for.body3.lr.ph.1:                                ; preds = %for.inc560
   %mul54.1 = mul i32 %136, %add4
   %add55.1 = add i32 %mul54.1, %add
   %137 = trunc i64 %indvars.iv.next81 to i32
-  %mul118.1 = shl nsw i32 %137, 6
+  %mul118.1 = shl nsw i32 %137, 7
   %138 = add i64 %134, 4294967295
   %139 = trunc i64 %138 to i32
   %mul309.1 = mul i32 %139, %add4
@@ -1173,7 +1173,7 @@ for.body3.lr.ph.1:                                ; preds = %for.inc560
   %mul318.1 = mul i32 %141, %add4
   %add319.1 = add i32 %mul318.1, %add
   %142 = trunc i64 %134 to i32
-  %mul358.1 = shl nsw i32 %142, 6
+  %mul358.1 = shl nsw i32 %142, 7
   br label %for.body3.1
 
 for.body3.1:                                      ; preds = %for.body3.1, %for.body3.lr.ph.1
@@ -1709,7 +1709,7 @@ for.body3.lr.ph.2:                                ; preds = %for.inc560.1
   %mul54.2 = mul i32 %199, %add4
   %add55.2 = add i32 %mul54.2, %add
   %200 = trunc i64 %indvars.iv.next81.1 to i32
-  %mul118.2 = shl nsw i32 %200, 6
+  %mul118.2 = shl nsw i32 %200, 7
   %201 = add i64 %197, 4294967295
   %202 = trunc i64 %201 to i32
   %mul309.2 = mul i32 %202, %add4
@@ -1719,7 +1719,7 @@ for.body3.lr.ph.2:                                ; preds = %for.inc560.1
   %mul318.2 = mul i32 %204, %add4
   %add319.2 = add i32 %mul318.2, %add
   %205 = trunc i64 %197 to i32
-  %mul358.2 = shl nsw i32 %205, 6
+  %mul358.2 = shl nsw i32 %205, 7
   br label %for.body3.2
 
 for.body3.2:                                      ; preds = %for.body3.2, %for.body3.lr.ph.2
@@ -2255,7 +2255,7 @@ for.body3.lr.ph.3:                                ; preds = %for.inc560.2
   %mul54.3 = mul i32 %262, %add4
   %add55.3 = add i32 %mul54.3, %add
   %263 = trunc i64 %indvars.iv.next81.2 to i32
-  %mul118.3 = shl nsw i32 %263, 6
+  %mul118.3 = shl nsw i32 %263, 7
   %264 = add i64 %260, 4294967295
   %265 = trunc i64 %264 to i32
   %mul309.3 = mul i32 %265, %add4
@@ -2265,7 +2265,7 @@ for.body3.lr.ph.3:                                ; preds = %for.inc560.2
   %mul318.3 = mul i32 %267, %add4
   %add319.3 = add i32 %mul318.3, %add
   %268 = trunc i64 %260 to i32
-  %mul358.3 = shl nsw i32 %268, 6
+  %mul358.3 = shl nsw i32 %268, 7
   br label %for.body3.3
 
 for.body3.3:                                      ; preds = %for.body3.3, %for.body3.lr.ph.3
@@ -2801,7 +2801,7 @@ for.body3.lr.ph.4:                                ; preds = %for.inc560.3
   %mul54.4 = mul i32 %325, %add4
   %add55.4 = add i32 %mul54.4, %add
   %326 = trunc i64 %indvars.iv.next81.3 to i32
-  %mul118.4 = shl nsw i32 %326, 6
+  %mul118.4 = shl nsw i32 %326, 7
   %327 = add i64 %323, 4294967295
   %328 = trunc i64 %327 to i32
   %mul309.4 = mul i32 %328, %add4
@@ -2811,7 +2811,7 @@ for.body3.lr.ph.4:                                ; preds = %for.inc560.3
   %mul318.4 = mul i32 %330, %add4
   %add319.4 = add i32 %mul318.4, %add
   %331 = trunc i64 %323 to i32
-  %mul358.4 = shl nsw i32 %331, 6
+  %mul358.4 = shl nsw i32 %331, 7
   br label %for.body3.4
 
 for.body3.4:                                      ; preds = %for.body3.4, %for.body3.lr.ph.4
@@ -3347,7 +3347,7 @@ for.body3.lr.ph.5:                                ; preds = %for.inc560.4
   %mul54.5 = mul i32 %388, %add4
   %add55.5 = add i32 %mul54.5, %add
   %389 = trunc i64 %indvars.iv.next81.4 to i32
-  %mul118.5 = shl nsw i32 %389, 6
+  %mul118.5 = shl nsw i32 %389, 7
   %390 = add i64 %386, 4294967295
   %391 = trunc i64 %390 to i32
   %mul309.5 = mul i32 %391, %add4
@@ -3357,7 +3357,7 @@ for.body3.lr.ph.5:                                ; preds = %for.inc560.4
   %mul318.5 = mul i32 %393, %add4
   %add319.5 = add i32 %mul318.5, %add
   %394 = trunc i64 %386 to i32
-  %mul358.5 = shl nsw i32 %394, 6
+  %mul358.5 = shl nsw i32 %394, 7
   br label %for.body3.5
 
 for.body3.5:                                      ; preds = %for.body3.5, %for.body3.lr.ph.5
@@ -3893,7 +3893,7 @@ for.body3.lr.ph.6:                                ; preds = %for.inc560.5
   %mul54.6 = mul i32 %451, %add4
   %add55.6 = add i32 %mul54.6, %add
   %452 = trunc i64 %indvars.iv.next81.5 to i32
-  %mul118.6 = shl nsw i32 %452, 6
+  %mul118.6 = shl nsw i32 %452, 7
   %453 = add i64 %449, 4294967295
   %454 = trunc i64 %453 to i32
   %mul309.6 = mul i32 %454, %add4
@@ -3903,7 +3903,7 @@ for.body3.lr.ph.6:                                ; preds = %for.inc560.5
   %mul318.6 = mul i32 %456, %add4
   %add319.6 = add i32 %mul318.6, %add
   %457 = trunc i64 %449 to i32
-  %mul358.6 = shl nsw i32 %457, 6
+  %mul358.6 = shl nsw i32 %457, 7
   br label %for.body3.6
 
 for.body3.6:                                      ; preds = %for.body3.6, %for.body3.lr.ph.6
@@ -4439,7 +4439,7 @@ for.body3.lr.ph.7:                                ; preds = %for.inc560.6
   %mul54.7 = mul i32 %514, %add4
   %add55.7 = add i32 %mul54.7, %add
   %515 = trunc i64 %indvars.iv.next81.6 to i32
-  %mul118.7 = shl nsw i32 %515, 6
+  %mul118.7 = shl nsw i32 %515, 7
   %516 = add i64 %512, 4294967295
   %517 = trunc i64 %516 to i32
   %mul309.7 = mul i32 %517, %add4
@@ -4449,7 +4449,7 @@ for.body3.lr.ph.7:                                ; preds = %for.inc560.6
   %mul318.7 = mul i32 %519, %add4
   %add319.7 = add i32 %mul318.7, %add
   %520 = trunc i64 %512 to i32
-  %mul358.7 = shl nsw i32 %520, 6
+  %mul358.7 = shl nsw i32 %520, 7
   br label %for.body3.7
 
 for.body3.7:                                      ; preds = %for.body3.7, %for.body3.lr.ph.7
@@ -4985,7 +4985,7 @@ for.body3.lr.ph.8:                                ; preds = %for.inc560.7
   %mul54.8 = mul i32 %577, %add4
   %add55.8 = add i32 %mul54.8, %add
   %578 = trunc i64 %indvars.iv.next81.7 to i32
-  %mul118.8 = shl nsw i32 %578, 6
+  %mul118.8 = shl nsw i32 %578, 7
   %579 = add i64 %575, 4294967295
   %580 = trunc i64 %579 to i32
   %mul309.8 = mul i32 %580, %add4
@@ -4995,7 +4995,7 @@ for.body3.lr.ph.8:                                ; preds = %for.inc560.7
   %mul318.8 = mul i32 %582, %add4
   %add319.8 = add i32 %mul318.8, %add
   %583 = trunc i64 %575 to i32
-  %mul358.8 = shl nsw i32 %583, 6
+  %mul358.8 = shl nsw i32 %583, 7
   br label %for.body3.8
 
 for.body3.8:                                      ; preds = %for.body3.8, %for.body3.lr.ph.8
@@ -5531,7 +5531,7 @@ for.body3.lr.ph.9:                                ; preds = %for.inc560.8
   %mul54.9 = mul i32 %640, %add4
   %add55.9 = add i32 %mul54.9, %add
   %641 = trunc i64 %indvars.iv.next81.8 to i32
-  %mul118.9 = shl nsw i32 %641, 6
+  %mul118.9 = shl nsw i32 %641, 7
   %642 = add i64 %638, 4294967295
   %643 = trunc i64 %642 to i32
   %mul309.9 = mul i32 %643, %add4
@@ -5541,7 +5541,7 @@ for.body3.lr.ph.9:                                ; preds = %for.inc560.8
   %mul318.9 = mul i32 %645, %add4
   %add319.9 = add i32 %mul318.9, %add
   %646 = trunc i64 %638 to i32
-  %mul358.9 = shl nsw i32 %646, 6
+  %mul358.9 = shl nsw i32 %646, 7
   br label %for.body3.9
 
 for.body3.9:                                      ; preds = %for.body3.9, %for.body3.lr.ph.9
@@ -6077,7 +6077,7 @@ for.body3.lr.ph.10:                               ; preds = %for.inc560.9
   %mul54.10 = mul i32 %703, %add4
   %add55.10 = add i32 %mul54.10, %add
   %704 = trunc i64 %indvars.iv.next81.9 to i32
-  %mul118.10 = shl nsw i32 %704, 6
+  %mul118.10 = shl nsw i32 %704, 7
   %705 = add i64 %701, 4294967295
   %706 = trunc i64 %705 to i32
   %mul309.10 = mul i32 %706, %add4
@@ -6087,7 +6087,7 @@ for.body3.lr.ph.10:                               ; preds = %for.inc560.9
   %mul318.10 = mul i32 %708, %add4
   %add319.10 = add i32 %mul318.10, %add
   %709 = trunc i64 %701 to i32
-  %mul358.10 = shl nsw i32 %709, 6
+  %mul358.10 = shl nsw i32 %709, 7
   br label %for.body3.10
 
 for.body3.10:                                     ; preds = %for.body3.10, %for.body3.lr.ph.10
@@ -6623,7 +6623,7 @@ for.body3.lr.ph.11:                               ; preds = %for.inc560.10
   %mul54.11 = mul i32 %766, %add4
   %add55.11 = add i32 %mul54.11, %add
   %767 = trunc i64 %indvars.iv.next81.10 to i32
-  %mul118.11 = shl nsw i32 %767, 6
+  %mul118.11 = shl nsw i32 %767, 7
   %768 = add i64 %764, 4294967295
   %769 = trunc i64 %768 to i32
   %mul309.11 = mul i32 %769, %add4
@@ -6633,7 +6633,7 @@ for.body3.lr.ph.11:                               ; preds = %for.inc560.10
   %mul318.11 = mul i32 %771, %add4
   %add319.11 = add i32 %mul318.11, %add
   %772 = trunc i64 %764 to i32
-  %mul358.11 = shl nsw i32 %772, 6
+  %mul358.11 = shl nsw i32 %772, 7
   br label %for.body3.11
 
 for.body3.11:                                     ; preds = %for.body3.11, %for.body3.lr.ph.11
@@ -7169,7 +7169,7 @@ for.body3.lr.ph.12:                               ; preds = %for.inc560.11
   %mul54.12 = mul i32 %829, %add4
   %add55.12 = add i32 %mul54.12, %add
   %830 = trunc i64 %indvars.iv.next81.11 to i32
-  %mul118.12 = shl nsw i32 %830, 6
+  %mul118.12 = shl nsw i32 %830, 7
   %831 = add i64 %827, 4294967295
   %832 = trunc i64 %831 to i32
   %mul309.12 = mul i32 %832, %add4
@@ -7179,7 +7179,7 @@ for.body3.lr.ph.12:                               ; preds = %for.inc560.11
   %mul318.12 = mul i32 %834, %add4
   %add319.12 = add i32 %mul318.12, %add
   %835 = trunc i64 %827 to i32
-  %mul358.12 = shl nsw i32 %835, 6
+  %mul358.12 = shl nsw i32 %835, 7
   br label %for.body3.12
 
 for.body3.12:                                     ; preds = %for.body3.12, %for.body3.lr.ph.12
@@ -7715,7 +7715,7 @@ for.body3.lr.ph.13:                               ; preds = %for.inc560.12
   %mul54.13 = mul i32 %892, %add4
   %add55.13 = add i32 %mul54.13, %add
   %893 = trunc i64 %indvars.iv.next81.12 to i32
-  %mul118.13 = shl nsw i32 %893, 6
+  %mul118.13 = shl nsw i32 %893, 7
   %894 = add i64 %890, 4294967295
   %895 = trunc i64 %894 to i32
   %mul309.13 = mul i32 %895, %add4
@@ -7725,7 +7725,7 @@ for.body3.lr.ph.13:                               ; preds = %for.inc560.12
   %mul318.13 = mul i32 %897, %add4
   %add319.13 = add i32 %mul318.13, %add
   %898 = trunc i64 %890 to i32
-  %mul358.13 = shl nsw i32 %898, 6
+  %mul358.13 = shl nsw i32 %898, 7
   br label %for.body3.13
 
 for.body3.13:                                     ; preds = %for.body3.13, %for.body3.lr.ph.13
@@ -8261,7 +8261,7 @@ for.body3.lr.ph.14:                               ; preds = %for.inc560.13
   %mul54.14 = mul i32 %955, %add4
   %add55.14 = add i32 %mul54.14, %add
   %956 = trunc i64 %indvars.iv.next81.13 to i32
-  %mul118.14 = shl nsw i32 %956, 6
+  %mul118.14 = shl nsw i32 %956, 7
   %957 = add i64 %953, 4294967295
   %958 = trunc i64 %957 to i32
   %mul309.14 = mul i32 %958, %add4
@@ -8271,7 +8271,7 @@ for.body3.lr.ph.14:                               ; preds = %for.inc560.13
   %mul318.14 = mul i32 %960, %add4
   %add319.14 = add i32 %mul318.14, %add
   %961 = trunc i64 %953 to i32
-  %mul358.14 = shl nsw i32 %961, 6
+  %mul358.14 = shl nsw i32 %961, 7
   br label %for.body3.14
 
 for.body3.14:                                     ; preds = %for.body3.14, %for.body3.lr.ph.14
@@ -8807,7 +8807,7 @@ for.body3.lr.ph.15:                               ; preds = %for.inc560.14
   %mul54.15 = mul i32 %1018, %add4
   %add55.15 = add i32 %mul54.15, %add
   %1019 = trunc i64 %indvars.iv.next81.14 to i32
-  %mul118.15 = shl nsw i32 %1019, 6
+  %mul118.15 = shl nsw i32 %1019, 7
   %1020 = add i64 %1016, 4294967295
   %1021 = trunc i64 %1020 to i32
   %mul309.15 = mul i32 %1021, %add4
@@ -8817,7 +8817,7 @@ for.body3.lr.ph.15:                               ; preds = %for.inc560.14
   %mul318.15 = mul i32 %1023, %add4
   %add319.15 = add i32 %mul318.15, %add
   %1024 = trunc i64 %1016 to i32
-  %mul358.15 = shl nsw i32 %1024, 6
+  %mul358.15 = shl nsw i32 %1024, 7
   br label %for.body3.15
 
 for.body3.15:                                     ; preds = %for.body3.15, %for.body3.lr.ph.15

@@ -136,4 +136,7 @@ void isp_driver(int, uint8_t, uint32_t, uint32_t, uint32_t, uint32_t, uint8_t);
 #define ISP0_OUTPUT1_SPM    0x27010224  // 48 KB
 #define ISP0_MMR            0x2701c230
 
+// Memory management
+void *get_memory(uint32_t);
+
 #endif

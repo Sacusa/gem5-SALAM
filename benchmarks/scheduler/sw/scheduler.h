@@ -150,7 +150,7 @@ void init_task_struct(task_struct_t*);
 /**
  * Functions for running each accelerator
  */
-void run_accelerator(int, int, task_struct_t*, acc_state_t*);
+int  run_accelerator(int, int, task_struct_t*, acc_state_t*);
 void run_canny_non_max(int, task_struct_t*, acc_state_t*);
 void run_convolution(int, task_struct_t*, acc_state_t*);
 void run_edge_tracking(int, task_struct_t*, acc_state_t*);
@@ -177,7 +177,6 @@ void finish_isp(int, task_struct_t*, acc_state_t*);
 void set_deadline_phase1(task_struct_t *node, int parent_deadline);
 int set_deadline_phase2(task_struct_t *node);
 
-void schedule(task_struct_t *run_queue[NUM_ACCS][MAX_ACC_INSTANCES][MAX_NODES],
-        int run_queue_size[NUM_ACCS][MAX_ACC_INSTANCES]);
+void schedule(task_struct_t****, int**);
 
 #endif /* _SCHEDULER_H_ */

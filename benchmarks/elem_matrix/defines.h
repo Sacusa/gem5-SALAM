@@ -1,8 +1,8 @@
 #ifndef __DEFINES_H__
 #define __DEFINES_H__
 
-#define ROW 64
-#define COL 64
+#define ROW 128
+#define COL 128
 
 enum operation {
     ADD = 0, SUB,

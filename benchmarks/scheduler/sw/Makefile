@@ -32,16 +32,16 @@
 #			Frederik Lauer
 include ../../common/Makefile
 
-TARGET = test.elf
+TARGET = test.elf canny.elf deblur.elf
 
-OBJS = ../../common/syscalls.o boot.o driver.o scheduler.o test.o
+OBJS = ../../common/syscalls.o boot.o driver.o mem_manage.o scheduler.o
 
 build : $(TARGET)
 
-%.elf: $(OBJS) $(LNK_SCRIPT) Makefile
-	$(CC) $(LNK_FILE_OPT) -o $@ $(OBJS) $(LNK_OPT) -lm
+%.elf: $(OBJS) %.o
+	$(CC) $(LNK_FILE_OPT) -o $@ $^ $(LNK_OPT) -lm
 
-boot.o: Makefile
+boot.o:
 	$(CPP) boot.s $(CFLAGS) | $(AS) $(ASFLAGS) -o boot.o
 
 clean:

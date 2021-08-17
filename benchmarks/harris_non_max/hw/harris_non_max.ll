@@ -22,19 +22,19 @@ for.cond4.preheader.preheader:                    ; preds = %for.cond1.preheader
   %2 = trunc i64 %indvars.iv35 to i32
   %cmp32 = icmp ult i32 %2, %img_height
   %3 = trunc i64 %indvars.iv35 to i32
-  %mul36 = shl i32 %3, 6
+  %mul36 = shl i32 %3, 7
   %4 = sext i32 %mul36 to i64
   %5 = add nuw nsw i64 %indvars.iv35, 1
   %6 = trunc i64 %5 to i32
   %cmp32.1 = icmp ult i32 %6, %img_height
   %7 = trunc i64 %5 to i32
-  %mul36.1 = shl i32 %7, 6
+  %mul36.1 = shl i32 %7, 7
   %8 = sext i32 %mul36.1 to i64
   %9 = add nuw nsw i64 %indvars.iv35, 2
   %10 = trunc i64 %9 to i32
   %cmp32.2 = icmp ult i32 %10, %img_height
   %11 = trunc i64 %9 to i32
-  %mul36.2 = shl i32 %11, 6
+  %mul36.2 = shl i32 %11, 7
   %12 = sext i32 %mul36.2 to i64
   br label %for.cond4.preheader
 
@@ -51,7 +51,7 @@ for.cond7.preheader:                              ; preds = %for.inc17, %for.con
   %14 = trunc i64 %13 to i32
   %cmp11 = icmp ult i32 %14, %img_height
   %15 = trunc i64 %13 to i32
-  %mul = shl i32 %15, 6
+  %mul = shl i32 %15, 7
   %16 = sext i32 %mul to i64
   %17 = trunc i64 %indvars.iv20 to i32
   br label %for.body9

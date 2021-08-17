@@ -51,13 +51,14 @@ void init_task_struct(task_struct_t *task_struct)
  * Functions for running each accelerator
  */
 
-void run_accelerator(int acc_id, int device_id, task_struct_t *req,
+int run_accelerator(int acc_id, int device_id, task_struct_t *req,
         acc_state_t *acc)
 {
     // return if there are pending reads from the output partition
     if (acc->spm_pending_reads[acc->curr_spm_part]) {
         printf("%d:%d has %d pending reads\n", acc_id, device_id,
                 acc->spm_pending_reads[acc->curr_spm_part]);
+        return -1;
     }
 
     acc->status = ACC_STATUS_RUNNING;
@@ -67,7 +68,7 @@ void run_accelerator(int acc_id, int device_id, task_struct_t *req,
     for (int c = 0; c < req->num_children; c++) {
         task_struct_t *child = req->children[c];
         for (int a = 0; a < MAX_ACC_ARGS; a++) {
-            if (child->producer[a] == req) {
+            if ((child->producer[a] == req) && child->producer_forward[a]) {
                 acc->spm_pending_reads[acc->curr_spm_part]++;
             }
         }
@@ -97,6 +98,8 @@ void run_accelerator(int acc_id, int device_id, task_struct_t *req,
             run_isp(device_id, req, acc);
             break;
     }
+
+    return 0;
 }
 
 void run_canny_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
@@ -148,6 +151,7 @@ void run_convolution(int device_id, task_struct_t *req, acc_state_t *acc)
         input_addr = (uint32_t) args->input;
     }
 
+    printf("CONVOLUTION: running driver\n");
     convolution_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr,
             kernel_addr, args->kern_height, args->kern_width,
             args->mod_and_floor, 0, acc->curr_spm_part);
@@ -171,6 +175,7 @@ void run_edge_tracking(int device_id, task_struct_t *req, acc_state_t *acc)
         input_addr = (uint32_t) args->input;
     }
 
+    printf("ET: running driver\n");
     edge_tracking_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr,
             args->thr_weak_ratio, args->thr_strong_ratio, 0,
             acc->curr_spm_part);
@@ -202,6 +207,7 @@ void run_elem_matrix(int device_id, task_struct_t *req, acc_state_t *acc)
         arg2_addr = (uint32_t) args->arg2;
     }
 
+    printf("EM: running driver\n");
     elem_matrix_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, arg1_addr,
             arg2_addr, args->is_arg2_scalar, args->op, args->do_one_minus, 0,
             acc->curr_spm_part);
@@ -230,6 +236,7 @@ void run_grayscale(int device_id, task_struct_t *req, acc_state_t *acc)
         input_addr = (uint32_t) args->input;
     }
 
+    printf("GRAYSCALE: running driver\n");
     grayscale_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr, 0,
             acc->curr_spm_part);
 
@@ -252,6 +259,7 @@ void run_harris_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
         input_addr = (uint32_t) args->input;
     }
 
+    printf("HNM: running driver\n");
     harris_non_max_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr, 0,
             acc->curr_spm_part);
 
@@ -274,6 +282,7 @@ void run_isp(int device_id, task_struct_t *req, acc_state_t *acc)
         input_addr = (uint32_t) args->input;
     }
 
+    printf("ISP: running driver\n");
     isp_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr, 0,
             acc->curr_spm_part);
 
@@ -338,6 +347,7 @@ void finish_accelerator(int acc_id, int device_id, task_struct_t *req,
     acc->status = ACC_STATUS_IDLE;
     acc->running_req = NULL;
     acc->curr_spm_part ^= 1;
+    printf("Returning...\n");
 }
 
 void finish_canny_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
@@ -393,10 +403,9 @@ void finish_isp(int device_id, task_struct_t *req, acc_state_t *acc)
  * Scheduling functions
  */
 
-void __attribute__((optimize("O0"))) schedule(
-        task_struct_t *run_queue[NUM_ACCS][MAX_ACC_INSTANCES][MAX_NODES],
-        int run_queue_size[NUM_ACCS][MAX_ACC_INSTANCES])
+void schedule(task_struct_t ****run_queue, int **run_queue_size)
 {
+    printf("In runtime\n");
     int run_queue_index[NUM_ACCS][MAX_ACC_INSTANCES];
 
     // Initialize structures
@@ -423,9 +432,14 @@ void __attribute__((optimize("O0"))) schedule(
     while (1) {
         is_exec_complete = true;
 
+        // launch more ready requests
         for (int i = 0; i < NUM_ACCS; i++) {
             for (int j = 0; j < acc_instances[i]; j++) {
-                printf("ACC_%d ID_%d=%d/%d\n", i, j, run_queue_index[i][j], run_queue_size[i][j]);
+                if (acc_state[i][j].status == ACC_STATUS_RUNNING) {
+                    is_exec_complete = false;
+                    printf("%d.%d is running\n", i, j);
+                }
+
                 if (run_queue_index[i][j] == run_queue_size[i][j]) {
                     continue;
                 }
@@ -437,10 +451,12 @@ void __attribute__((optimize("O0"))) schedule(
                 // Launch the ready request for this accelerator
                 if ((acc_state[i][j].status == ACC_STATUS_IDLE) && \
                     (curr_req->status == REQ_STATUS_READY)) {
-
-                    run_accelerator(i, j, curr_req, &acc_state[i][j]);
+                    if (run_accelerator(i, j, curr_req, &acc_state[i][j])) {
+                        continue;
+                    }
                     curr_req->status = REQ_STATUS_COMPLETED;
                     run_queue_index[i][j]++;
+                    printf("%d.%d has started running\n", i, j);
                 }
             }
         }
@@ -453,11 +469,11 @@ void __attribute__((optimize("O0"))) schedule(
         bool exit_loop = false;
 
         while (!exit_loop) {
-            printf("Waiting for an accelerator to finish...\n");
             for (int i = 0; (i < NUM_ACCS) && (!exit_loop); i++) {
                 for (int j = 0; j < acc_instances[i]; j++) {
 
                     if ((*acc_state[i][j].flags & DEV_INTR) == DEV_INTR) {
+                        printf("%d.%d finished\n", i, j);
                         task_struct_t *node = acc_state[i][j].running_req;
 
                         for (int c = 0; c < node->num_children; c++) {

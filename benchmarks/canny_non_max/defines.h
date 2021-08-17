@@ -2,8 +2,8 @@
 #define __DEFINES_H__
 
 #define PI  3.141592653589793238462643
-#define ROW 64
-#define COL 64
+#define ROW 128
+#define COL 128
 #define DIM(x,y) (((x) * COL) + (y))
 #define LOOP_UNROLL 32
 

@@ -35,9 +35,9 @@ for.cond5.preheader.prol:                         ; preds = %for.cond5.preheader
 
 for.cond8.preheader.lr.ph.prol:                   ; preds = %for.cond5.preheader.prol
   %1 = trunc i64 %indvars.iv26.prol to i32
-  %mul48.prol = shl i32 %1, 6
+  %mul48.prol = shl i32 %1, 7
   %2 = trunc i64 %indvars.iv26.prol to i32
-  %mul44.prol = shl i32 %2, 6
+  %mul44.prol = shl i32 %2, 7
   %3 = sext i32 %mul48.prol to i64
   %4 = sext i32 %mul44.prol to i64
   br label %for.cond8.preheader.prol
@@ -61,7 +61,7 @@ for.body10.prol:                                  ; preds = %for.body10.prol.pre
   br i1 %brmerge.prol, label %for.inc36.prol, label %for.body16.lr.ph.prol
 
 for.body16.lr.ph.prol:                            ; preds = %for.body10.prol
-  %mul.prol = shl i32 %add.prol, 6
+  %mul.prol = shl i32 %add.prol, 7
   %mul30.prol = mul i32 %ki.06.prol, %kern_width
   br label %for.body16.prol
 
@@ -201,9 +201,9 @@ for.cond5.preheader:                              ; preds = %for.cond5.preheader
 
 for.cond8.preheader.lr.ph:                        ; preds = %for.cond5.preheader
   %13 = trunc i64 %indvars.iv26 to i32
-  %mul48 = shl i32 %13, 6
+  %mul48 = shl i32 %13, 7
   %14 = trunc i64 %indvars.iv26 to i32
-  %mul44 = shl i32 %14, 6
+  %mul44 = shl i32 %14, 7
   %15 = sext i32 %mul48 to i64
   %16 = sext i32 %mul44 to i64
   br label %for.cond8.preheader
@@ -227,7 +227,7 @@ for.body10:                                       ; preds = %for.body10.preheade
   br i1 %brmerge, label %for.inc36, label %for.body16.lr.ph
 
 for.body16.lr.ph:                                 ; preds = %for.body10
-  %mul = shl i32 %add, 6
+  %mul = shl i32 %add, 7
   %mul30 = mul i32 %ki.06, %kern_width
   br label %for.body16
 
@@ -317,9 +317,9 @@ for.end60:                                        ; preds = %for.end60.loopexit,
 
 for.cond8.preheader.lr.ph.1:                      ; preds = %for.inc57
   %24 = trunc i64 %indvars.iv.next27 to i32
-  %mul48.1 = shl i32 %24, 6
+  %mul48.1 = shl i32 %24, 7
   %25 = trunc i64 %indvars.iv.next27 to i32
-  %mul44.1 = shl i32 %25, 6
+  %mul44.1 = shl i32 %25, 7
   %26 = sext i32 %mul48.1 to i64
   %27 = sext i32 %mul44.1 to i64
   br label %for.cond8.preheader.1
@@ -343,7 +343,7 @@ for.body10.1:                                     ; preds = %for.body10.1.prehea
   br i1 %brmerge.1, label %for.inc36.1, label %for.body16.lr.ph.1
 
 for.body16.lr.ph.1:                               ; preds = %for.body10.1
-  %mul.1 = shl i32 %add.1, 6
+  %mul.1 = shl i32 %add.1, 7
   %mul30.1 = mul i32 %ki.06.1, %kern_width
   br label %for.body16.1
 
@@ -427,9 +427,9 @@ for.inc57.1:                                      ; preds = %for.inc53.1
 
 for.cond8.preheader.lr.ph.2:                      ; preds = %for.inc57.1
   %35 = trunc i64 %indvars.iv.next27.1 to i32
-  %mul48.2 = shl i32 %35, 6
+  %mul48.2 = shl i32 %35, 7
   %36 = trunc i64 %indvars.iv.next27.1 to i32
-  %mul44.2 = shl i32 %36, 6
+  %mul44.2 = shl i32 %36, 7
   %37 = sext i32 %mul48.2 to i64
   %38 = sext i32 %mul44.2 to i64
   br label %for.cond8.preheader.2
@@ -453,7 +453,7 @@ for.body10.2:                                     ; preds = %for.body10.2.prehea
   br i1 %brmerge.2, label %for.inc36.2, label %for.body16.lr.ph.2
 
 for.body16.lr.ph.2:                               ; preds = %for.body10.2
-  %mul.2 = shl i32 %add.2, 6
+  %mul.2 = shl i32 %add.2, 7
   %mul30.2 = mul i32 %ki.06.2, %kern_width
   br label %for.body16.2
 
@@ -537,9 +537,9 @@ for.inc57.2:                                      ; preds = %for.inc53.2
 
 for.cond8.preheader.lr.ph.3:                      ; preds = %for.inc57.2
   %46 = trunc i64 %indvars.iv.next27.2 to i32
-  %mul48.3 = shl i32 %46, 6
+  %mul48.3 = shl i32 %46, 7
   %47 = trunc i64 %indvars.iv.next27.2 to i32
-  %mul44.3 = shl i32 %47, 6
+  %mul44.3 = shl i32 %47, 7
   %48 = sext i32 %mul48.3 to i64
   %49 = sext i32 %mul44.3 to i64
   br label %for.cond8.preheader.3
@@ -563,7 +563,7 @@ for.body10.3:                                     ; preds = %for.body10.3.prehea
   br i1 %brmerge.3, label %for.inc36.3, label %for.body16.lr.ph.3
 
 for.body16.lr.ph.3:                               ; preds = %for.body10.3
-  %mul.3 = shl i32 %add.3, 6
+  %mul.3 = shl i32 %add.3, 7
   %mul30.3 = mul i32 %ki.06.3, %kern_width
   br label %for.body16.3
 
@@ -647,9 +647,9 @@ for.inc57.3:                                      ; preds = %for.inc53.3
 
 for.cond8.preheader.lr.ph.4:                      ; preds = %for.inc57.3
   %57 = trunc i64 %indvars.iv.next27.3 to i32
-  %mul48.4 = shl i32 %57, 6
+  %mul48.4 = shl i32 %57, 7
   %58 = trunc i64 %indvars.iv.next27.3 to i32
-  %mul44.4 = shl i32 %58, 6
+  %mul44.4 = shl i32 %58, 7
   %59 = sext i32 %mul48.4 to i64
   %60 = sext i32 %mul44.4 to i64
   br label %for.cond8.preheader.4
@@ -673,7 +673,7 @@ for.body10.4:                                     ; preds = %for.body10.4.prehea
   br i1 %brmerge.4, label %for.inc36.4, label %for.body16.lr.ph.4
 
 for.body16.lr.ph.4:                               ; preds = %for.body10.4
-  %mul.4 = shl i32 %add.4, 6
+  %mul.4 = shl i32 %add.4, 7
   %mul30.4 = mul i32 %ki.06.4, %kern_width
   br label %for.body16.4
 
@@ -757,9 +757,9 @@ for.inc57.4:                                      ; preds = %for.inc53.4
 
 for.cond8.preheader.lr.ph.5:                      ; preds = %for.inc57.4
   %68 = trunc i64 %indvars.iv.next27.4 to i32
-  %mul48.5 = shl i32 %68, 6
+  %mul48.5 = shl i32 %68, 7
   %69 = trunc i64 %indvars.iv.next27.4 to i32
-  %mul44.5 = shl i32 %69, 6
+  %mul44.5 = shl i32 %69, 7
   %70 = sext i32 %mul48.5 to i64
   %71 = sext i32 %mul44.5 to i64
   br label %for.cond8.preheader.5
@@ -783,7 +783,7 @@ for.body10.5:                                     ; preds = %for.body10.5.prehea
   br i1 %brmerge.5, label %for.inc36.5, label %for.body16.lr.ph.5
 
 for.body16.lr.ph.5:                               ; preds = %for.body10.5
-  %mul.5 = shl i32 %add.5, 6
+  %mul.5 = shl i32 %add.5, 7
   %mul30.5 = mul i32 %ki.06.5, %kern_width
   br label %for.body16.5
 
@@ -867,9 +867,9 @@ for.inc57.5:                                      ; preds = %for.inc53.5
 
 for.cond8.preheader.lr.ph.6:                      ; preds = %for.inc57.5
   %79 = trunc i64 %indvars.iv.next27.5 to i32
-  %mul48.6 = shl i32 %79, 6
+  %mul48.6 = shl i32 %79, 7
   %80 = trunc i64 %indvars.iv.next27.5 to i32
-  %mul44.6 = shl i32 %80, 6
+  %mul44.6 = shl i32 %80, 7
   %81 = sext i32 %mul48.6 to i64
   %82 = sext i32 %mul44.6 to i64
   br label %for.cond8.preheader.6
@@ -893,7 +893,7 @@ for.body10.6:                                     ; preds = %for.body10.6.prehea
   br i1 %brmerge.6, label %for.inc36.6, label %for.body16.lr.ph.6
 
 for.body16.lr.ph.6:                               ; preds = %for.body10.6
-  %mul.6 = shl i32 %add.6, 6
+  %mul.6 = shl i32 %add.6, 7
   %mul30.6 = mul i32 %ki.06.6, %kern_width
   br label %for.body16.6
 
@@ -977,9 +977,9 @@ for.inc57.6:                                      ; preds = %for.inc53.6
 
 for.cond8.preheader.lr.ph.7:                      ; preds = %for.inc57.6
   %90 = trunc i64 %indvars.iv.next27.6 to i32
-  %mul48.7 = shl i32 %90, 6
+  %mul48.7 = shl i32 %90, 7
   %91 = trunc i64 %indvars.iv.next27.6 to i32
-  %mul44.7 = shl i32 %91, 6
+  %mul44.7 = shl i32 %91, 7
   %92 = sext i32 %mul48.7 to i64
   %93 = sext i32 %mul44.7 to i64
   br label %for.cond8.preheader.7
@@ -1003,7 +1003,7 @@ for.body10.7:                                     ; preds = %for.body10.7.prehea
   br i1 %brmerge.7, label %for.inc36.7, label %for.body16.lr.ph.7
 
 for.body16.lr.ph.7:                               ; preds = %for.body10.7
-  %mul.7 = shl i32 %add.7, 6
+  %mul.7 = shl i32 %add.7, 7
   %mul30.7 = mul i32 %ki.06.7, %kern_width
   br label %for.body16.7
 
@@ -1087,9 +1087,9 @@ for.inc57.7:                                      ; preds = %for.inc53.7
 
 for.cond8.preheader.lr.ph.8:                      ; preds = %for.inc57.7
   %101 = trunc i64 %indvars.iv.next27.7 to i32
-  %mul48.8 = shl i32 %101, 6
+  %mul48.8 = shl i32 %101, 7
   %102 = trunc i64 %indvars.iv.next27.7 to i32
-  %mul44.8 = shl i32 %102, 6
+  %mul44.8 = shl i32 %102, 7
   %103 = sext i32 %mul48.8 to i64
   %104 = sext i32 %mul44.8 to i64
   br label %for.cond8.preheader.8
@@ -1113,7 +1113,7 @@ for.body10.8:                                     ; preds = %for.body10.8.prehea
   br i1 %brmerge.8, label %for.inc36.8, label %for.body16.lr.ph.8
 
 for.body16.lr.ph.8:                               ; preds = %for.body10.8
-  %mul.8 = shl i32 %add.8, 6
+  %mul.8 = shl i32 %add.8, 7
   %mul30.8 = mul i32 %ki.06.8, %kern_width
   br label %for.body16.8
 
@@ -1197,9 +1197,9 @@ for.inc57.8:                                      ; preds = %for.inc53.8
 
 for.cond8.preheader.lr.ph.9:                      ; preds = %for.inc57.8
   %112 = trunc i64 %indvars.iv.next27.8 to i32
-  %mul48.9 = shl i32 %112, 6
+  %mul48.9 = shl i32 %112, 7
   %113 = trunc i64 %indvars.iv.next27.8 to i32
-  %mul44.9 = shl i32 %113, 6
+  %mul44.9 = shl i32 %113, 7
   %114 = sext i32 %mul48.9 to i64
   %115 = sext i32 %mul44.9 to i64
   br label %for.cond8.preheader.9
@@ -1223,7 +1223,7 @@ for.body10.9:                                     ; preds = %for.body10.9.prehea
   br i1 %brmerge.9, label %for.inc36.9, label %for.body16.lr.ph.9
 
 for.body16.lr.ph.9:                               ; preds = %for.body10.9
-  %mul.9 = shl i32 %add.9, 6
+  %mul.9 = shl i32 %add.9, 7
   %mul30.9 = mul i32 %ki.06.9, %kern_width
   br label %for.body16.9
 
@@ -1307,9 +1307,9 @@ for.inc57.9:                                      ; preds = %for.inc53.9
 
 for.cond8.preheader.lr.ph.10:                     ; preds = %for.inc57.9
   %123 = trunc i64 %indvars.iv.next27.9 to i32
-  %mul48.10 = shl i32 %123, 6
+  %mul48.10 = shl i32 %123, 7
   %124 = trunc i64 %indvars.iv.next27.9 to i32
-  %mul44.10 = shl i32 %124, 6
+  %mul44.10 = shl i32 %124, 7
   %125 = sext i32 %mul48.10 to i64
   %126 = sext i32 %mul44.10 to i64
   br label %for.cond8.preheader.10
@@ -1333,7 +1333,7 @@ for.body10.10:                                    ; preds = %for.body10.10.prehe
   br i1 %brmerge.10, label %for.inc36.10, label %for.body16.lr.ph.10
 
 for.body16.lr.ph.10:                              ; preds = %for.body10.10
-  %mul.10 = shl i32 %add.10, 6
+  %mul.10 = shl i32 %add.10, 7
   %mul30.10 = mul i32 %ki.06.10, %kern_width
   br label %for.body16.10
 
@@ -1417,9 +1417,9 @@ for.inc57.10:                                     ; preds = %for.inc53.10
 
 for.cond8.preheader.lr.ph.11:                     ; preds = %for.inc57.10
   %134 = trunc i64 %indvars.iv.next27.10 to i32
-  %mul48.11 = shl i32 %134, 6
+  %mul48.11 = shl i32 %134, 7
   %135 = trunc i64 %indvars.iv.next27.10 to i32
-  %mul44.11 = shl i32 %135, 6
+  %mul44.11 = shl i32 %135, 7
   %136 = sext i32 %mul48.11 to i64
   %137 = sext i32 %mul44.11 to i64
   br label %for.cond8.preheader.11
@@ -1443,7 +1443,7 @@ for.body10.11:                                    ; preds = %for.body10.11.prehe
   br i1 %brmerge.11, label %for.inc36.11, label %for.body16.lr.ph.11
 
 for.body16.lr.ph.11:                              ; preds = %for.body10.11
-  %mul.11 = shl i32 %add.11, 6
+  %mul.11 = shl i32 %add.11, 7
   %mul30.11 = mul i32 %ki.06.11, %kern_width
   br label %for.body16.11
 
@@ -1527,9 +1527,9 @@ for.inc57.11:                                     ; preds = %for.inc53.11
 
 for.cond8.preheader.lr.ph.12:                     ; preds = %for.inc57.11
   %145 = trunc i64 %indvars.iv.next27.11 to i32
-  %mul48.12 = shl i32 %145, 6
+  %mul48.12 = shl i32 %145, 7
   %146 = trunc i64 %indvars.iv.next27.11 to i32
-  %mul44.12 = shl i32 %146, 6
+  %mul44.12 = shl i32 %146, 7
   %147 = sext i32 %mul48.12 to i64
   %148 = sext i32 %mul44.12 to i64
   br label %for.cond8.preheader.12
@@ -1553,7 +1553,7 @@ for.body10.12:                                    ; preds = %for.body10.12.prehe
   br i1 %brmerge.12, label %for.inc36.12, label %for.body16.lr.ph.12
 
 for.body16.lr.ph.12:                              ; preds = %for.body10.12
-  %mul.12 = shl i32 %add.12, 6
+  %mul.12 = shl i32 %add.12, 7
   %mul30.12 = mul i32 %ki.06.12, %kern_width
   br label %for.body16.12
 
@@ -1637,9 +1637,9 @@ for.inc57.12:                                     ; preds = %for.inc53.12
 
 for.cond8.preheader.lr.ph.13:                     ; preds = %for.inc57.12
   %156 = trunc i64 %indvars.iv.next27.12 to i32
-  %mul48.13 = shl i32 %156, 6
+  %mul48.13 = shl i32 %156, 7
   %157 = trunc i64 %indvars.iv.next27.12 to i32
-  %mul44.13 = shl i32 %157, 6
+  %mul44.13 = shl i32 %157, 7
   %158 = sext i32 %mul48.13 to i64
   %159 = sext i32 %mul44.13 to i64
   br label %for.cond8.preheader.13
@@ -1663,7 +1663,7 @@ for.body10.13:                                    ; preds = %for.body10.13.prehe
   br i1 %brmerge.13, label %for.inc36.13, label %for.body16.lr.ph.13
 
 for.body16.lr.ph.13:                              ; preds = %for.body10.13
-  %mul.13 = shl i32 %add.13, 6
+  %mul.13 = shl i32 %add.13, 7
   %mul30.13 = mul i32 %ki.06.13, %kern_width
   br label %for.body16.13
 
@@ -1747,9 +1747,9 @@ for.inc57.13:                                     ; preds = %for.inc53.13
 
 for.cond8.preheader.lr.ph.14:                     ; preds = %for.inc57.13
   %167 = trunc i64 %indvars.iv.next27.13 to i32
-  %mul48.14 = shl i32 %167, 6
+  %mul48.14 = shl i32 %167, 7
   %168 = trunc i64 %indvars.iv.next27.13 to i32
-  %mul44.14 = shl i32 %168, 6
+  %mul44.14 = shl i32 %168, 7
   %169 = sext i32 %mul48.14 to i64
   %170 = sext i32 %mul44.14 to i64
   br label %for.cond8.preheader.14
@@ -1773,7 +1773,7 @@ for.body10.14:                                    ; preds = %for.body10.14.prehe
   br i1 %brmerge.14, label %for.inc36.14, label %for.body16.lr.ph.14
 
 for.body16.lr.ph.14:                              ; preds = %for.body10.14
-  %mul.14 = shl i32 %add.14, 6
+  %mul.14 = shl i32 %add.14, 7
   %mul30.14 = mul i32 %ki.06.14, %kern_width
   br label %for.body16.14
 
@@ -1857,9 +1857,9 @@ for.inc57.14:                                     ; preds = %for.inc53.14
 
 for.cond8.preheader.lr.ph.15:                     ; preds = %for.inc57.14
   %178 = trunc i64 %indvars.iv.next27.14 to i32
-  %mul48.15 = shl i32 %178, 6
+  %mul48.15 = shl i32 %178, 7
   %179 = trunc i64 %indvars.iv.next27.14 to i32
-  %mul44.15 = shl i32 %179, 6
+  %mul44.15 = shl i32 %179, 7
   %180 = sext i32 %mul48.15 to i64
   %181 = sext i32 %mul44.15 to i64
   br label %for.cond8.preheader.15
@@ -1883,7 +1883,7 @@ for.body10.15:                                    ; preds = %for.body10.15.prehe
   br i1 %brmerge.15, label %for.inc36.15, label %for.body16.lr.ph.15
 
 for.body16.lr.ph.15:                              ; preds = %for.body10.15
-  %mul.15 = shl i32 %add.15, 6
+  %mul.15 = shl i32 %add.15, 7
   %mul30.15 = mul i32 %ki.06.15, %kern_width
   br label %for.body16.15
 
@@ -1967,9 +1967,9 @@ for.inc57.15:                                     ; preds = %for.inc53.15
 
 for.cond8.preheader.lr.ph.16:                     ; preds = %for.inc57.15
   %189 = trunc i64 %indvars.iv.next27.15 to i32
-  %mul48.16 = shl i32 %189, 6
+  %mul48.16 = shl i32 %189, 7
   %190 = trunc i64 %indvars.iv.next27.15 to i32
-  %mul44.16 = shl i32 %190, 6
+  %mul44.16 = shl i32 %190, 7
   %191 = sext i32 %mul48.16 to i64
   %192 = sext i32 %mul44.16 to i64
   br label %for.cond8.preheader.16
@@ -1993,7 +1993,7 @@ for.body10.16:                                    ; preds = %for.body10.16.prehe
   br i1 %brmerge.16, label %for.inc36.16, label %for.body16.lr.ph.16
 
 for.body16.lr.ph.16:                              ; preds = %for.body10.16
-  %mul.16 = shl i32 %add.16, 6
+  %mul.16 = shl i32 %add.16, 7
   %mul30.16 = mul i32 %ki.06.16, %kern_width
   br label %for.body16.16
 
@@ -2077,9 +2077,9 @@ for.inc57.16:                                     ; preds = %for.inc53.16
 
 for.cond8.preheader.lr.ph.17:                     ; preds = %for.inc57.16
   %200 = trunc i64 %indvars.iv.next27.16 to i32
-  %mul48.17 = shl i32 %200, 6
+  %mul48.17 = shl i32 %200, 7
   %201 = trunc i64 %indvars.iv.next27.16 to i32
-  %mul44.17 = shl i32 %201, 6
+  %mul44.17 = shl i32 %201, 7
   %202 = sext i32 %mul48.17 to i64
   %203 = sext i32 %mul44.17 to i64
   br label %for.cond8.preheader.17
@@ -2103,7 +2103,7 @@ for.body10.17:                                    ; preds = %for.body10.17.prehe
   br i1 %brmerge.17, label %for.inc36.17, label %for.body16.lr.ph.17
 
 for.body16.lr.ph.17:                              ; preds = %for.body10.17
-  %mul.17 = shl i32 %add.17, 6
+  %mul.17 = shl i32 %add.17, 7
   %mul30.17 = mul i32 %ki.06.17, %kern_width
   br label %for.body16.17
 
@@ -2187,9 +2187,9 @@ for.inc57.17:                                     ; preds = %for.inc53.17
 
 for.cond8.preheader.lr.ph.18:                     ; preds = %for.inc57.17
   %211 = trunc i64 %indvars.iv.next27.17 to i32
-  %mul48.18 = shl i32 %211, 6
+  %mul48.18 = shl i32 %211, 7
   %212 = trunc i64 %indvars.iv.next27.17 to i32
-  %mul44.18 = shl i32 %212, 6
+  %mul44.18 = shl i32 %212, 7
   %213 = sext i32 %mul48.18 to i64
   %214 = sext i32 %mul44.18 to i64
   br label %for.cond8.preheader.18
@@ -2213,7 +2213,7 @@ for.body10.18:                                    ; preds = %for.body10.18.prehe
   br i1 %brmerge.18, label %for.inc36.18, label %for.body16.lr.ph.18
 
 for.body16.lr.ph.18:                              ; preds = %for.body10.18
-  %mul.18 = shl i32 %add.18, 6
+  %mul.18 = shl i32 %add.18, 7
   %mul30.18 = mul i32 %ki.06.18, %kern_width
   br label %for.body16.18
 
@@ -2297,9 +2297,9 @@ for.inc57.18:                                     ; preds = %for.inc53.18
 
 for.cond8.preheader.lr.ph.19:                     ; preds = %for.inc57.18
   %222 = trunc i64 %indvars.iv.next27.18 to i32
-  %mul48.19 = shl i32 %222, 6
+  %mul48.19 = shl i32 %222, 7
   %223 = trunc i64 %indvars.iv.next27.18 to i32
-  %mul44.19 = shl i32 %223, 6
+  %mul44.19 = shl i32 %223, 7
   %224 = sext i32 %mul48.19 to i64
   %225 = sext i32 %mul44.19 to i64
   br label %for.cond8.preheader.19
@@ -2323,7 +2323,7 @@ for.body10.19:                                    ; preds = %for.body10.19.prehe
   br i1 %brmerge.19, label %for.inc36.19, label %for.body16.lr.ph.19
 
 for.body16.lr.ph.19:                              ; preds = %for.body10.19
-  %mul.19 = shl i32 %add.19, 6
+  %mul.19 = shl i32 %add.19, 7
   %mul30.19 = mul i32 %ki.06.19, %kern_width
   br label %for.body16.19
 
@@ -2407,9 +2407,9 @@ for.inc57.19:                                     ; preds = %for.inc53.19
 
 for.cond8.preheader.lr.ph.20:                     ; preds = %for.inc57.19
   %233 = trunc i64 %indvars.iv.next27.19 to i32
-  %mul48.20 = shl i32 %233, 6
+  %mul48.20 = shl i32 %233, 7
   %234 = trunc i64 %indvars.iv.next27.19 to i32
-  %mul44.20 = shl i32 %234, 6
+  %mul44.20 = shl i32 %234, 7
   %235 = sext i32 %mul48.20 to i64
   %236 = sext i32 %mul44.20 to i64
   br label %for.cond8.preheader.20
@@ -2433,7 +2433,7 @@ for.body10.20:                                    ; preds = %for.body10.20.prehe
   br i1 %brmerge.20, label %for.inc36.20, label %for.body16.lr.ph.20
 
 for.body16.lr.ph.20:                              ; preds = %for.body10.20
-  %mul.20 = shl i32 %add.20, 6
+  %mul.20 = shl i32 %add.20, 7
   %mul30.20 = mul i32 %ki.06.20, %kern_width
   br label %for.body16.20
 
@@ -2517,9 +2517,9 @@ for.inc57.20:                                     ; preds = %for.inc53.20
 
 for.cond8.preheader.lr.ph.21:                     ; preds = %for.inc57.20
   %244 = trunc i64 %indvars.iv.next27.20 to i32
-  %mul48.21 = shl i32 %244, 6
+  %mul48.21 = shl i32 %244, 7
   %245 = trunc i64 %indvars.iv.next27.20 to i32
-  %mul44.21 = shl i32 %245, 6
+  %mul44.21 = shl i32 %245, 7
   %246 = sext i32 %mul48.21 to i64
   %247 = sext i32 %mul44.21 to i64
   br label %for.cond8.preheader.21
@@ -2543,7 +2543,7 @@ for.body10.21:                                    ; preds = %for.body10.21.prehe
   br i1 %brmerge.21, label %for.inc36.21, label %for.body16.lr.ph.21
 
 for.body16.lr.ph.21:                              ; preds = %for.body10.21
-  %mul.21 = shl i32 %add.21, 6
+  %mul.21 = shl i32 %add.21, 7
   %mul30.21 = mul i32 %ki.06.21, %kern_width
   br label %for.body16.21
 
@@ -2627,9 +2627,9 @@ for.inc57.21:                                     ; preds = %for.inc53.21
 
 for.cond8.preheader.lr.ph.22:                     ; preds = %for.inc57.21
   %255 = trunc i64 %indvars.iv.next27.21 to i32
-  %mul48.22 = shl i32 %255, 6
+  %mul48.22 = shl i32 %255, 7
   %256 = trunc i64 %indvars.iv.next27.21 to i32
-  %mul44.22 = shl i32 %256, 6
+  %mul44.22 = shl i32 %256, 7
   %257 = sext i32 %mul48.22 to i64
   %258 = sext i32 %mul44.22 to i64
   br label %for.cond8.preheader.22
@@ -2653,7 +2653,7 @@ for.body10.22:                                    ; preds = %for.body10.22.prehe
   br i1 %brmerge.22, label %for.inc36.22, label %for.body16.lr.ph.22
 
 for.body16.lr.ph.22:                              ; preds = %for.body10.22
-  %mul.22 = shl i32 %add.22, 6
+  %mul.22 = shl i32 %add.22, 7
   %mul30.22 = mul i32 %ki.06.22, %kern_width
   br label %for.body16.22
 
@@ -2737,9 +2737,9 @@ for.inc57.22:                                     ; preds = %for.inc53.22
 
 for.cond8.preheader.lr.ph.23:                     ; preds = %for.inc57.22
   %266 = trunc i64 %indvars.iv.next27.22 to i32
-  %mul48.23 = shl i32 %266, 6
+  %mul48.23 = shl i32 %266, 7
   %267 = trunc i64 %indvars.iv.next27.22 to i32
-  %mul44.23 = shl i32 %267, 6
+  %mul44.23 = shl i32 %267, 7
   %268 = sext i32 %mul48.23 to i64
   %269 = sext i32 %mul44.23 to i64
   br label %for.cond8.preheader.23
@@ -2763,7 +2763,7 @@ for.body10.23:                                    ; preds = %for.body10.23.prehe
   br i1 %brmerge.23, label %for.inc36.23, label %for.body16.lr.ph.23
 
 for.body16.lr.ph.23:                              ; preds = %for.body10.23
-  %mul.23 = shl i32 %add.23, 6
+  %mul.23 = shl i32 %add.23, 7
   %mul30.23 = mul i32 %ki.06.23, %kern_width
   br label %for.body16.23
 
@@ -2847,9 +2847,9 @@ for.inc57.23:                                     ; preds = %for.inc53.23
 
 for.cond8.preheader.lr.ph.24:                     ; preds = %for.inc57.23
   %277 = trunc i64 %indvars.iv.next27.23 to i32
-  %mul48.24 = shl i32 %277, 6
+  %mul48.24 = shl i32 %277, 7
   %278 = trunc i64 %indvars.iv.next27.23 to i32
-  %mul44.24 = shl i32 %278, 6
+  %mul44.24 = shl i32 %278, 7
   %279 = sext i32 %mul48.24 to i64
   %280 = sext i32 %mul44.24 to i64
   br label %for.cond8.preheader.24
@@ -2873,7 +2873,7 @@ for.body10.24:                                    ; preds = %for.body10.24.prehe
   br i1 %brmerge.24, label %for.inc36.24, label %for.body16.lr.ph.24
 
 for.body16.lr.ph.24:                              ; preds = %for.body10.24
-  %mul.24 = shl i32 %add.24, 6
+  %mul.24 = shl i32 %add.24, 7
   %mul30.24 = mul i32 %ki.06.24, %kern_width
   br label %for.body16.24
 
@@ -2957,9 +2957,9 @@ for.inc57.24:                                     ; preds = %for.inc53.24
 
 for.cond8.preheader.lr.ph.25:                     ; preds = %for.inc57.24
   %288 = trunc i64 %indvars.iv.next27.24 to i32
-  %mul48.25 = shl i32 %288, 6
+  %mul48.25 = shl i32 %288, 7
   %289 = trunc i64 %indvars.iv.next27.24 to i32
-  %mul44.25 = shl i32 %289, 6
+  %mul44.25 = shl i32 %289, 7
   %290 = sext i32 %mul48.25 to i64
   %291 = sext i32 %mul44.25 to i64
   br label %for.cond8.preheader.25
@@ -2983,7 +2983,7 @@ for.body10.25:                                    ; preds = %for.body10.25.prehe
   br i1 %brmerge.25, label %for.inc36.25, label %for.body16.lr.ph.25
 
 for.body16.lr.ph.25:                              ; preds = %for.body10.25
-  %mul.25 = shl i32 %add.25, 6
+  %mul.25 = shl i32 %add.25, 7
   %mul30.25 = mul i32 %ki.06.25, %kern_width
   br label %for.body16.25
 
@@ -3067,9 +3067,9 @@ for.inc57.25:                                     ; preds = %for.inc53.25
 
 for.cond8.preheader.lr.ph.26:                     ; preds = %for.inc57.25
   %299 = trunc i64 %indvars.iv.next27.25 to i32
-  %mul48.26 = shl i32 %299, 6
+  %mul48.26 = shl i32 %299, 7
   %300 = trunc i64 %indvars.iv.next27.25 to i32
-  %mul44.26 = shl i32 %300, 6
+  %mul44.26 = shl i32 %300, 7
   %301 = sext i32 %mul48.26 to i64
   %302 = sext i32 %mul44.26 to i64
   br label %for.cond8.preheader.26
@@ -3093,7 +3093,7 @@ for.body10.26:                                    ; preds = %for.body10.26.prehe
   br i1 %brmerge.26, label %for.inc36.26, label %for.body16.lr.ph.26
 
 for.body16.lr.ph.26:                              ; preds = %for.body10.26
-  %mul.26 = shl i32 %add.26, 6
+  %mul.26 = shl i32 %add.26, 7
   %mul30.26 = mul i32 %ki.06.26, %kern_width
   br label %for.body16.26
 
@@ -3177,9 +3177,9 @@ for.inc57.26:                                     ; preds = %for.inc53.26
 
 for.cond8.preheader.lr.ph.27:                     ; preds = %for.inc57.26
   %310 = trunc i64 %indvars.iv.next27.26 to i32
-  %mul48.27 = shl i32 %310, 6
+  %mul48.27 = shl i32 %310, 7
   %311 = trunc i64 %indvars.iv.next27.26 to i32
-  %mul44.27 = shl i32 %311, 6
+  %mul44.27 = shl i32 %311, 7
   %312 = sext i32 %mul48.27 to i64
   %313 = sext i32 %mul44.27 to i64
   br label %for.cond8.preheader.27
@@ -3203,7 +3203,7 @@ for.body10.27:                                    ; preds = %for.body10.27.prehe
   br i1 %brmerge.27, label %for.inc36.27, label %for.body16.lr.ph.27
 
 for.body16.lr.ph.27:                              ; preds = %for.body10.27
-  %mul.27 = shl i32 %add.27, 6
+  %mul.27 = shl i32 %add.27, 7
   %mul30.27 = mul i32 %ki.06.27, %kern_width
   br label %for.body16.27
 
@@ -3287,9 +3287,9 @@ for.inc57.27:                                     ; preds = %for.inc53.27
 
 for.cond8.preheader.lr.ph.28:                     ; preds = %for.inc57.27
   %321 = trunc i64 %indvars.iv.next27.27 to i32
-  %mul48.28 = shl i32 %321, 6
+  %mul48.28 = shl i32 %321, 7
   %322 = trunc i64 %indvars.iv.next27.27 to i32
-  %mul44.28 = shl i32 %322, 6
+  %mul44.28 = shl i32 %322, 7
   %323 = sext i32 %mul48.28 to i64
   %324 = sext i32 %mul44.28 to i64
   br label %for.cond8.preheader.28
@@ -3313,7 +3313,7 @@ for.body10.28:                                    ; preds = %for.body10.28.prehe
   br i1 %brmerge.28, label %for.inc36.28, label %for.body16.lr.ph.28
 
 for.body16.lr.ph.28:                              ; preds = %for.body10.28
-  %mul.28 = shl i32 %add.28, 6
+  %mul.28 = shl i32 %add.28, 7
   %mul30.28 = mul i32 %ki.06.28, %kern_width
   br label %for.body16.28
 
@@ -3397,9 +3397,9 @@ for.inc57.28:                                     ; preds = %for.inc53.28
 
 for.cond8.preheader.lr.ph.29:                     ; preds = %for.inc57.28
   %332 = trunc i64 %indvars.iv.next27.28 to i32
-  %mul48.29 = shl i32 %332, 6
+  %mul48.29 = shl i32 %332, 7
   %333 = trunc i64 %indvars.iv.next27.28 to i32
-  %mul44.29 = shl i32 %333, 6
+  %mul44.29 = shl i32 %333, 7
   %334 = sext i32 %mul48.29 to i64
   %335 = sext i32 %mul44.29 to i64
   br label %for.cond8.preheader.29
@@ -3423,7 +3423,7 @@ for.body10.29:                                    ; preds = %for.body10.29.prehe
   br i1 %brmerge.29, label %for.inc36.29, label %for.body16.lr.ph.29
 
 for.body16.lr.ph.29:                              ; preds = %for.body10.29
-  %mul.29 = shl i32 %add.29, 6
+  %mul.29 = shl i32 %add.29, 7
   %mul30.29 = mul i32 %ki.06.29, %kern_width
   br label %for.body16.29
 
@@ -3507,9 +3507,9 @@ for.inc57.29:                                     ; preds = %for.inc53.29
 
 for.cond8.preheader.lr.ph.30:                     ; preds = %for.inc57.29
   %343 = trunc i64 %indvars.iv.next27.29 to i32
-  %mul48.30 = shl i32 %343, 6
+  %mul48.30 = shl i32 %343, 7
   %344 = trunc i64 %indvars.iv.next27.29 to i32
-  %mul44.30 = shl i32 %344, 6
+  %mul44.30 = shl i32 %344, 7
   %345 = sext i32 %mul48.30 to i64
   %346 = sext i32 %mul44.30 to i64
   br label %for.cond8.preheader.30
@@ -3533,7 +3533,7 @@ for.body10.30:                                    ; preds = %for.body10.30.prehe
   br i1 %brmerge.30, label %for.inc36.30, label %for.body16.lr.ph.30
 
 for.body16.lr.ph.30:                              ; preds = %for.body10.30
-  %mul.30 = shl i32 %add.30, 6
+  %mul.30 = shl i32 %add.30, 7
   %mul30.30 = mul i32 %ki.06.30, %kern_width
   br label %for.body16.30
 
@@ -3617,9 +3617,9 @@ for.inc57.30:                                     ; preds = %for.inc53.30
 
 for.cond8.preheader.lr.ph.31:                     ; preds = %for.inc57.30
   %354 = trunc i64 %indvars.iv.next27.30 to i32
-  %mul48.31 = shl i32 %354, 6
+  %mul48.31 = shl i32 %354, 7
   %355 = trunc i64 %indvars.iv.next27.30 to i32
-  %mul44.31 = shl i32 %355, 6
+  %mul44.31 = shl i32 %355, 7
   %356 = sext i32 %mul48.31 to i64
   %357 = sext i32 %mul44.31 to i64
   br label %for.cond8.preheader.31
@@ -3643,7 +3643,7 @@ for.body10.31:                                    ; preds = %for.body10.31.prehe
   br i1 %brmerge.31, label %for.inc36.31, label %for.body16.lr.ph.31
 
 for.body16.lr.ph.31:                              ; preds = %for.body10.31
-  %mul.31 = shl i32 %add.31, 6
+  %mul.31 = shl i32 %add.31, 7
   %mul30.31 = mul i32 %ki.06.31, %kern_width
   br label %for.body16.31
 

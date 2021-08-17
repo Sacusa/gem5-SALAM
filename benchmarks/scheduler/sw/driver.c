@@ -59,6 +59,7 @@ void canny_non_max_driver(int device_id, uint8_t do_init, uint32_t img_height,
         *CNMFlags = DEV_INIT;
     }
     else {
+        printf("CNM: writing back results\n");
         // DMA transfer for output
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
@@ -138,6 +139,7 @@ void convolution_driver(int device_id, uint8_t do_init, uint32_t img_height,
         *ConvolutionFlags = DEV_INIT;
     }
     else {
+        printf("CONVOLUTION: writing back results\n");
         // DMA transfer for output data
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
@@ -167,7 +169,7 @@ void edge_tracking_driver(int device_id, uint8_t do_init, uint32_t img_height,
     const uint32_t output_spm_addr = base_addr + offset_output_spm[spm_part];
     const uint32_t mmr_addr = base_addr + offset_mmr;
 
-    uint32_t data_size = img_height * img_width * 4;
+    uint32_t num_elems = img_height * img_width;
 
     // DMA flags
     volatile uint8_t  *DmaFlags   = (uint8_t*)  (dma_addr);
@@ -187,7 +189,7 @@ void edge_tracking_driver(int device_id, uint8_t do_init, uint32_t img_height,
         // DMA transfer for input data
         *DmaRdAddr  = input_addr;
         *DmaWrAddr  = input_spm_addr;
-        *DmaCopyLen = data_size;
+        *DmaCopyLen = num_elems * 4;
         *DmaFlags   = DEV_INIT;
         while ((*DmaFlags & DEV_INTR) != DEV_INTR);
         *DmaFlags = 0;
@@ -203,10 +205,11 @@ void edge_tracking_driver(int device_id, uint8_t do_init, uint32_t img_height,
         *EdgeTrackingFlags = DEV_INIT;
     }
     else {
+        printf("ET: writing back results\n");
         // DMA transfer for output data
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
-        *DmaCopyLen = img_height * img_width * 4;
+        *DmaCopyLen = num_elems;
         *DmaFlags   = DEV_INIT;
         while ((*DmaFlags & DEV_INTR) != DEV_INTR);
         *DmaFlags = 0;
@@ -268,16 +271,16 @@ void elem_matrix_driver(int device_id, uint8_t do_init, uint32_t img_height,
             case MUL:
             case DIV:
             case ATAN2: {
-                *DmaRdAddr  = arg2_addr;
-                *DmaWrAddr  = arg2_spm_addr;
+                *DmaRdAddr = arg2_addr;
+                *DmaWrAddr = arg2_spm_addr;
 
                 if (is_arg2_scalar) {
                     *DmaCopyLen = 4;
                 } else {
-                    *DmaCopyLen = data_size * 4;
+                    *DmaCopyLen = data_size;
                 }
 
-                *DmaFlags   = DEV_INIT;
+                *DmaFlags = DEV_INIT;
                 while ((*DmaFlags & DEV_INTR) != DEV_INTR);
                 *DmaFlags = 0;
             }
@@ -292,8 +295,10 @@ void elem_matrix_driver(int device_id, uint8_t do_init, uint32_t img_height,
 
         // Start the accelerator
         *EMFlags = DEV_INIT;
+        printf("EM: accelerator started\n");
     }
     else {
+        printf("EM: writing back results\n");
         // DMA transfer for output
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
@@ -352,6 +357,7 @@ void grayscale_driver(int device_id, uint8_t do_init, uint32_t img_height,
         *GrayscaleFlags = DEV_INIT;
     }
     else {
+        printf("GRAYSCALE: writing back results\n");
         // DMA transfer for output data
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
@@ -411,6 +417,7 @@ void harris_non_max_driver(int device_id, uint8_t do_init, uint32_t img_height,
         *HNMFlags = DEV_INIT;
     }
     else {
+        printf("HNM: writing back results\n");
         // DMA transfer for output data
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
@@ -468,6 +475,7 @@ void isp_driver(int device_id, uint8_t do_init, uint32_t img_height,
         *IspFlags = DEV_INIT;
     }
     else {
+        printf("ISP: writing back results\n");
         // DMA transfer for output data
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;

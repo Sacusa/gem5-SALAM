@@ -6,13 +6,12 @@ void edge_tracking_driver(uint32_t, uint32_t, uint32_t, uint32_t, float,
         float);
 
 // Function specific definitions
-#define ROW 64
-#define COL 64
+#define ROW 128
+#define COL 128
 #define DIM(x,y) (((x)*COL) + (y))
 
 #define WEAK       75
 #define STRONG     255
-#define MAX_LOOP_UNFOLD 16
 
 // Device flags
 #define DEV_INIT    0x01

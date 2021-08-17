@@ -5,8 +5,8 @@
 void isp_driver(uint32_t, uint32_t, uint32_t, uint32_t);
 
 // Function specific definitions
-#define ROW 64
-#define COL 64
+#define ROW 128
+#define COL 128
 #define ISP_IN_DIM(x,y)    (img_width + 3 + ((x)*(2+img_width)) + (y))
 #define ISP_OUT_DIM(x,y,c) (3*((x)*COL + (y)) + (c))
 

@@ -8,8 +8,8 @@ void driver(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t,
         uint32_t, uint8_t);
 
 // Function specific definitions
-#define ROW 64
-#define COL 64
+#define ROW 128
+#define COL 128
 #define KERN_ROW 5
 #define KERN_COL 5
 #define DIM(x,y) (((x)*COL) + (y))
