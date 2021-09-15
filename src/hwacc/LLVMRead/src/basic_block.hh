@@ -5,7 +5,7 @@
 #include "instructions.hh"
 //------------------------------------------//
 #include <memory>
-#include <iomanip> 
+#include <iomanip>
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -168,6 +168,7 @@ class BasicBlock {
     std::string getName() { return _Name; }
     bool isEmpty() { return _Nodes.empty(); }
     std::string convertImmediate(std::string dataType, std::string immediateValue);
+    uint64_t str_to_uint64(std::string immediateValue);
     std::string sciToDecimal(std::string immediateValue);
     void dependencyList(std::vector<std::string> &parameters, int dependencies);
     void debugParams(std::vector<std::string> &parameters);

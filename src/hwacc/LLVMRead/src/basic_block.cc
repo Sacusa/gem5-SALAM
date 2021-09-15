@@ -1780,35 +1780,37 @@ std::string
 BasicBlock::convertImmediate(std::string dataType, std::string immediateValue) {
     int arr1 = 0;
     int arr2 = 0;
-    int integer = 0;
+    uint64_t integer = 0;
     double doub;
     float flt;
     std::string temp;
-    char *array = &immediateValue[0];
-    char *end;
+
     if (_debug) DPRINTF(LLVMParse, "Type: %s, Value: %s\n",dataType, immediateValue);
+
     if (dataType.compare("double") == 0) {
         if (immediateValue[1] == 'x') {
-            uint64_t doub_hex = strtoll(array, &end, 16);
+            uint64_t doub_hex = str_to_uint64(immediateValue);
             memcpy(&doub, &doub_hex, 8);
-                        temp = std::to_string(doub);
+            temp = std::to_string(doub);
         } else temp = sciToDecimal(immediateValue);
     } else if (dataType.compare("float") == 0) {
         if (immediateValue[1] == 'x') {
             // LLVM stores immediate arguments as double-precision values,
             // even for single-precision arithmetic.
-            uint64_t doub_hex = strtoll(array, &end, 16);
+            uint64_t doub_hex = str_to_uint64(immediateValue);
             memcpy(&doub, &doub_hex, 8);
             flt = (float) doub;
-                        temp = std::to_string(flt);
+            temp = std::to_string(flt);
         } else temp = sciToDecimal(immediateValue);
     } else { // Integer Value
         if (immediateValue[1] == 'x') {
-            integer = strtol(array, &end, 0);
+            integer = str_to_uint64(immediateValue);
             temp = std::to_string(integer);
         } else temp = sciToDecimal(immediateValue);
     }
+
     if (_debug) DPRINTF(LLVMParse, "Value: %s, %d, %d, %d\n", temp, doub, arr1, arr2);
+
     return temp;
 }
 
@@ -1855,6 +1857,32 @@ BasicBlock::sciToDecimal(std::string immediateValue) {
     }
 
     return immediateValue;
+}
+
+uint64_t
+BasicBlock::str_to_uint64(std::string immediateValue) {
+    uint64_t value = 0;
+    size_t strlen = immediateValue.size();
+
+    for (int i = 2; i < strlen; i++) {
+        value <<= 4;
+
+        char nibble = immediateValue[i];
+
+        if (isalpha(nibble)) {
+            if (islower(nibble)) {
+                value += 10 + (nibble - 97);
+            }
+            else {
+                value += 10 + (nibble - 65);
+            }
+        }
+        else {
+            value += nibble - 48;
+        }
+    }
+
+    return value;
 }
 
 void
