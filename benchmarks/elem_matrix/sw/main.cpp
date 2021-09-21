@@ -6,7 +6,8 @@
 #include "../../common/m5ops.h"
 #include "../defines.h"
 
-#define VERBOSE
+//#define VERIFY
+//#define VERBOSE
 
 void gen_data(float*, float*, float*);
 void run_and_check(float*, float*, float*, uint8_t);
@@ -35,7 +36,7 @@ void gen_data(float *arg1, float *arg2, float *result) {
     int num_elems = ROW * COL;
 
     for (int i = 0; i < num_elems; i++) {
-        arg1[i] = (i % 128) + 1;
+        arg1[i] = (i % 16) + 1;
         arg2[i] = num_elems - i;
         result[i] = -1;
     }
@@ -45,13 +46,15 @@ void run_and_check(float *arg1, float *arg2, float *result, uint8_t test_op) {
     elem_matrix_driver(ROW*COL, (uint32_t)arg1, (uint32_t)arg2,
             (uint32_t)result, test_op, 0, 0);
 
+#ifdef VERIFY
     int num_failures = 0;
 
     switch (test_op) {
         case ADD:
             for (int i = 0; i < (ROW*COL); i++) {
                 float expected = arg1[i] + arg2[i];
-                if (fabs(expected - result[i]) > 0.0001) {
+                if ((fabs(expected - result[i]) > 0.0001) ||
+                        std::isnan(result[i])) {
                     num_failures++;
 #ifdef VERBOSE
                     printf("ERROR: ADD at i = %d; expected = %f, got = %f\n",
@@ -65,7 +68,8 @@ void run_and_check(float *arg1, float *arg2, float *result, uint8_t test_op) {
         case SUB:
             for (int i = 0; i < (ROW*COL); i++) {
                 float expected = arg1[i] - arg2[i];
-                if (fabs(expected - result[i]) > 0.0001) {
+                if ((fabs(expected - result[i]) > 0.0001) ||
+                        std::isnan(result[i])) {
                     num_failures++;
 #ifdef VERBOSE
                     printf("ERROR: SUB at i = %d; expected = %f, got = %f\n",
@@ -79,7 +83,8 @@ void run_and_check(float *arg1, float *arg2, float *result, uint8_t test_op) {
         case MUL:
             for (int i = 0; i < (ROW*COL); i++) {
                 float expected = arg1[i] * arg2[i];
-                if (fabs(expected - result[i]) > 0.0001) {
+                if ((fabs(expected - result[i]) > 0.0001) ||
+                        std::isnan(result[i])) {
                     num_failures++;
 #ifdef VERBOSE
                     printf("ERROR: MUL at i = %d; expected = %f, got = %f\n",
@@ -93,7 +98,8 @@ void run_and_check(float *arg1, float *arg2, float *result, uint8_t test_op) {
         case DIV:
             for (int i = 0; i < (ROW*COL); i++) {
                 float expected = arg1[i] / arg2[i];
-                if (fabs(expected - result[i]) > 0.0001) {
+                if ((fabs(expected - result[i]) > 0.0001) ||
+                        std::isnan(result[i])) {
                     num_failures++;
 #ifdef VERBOSE
                     printf("ERROR: DIV at i = %d; expected = %f, got = %f\n",
@@ -107,7 +113,8 @@ void run_and_check(float *arg1, float *arg2, float *result, uint8_t test_op) {
         case SQR:
             for (int i = 0; i < (ROW*COL); i++) {
                 float expected = arg1[i] * arg1[i];
-                if (fabs(expected - result[i]) > 0.0001) {
+                if ((fabs(expected - result[i]) > 0.0001) ||
+                        std::isnan(result[i])) {
                     num_failures++;
 #ifdef VERBOSE
                     printf("ERROR: SQR at i = %d; expected = %f, got = %f\n",
@@ -121,7 +128,8 @@ void run_and_check(float *arg1, float *arg2, float *result, uint8_t test_op) {
         case SQRT:
             for (int i = 0; i < (ROW*COL); i++) {
                 float expected = sqrtf(arg1[i]);
-                if (fabs(expected - result[i]) > 0.0001) {
+                if ((fabs(expected - result[i]) > 0.0001) ||
+                        std::isnan(result[i])) {
                     num_failures++;
 #ifdef VERBOSE
                     printf("ERROR: SQRT at i = %d; expected = %f, got = %f\n",
@@ -135,11 +143,12 @@ void run_and_check(float *arg1, float *arg2, float *result, uint8_t test_op) {
         case ATAN2:
             for (int i = 0; i < (ROW*COL); i++) {
                 float expected = atan2(arg2[i], arg1[i]);
-                if (fabs(expected - result[i]) > 0.0001) {
+                if ((fabs(expected - result[i]) > 0.0001) ||
+                        std::isnan(result[i])) {
                     num_failures++;
 #ifdef VERBOSE
-                    printf("ERROR: ATAN2 at i = %d; expected = %f, got = %f\n",
-                            i, expected, result[i]);
+                    printf("ERROR: ATAN2 at i = %d; expected = %f, got = %f (%x)\n",
+                            i, expected, result[i], *(uint32_t*)&result[i]);
 #endif
                 }
             }
@@ -149,7 +158,8 @@ void run_and_check(float *arg1, float *arg2, float *result, uint8_t test_op) {
         case TANH:
             for (int i = 0; i < (ROW*COL); i++) {
                 float expected = tanhf(arg1[i]);
-                if (fabs(expected - result[i]) > 1) {
+                if ((fabs(expected - result[i]) > 1) ||
+                        std::isnan(result[i])) {
                     num_failures++;
 #ifdef VERBOSE
                     printf("ERROR: TANH at i = %d; expected = %f, got = %f\n",
@@ -165,7 +175,8 @@ void run_and_check(float *arg1, float *arg2, float *result, uint8_t test_op) {
                 float arg1_exp = expf(arg1[i]);
                 float arg1_sigmoid = arg1_exp / (arg1_exp + 1);
 
-                if (fabs(arg1_sigmoid - result[i]) > 0.01) {
+                if ((fabs(arg1_sigmoid - result[i]) > 0.01) ||
+                        std::isnan(result[i])) {
                     num_failures++;
 #ifdef VERBOSE
                     printf("ERROR: SIGMOID at i = %d; expected = %f, "
@@ -176,4 +187,5 @@ void run_and_check(float *arg1, float *arg2, float *result, uint8_t test_op) {
             printf("Number of SIGMOID failures = %d\n", num_failures);
             break;
     }
+#endif
 }

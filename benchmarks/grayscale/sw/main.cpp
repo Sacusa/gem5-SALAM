@@ -6,7 +6,8 @@
 #include "../../common/m5ops.h"
 #include "../defines.h"
 
-#define VERBOSE
+//#define VERIFY
+//#define VERBOSE
 
 void gen_data(uint8_t*, float*);
 
@@ -23,6 +24,7 @@ int main(void) {
 
     grayscale_driver(ROW * COL, (uint32_t)input, (uint32_t)output);
 
+#ifdef VERIFY
     int num_failures = 0;
 
     for (int i = 0; i < (ROW*COL); i++) {
@@ -41,6 +43,7 @@ int main(void) {
     }
 
     printf("Number of failures = %d\n", num_failures);
+#endif
 
     m5_dump_stats();
     m5_exit();

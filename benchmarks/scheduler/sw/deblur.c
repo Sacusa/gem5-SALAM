@@ -412,5 +412,6 @@ int main(int argc, char *argv[])
     printf("Max difference = %f\n", max_diff);
 #endif
 
-    return 0;
+    m5_dump_stats();
+    m5_exit();
 }

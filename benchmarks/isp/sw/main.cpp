@@ -6,7 +6,8 @@
 #include "../../common/m5ops.h"
 #include "../defines.h"
 
-#define VERBOSE
+//#define VERIFY
+//#define VERBOSE
 
 int test_output(uint8_t*, uint8_t*);
 static inline float sqrtf(float, float);
@@ -27,10 +28,12 @@ int main(void) {
     printf("Data generated\n");
 
     isp_driver((uint32_t)input, (uint32_t)output, ROW, COL);
+#ifdef VERIFY
     isp(ROW, COL, input, expected);
 
     printf("Testing output\n");
     printf("Number of failures = %d\n", test_output(output, expected));
+#endif
 
     m5_dump_stats();
     m5_exit();

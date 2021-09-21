@@ -3,6 +3,7 @@
 
 #define ROW 128
 #define COL 128
+#define PI  3.141592653589793238462643
 
 enum operation {
     ADD = 0, SUB,

@@ -32,7 +32,8 @@
 #			Frederik Lauer
 include ../../common/Makefile
 
-TARGET = test.elf canny.elf deblur.elf
+TARGET = test_all_acc.elf test_forwarding.elf canny.elf deblur.elf \
+		 gru.elf harris.elf lstm.elf
 
 OBJS = ../../common/syscalls.o boot.o driver.o mem_manage.o scheduler.o
 

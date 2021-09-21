@@ -63,7 +63,7 @@ void elem_matrix(uint32_t num_elems, uint8_t op, uint8_t is_arg2_scalar,
         case ATAN2: if (is_arg2_scalar) { arg2_val = arg2[0]; }
     }
 
-    #pragma clang loop unroll_count(64)
+    #pragma clang loop unroll_count(32)
     for (int i = 0; i < num_elems; i++) {
         switch (op) {
             case ADD: {

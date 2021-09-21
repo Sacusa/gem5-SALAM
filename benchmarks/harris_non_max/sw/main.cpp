@@ -6,7 +6,8 @@
 #include "../../common/m5ops.h"
 #include "../defines.h"
 
-#define VERBOSE
+//#define VERIFY
+//#define VERBOSE
 
 void gen_data(float*, uint32_t*, uint32_t*);
 int test_output(float*, uint32_t*, uint32_t*);
@@ -25,7 +26,9 @@ int main(void) {
 
     harris_non_max_driver((uint32_t)input, (uint32_t)output, ROW, COL);
 
+#ifdef VERIFY
     printf("Number of failures = %d\n", test_output(input, output, expected));
+#endif
 
     m5_dump_stats();
     m5_exit();
@@ -73,17 +76,6 @@ void gen_data(float *input, uint32_t *output, uint32_t *expected) {
 
 int test_output(float *input, uint32_t *output, uint32_t *expected) {
     int max_val_index = 0, num_failures = 0;
-
-    /*
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            int index = DIM(i,j);
-            printf("ERROR at (%d,%d): input = %lf, expected = %x, got = %x\n",
-                i, j, input[index], expected[index], output[index]);
-        }
-    }
-    return 0;
-    */
 
     for (int i = 0; i < ROW; i++) {
         for (int j = 0; j < COL; j++) {

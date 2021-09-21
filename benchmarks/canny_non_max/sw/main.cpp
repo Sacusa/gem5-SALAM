@@ -6,7 +6,8 @@
 #include "../../common/m5ops.h"
 #include "../defines.h"
 
-#define VERBOSE
+//#define VERIFY
+//#define VERBOSE
 
 void gen_data(float*, float*, uint32_t*);
 int  check_output(float*, float*, uint32_t*);
@@ -15,9 +16,9 @@ int main(void) {
     m5_reset_stats();
 
     uint32_t base = 0x81000000;
-    float *hypotenuse    = (float *)(base);
-    float *theta         = (float *)(base + 4*ROW*COL);
-    uint32_t *result     = (uint32_t *)(base + 8*ROW*COL);
+    float *hypotenuse = (float *)(base);
+    float *theta      = (float *)(base + 4*ROW*COL);
+    uint32_t *result  = (uint32_t *)(base + 8*ROW*COL);
 
     printf("Generating data\n");
     gen_data(hypotenuse, theta, result);
@@ -26,7 +27,9 @@ int main(void) {
     canny_non_max_driver(ROW, COL, (uint32_t)hypotenuse, (uint32_t)theta,
             (uint32_t)result);
 
+#ifdef VERIFY
     printf("Number of errors = %d\n", check_output(hypotenuse, theta, result));
+#endif
 
     m5_dump_stats();
     m5_exit();
@@ -38,10 +41,9 @@ void gen_data(float *hypotenuse, float *theta, uint32_t *result) {
 
     for (int i = 0; i < ROW; i++) {
         angles_index = i % angles_size;
-        hypo = i;
 
         for (int j = 0; j < COL; j++) {
-            hypotenuse[DIM(i,j)] = hypo;
+            hypotenuse[DIM(i,j)] = rand() % 256;
             theta[DIM(i,j)] = angles[angles_index];
             result[DIM(i,j)] = 0xffffffff;
 
@@ -62,7 +64,7 @@ int check_output(float *hypotenuse, float *theta, uint32_t *result) {
             uint32_t expected_value;
 
             if ((i == 0) || (i == max_height) || (j == 0) ||
-                    (j == max_width)) {
+                (j == max_width)) {
                 expected_value = 0;
             }
             else {

@@ -56,7 +56,7 @@ int run_accelerator(int acc_id, int device_id, task_struct_t *req,
 {
     // return if there are pending reads from the output partition
     if (acc->spm_pending_reads[acc->curr_spm_part]) {
-        printf("%d:%d has %d pending reads\n", acc_id, device_id,
+        printf("%d.%d has %d pending reads\n", acc_id, device_id,
                 acc->spm_pending_reads[acc->curr_spm_part]);
         return -1;
     }
@@ -73,6 +73,8 @@ int run_accelerator(int acc_id, int device_id, task_struct_t *req,
             }
         }
     }
+    printf("%d.%d will have %d forwards to children\n", acc_id, device_id,
+            acc->spm_pending_reads[acc->curr_spm_part]);
 
     // accelerator specific parsing and driver code
     switch (acc_id) {
@@ -347,7 +349,6 @@ void finish_accelerator(int acc_id, int device_id, task_struct_t *req,
     acc->status = ACC_STATUS_IDLE;
     acc->running_req = NULL;
     acc->curr_spm_part ^= 1;
-    printf("Returning...\n");
 }
 
 void finish_canny_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
@@ -405,7 +406,6 @@ void finish_isp(int device_id, task_struct_t *req, acc_state_t *acc)
 
 void schedule(task_struct_t ****run_queue, int **run_queue_size)
 {
-    printf("In runtime\n");
     int run_queue_index[NUM_ACCS][MAX_ACC_INSTANCES];
 
     // Initialize structures
@@ -437,7 +437,6 @@ void schedule(task_struct_t ****run_queue, int **run_queue_size)
             for (int j = 0; j < acc_instances[i]; j++) {
                 if (acc_state[i][j].status == ACC_STATUS_RUNNING) {
                     is_exec_complete = false;
-                    printf("%d.%d is running\n", i, j);
                 }
 
                 if (run_queue_index[i][j] == run_queue_size[i][j]) {

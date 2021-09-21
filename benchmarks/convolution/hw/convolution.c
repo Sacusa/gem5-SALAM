@@ -12,7 +12,7 @@ void convolution(uint32_t img_height, uint32_t img_width, uint32_t kern_height,
     #pragma clang loop unroll_count(32)
     for (int in_i = start_in_i, out_i = 0; out_i < img_height; in_i++,
             out_i++) {
-        #pragma clang loop unroll(disable)
+        #pragma clang loop unroll_count(8)
         for (int in_j = start_in_j, out_j = 0; out_j < img_width; in_j++,
                 out_j++) {
             float partial_sum = 0;

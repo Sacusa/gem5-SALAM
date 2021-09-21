@@ -6,6 +6,7 @@
 #include "../../common/m5ops.h"
 #include "../defines.h"
 
+#define VERIFY
 #define VERBOSE
 
 void gen_data(float*, float*, float*);
@@ -27,8 +28,10 @@ int main(void) {
     driver((uint32_t)input, (uint32_t)output, (uint32_t)kernel, ROW, COL,
             KERN_ROW, KERN_COL, mod_and_floor);
 
+#ifdef VERIFY
     printf("Number of failures = %d\n", test_output(input, kernel, output,
                 mod_and_floor));
+#endif
 
     m5_dump_stats();
     m5_exit();

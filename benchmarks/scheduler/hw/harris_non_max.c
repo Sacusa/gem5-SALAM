@@ -17,7 +17,7 @@ void harris_non_max(uint32_t img_height, uint32_t img_width,
         max_values = (uint32_t*) HNM0_OUTPUT0_SPM;
 #endif
 
-    #pragma clang loop unroll(disable)
+    #pragma clang loop unroll_count(1)
     for (int i = 0; i < img_height; i += 3) {
         #pragma clang loop unroll(disable)
         for (int j = 0; j < img_width; j += 3) {

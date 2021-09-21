@@ -6,7 +6,8 @@
 #include "../../common/m5ops.h"
 #include "../defines.h"
 
-#define VERBOSE
+//#define VERIFY
+//#define VERBOSE
 
 void gen_data(uint32_t*, uint8_t*);
 int test_output(uint8_t*);
@@ -25,7 +26,9 @@ int main(void) {
     edge_tracking_driver((uint32_t)input, (uint32_t)output, ROW, COL, 0.5,
             0.503);
 
+#ifdef VERIFY
     printf("Number of failures = %d\n", test_output(output));
+#endif
 
     m5_dump_stats();
     m5_exit();
