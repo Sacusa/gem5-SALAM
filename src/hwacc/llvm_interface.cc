@@ -673,15 +673,15 @@ LLVMInterface::occupancy() {
 
 void
 LLVMInterface::finalize() {
-    std::cout << "1\n";
     // Simulation Times
     running = false;
     simStop = std::chrono::high_resolution_clock::now();
     simTime = std::chrono::duration_cast<std::chrono::duration<double>>(simStop-timeStart);
 //    cache_size = comm->getCacheSize();
-    read_ports = comm->getReadPorts();
-    write_ports = comm->getWritePorts();
-    spm_size = comm->getPmemRange();
+//    read_ports = comm->getReadPorts();
+//    write_ports = comm->getWritePorts();
+    int spm_ports = comm->getNumSpmPorts();
+    spm_size = comm->getSpmSize();
     read_bus_width = comm->getReadBusWidth();
     write_bus_width = comm->getWriteBusWidth();
 //    cache_ports = comm->getcachePorts();
@@ -691,22 +691,27 @@ LLVMInterface::finalize() {
     AverageOccupancy();
     pwrUtil->finalPowerUsage(_MaxFU, cycle);
 
-    /*
     // Experimental
     // getCactiResults(int cache_size, int word_size, int ports, int type)
     // SPM cache_type = 0
-    _SPM.opt = pwrUtil->getCactiResults(regList->count()*(read_bus_width), (read_bus_width/8), (read_ports+write_ports), 0);
-    _SPM.leakage = pwrUtil->getCactiResults(spm_size, (read_bus_width/8), (read_ports+write_ports), 0);
-    _SPM.dyn_read = pwrUtil->getCactiResults((int) (dma_loads*(read_bus_width/8)), (read_bus_width/8), (read_ports), 0);
-    _SPM.dyn_write = pwrUtil->getCactiResults((int) (dma_stores*(write_bus_width/8)), (read_bus_width/8), (write_ports), 0);
+    _SPM.opt = pwrUtil->getCactiResults(regList->count() * read_bus_width,
+            read_bus_width, spm_ports, 0);
+    _SPM.leakage = pwrUtil->getCactiResults(spm_size, read_bus_width,
+            spm_ports, 0);
+    _SPM.dyn_read = pwrUtil->getCactiResults(
+            (int)(memory_loads*read_bus_width), read_bus_width, spm_ports, 0);
+    _SPM.dyn_write = pwrUtil->getCactiResults(
+            (int)(memory_stores*write_bus_width), write_bus_width,
+            spm_ports, 0);
 
+    /*
     // Experimental
     // Cache cache_type = 1
     _Cache.leakage = pwrUtil->getCactiResults(cache_size, (read_bus_width/8), cache_ports, 1);
     _Cache.dyn_read = pwrUtil->getCactiResults(dma_loads*(read_bus_width/8), (read_bus_width/8), cache_ports, 1);
     _Cache.dyn_write = pwrUtil->getCactiResults(dma_stores*(read_bus_width/8), (read_bus_width/8), cache_ports, 1);
-
     */
+
     printPerformanceResults();
     // comm->printResults()
     // hardware->printResults();

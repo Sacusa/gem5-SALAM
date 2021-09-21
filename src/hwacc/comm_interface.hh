@@ -236,7 +236,7 @@ class CommInterface : public BasicPioDevice
     void recvPacket(PacketPtr pkt);
 
     // Addr value stored in gep register, length based on data type
-    void enqueueRead(MemoryRequest * req); 
+    void enqueueRead(MemoryRequest * req);
 
     void enqueueWrite(MemoryRequest * req);
 
@@ -249,9 +249,13 @@ class CommInterface : public BasicPioDevice
     int getProcessDelay() { return processDelay; }
     virtual int getReadPorts()  { return 0; }
     virtual int getWritePorts()  { return 0; }
-    virtual int getReadBusWidth()  { return 0; }
-    virtual int getWriteBusWidth()  { return 0; }  
+    virtual int getNumSpmPorts() { return spmPorts.size(); }
+    virtual int getReadBusWidth()  { return cacheLineSize; }
+    virtual int getWriteBusWidth()  { return cacheLineSize; }
     virtual int getPmemRange() { return 0; }
+    virtual int getSpmSize() {
+        return spmPorts[0]->getAddrRanges().front().size();
+    }
     void registerCompUnit(ComputeUnit *compunit) { cu = compunit; }
     void registerCycleCounts(CycleCounts *cylcount) { cycleCount = cylcount; }
     virtual void finish();
