@@ -34,8 +34,8 @@ class AccCluster(Platform):
     external_range_hi_min = Param.Unsigned(0x80000000, "minimal address of external range high")
     external_range_hi_max = Param.Unsigned(0xffffffff, "maximum address of external range high")
 
-    local_bus = NoncoherentXBar(width=2, frontend_latency=1, forward_latency=0, response_latency=1)
-    coherency_bus = CoherentXBar(width=2, frontend_latency=1, forward_latency=0, response_latency=1)
+    local_bus = NoncoherentXBar(width=16, frontend_latency=1, forward_latency=0, response_latency=1)
+    coherency_bus = CoherentXBar(width=16, frontend_latency=1, forward_latency=0, response_latency=1)
     coherency_bus.snoop_filter = SnoopFilter()
     coherency_bus.snoop_response_latency = 4
     coherency_bus.point_of_coherency = True

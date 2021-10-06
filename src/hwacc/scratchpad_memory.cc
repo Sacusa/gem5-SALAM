@@ -399,6 +399,10 @@ ScratchpadMemory::dequeue()
     assert(!packetQueue.empty());
     DeferredPacket deferred_pkt = packetQueue.front();
     PortID idx = deferred_pkt.origin;
+
+    // if retryResp is set, we are waiting for the requesting port to free up
+    if (retryResp[idx]) { return; }
+
     if (idx == 0)
         retryResp[idx] = !port.sendTimingResp(deferred_pkt.pkt);
     else
@@ -433,6 +437,7 @@ ScratchpadMemory::recvRespRetry(PortID id)
 {
     PortID idx = id+1;
     assert(retryResp[idx]);
+    retryResp[idx] = false;
 
     dequeue();
 }
