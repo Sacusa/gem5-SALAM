@@ -1,10 +1,8 @@
 #!/bin/bash
 
 declare -a lane=("1" "2" "4" "8" "16" "32")
-declare -a spm_ports=("1" "2" "4" "8" "16")
-#declare -a benchmarks=("canny_non_max" "convolution" "edge_tracking"
-#                       "elem_matrix" "grayscale" "harris_non_max" "isp")
-declare -a benchmarks=("canny_non_max" "edge_tracking"
+declare -a spm_ports=("1" "2" "4" "8")
+declare -a benchmarks=("canny_non_max" "convolution" "edge_tracking"
                        "elem_matrix" "grayscale" "harris_non_max" "isp")
 
 run_sweep () {

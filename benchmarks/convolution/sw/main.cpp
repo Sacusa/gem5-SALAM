@@ -6,8 +6,8 @@
 #include "../../common/m5ops.h"
 #include "../defines.h"
 
-#define VERIFY
-#define VERBOSE
+//#define VERIFY
+//#define VERBOSE
 
 void gen_data(float*, float*, float*);
 int test_output(float*, float*, float*, uint8_t);

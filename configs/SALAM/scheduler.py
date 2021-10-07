@@ -138,8 +138,6 @@ def makeHWAcc(options, system):
                     pio_addr=0x20000000 + ((i+1) << 24) + (j << 20),
                     pio_size=21, gic=gic, int_num=98)
             dma_obj.cluster_dma = system.acctest.local_bus.slave
-            dma_obj.max_req_size = 1
-            dma_obj.buffer_size = 128
             system.acctest._connect_dma(system, dma_obj);
             setattr(system.acctest, acc + '_dma', dma_obj)
 
@@ -452,5 +450,6 @@ if buildEnv['TARGET_ISA'] == "arm" and not options.bare_metal \
             sys = getattr(root, sysname)
             sys.generateDtb(m5.options.outdir, '%s.dtb' % sysname)
 
+#test_sys.cpu[0].wait_for_remote_gdb = True
 Simulation.setWorkCountOptions(test_sys, options)
 Simulation.run(options, root, test_sys, FutureClass)

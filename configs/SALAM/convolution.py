@@ -113,8 +113,6 @@ def makeHWAcc(options, system):
     # Add the cluster DMA
     system.acctest.dma = NoncoherentDma(pio_addr=0x22000000, pio_size=21, gic=gic, int_num=98)
     system.acctest.dma.cluster_dma = system.acctest.local_bus.slave
-    system.acctest.dma.max_req_size = 1
-    system.acctest.dma.buffer_size = 128
     system.acctest._connect_dma(system, system.acctest.dma);
 
 def build_test_system(np):

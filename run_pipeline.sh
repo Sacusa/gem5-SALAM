@@ -5,43 +5,43 @@ DEBUG="false"
 PRINT_TO_FILE="false"
 
 while getopts ":b:f:dp" opt
-	do
-		case $opt in
-			b )
-				BENCH=${OPTARG}
-				;;
-			d )
-				DEBUG="true"
-				;;
-			p )
-				PRINT_TO_FILE="true"
-				;;
-			f )
-				FLAGS+=",${OPTARG}"
-				;;
-			* )
-				echo "Invalid argument: ${OPTARG}"
-				echo "Usage: $0 -b BENCHMARK (-f DEBUGFLAG) (-p) (-d)"
-				exit 1
-				;;
-		esac
+    do
+        case $opt in
+            b )
+                BENCH=${OPTARG}
+                ;;
+            d )
+                DEBUG="true"
+                ;;
+            p )
+                PRINT_TO_FILE="true"
+                ;;
+            f )
+                FLAGS+=",${OPTARG}"
+                ;;
+            * )
+                echo "Invalid argument: ${OPTARG}"
+                echo "Usage: $0 -b BENCHMARK (-f DEBUGFLAG) (-p) (-d)"
+                exit 1
+                ;;
+        esac
 done
 
 if [ "${BENCH}" == "" ]; then
-	echo "No benchmark specified."
-	echo "Usage: $0 -b BENCHMARK (-f DEBUGFLAG) (-p) (-d)"
-	exit 2
+    echo "No benchmark specified."
+    echo "Usage: $0 -b BENCHMARK (-f DEBUGFLAG) (-p) (-d)"
+    exit 2
 fi
 
 if [ "${DEBUG}" == "true" ]; then
-	BINARY="gdb --args ${M5_PATH}/build/ARM/gem5.debug"
+    BINARY="gdb --args ${M5_PATH}/build/ARM/gem5.debug"
 else
-	BINARY="${M5_PATH}/build/ARM/gem5.opt"
+    BINARY="${M5_PATH}/build/ARM/gem5.opt"
 fi
 
 KERNEL=$M5_PATH/benchmarks/scheduler/sw/${BENCH}.elf
 SYS_OPTS="--mem-size=4GB \
-		  --mem-type=DDR4_2400_8x8 \
+          --mem-type=DDR4_2400_8x8 \
           --kernel=$KERNEL \
           --disk-image=$M5_PATH/baremetal/common/fake.iso \
           --machine-type=VExpress_GEM5_V1 \
@@ -52,28 +52,13 @@ CACHE_OPTS="--caches --l2cache"
 OUTDIR=BM_ARM_OUT/${BENCH}_pipeline
 
 RUN_SCRIPT="$BINARY --debug-flags=$FLAGS --outdir=$OUTDIR \
-			configs/SALAM/scheduler.py $SYS_OPTS \
-			--accpath=$M5_PATH/benchmarks \
-			$CACHE_OPTS"
+            configs/SALAM/scheduler.py $SYS_OPTS \
+            --accpath=$M5_PATH/benchmarks \
+            $CACHE_OPTS"
 
 if [ "${PRINT_TO_FILE}" == "true" ]; then
-	mkdir -p $OUTDIR
-	$RUN_SCRIPT > ${OUTDIR}/debug-trace.txt
+    mkdir -p $OUTDIR
+    $RUN_SCRIPT > ${OUTDIR}/debug-trace.txt
 else
-	$RUN_SCRIPT
+    $RUN_SCRIPT
 fi
-
-# Debug Flags List
-#
-# IOAcc
-# ClassDetail
-# CommInterface
-# ComputeUnit
-# LLVMInterface
-# ComputeNode
-# LLVMRegister
-# LLVMOp
-# LLVMParse
-# LLVMGEP
-# LLVMRuntime == ComputeNode + LLVMRegister + LLVMOp + LLVMParse
-# NoncoherentDma - bfs, fft, gemm, md-knn, nw, spmv
