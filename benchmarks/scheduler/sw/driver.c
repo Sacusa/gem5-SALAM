@@ -1,5 +1,5 @@
 #include "../../common/m5ops.h"
-#include "scheduler.h"
+#include "runtime.h"
 
 void canny_non_max_driver(int device_id, uint8_t do_init, uint32_t img_height,
         uint32_t img_width, uint32_t hypo_addr, uint32_t theta_addr,
@@ -59,7 +59,6 @@ void canny_non_max_driver(int device_id, uint8_t do_init, uint32_t img_height,
         *CNMFlags = DEV_INIT;
     }
     else {
-        printf("CNM: writing back results\n");
         // DMA transfer for output
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
@@ -139,7 +138,6 @@ void convolution_driver(int device_id, uint8_t do_init, uint32_t img_height,
         *ConvolutionFlags = DEV_INIT;
     }
     else {
-        printf("CONVOLUTION: writing back results\n");
         // DMA transfer for output data
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
@@ -205,7 +203,6 @@ void edge_tracking_driver(int device_id, uint8_t do_init, uint32_t img_height,
         *EdgeTrackingFlags = DEV_INIT;
     }
     else {
-        printf("ET: writing back results\n");
         // DMA transfer for output data
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
@@ -295,10 +292,8 @@ void elem_matrix_driver(int device_id, uint8_t do_init, uint32_t img_height,
 
         // Start the accelerator
         *EMFlags = DEV_INIT;
-        printf("EM: accelerator started\n");
     }
     else {
-        printf("EM: writing back results\n");
         // DMA transfer for output
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
@@ -357,7 +352,6 @@ void grayscale_driver(int device_id, uint8_t do_init, uint32_t img_height,
         *GrayscaleFlags = DEV_INIT;
     }
     else {
-        printf("GRAYSCALE: writing back results\n");
         // DMA transfer for output data
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
@@ -385,8 +379,6 @@ void harris_non_max_driver(int device_id, uint8_t do_init, uint32_t img_height,
     const uint32_t output_spm_addr = base_addr + offset_output_spm[spm_part];
     const uint32_t mmr_addr = base_addr + offset_mmr;
 
-    uint32_t data_size = img_height * img_width * 4;
-
     // DMA flags
     volatile uint8_t  *DmaFlags   = (uint8_t*)  (dma_addr);
     volatile uint64_t *DmaRdAddr  = (uint64_t*) (dma_addr + 1);
@@ -403,7 +395,7 @@ void harris_non_max_driver(int device_id, uint8_t do_init, uint32_t img_height,
         // DMA transfer for input data
         *DmaRdAddr  = input_addr;
         *DmaWrAddr  = input_spm_addr;
-        *DmaCopyLen = data_size;
+        *DmaCopyLen = img_height * img_width * 4;
         *DmaFlags   = DEV_INIT;
         while ((*DmaFlags & DEV_INTR) != DEV_INTR);
         *DmaFlags = 0;
@@ -417,11 +409,10 @@ void harris_non_max_driver(int device_id, uint8_t do_init, uint32_t img_height,
         *HNMFlags = DEV_INIT;
     }
     else {
-        printf("HNM: writing back results\n");
         // DMA transfer for output data
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
-        *DmaCopyLen = data_size;
+        *DmaCopyLen = img_height * img_width;
         *DmaFlags   = DEV_INIT;
         while ((*DmaFlags & DEV_INTR) != DEV_INTR);
         *DmaFlags = 0;
@@ -475,7 +466,6 @@ void isp_driver(int device_id, uint8_t do_init, uint32_t img_height,
         *IspFlags = DEV_INIT;
     }
     else {
-        printf("ISP: writing back results\n");
         // DMA transfer for output data
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;

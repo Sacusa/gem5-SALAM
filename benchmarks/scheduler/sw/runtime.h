@@ -18,6 +18,7 @@
 #define MAX_CHILDREN        5
 #define MAX_DAGS            10
 #define MAX_NODES           100
+//#define VERIFY
 
 /**
  * Bookkeeping for accelerators
@@ -172,11 +173,8 @@ void finish_harris_non_max(int, task_struct_t*, acc_state_t*);
 void finish_isp(int, task_struct_t*, acc_state_t*);
 
 /**
- * Scheduling functions
+ * The actual runtime
  */
-void set_deadline_phase1(task_struct_t *node, int parent_deadline);
-int set_deadline_phase2(task_struct_t *node);
-
-void schedule(task_struct_t****, int**);
+void runtime(task_struct_t****, int**);
 
 #endif /* _SCHEDULER_H_ */

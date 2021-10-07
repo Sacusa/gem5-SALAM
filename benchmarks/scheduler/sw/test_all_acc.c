@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #include "../../common/m5ops.h"
-#include "scheduler.h"
+#include "runtime.h"
 
 #define VERBOSE
 

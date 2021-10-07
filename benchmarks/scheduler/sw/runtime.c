@@ -1,4 +1,4 @@
-#include "scheduler.h"
+#include "runtime.h"
 
 int acc_instances[NUM_ACCS] = {
     /* ACC_CANNY_NON_MAX  */ 1,
@@ -34,9 +34,6 @@ int acc_output_spm_offset[NUM_ACCS][2] = {
     {ISP0_OUTPUT0_SPM - ISP0_BASE, ISP0_OUTPUT1_SPM - ISP0_BASE}
 };
 
-acc_state_t acc_state[NUM_ACCS][MAX_ACC_INSTANCES];
-int device_id[NUM_ACCS][MAX_ACC_INSTANCES];
-
 void init_task_struct(task_struct_t *task_struct)
 {
     for (int i = 0; i < MAX_ACC_ARGS; i++) {
@@ -56,8 +53,6 @@ int run_accelerator(int acc_id, int device_id, task_struct_t *req,
 {
     // return if there are pending reads from the output partition
     if (acc->spm_pending_reads[acc->curr_spm_part]) {
-        printf("%d.%d has %d pending reads\n", acc_id, device_id,
-                acc->spm_pending_reads[acc->curr_spm_part]);
         return -1;
     }
 
@@ -73,8 +68,6 @@ int run_accelerator(int acc_id, int device_id, task_struct_t *req,
             }
         }
     }
-    printf("%d.%d will have %d forwards to children\n", acc_id, device_id,
-            acc->spm_pending_reads[acc->curr_spm_part]);
 
     // accelerator specific parsing and driver code
     switch (acc_id) {
@@ -125,7 +118,6 @@ void run_canny_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
         theta_addr = (uint32_t) args->theta;
     }
 
-    printf("CNM: running driver\n");
     canny_non_max_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, hypo_addr,
             theta_addr, 0, acc->curr_spm_part);
 
@@ -153,7 +145,6 @@ void run_convolution(int device_id, task_struct_t *req, acc_state_t *acc)
         input_addr = (uint32_t) args->input;
     }
 
-    printf("CONVOLUTION: running driver\n");
     convolution_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr,
             kernel_addr, args->kern_height, args->kern_width,
             args->mod_and_floor, 0, acc->curr_spm_part);
@@ -177,7 +168,6 @@ void run_edge_tracking(int device_id, task_struct_t *req, acc_state_t *acc)
         input_addr = (uint32_t) args->input;
     }
 
-    printf("ET: running driver\n");
     edge_tracking_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr,
             args->thr_weak_ratio, args->thr_strong_ratio, 0,
             acc->curr_spm_part);
@@ -209,7 +199,6 @@ void run_elem_matrix(int device_id, task_struct_t *req, acc_state_t *acc)
         arg2_addr = (uint32_t) args->arg2;
     }
 
-    printf("EM: running driver\n");
     elem_matrix_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, arg1_addr,
             arg2_addr, args->is_arg2_scalar, args->op, args->do_one_minus, 0,
             acc->curr_spm_part);
@@ -238,7 +227,6 @@ void run_grayscale(int device_id, task_struct_t *req, acc_state_t *acc)
         input_addr = (uint32_t) args->input;
     }
 
-    printf("GRAYSCALE: running driver\n");
     grayscale_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr, 0,
             acc->curr_spm_part);
 
@@ -261,7 +249,6 @@ void run_harris_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
         input_addr = (uint32_t) args->input;
     }
 
-    printf("HNM: running driver\n");
     harris_non_max_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr, 0,
             acc->curr_spm_part);
 
@@ -284,7 +271,6 @@ void run_isp(int device_id, task_struct_t *req, acc_state_t *acc)
         input_addr = (uint32_t) args->input;
     }
 
-    printf("ISP: running driver\n");
     isp_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr, 0,
             acc->curr_spm_part);
 
@@ -401,11 +387,12 @@ void finish_isp(int device_id, task_struct_t *req, acc_state_t *acc)
 }
 
 /**
- * Scheduling functions
+ * The actual runtime
  */
 
-void schedule(task_struct_t ****run_queue, int **run_queue_size)
+void runtime(task_struct_t ****run_queue, int **run_queue_size)
 {
+    acc_state_t acc_state[NUM_ACCS][MAX_ACC_INSTANCES];
     int run_queue_index[NUM_ACCS][MAX_ACC_INSTANCES];
 
     // Initialize structures
@@ -455,13 +442,11 @@ void schedule(task_struct_t ****run_queue, int **run_queue_size)
                     }
                     curr_req->status = REQ_STATUS_COMPLETED;
                     run_queue_index[i][j]++;
-                    printf("%d.%d has started running\n", i, j);
                 }
             }
         }
 
         if (is_exec_complete) {
-            printf("Execution complete\n");
             break;
         }
 
@@ -472,7 +457,6 @@ void schedule(task_struct_t ****run_queue, int **run_queue_size)
                 for (int j = 0; j < acc_instances[i]; j++) {
 
                     if ((*acc_state[i][j].flags & DEV_INTR) == DEV_INTR) {
-                        printf("%d.%d finished\n", i, j);
                         task_struct_t *node = acc_state[i][j].running_req;
 
                         for (int c = 0; c < node->num_children; c++) {
@@ -483,16 +467,16 @@ void schedule(task_struct_t ****run_queue, int **run_queue_size)
                             if (child->completed_parents == \
                                 child->num_parents) {
                                 child->status = REQ_STATUS_READY;
+                            }
 
-                                // set parent SPM partitions if forwarding data
-                                for (int a = 0; a < MAX_ACC_ARGS; a++) {
-                                    if ((child->producer[a] == node) &&
-                                        child->producer_forward[a]) {
-                                        child->producer_spm_part[a] =
-                                            acc_state[i][j].curr_spm_part;
-                                        child->producer_acc[a] =
-                                            &acc_state[i][j];
-                                    }
+                            // set parent SPM partitions if forwarding data
+                            for (int a = 0; a < MAX_ACC_ARGS; a++) {
+                                if ((child->producer[a] == node) &&
+                                    child->producer_forward[a]) {
+                                    child->producer_spm_part[a] =
+                                        acc_state[i][j].curr_spm_part;
+                                    child->producer_acc[a] =
+                                        &acc_state[i][j];
                                 }
                             }
                         }

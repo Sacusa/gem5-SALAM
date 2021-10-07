@@ -3,12 +3,12 @@
 
 #include "../defines.h"
 
-uint32_t curr_address = 0x81000000;
+static uint32_t curr_address = 0x85000000;
 
 void *get_memory(uint32_t num_bytes)
 {
     void *retval = (void*)curr_address;
-    const uint32_t align = 64;
+    const uint32_t align = 8;
     uint32_t req_num_bytes = num_bytes;
 
     // allocations are made in multiples of 8-bytes for maximum compatibility

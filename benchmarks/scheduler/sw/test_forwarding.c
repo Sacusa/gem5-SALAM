@@ -6,7 +6,9 @@
 #include <string.h>
 
 #include "../../common/m5ops.h"
-#include "scheduler.h"
+#include "runtime.h"
+
+//#define VERIFY
 
 void run_pipeline()
 {
@@ -43,6 +45,7 @@ void run_pipeline()
     em_args->op = SQR;
     em_args->do_one_minus = 0;
 
+#ifdef VERIFY
     for (int i = 0; i < NUM_PIXELS; i++) {
         int ii = i * 3;
         g_args->input[ii]   = 3;
@@ -50,6 +53,7 @@ void run_pipeline()
         g_args->input[ii+2] = 3;
     }
     float expected = 9;
+#endif
 
     task_struct_t *task[2];
     task[0] = (task_struct_t*) get_memory(sizeof(task_struct_t));
@@ -89,6 +93,7 @@ void run_pipeline()
     printf("Launching accelerators\n");
     schedule(run_queue, run_queue_size);
 
+#ifdef VERIFY
     printf("Verifying output\n");
     for (int i = 0; i < NUM_PIXELS; i++) {
         if (em_args->output[i] != expected) {
@@ -96,6 +101,7 @@ void run_pipeline()
                     expected, em_args->output[i]);
         }
     }
+#endif
 }
 
 int main(int argc, char *argv[])

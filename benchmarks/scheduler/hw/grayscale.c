@@ -13,7 +13,7 @@ void grayscale(uint64_t num_elems, uint8_t spm_part) {
     }
 #endif
 
-    #pragma clang loop unroll_count(32)
+    #pragma clang loop unroll_count(8)
     for (int i = 0; i < num_elems; i++) {
         int ii = i * 3;
         uint8_t r = input_image[ii];

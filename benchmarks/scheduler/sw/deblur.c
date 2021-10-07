@@ -6,10 +6,12 @@
 #include <string.h>
 
 #include "../../common/m5ops.h"
-#include "scheduler.h"
+#include "runtime.h"
 
 #define NUM_IMAGES 1
 #define NUM_ITERS 2
+#define ENABLE_FORWARDING
+#define VERIFY
 
 typedef struct {
     // ISP
@@ -35,7 +37,7 @@ typedef struct {
 float *psf;
 float *psf_flip;
 
-task_struct_t *retval[5];
+task_struct_t *retval[6];
 
 void init_img(image_data_t *img)
 {
@@ -88,15 +90,17 @@ void convert_to_grayscale(image_data_t *img, task_struct_t **nodes)
 
     task->acc_id = ACC_GRAYSCALE;
     task->acc_args = (void*) args;
-    task->num_children = 1;
-    task->num_parents = 1;
-    task->producer[0] = retval[0];
-    task->producer_forward[0] = 0;
+    task->num_children = NUM_ITERS;
 #ifdef VERIFY
+    task->num_parents = 0;
+    task->producer[0] = NULL;
     task->status = REQ_STATUS_READY;
 #else
+    task->num_parents = 1;
+    task->producer[0] = retval[0];
     task->status = REQ_STATUS_WAITING;
 #endif
+    task->producer_forward[0] = 0;
     task->completed_parents = 0;
 
 #ifndef VERIFY
@@ -130,9 +134,9 @@ void run_conv_psf(image_data_t *img, task_struct_t **nodes,
     }
     else {
         task->num_parents = 1;
-        task->producer[0] = retval[1];
+        task->producer[0] = retval[5];
         task->status = REQ_STATUS_WAITING;
-        retval[1]->children[0] = task;
+        retval[5]->children[0] = task;
     }
     task->producer_forward[0] = 0;
     task->completed_parents = 0;
@@ -142,7 +146,7 @@ void run_conv_psf(image_data_t *img, task_struct_t **nodes,
 }
 
 void run_div_ut_psf(image_data_t *img, task_struct_t **nodes,
-        int node_index, bool is_first)
+        int node_index, int iter_num)
 {
     task_struct_t *task = (task_struct_t*) get_memory(sizeof(task_struct_t));
     elem_matrix_args *args = (elem_matrix_args*)
@@ -157,22 +161,15 @@ void run_div_ut_psf(image_data_t *img, task_struct_t **nodes,
     task->acc_id = ACC_ELEM_MATRIX;
     task->acc_args = (void*) args;
     task->num_children = 1;
-    if (is_first) {
-        task->num_parents = 2;
-        task->producer[0] = retval[1];
-        task->producer[1] = retval[2];
-        retval[1]->children[0] = task;
-    }
-    else {
-        task->num_parents = 1;
-        task->producer[0] = NULL;
-        task->producer[1] = retval[2];
-    }
+    task->num_parents = 2;
+    task->producer[0] = retval[1];
+    task->producer[1] = retval[2];
     task->producer_forward[0] = 0;
     task->producer_forward[1] = 0;
     task->status = REQ_STATUS_WAITING;
     task->completed_parents = 0;
 
+    retval[1]->children[iter_num] = task;
     retval[2]->children[0] = task;
     retval[3] = task;
     nodes[node_index] = task;
@@ -206,7 +203,7 @@ void run_conv_psf_flip(image_data_t *img, task_struct_t **nodes,
     nodes[node_index] = task;
 }
 
-void run_mult_psf_flip(image_data_t *img, bool has_child,
+void run_mult_psf_flip(image_data_t *img, bool is_first, bool has_child,
         task_struct_t **nodes, int node_index)
 {
     task_struct_t *task = (task_struct_t*) get_memory(sizeof(task_struct_t));
@@ -222,13 +219,22 @@ void run_mult_psf_flip(image_data_t *img, bool has_child,
     task->acc_id = ACC_ELEM_MATRIX;
     task->acc_args = (void*) args;
     if (has_child) {
-        task->num_children = 1;
+        task->num_children = 2;
     }
     else {
         task->num_children = 0;
     }
-    task->num_parents = 1;
-    task->producer[0] = NULL;
+
+    if (is_first) {
+        task->num_parents = 1;
+        task->producer[0] = NULL;
+    }
+    else {
+        task->num_parents = 2;
+        task->producer[0] = retval[5];
+        retval[5]->children[1] = task;
+    }
+
     task->producer[1] = retval[4];
     task->producer_forward[0] = 0;
     task->producer_forward[1] = 0;
@@ -236,7 +242,7 @@ void run_mult_psf_flip(image_data_t *img, bool has_child,
     task->completed_parents = 0;
 
     retval[4]->children[0] = task;
-    retval[1] = task;
+    retval[5] = task;
     nodes[node_index] = task;
 }
 
@@ -264,6 +270,7 @@ void gedf(task_struct_t ***nodes)
     run_queue[1][0][1] = nodes[0][4];
     run_queue[1][0][2] = nodes[0][6];
     run_queue[1][0][3] = nodes[0][8];
+    run_queue_size[1][1] = 0;
     run_queue_size[2][0] = 0;
     run_queue_size[3][0] = 4;
     run_queue[3][0][0] = nodes[0][3];
@@ -271,6 +278,8 @@ void gedf(task_struct_t ***nodes)
     run_queue[3][0][2] = nodes[0][7];
     run_queue[3][0][3] = nodes[0][9];
     run_queue_size[3][1] = 0;
+    run_queue_size[3][2] = 0;
+    run_queue_size[3][3] = 0;
     run_queue_size[4][0] = 1;
     run_queue[4][0][0] = nodes[0][1];
     run_queue_size[5][0] = 0;
@@ -278,8 +287,27 @@ void gedf(task_struct_t ***nodes)
     run_queue_size[6][0] = 0;
 #else
     run_queue_size[6][0] = 1;
-#endif
     run_queue[6][0][0] = nodes[0][0];
+#endif
+
+#ifdef ENABLE_FORWARDING
+    nodes[0][2]->producer_forward[0] = 0;
+    nodes[0][4]->producer_forward[0] = 1;
+    nodes[0][6]->producer_forward[0] = 1;
+    nodes[0][8]->producer_forward[0] = 1;
+    nodes[0][3]->producer_forward[0] = 0;
+    nodes[0][3]->producer_forward[1] = 1;
+    nodes[0][5]->producer_forward[0] = 0;
+    nodes[0][5]->producer_forward[1] = 1;
+    nodes[0][7]->producer_forward[0] = 0;
+    nodes[0][7]->producer_forward[1] = 1;
+    nodes[0][9]->producer_forward[0] = 0;
+    nodes[0][9]->producer_forward[1] = 1;
+#ifndef VERIFY
+    nodes[0][1]->producer_forward[0] = 1;
+#endif
+    nodes[0][0]->producer_forward[0] = 0;
+#endif
 
     schedule(run_queue, run_queue_size);
 }
@@ -327,51 +355,21 @@ int main(int argc, char *argv[])
     psf_flip[24] = 0.00291502;
 
 #ifdef VERIFY
-    if (argc != 3) {
-        printf("Usage: %s <input image> <expected output image>\n", argv[0]);
-        return -1;
+    uint8_t *isp_output = (uint8_t*) get_memory(NUM_PIXELS * 3);
+
+    for (int i = 0; i < (NUM_PIXELS * 3); i++) {
+        isp_output[i] = i % 128;
     }
-
-    uint8_t input_img[NUM_PIXELS*3];
-    float expected_output[NUM_PIXELS];
-
-    FILE *fp;
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-
-    // read input image
-    int index = 0;
-    fp = fopen(argv[1], "r");
-    while ((read = getline(&line, &len, fp)) != -1) {
-        input_img[index] = atoi(line);
-        index++;
-    }
-    fclose(fp);
-
-    // read reference output
-    index = 0;
-    fp = fopen(argv[2], "r");
-    while ((read = getline(&line, &len, fp)) != -1) {
-        expected_output[index] = atof(line);
-        index++;
-    }
-    fclose(fp);
 #endif
 
     for (int i = 0; i < NUM_IMAGES; i++) {
         init_img(&imgs[i]);
 
 #ifdef VERIFY
-        // Load input image as ISP output
-        int err = posix_memalign((void**)&imgs[i].isp_img, CACHELINE_SIZE, NUM_PIXELS * 3);
-        assert(err == 0 && "Failed to allocate memory");
-
-        for (int j = 0; j < (NUM_PIXELS * 3); j++) {
-            imgs[i].isp_img[j] = input_img[j];
-        }
+        // Step 0: Link ISP output
+        imgs[i].isp_img = isp_output;
 #else
-        // Run raw image through ISP
+        // Step 0: Run raw image through ISP
         process_raw(&imgs[i], nodes[i]);
 #endif
 
@@ -381,9 +379,9 @@ int main(int argc, char *argv[])
             int node_index = 2 + j*4;
 
             run_conv_psf(&imgs[i], nodes[i], node_index, j == 0);
-            run_div_ut_psf(&imgs[i], nodes[i], node_index+1, j == 0);
+            run_div_ut_psf(&imgs[i], nodes[i], node_index+1, j);
             run_conv_psf_flip(&imgs[i], nodes[i], node_index+2);
-            run_mult_psf_flip(&imgs[i], j != (NUM_ITERS-1), nodes[i],
+            run_mult_psf_flip(&imgs[i], j == 0, j != (NUM_ITERS-1), nodes[i],
                     node_index+3);
         }
     }
@@ -391,25 +389,12 @@ int main(int argc, char *argv[])
     gedf(nodes);
 
 #ifdef VERIFY
-    int num_failures = 0;
-    float max_diff = 0;
-
     for (int i = 0; i < NUM_IMAGES; i++) {
         for (int j = 0; j < NUM_PIXELS; j++) {
-            float diff = fabs(imgs[i].conv_psf[j] - expected_output[j]);
-
-            if (diff > 0.1) {
-                num_failures++;
-                //printf("ERROR in image %d, pixel %d: expected %f, got %f\n", i, j,
-                //        expected_output[j], imgs[i].conv_psf[j]);
-            }
-
-            if (diff > max_diff) { max_diff = diff; }
+            printf("Image %2d, pixel %2d, value = %f\n", i, j,
+                    imgs[i].estimate[j]);
         }
     }
-
-    printf("Number of failures = %d\n", num_failures);
-    printf("Max difference = %f\n", max_diff);
 #endif
 
     m5_dump_stats();

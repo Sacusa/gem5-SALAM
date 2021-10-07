@@ -5,12 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../../common/m5ops.h"
 #include "runtime.h"
-
-#define NUM_IMAGES 10
-#define ENABLE_FORWARDING
-//#define VERIFY
 
 typedef struct {
     // ISP
@@ -34,11 +29,14 @@ typedef struct {
 
     // Edge tracking and hysteresis
     uint8_t *final_img;
-} image_data_t;
+} canny_data_t;
 
-task_struct_t *retval[5][3];
+task_struct_t *canny_retval[5][3];
+#ifdef VERIFY
+uint8_t *canny_isp_output;
+#endif
 
-void process_raw(image_data_t *img, task_struct_t **nodes)
+void canny_process_raw(canny_data_t *img, task_struct_t **nodes)
 {
     task_struct_t *task = (task_struct_t*) get_memory(sizeof(task_struct_t));
     isp_args *args = (isp_args*) get_memory(sizeof(isp_args));
@@ -58,11 +56,11 @@ void process_raw(image_data_t *img, task_struct_t **nodes)
     task->status = REQ_STATUS_READY;
     task->completed_parents = 0;
 
-    retval[0][0] = task;
+    canny_retval[0][0] = task;
     nodes[0] = task;
 }
 
-void convert_to_grayscale(image_data_t *img, task_struct_t **nodes)
+void canny_convert_to_grayscale(canny_data_t *img, task_struct_t **nodes)
 {
     task_struct_t *task = (task_struct_t*) get_memory(sizeof(task_struct_t));
     grayscale_args *args = (grayscale_args*)
@@ -82,20 +80,20 @@ void convert_to_grayscale(image_data_t *img, task_struct_t **nodes)
     task->status = REQ_STATUS_READY;
 #else
     task->num_parents = 1;
-    task->producer[0] = retval[0][0];
+    task->producer[0] = canny_retval[0][0];
     task->status = REQ_STATUS_WAITING;
 #endif
     task->producer_forward[0] = 0;
     task->completed_parents = 0;
 
 #ifndef VERIFY
-    retval[0][0]->children[0] = task;
+    canny_retval[0][0]->children[0] = task;
 #endif
-    retval[1][0] = task;
+    canny_retval[1][0] = task;
     nodes[1] = task;
 }
 
-void noise_reduction(image_data_t *img, task_struct_t **nodes)
+void canny_noise_reduction(canny_data_t *img, task_struct_t **nodes)
 {
     task_struct_t *task = (task_struct_t*) get_memory(sizeof(task_struct_t));
     convolution_args *args = (convolution_args*)
@@ -131,17 +129,17 @@ void noise_reduction(image_data_t *img, task_struct_t **nodes)
     task->acc_args = (void*) args;
     task->num_children = 2;
     task->num_parents = 1;
-    task->producer[0] = retval[1][0];
+    task->producer[0] = canny_retval[1][0];
     task->producer_forward[0] = 0;
     task->status = REQ_STATUS_WAITING;
     task->completed_parents = 0;
 
-    retval[1][0]->children[0] = task;
-    retval[2][0] = task;
+    canny_retval[1][0]->children[0] = task;
+    canny_retval[2][0] = task;
     nodes[2] = task;
 }
 
-void gradient_calculation(image_data_t *img, task_struct_t **nodes)
+void canny_gradient_calculation(canny_data_t *img, task_struct_t **nodes)
 {
     task_struct_t *task[7];
     convolution_args *c_args[2];
@@ -230,7 +228,7 @@ void gradient_calculation(image_data_t *img, task_struct_t **nodes)
         task[i]->acc_args = (void*) c_args[i];
         task[i]->num_children = 2;
         task[i]->num_parents = 1;
-        task[i]->producer[0] = retval[2][0];
+        task[i]->producer[0] = canny_retval[2][0];
         task[i]->producer_forward[0] = 0;
         task[i]->status = REQ_STATUS_WAITING;
         task[i]->completed_parents = 0;
@@ -272,13 +270,13 @@ void gradient_calculation(image_data_t *img, task_struct_t **nodes)
     task[6]->num_parents = 1;
     task[6]->producer[0] = task[5];
 
-    retval[2][0]->children[0] = task[0];
-    retval[2][0]->children[1] = task[1];
-    retval[3][0] = task[3];
-    retval[3][1] = task[6];
+    canny_retval[2][0]->children[0] = task[0];
+    canny_retval[2][0]->children[1] = task[1];
+    canny_retval[3][0] = task[3];
+    canny_retval[3][1] = task[6];
 }
 
-void non_max_suppression(image_data_t *img, task_struct_t **nodes)
+void canny_non_max_suppression(canny_data_t *img, task_struct_t **nodes)
 {
     task_struct_t *task = (task_struct_t*) get_memory(sizeof(task_struct_t));
     canny_non_max_args *args = (canny_non_max_args*)
@@ -294,20 +292,20 @@ void non_max_suppression(image_data_t *img, task_struct_t **nodes)
     task->acc_args = (void*) args;
     task->num_children = 1;
     task->num_parents = 2;
-    task->producer[0] = retval[3][1];
-    task->producer[1] = retval[3][0];
+    task->producer[0] = canny_retval[3][1];
+    task->producer[1] = canny_retval[3][0];
     task->producer_forward[0] = 0;
     task->producer_forward[1] = 0;
     task->status = REQ_STATUS_WAITING;
     task->completed_parents = 0;
 
-    retval[3][0]->children[0] = task;
-    retval[3][1]->children[0] = task;
-    retval[4][0] = task;
+    canny_retval[3][0]->children[0] = task;
+    canny_retval[3][1]->children[0] = task;
+    canny_retval[4][0] = task;
     nodes[10] = task;
 }
 
-void thr_and_edge_tracking(image_data_t *img, task_struct_t **nodes)
+void canny_thr_and_edge_tracking(canny_data_t *img, task_struct_t **nodes)
 {
     task_struct_t *task = (task_struct_t*) get_memory(sizeof(task_struct_t));
     edge_tracking_args *args = (edge_tracking_args*)
@@ -324,144 +322,62 @@ void thr_and_edge_tracking(image_data_t *img, task_struct_t **nodes)
     task->acc_args = (void*) args;
     task->num_children = 0;
     task->num_parents = 1;
-    task->producer[0] = retval[4][0];
+    task->producer[0] = canny_retval[4][0];
     task->producer_forward[0] = 0;
     task->status = REQ_STATUS_WAITING;
     task->completed_parents = 0;
 
-    retval[4][0]->children[0] = task;
+    canny_retval[4][0]->children[0] = task;
     nodes[11] = task;
 }
 
-void schedule(task_struct_t ***nodes) // Policy: GEDF
+void init_canny()
 {
-    task_struct_t ****run_queue = (task_struct_t****)
-        get_memory(NUM_ACCS * sizeof(task_struct_t***));
-    int **run_queue_size = (int**) get_memory(NUM_ACCS * sizeof(int*));
-
-    for (int i = 0; i < NUM_ACCS; i++) {
-        run_queue[i] = (task_struct_t***)
-            get_memory(MAX_ACC_INSTANCES * sizeof(task_struct_t**));
-        run_queue_size[i] = (int*)
-            get_memory(MAX_ACC_INSTANCES * sizeof(int));
-
-        for (int j = 0; j < MAX_ACC_INSTANCES; j++) {
-            run_queue[i][j] = (task_struct_t**)
-                get_memory(MAX_NODES * sizeof(task_struct_t*));
-        }
-    }
-
-    run_queue_size[0][0] = 1;
-    run_queue[0][0][0] = nodes[0][10];
-    run_queue_size[1][0] = 2;
-    run_queue[1][0][0] = nodes[0][2];
-    run_queue[1][0][1] = nodes[0][3];
-    run_queue_size[1][1] = 1;
-    run_queue[1][1][0] = nodes[0][4];
-    run_queue_size[2][0] = 1;
-    run_queue[2][0][0] = nodes[0][11];
-    run_queue_size[3][0] = 3;
-    run_queue[3][0][0] = nodes[0][5];
-    run_queue[3][0][1] = nodes[0][8];
-    run_queue[3][0][2] = nodes[0][9];
-    run_queue_size[3][1] = 1;
-    run_queue[3][1][0] = nodes[0][7];
-    run_queue_size[3][2] = 1;
-    run_queue[3][2][0] = nodes[0][6];
-    run_queue_size[3][3] = 0;
-    run_queue_size[4][0] = 1;
-    run_queue[4][0][0] = nodes[0][1];
-    run_queue_size[5][0] = 0;
 #ifdef VERIFY
-    run_queue_size[6][0] = 0
-#else
-    run_queue_size[6][0] = 1;
-#endif
-    run_queue[6][0][0] = nodes[0][0];
-#ifdef ENABLE_FORWARDING
-    nodes[0][10]->producer_forward[0] = 1;
-    nodes[0][10]->producer_forward[1] = 0;
-    nodes[0][2]->producer_forward[0] = 1;
-    nodes[0][3]->producer_forward[0] = 1;
-    nodes[0][4]->producer_forward[0] = 1;
-    nodes[0][11]->producer_forward[0] = 1;
-    nodes[0][5]->producer_forward[0] = 1;
-    nodes[0][5]->producer_forward[1] = 0;
-    nodes[0][8]->producer_forward[0] = 1;
-    nodes[0][8]->producer_forward[1] = 1;
-    nodes[0][9]->producer_forward[0] = 1;
-    nodes[0][9]->producer_forward[1] = 0;
-    nodes[0][7]->producer_forward[0] = 1;
-    nodes[0][7]->producer_forward[1] = 0;
-    nodes[0][6]->producer_forward[0] = 1;
-    nodes[0][6]->producer_forward[1] = 1;
-#ifndef VERIFY
-    nodes[0][1]->producer_forward[0] = 1;
-#endif
-    nodes[0][0]->producer_forward[0] = 0;
-#endif
-
-     runtime(run_queue, run_queue_size);
-}
-
-
-int main(int argc, char *argv[])
-{
-    m5_reset_stats();
-
-    image_data_t *imgs = (image_data_t*)
-        get_memory(NUM_IMAGES * sizeof(image_data_t));
-    task_struct_t ***nodes = (task_struct_t***)
-        get_memory(MAX_DAGS * sizeof(task_struct_t**));
-    for (int i = 0; i < MAX_DAGS; i++) {
-        nodes[i] = (task_struct_t **)
-            get_memory(MAX_NODES * sizeof(task_struct_t*));
-    }
-
-#ifdef VERIFY
-    uint8_t *isp_output = (uint8_t*) get_memory(NUM_PIXELS * 3);
+    canny_isp_output = (uint8_t*) get_memory(NUM_PIXELS * 3);
 
     for (int i = 0; i < (NUM_PIXELS * 3); i++) {
-        isp_output[i] = i % 256;
+        canny_isp_output[i] = i % 256;
     }
 #endif
+}
 
-    for (int i = 0; i < NUM_IMAGES; i++) {
+void add_canny_dag(task_struct_t ***nodes, int num_images)
+{
+    canny_data_t *imgs = (canny_data_t*)
+        get_memory(num_images * sizeof(canny_data_t));
+
+    for (int i = 0; i < num_images; i++) {
 #ifdef VERIFY
         // Step 0: Link ISP output
-        imgs[i].isp_img = isp_output;
+        imgs[i].isp_img = canny_isp_output;
 #else
         // Step 0: Run raw image through ISP
-        process_raw(&imgs[i], nodes[i]);
+        canny_process_raw(&imgs[i], nodes[i]);
 #endif
 
         // Step 1: Convert image to grayscale
-        convert_to_grayscale(&imgs[i], nodes[i]);
+        canny_convert_to_grayscale(&imgs[i], nodes[i]);
 
         // Step 2: Noise reduction
-        noise_reduction(&imgs[i], nodes[i]);
+        canny_noise_reduction(&imgs[i], nodes[i]);
 
         // Step 3: Gradient calculation
-        gradient_calculation(&imgs[i], nodes[i]);
+        canny_gradient_calculation(&imgs[i], nodes[i]);
 
         // Step 4: Non-maximum suppression
-        non_max_suppression(&imgs[i], nodes[i]);
+        canny_non_max_suppression(&imgs[i], nodes[i]);
 
         // Steps 5 and 6: Double threshold and edge tracking by hysteresis
-        thr_and_edge_tracking(&imgs[i], nodes[i]);
+        canny_thr_and_edge_tracking(&imgs[i], nodes[i]);
     }
 
-    schedule(nodes);
-
 #ifdef VERIFY
-    for (int i = 0; i < NUM_IMAGES; i++) {
+    for (int i = 0; i < num_images; i++) {
         for (int j = 0; j < NUM_PIXELS; j++) {
             printf("Image %2d, pixel %2d, value = %d\n", i, j,
                     imgs[i].final_img[j]);
         }
     }
 #endif
-
-    m5_dump_stats();
-    m5_exit();
 }
