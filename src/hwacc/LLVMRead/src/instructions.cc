@@ -972,7 +972,10 @@ FPExt::compute() {
 void
 PtrToInt::compute() { }
 void
-IntToPtr::compute() { }
+IntToPtr::compute() {
+    _Result = _Ops.at(0);
+    setResult(&_Result);
+}
 void
 BitCast::compute() {
     _Result = _Ops.at(0);
