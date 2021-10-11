@@ -87,7 +87,7 @@ void deblur_convert_to_grayscale(deblur_data_t *img, task_struct_t **nodes,
 
     task->acc_id = ACC_GRAYSCALE;
     task->acc_args = (void*) args;
-    task->num_children = num_iters;
+    task->num_children = num_iters + 1;
 #ifdef VERIFY
     task->num_parents = 0;
     task->producer[0] = NULL;
@@ -114,7 +114,12 @@ void deblur_run_conv_psf(deblur_data_t *img, task_struct_t **nodes,
     convolution_args *args = (convolution_args*)
         get_memory(sizeof(convolution_args));
 
-    args->input = img->estimate;
+    if (is_first) {
+        args->input = img->input_img;
+    }
+    else {
+        args->input = img->estimate;
+    }
     args->kernel = deblur_psf;
     args->output = img->conv_psf;
     args->kern_width = 5;
@@ -124,17 +129,16 @@ void deblur_run_conv_psf(deblur_data_t *img, task_struct_t **nodes,
     task->acc_id = ACC_CONVOLUTION;
     task->acc_args = (void*) args;
     task->num_children = 1;
+    task->num_parents = 1;
     if (is_first) {
-        task->num_parents = 0;
-        task->producer[0] = NULL;
-        task->status = REQ_STATUS_READY;
+        task->producer[0] = deblur_retval[1];
+        deblur_retval[1]->children[0] = task;
     }
     else {
-        task->num_parents = 1;
         task->producer[0] = deblur_retval[5];
-        task->status = REQ_STATUS_WAITING;
         deblur_retval[5]->children[0] = task;
     }
+    task->status = REQ_STATUS_WAITING;
     task->producer_forward[0] = 0;
     task->completed_parents = 0;
 
@@ -166,7 +170,7 @@ void deblur_run_div_ut_psf(deblur_data_t *img, task_struct_t **nodes,
     task->status = REQ_STATUS_WAITING;
     task->completed_parents = 0;
 
-    deblur_retval[1]->children[iter_num] = task;
+    deblur_retval[1]->children[iter_num + 1] = task;
     deblur_retval[2]->children[0] = task;
     deblur_retval[3] = task;
     nodes[node_index] = task;

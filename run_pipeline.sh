@@ -39,7 +39,7 @@ else
     BINARY="${M5_PATH}/build/ARM/gem5.opt"
 fi
 
-KERNEL=$M5_PATH/benchmarks/scheduler/sw/${BENCH}.elf
+KERNEL=$M5_PATH/benchmarks/scheduler/sw/bin/${BENCH}.elf
 SYS_OPTS="--mem-size=4GB \
           --mem-type=DDR4_2400_8x8 \
           --kernel=$KERNEL \

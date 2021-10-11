@@ -239,7 +239,17 @@ int run_elem_matrix(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     elem_matrix_args *args = (elem_matrix_args*) req->acc_args;
     uint32_t arg1_addr = 0, arg2_addr = 0;
-    uint32_t arg1_spm_addr = 0, arg2_spm_addr = 0, output_spm_addr = 0;
+    uint32_t arg1_spm_addr = 0, arg2_spm_addr = 0;
+    bool has_arg2 = false, has_available_part = false;
+
+    // allocate partition for arg2 only if we need it
+    switch (args->op) {
+        case ADD:
+        case SUB:
+        case MUL:
+        case DIV:
+        case ATAN2: has_arg2 = true;
+    }
 
     // check if we need to forward arg1
     if (req->producer_forward[0]) {
@@ -256,17 +266,19 @@ int run_elem_matrix(int device_id, task_struct_t *req, acc_state_t *acc)
     }
 
     // check if we need to forward arg2
-    if (req->producer_forward[0]) {
-        if (req->producer_acc[0] == acc) {
-            arg2_spm_addr = acc->spm_part[req->producer_spm_part[0]];
+    if (has_arg2) {
+        if (req->producer_forward[1]) {
+            if (req->producer_acc[1] == acc) {
+                arg2_spm_addr = acc->spm_part[req->producer_spm_part[1]];
+            }
+            else {
+                arg2_addr =
+                    req->producer_acc[1]->spm_part[req->producer_spm_part[1]];
+            }
         }
         else {
-            arg2_addr =
-                req->producer_acc[0]->spm_part[req->producer_spm_part[0]];
+            arg2_addr = (uint32_t) args->arg2;
         }
-    }
-    else {
-        arg2_addr = (uint32_t) args->arg2;
     }
 
     // allocate input/output partitions
@@ -275,19 +287,18 @@ int run_elem_matrix(int device_id, task_struct_t *req, acc_state_t *acc)
             if (arg1_spm_addr == 0) {
                 arg1_spm_addr = acc->spm_part[i];
             }
-            else if (arg2_spm_addr == 0) {
+            else if (has_arg2 && (arg2_spm_addr == 0)) {
                 arg2_spm_addr = acc->spm_part[i];
             }
-            else if (output_spm_addr == 0) {
-                output_spm_addr = acc->spm_part[i];
+            else {
                 acc->curr_spm_out_part = i;
+                has_available_part = true;
                 break;
             }
         }
     }
 
-    if ((arg1_spm_addr == 0) || (arg2_spm_addr == 0) ||
-            (output_spm_addr == 0)) { return -1; }
+    if (!has_available_part) { return -1; }
 
     elem_matrix_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, arg1_addr,
             arg2_addr, args->is_arg2_scalar, args->op, args->do_one_minus, 0,
@@ -551,6 +562,7 @@ void runtime(task_struct_t ****run_queue, int **run_queue_size)
     }
 
     bool is_exec_complete = false;
+    int num_running = 0;
 
     while (1) {
         is_exec_complete = true;
@@ -578,12 +590,18 @@ void runtime(task_struct_t ****run_queue, int **run_queue_size)
                     }
                     curr_req->status = REQ_STATUS_COMPLETED;
                     run_queue_index[i][j]++;
+                    num_running++;
                 }
             }
         }
 
         if (is_exec_complete) {
             break;
+        }
+
+        if (num_running == 0) {
+            printf("ERROR: unable to launch any more nodes\n");
+            return;
         }
 
         bool exit_loop = false;
@@ -618,6 +636,7 @@ void runtime(task_struct_t ****run_queue, int **run_queue_size)
                         }
 
                         finish_accelerator(i, j, node, &acc_state[i][j]);
+                        num_running--;
 
                         exit_loop = true;
                         break;

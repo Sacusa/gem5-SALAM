@@ -67,7 +67,7 @@ done
 
 cd ~/scheduler
 schedule=`${scheduler_command}`
-cd -
+cd - &> /dev/null
 
 # generate and inject schedule code
 code="void schedule(task_struct_t ***nodes)\n"
@@ -90,7 +90,7 @@ code+="\n\n     runtime(run_queue, run_queue_size);\n}\n"
 sed -i "s/<<schedule>>/${code}/g" main.c
 
 # compile and rename binary
-make main.elf
+make main.elf &> /dev/null
 mv main.elf canny_${num_canny}_deblur_${num_deblur}_gru_${num_gru}_harris_${num_harris}_lstm_${num_lstm}_${policy}.elf
 
 # print the expected performance

@@ -250,26 +250,18 @@ void elem_matrix_driver(int device_id, uint8_t do_init, uint32_t img_height,
 
         // DMA transfer for arg2
         if (arg2_addr != 0) {
-            switch (op) {
-                case ADD:
-                case SUB:
-                case MUL:
-                case DIV:
-                case ATAN2: {
-                    *DmaRdAddr = arg2_addr;
-                    *DmaWrAddr = arg2_spm_addr;
+            *DmaRdAddr = arg2_addr;
+            *DmaWrAddr = arg2_spm_addr;
 
-                    if (is_arg2_scalar) {
-                        *DmaCopyLen = 4;
-                    } else {
-                        *DmaCopyLen = data_size;
-                    }
-
-                    *DmaFlags = DEV_INIT;
-                    while ((*DmaFlags & DEV_INTR) != DEV_INTR);
-                    *DmaFlags = 0;
-                }
+            if (is_arg2_scalar) {
+                *DmaCopyLen = 4;
+            } else {
+                *DmaCopyLen = data_size;
             }
+
+            *DmaFlags = DEV_INIT;
+            while ((*DmaFlags & DEV_INTR) != DEV_INTR);
+            *DmaFlags = 0;
         }
 
         // Configure the accelerator

@@ -16,9 +16,9 @@
 #define MAX_ACC_INSTANCES   10
 #define MAX_ACC_ARGS        5
 #define MAX_ACC_SPM_PARTS   5
-#define MAX_CHILDREN        5
-#define MAX_DAGS            10
-#define MAX_NODES           100
+#define MAX_CHILDREN        50
+#define MAX_DAGS            50
+#define MAX_NODES           200
 //#define VERIFY
 
 /**
