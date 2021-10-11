@@ -92,3 +92,7 @@ sed -i "s/<<schedule>>/${code}/g" main.c
 # compile and rename binary
 make main.elf
 mv main.elf canny_${num_canny}_deblur_${num_deblur}_gru_${num_gru}_harris_${num_harris}_lstm_${num_lstm}_${policy}.elf
+
+# print the expected performance
+perf=`echo "${schedule}" | head -1`
+echo $perf

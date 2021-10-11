@@ -19,7 +19,7 @@
 #define MAX_CHILDREN        5
 #define MAX_DAGS            10
 #define MAX_NODES           100
-#define VERIFY
+//#define VERIFY
 
 /**
  * Bookkeeping for accelerators
