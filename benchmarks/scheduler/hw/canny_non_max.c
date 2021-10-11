@@ -1,18 +1,12 @@
 #include "hw_defines.h"
 
-void canny_non_max(uint32_t img_height, uint32_t img_width, uint8_t spm_part) {
+void canny_non_max(uint32_t img_height, uint32_t img_width,
+        uint32_t output_spm_addr) {
 #if ACC_NUM == 0
     float *hypotenuse = (float*) CNM0_HYPO_SPM;
     float *theta = (float*) CNM0_THETA_SPM;
-    uint32_t *result;
-
-    if (spm_part == 1) {
-        result = (uint32_t*) CNM0_OUTPUT1_SPM;
-    }
-    else {
-        result = (uint32_t*) CNM0_OUTPUT0_SPM;
-    }
 #endif
+    uint32_t *result = (uint32_t*) output_spm_addr;
 
     int max_height = img_height - 1, max_width = img_width - 1;
 

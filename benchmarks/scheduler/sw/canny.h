@@ -314,8 +314,8 @@ void canny_thr_and_edge_tracking(canny_data_t *img, task_struct_t **nodes)
     img->final_img = (uint8_t*) get_memory(NUM_PIXELS);
 
     args->input = img->max_values;
-    args->thr_strong_ratio = 0.15;
-    args->thr_weak_ratio = 0.05;
+    args->thr_strong_ratio = 0.5;
+    args->thr_weak_ratio = 0.503;
     args->output = img->final_img;
 
     task->acc_id = ACC_EDGE_TRACKING;
@@ -371,13 +371,19 @@ void add_canny_dag(task_struct_t ***nodes, int num_images)
         // Steps 5 and 6: Double threshold and edge tracking by hysteresis
         canny_thr_and_edge_tracking(&imgs[i], nodes[i]);
     }
+}
 
-#ifdef VERIFY
+void print_canny_output(task_struct_t ***nodes, int num_images)
+{
+    printf("Printing canny results\n");
+    printf("======================\n");
+
     for (int i = 0; i < num_images; i++) {
+        uint8_t *final_img =
+            ((edge_tracking_args*)(nodes[i][11]->acc_args))->output;
         for (int j = 0; j < NUM_PIXELS; j++) {
             printf("Image %2d, pixel %2d, value = %d\n", i, j,
-                    imgs[i].final_img[j]);
+                    final_img[j]);
         }
     }
-#endif
 }

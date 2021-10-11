@@ -3,5685 +3,5685 @@ target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-unknown-linux-gnu"
 
 ; Function Attrs: norecurse nounwind uwtable
-define void @edge_tracking(i32 %img_height, i32 %img_width, float %thr_weak_ratio, float %thr_strong_ratio, i8 zeroext %spm_part) #0 {
+define void @edge_tracking(i32 %img_height, i32 %img_width, float %thr_weak_ratio, float %thr_strong_ratio, i32 %output_spm_addr) #0 {
 entry:
-  %cmp = icmp eq i8 %spm_part, 1
-  %. = select i1 %cmp, i8* inttoptr (i64 587284512 to i8*), i8* inttoptr (i64 587268128 to i8*)
+  %conv = zext i32 %output_spm_addr to i64
+  %0 = inttoptr i64 %conv to i8*
   %sub = add i32 %img_height, -1
-  %sub2 = add i32 %img_width, -1
+  %sub1 = add i32 %img_width, -1
   %mul = mul i32 %img_width, %img_height
-  %cmp313 = icmp sgt i32 %mul, 0
-  br i1 %cmp313, label %for.body.preheader, label %for.end
+  %cmp13 = icmp sgt i32 %mul, 0
+  br i1 %cmp13, label %for.body.preheader, label %for.end
 
 for.body.preheader:                               ; preds = %entry
-  %0 = mul i32 %img_width, %img_height
+  %1 = mul i32 %img_width, %img_height
   br label %for.body
 
 for.body:                                         ; preds = %for.body, %for.body.preheader
   %indvars.iv32 = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next33, %for.body ]
   %img_max.014 = phi i32 [ 0, %for.body.preheader ], [ %.img_max.0, %for.body ]
   %arrayidx = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %indvars.iv32
-  %1 = load i32, i32* %arrayidx, align 4
-  %cmp5 = icmp ugt i32 %1, %img_max.014
-  %.img_max.0 = select i1 %cmp5, i32 %1, i32 %img_max.014
+  %2 = load i32, i32* %arrayidx, align 4
+  %cmp3 = icmp ugt i32 %2, %img_max.014
+  %.img_max.0 = select i1 %cmp3, i32 %2, i32 %img_max.014
   %indvars.iv.next33 = add nuw nsw i64 %indvars.iv32, 1
   %lftr.wideiv34 = trunc i64 %indvars.iv.next33 to i32
-  %exitcond35 = icmp eq i32 %lftr.wideiv34, %0
+  %exitcond35 = icmp eq i32 %lftr.wideiv34, %1
   br i1 %exitcond35, label %for.end.loopexit, label %for.body, !llvm.loop !1
 
 for.end.loopexit:                                 ; preds = %for.body
   %.img_max.0.lcssa = phi i32 [ %.img_max.0, %for.body ]
   %phitmp = uitofp i32 %.img_max.0.lcssa to float
-  %phitmp73 = fmul float %phitmp, 0x3FE0189380000000
   br label %for.end
 
 for.end:                                          ; preds = %for.end.loopexit, %entry
-  %img_max.0.lcssa = phi float [ 0.000000e+00, %entry ], [ %phitmp73, %for.end.loopexit ]
-  %mul13 = fmul float %img_max.0.lcssa, 5.000000e-01
-  %cmp1610 = icmp eq i32 %img_height, 0
-  br i1 %cmp1610, label %for.end171, label %for.cond19.preheader.lr.ph
+  %img_max.0.lcssa = phi float [ 0.000000e+00, %entry ], [ %phitmp, %for.end.loopexit ]
+  %mul8 = fmul float %img_max.0.lcssa, %thr_strong_ratio
+  %mul9 = fmul float %mul8, %thr_weak_ratio
+  %cmp1210 = icmp eq i32 %img_height, 0
+  br i1 %cmp1210, label %for.end166, label %for.cond15.preheader.lr.ph
 
-for.cond19.preheader.lr.ph:                       ; preds = %for.end
-  %cmp208 = icmp eq i32 %img_width, 0
-  %2 = add i32 %img_height, -1
+for.cond15.preheader.lr.ph:                       ; preds = %for.end
+  %cmp168 = icmp eq i32 %img_width, 0
+  %3 = add i32 %img_height, -1
   %xtraiter36 = and i32 %img_height, 31
   %lcmp.mod37 = icmp eq i32 %xtraiter36, 0
-  br i1 %lcmp.mod37, label %for.cond19.preheader.lr.ph.split, label %for.cond19.preheader.prol.preheader
+  br i1 %lcmp.mod37, label %for.cond15.preheader.lr.ph.split, label %for.cond15.preheader.prol.preheader
 
-for.cond19.preheader.prol.preheader:              ; preds = %for.cond19.preheader.lr.ph
-  br label %for.cond19.preheader.prol
+for.cond15.preheader.prol.preheader:              ; preds = %for.cond15.preheader.lr.ph
+  br label %for.cond15.preheader.prol
 
-for.cond19.preheader.prol:                        ; preds = %for.cond19.preheader.prol.preheader, %for.inc49.prol
-  %indvars.iv28.prol = phi i64 [ %indvars.iv.next29.prol, %for.inc49.prol ], [ 0, %for.cond19.preheader.prol.preheader ]
-  %prol.iter38 = phi i32 [ %prol.iter38.sub, %for.inc49.prol ], [ %xtraiter36, %for.cond19.preheader.prol.preheader ]
-  br i1 %cmp208, label %for.inc49.prol, label %for.body22.lr.ph.prol
+for.cond15.preheader.prol:                        ; preds = %for.cond15.preheader.prol.preheader, %for.inc44.prol
+  %indvars.iv28.prol = phi i64 [ %indvars.iv.next29.prol, %for.inc44.prol ], [ 0, %for.cond15.preheader.prol.preheader ]
+  %prol.iter38 = phi i32 [ %prol.iter38.sub, %for.inc44.prol ], [ %xtraiter36, %for.cond15.preheader.prol.preheader ]
+  br i1 %cmp168, label %for.inc44.prol, label %for.body18.lr.ph.prol
 
-for.body22.lr.ph.prol:                            ; preds = %for.cond19.preheader.prol
-  %3 = trunc i64 %indvars.iv28.prol to i32
-  %mul23.prol = shl i32 %3, 7
-  %4 = sext i32 %mul23.prol to i64
-  br label %for.body22.prol
+for.body18.lr.ph.prol:                            ; preds = %for.cond15.preheader.prol
+  %4 = trunc i64 %indvars.iv28.prol to i32
+  %mul19.prol = shl i32 %4, 7
+  %5 = sext i32 %mul19.prol to i64
+  br label %for.body18.prol
 
-for.body22.prol:                                  ; preds = %for.inc46.prol, %for.body22.lr.ph.prol
-  %indvars.iv23.prol = phi i64 [ 0, %for.body22.lr.ph.prol ], [ %indvars.iv.next24.prol, %for.inc46.prol ]
-  %5 = add nsw i64 %indvars.iv23.prol, %4
-  %arrayidx25.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %5
-  %6 = load i32, i32* %arrayidx25.prol, align 4
-  %conv26.prol = uitofp i32 %6 to float
-  %cmp27.prol = fcmp olt float %conv26.prol, %mul13
-  br i1 %cmp27.prol, label %if.then29.prol, label %if.else32.prol
+for.body18.prol:                                  ; preds = %for.inc41.prol, %for.body18.lr.ph.prol
+  %indvars.iv23.prol = phi i64 [ 0, %for.body18.lr.ph.prol ], [ %indvars.iv.next24.prol, %for.inc41.prol ]
+  %6 = add nsw i64 %indvars.iv23.prol, %5
+  %arrayidx21.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %6
+  %7 = load i32, i32* %arrayidx21.prol, align 4
+  %conv22.prol = uitofp i32 %7 to float
+  %cmp23.prol = fcmp olt float %conv22.prol, %mul9
+  br i1 %cmp23.prol, label %if.then25.prol, label %if.else.prol
 
-if.else32.prol:                                   ; preds = %for.body22.prol
-  %cmp36.prol = fcmp ult float %conv26.prol, %img_max.0.lcssa
-  br i1 %cmp36.prol, label %if.else41.prol, label %if.then38.prol
+if.else.prol:                                     ; preds = %for.body18.prol
+  %cmp31.prol = fcmp ult float %conv22.prol, %mul8
+  br i1 %cmp31.prol, label %if.else36.prol, label %if.then33.prol
 
-if.then38.prol:                                   ; preds = %if.else32.prol
-  store i32 255, i32* %arrayidx25.prol, align 4
-  br label %for.inc46.prol
+if.then33.prol:                                   ; preds = %if.else.prol
+  store i32 255, i32* %arrayidx21.prol, align 4
+  br label %for.inc41.prol
 
-if.else41.prol:                                   ; preds = %if.else32.prol
-  store i32 75, i32* %arrayidx25.prol, align 4
-  br label %for.inc46.prol
+if.else36.prol:                                   ; preds = %if.else.prol
+  store i32 75, i32* %arrayidx21.prol, align 4
+  br label %for.inc41.prol
 
-if.then29.prol:                                   ; preds = %for.body22.prol
-  store i32 0, i32* %arrayidx25.prol, align 4
-  br label %for.inc46.prol
+if.then25.prol:                                   ; preds = %for.body18.prol
+  store i32 0, i32* %arrayidx21.prol, align 4
+  br label %for.inc41.prol
 
-for.inc46.prol:                                   ; preds = %if.then29.prol, %if.else41.prol, %if.then38.prol
+for.inc41.prol:                                   ; preds = %if.then25.prol, %if.else36.prol, %if.then33.prol
   %indvars.iv.next24.prol = add nuw nsw i64 %indvars.iv23.prol, 1
   %lftr.wideiv26.prol = trunc i64 %indvars.iv.next24.prol to i32
   %exitcond27.prol = icmp eq i32 %lftr.wideiv26.prol, %img_width
-  br i1 %exitcond27.prol, label %for.inc49.prol.loopexit, label %for.body22.prol, !llvm.loop !3
+  br i1 %exitcond27.prol, label %for.inc44.prol.loopexit, label %for.body18.prol, !llvm.loop !3
 
-for.inc49.prol.loopexit:                          ; preds = %for.inc46.prol
-  br label %for.inc49.prol
+for.inc44.prol.loopexit:                          ; preds = %for.inc41.prol
+  br label %for.inc44.prol
 
-for.inc49.prol:                                   ; preds = %for.inc49.prol.loopexit, %for.cond19.preheader.prol
+for.inc44.prol:                                   ; preds = %for.inc44.prol.loopexit, %for.cond15.preheader.prol
   %indvars.iv.next29.prol = add nuw nsw i64 %indvars.iv28.prol, 1
   %prol.iter38.sub = add i32 %prol.iter38, -1
   %prol.iter38.cmp = icmp eq i32 %prol.iter38.sub, 0
-  br i1 %prol.iter38.cmp, label %for.cond19.preheader.lr.ph.split.loopexit, label %for.cond19.preheader.prol, !llvm.loop !4
+  br i1 %prol.iter38.cmp, label %for.cond15.preheader.lr.ph.split.loopexit, label %for.cond15.preheader.prol, !llvm.loop !4
 
-for.cond19.preheader.lr.ph.split.loopexit:        ; preds = %for.inc49.prol
-  %indvars.iv.next29.prol.lcssa = phi i64 [ %indvars.iv.next29.prol, %for.inc49.prol ]
-  br label %for.cond19.preheader.lr.ph.split
+for.cond15.preheader.lr.ph.split.loopexit:        ; preds = %for.inc44.prol
+  %indvars.iv.next29.prol.lcssa = phi i64 [ %indvars.iv.next29.prol, %for.inc44.prol ]
+  br label %for.cond15.preheader.lr.ph.split
 
-for.cond19.preheader.lr.ph.split:                 ; preds = %for.cond19.preheader.lr.ph.split.loopexit, %for.cond19.preheader.lr.ph
-  %indvars.iv28.unr = phi i64 [ 0, %for.cond19.preheader.lr.ph ], [ %indvars.iv.next29.prol.lcssa, %for.cond19.preheader.lr.ph.split.loopexit ]
-  %7 = icmp ult i32 %2, 31
-  br i1 %7, label %for.cond58.preheader.lr.ph, label %for.cond19.preheader.preheader
+for.cond15.preheader.lr.ph.split:                 ; preds = %for.cond15.preheader.lr.ph.split.loopexit, %for.cond15.preheader.lr.ph
+  %indvars.iv28.unr = phi i64 [ 0, %for.cond15.preheader.lr.ph ], [ %indvars.iv.next29.prol.lcssa, %for.cond15.preheader.lr.ph.split.loopexit ]
+  %8 = icmp ult i32 %3, 31
+  br i1 %8, label %for.cond53.preheader.lr.ph, label %for.cond15.preheader.preheader
 
-for.cond19.preheader.preheader:                   ; preds = %for.cond19.preheader.lr.ph.split
-  br label %for.cond19.preheader
+for.cond15.preheader.preheader:                   ; preds = %for.cond15.preheader.lr.ph.split
+  br label %for.cond15.preheader
 
-for.cond19.preheader:                             ; preds = %for.cond19.preheader.preheader, %for.inc49.31
-  %indvars.iv28 = phi i64 [ %indvars.iv.next29.31, %for.inc49.31 ], [ %indvars.iv28.unr, %for.cond19.preheader.preheader ]
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph
+for.cond15.preheader:                             ; preds = %for.cond15.preheader.preheader, %for.inc44.31
+  %indvars.iv28 = phi i64 [ %indvars.iv.next29.31, %for.inc44.31 ], [ %indvars.iv28.unr, %for.cond15.preheader.preheader ]
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph
 
-for.body22.lr.ph:                                 ; preds = %for.cond19.preheader
-  %8 = trunc i64 %indvars.iv28 to i32
-  %mul23 = shl i32 %8, 7
-  %9 = sext i32 %mul23 to i64
-  br label %for.body22
+for.body18.lr.ph:                                 ; preds = %for.cond15.preheader
+  %9 = trunc i64 %indvars.iv28 to i32
+  %mul19 = shl i32 %9, 7
+  %10 = sext i32 %mul19 to i64
+  br label %for.body18
 
-for.cond53.preheader:                             ; preds = %for.inc49.31
-  %cmp545 = icmp eq i32 %img_height, 0
-  br i1 %cmp545, label %for.end171, label %for.cond58.preheader.lr.ph
+for.cond48.preheader:                             ; preds = %for.inc44.31
+  %cmp495 = icmp eq i32 %img_height, 0
+  br i1 %cmp495, label %for.end166, label %for.cond53.preheader.lr.ph
 
-for.cond58.preheader.lr.ph:                       ; preds = %for.cond19.preheader.lr.ph.split, %for.cond53.preheader
-  %cmp593 = icmp eq i32 %img_width, 0
-  %10 = zext i32 %sub2 to i64
-  %11 = zext i32 %sub to i64
-  %12 = add i32 %img_height, -1
+for.cond53.preheader.lr.ph:                       ; preds = %for.cond15.preheader.lr.ph.split, %for.cond48.preheader
+  %cmp543 = icmp eq i32 %img_width, 0
+  %11 = zext i32 %sub1 to i64
+  %12 = zext i32 %sub to i64
+  %13 = add i32 %img_height, -1
   %xtraiter = and i32 %img_height, 31
   %lcmp.mod = icmp eq i32 %xtraiter, 0
-  br i1 %lcmp.mod, label %for.cond58.preheader.lr.ph.split, label %for.cond58.preheader.prol.preheader
+  br i1 %lcmp.mod, label %for.cond53.preheader.lr.ph.split, label %for.cond53.preheader.prol.preheader
 
-for.cond58.preheader.prol.preheader:              ; preds = %for.cond58.preheader.lr.ph
-  br label %for.cond58.preheader.prol
+for.cond53.preheader.prol.preheader:              ; preds = %for.cond53.preheader.lr.ph
+  br label %for.cond53.preheader.prol
 
-for.cond58.preheader.prol:                        ; preds = %for.cond58.preheader.prol.preheader, %for.inc169.prol
-  %indvars.iv19.prol = phi i64 [ %indvars.iv.next20.prol, %for.inc169.prol ], [ 0, %for.cond58.preheader.prol.preheader ]
-  %prol.iter = phi i32 [ %prol.iter.sub, %for.inc169.prol ], [ %xtraiter, %for.cond58.preheader.prol.preheader ]
-  br i1 %cmp593, label %for.inc169.prol, label %for.body61.lr.ph.prol
+for.cond53.preheader.prol:                        ; preds = %for.cond53.preheader.prol.preheader, %for.inc164.prol
+  %indvars.iv19.prol = phi i64 [ %indvars.iv.next20.prol, %for.inc164.prol ], [ 0, %for.cond53.preheader.prol.preheader ]
+  %prol.iter = phi i32 [ %prol.iter.sub, %for.inc164.prol ], [ %xtraiter, %for.cond53.preheader.prol.preheader ]
+  br i1 %cmp543, label %for.inc164.prol, label %for.body56.lr.ph.prol
 
-for.body61.lr.ph.prol:                            ; preds = %for.cond58.preheader.prol
-  %13 = trunc i64 %indvars.iv19.prol to i32
-  %mul63.prol = shl nsw i32 %13, 7
-  %cmp65.prol = icmp eq i64 %indvars.iv19.prol, 0
-  %cmp67.prol = icmp eq i64 %indvars.iv19.prol, %11
-  %or.cond.prol = or i1 %cmp65.prol, %cmp67.prol
+for.body56.lr.ph.prol:                            ; preds = %for.cond53.preheader.prol
   %14 = trunc i64 %indvars.iv19.prol to i32
-  %sub84.prol = shl i32 %14, 7
-  %mul94.prol = add i32 %sub84.prol, -128
-  %sub111.prol = add i32 %mul63.prol, -1
-  %add119.prol = or i32 %mul63.prol, 1
-  %mul136.prol = add i32 %sub84.prol, 128
-  %15 = sext i32 %mul63.prol to i64
-  %16 = sext i32 %mul136.prol to i64
-  %17 = sext i32 %mul94.prol to i64
-  br label %for.body61.prol
+  %mul58.prol = shl nsw i32 %14, 7
+  %cmp60.prol = icmp eq i64 %indvars.iv19.prol, 0
+  %cmp62.prol = icmp eq i64 %indvars.iv19.prol, %12
+  %or.cond.prol = or i1 %cmp60.prol, %cmp62.prol
+  %15 = trunc i64 %indvars.iv19.prol to i32
+  %sub79.prol = shl i32 %15, 7
+  %mul89.prol = add i32 %sub79.prol, -128
+  %sub106.prol = add i32 %mul58.prol, -1
+  %add114.prol = or i32 %mul58.prol, 1
+  %mul131.prol = add i32 %sub79.prol, 128
+  %16 = sext i32 %mul58.prol to i64
+  %17 = sext i32 %mul131.prol to i64
+  %18 = sext i32 %mul89.prol to i64
+  br label %for.body56.prol
 
-for.body61.prol:                                  ; preds = %for.inc166.prol, %for.body61.lr.ph.prol
-  %indvars.iv.prol = phi i64 [ 0, %for.body61.lr.ph.prol ], [ %indvars.iv.next.prol, %for.inc166.prol ]
-  %18 = add nsw i64 %indvars.iv.prol, %15
-  %cmp70.prol = icmp eq i64 %indvars.iv.prol, 0
-  %or.cond1.prol = or i1 %or.cond.prol, %cmp70.prol
-  %cmp73.prol = icmp eq i64 %indvars.iv.prol, %10
-  %or.cond2.prol = or i1 %cmp73.prol, %or.cond1.prol
-  br i1 %or.cond2.prol, label %if.then75.prol, label %if.else78.prol
+for.body56.prol:                                  ; preds = %for.inc161.prol, %for.body56.lr.ph.prol
+  %indvars.iv.prol = phi i64 [ 0, %for.body56.lr.ph.prol ], [ %indvars.iv.next.prol, %for.inc161.prol ]
+  %19 = add nsw i64 %indvars.iv.prol, %16
+  %cmp65.prol = icmp eq i64 %indvars.iv.prol, 0
+  %or.cond1.prol = or i1 %or.cond.prol, %cmp65.prol
+  %cmp68.prol = icmp eq i64 %indvars.iv.prol, %11
+  %or.cond2.prol = or i1 %cmp68.prol, %or.cond1.prol
+  br i1 %or.cond2.prol, label %if.then70.prol, label %if.else73.prol
 
-if.else78.prol:                                   ; preds = %for.body61.prol
-  %arrayidx80.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %18
-  %19 = load i32, i32* %arrayidx80.prol, align 4
-  %cmp81.prol = icmp eq i32 %19, 75
-  br i1 %cmp81.prol, label %if.then83.prol, label %if.else158.prol
+if.else73.prol:                                   ; preds = %for.body56.prol
+  %arrayidx75.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %19
+  %20 = load i32, i32* %arrayidx75.prol, align 4
+  %cmp76.prol = icmp eq i32 %20, 75
+  br i1 %cmp76.prol, label %if.then78.prol, label %if.else153.prol
 
-if.else158.prol:                                  ; preds = %if.else78.prol
-  %conv161.prol = trunc i32 %19 to i8
-  %arrayidx163.prol = getelementptr inbounds i8, i8* %., i64 %18
-  store i8 %conv161.prol, i8* %arrayidx163.prol, align 1
-  br label %for.inc166.prol
+if.else153.prol:                                  ; preds = %if.else73.prol
+  %conv156.prol = trunc i32 %20 to i8
+  %arrayidx158.prol = getelementptr inbounds i8, i8* %0, i64 %19
+  store i8 %conv156.prol, i8* %arrayidx158.prol, align 1
+  br label %for.inc161.prol
 
-if.then83.prol:                                   ; preds = %if.else78.prol
-  %20 = trunc i64 %indvars.iv.prol to i32
-  %sub86.prol = add i32 %20, %sub84.prol
-  %add87.prol = add i32 %sub86.prol, -129
-  %idxprom88.prol = sext i32 %add87.prol to i64
-  %arrayidx89.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.prol
-  %21 = load i32, i32* %arrayidx89.prol, align 4
-  %cmp90.prol = icmp eq i32 %21, 255
-  br i1 %cmp90.prol, label %if.then151.prol, label %lor.lhs.false92.prol
+if.then78.prol:                                   ; preds = %if.else73.prol
+  %21 = trunc i64 %indvars.iv.prol to i32
+  %sub81.prol = add i32 %21, %sub79.prol
+  %add82.prol = add i32 %sub81.prol, -129
+  %idxprom83.prol = sext i32 %add82.prol to i64
+  %arrayidx84.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.prol
+  %22 = load i32, i32* %arrayidx84.prol, align 4
+  %cmp85.prol = icmp eq i32 %22, 255
+  br i1 %cmp85.prol, label %if.then146.prol, label %lor.lhs.false87.prol
 
-lor.lhs.false92.prol:                             ; preds = %if.then83.prol
-  %22 = add nsw i64 %17, %indvars.iv.prol
-  %arrayidx97.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %22
-  %23 = load i32, i32* %arrayidx97.prol, align 4
-  %cmp98.prol = icmp eq i32 %23, 255
-  br i1 %cmp98.prol, label %if.then151.prol, label %lor.lhs.false100.prol
+lor.lhs.false87.prol:                             ; preds = %if.then78.prol
+  %23 = add nsw i64 %18, %indvars.iv.prol
+  %arrayidx92.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %23
+  %24 = load i32, i32* %arrayidx92.prol, align 4
+  %cmp93.prol = icmp eq i32 %24, 255
+  br i1 %cmp93.prol, label %if.then146.prol, label %lor.lhs.false95.prol
 
-lor.lhs.false100.prol:                            ; preds = %lor.lhs.false92.prol
-  %add104.prol = add i32 %sub86.prol, -127
-  %idxprom105.prol = sext i32 %add104.prol to i64
-  %arrayidx106.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.prol
-  %24 = load i32, i32* %arrayidx106.prol, align 4
-  %cmp107.prol = icmp eq i32 %24, 255
-  br i1 %cmp107.prol, label %if.then151.prol, label %lor.lhs.false109.prol
+lor.lhs.false95.prol:                             ; preds = %lor.lhs.false87.prol
+  %add99.prol = add i32 %sub81.prol, -127
+  %idxprom100.prol = sext i32 %add99.prol to i64
+  %arrayidx101.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.prol
+  %25 = load i32, i32* %arrayidx101.prol, align 4
+  %cmp102.prol = icmp eq i32 %25, 255
+  br i1 %cmp102.prol, label %if.then146.prol, label %lor.lhs.false104.prol
 
-lor.lhs.false109.prol:                            ; preds = %lor.lhs.false100.prol
-  %25 = trunc i64 %indvars.iv.prol to i32
-  %add112.prol = add i32 %sub111.prol, %25
-  %idxprom113.prol = sext i32 %add112.prol to i64
-  %arrayidx114.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.prol
-  %26 = load i32, i32* %arrayidx114.prol, align 4
-  %cmp115.prol = icmp eq i32 %26, 255
-  br i1 %cmp115.prol, label %if.then151.prol, label %lor.lhs.false117.prol
+lor.lhs.false104.prol:                            ; preds = %lor.lhs.false95.prol
+  %26 = trunc i64 %indvars.iv.prol to i32
+  %add107.prol = add i32 %sub106.prol, %26
+  %idxprom108.prol = sext i32 %add107.prol to i64
+  %arrayidx109.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.prol
+  %27 = load i32, i32* %arrayidx109.prol, align 4
+  %cmp110.prol = icmp eq i32 %27, 255
+  br i1 %cmp110.prol, label %if.then146.prol, label %lor.lhs.false112.prol
 
-lor.lhs.false117.prol:                            ; preds = %lor.lhs.false109.prol
-  %27 = trunc i64 %indvars.iv.prol to i32
-  %add120.prol = add i32 %add119.prol, %27
-  %idxprom121.prol = sext i32 %add120.prol to i64
-  %arrayidx122.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.prol
-  %28 = load i32, i32* %arrayidx122.prol, align 4
-  %cmp123.prol = icmp eq i32 %28, 255
-  br i1 %cmp123.prol, label %if.then151.prol, label %lor.lhs.false125.prol
+lor.lhs.false112.prol:                            ; preds = %lor.lhs.false104.prol
+  %28 = trunc i64 %indvars.iv.prol to i32
+  %add115.prol = add i32 %add114.prol, %28
+  %idxprom116.prol = sext i32 %add115.prol to i64
+  %arrayidx117.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.prol
+  %29 = load i32, i32* %arrayidx117.prol, align 4
+  %cmp118.prol = icmp eq i32 %29, 255
+  br i1 %cmp118.prol, label %if.then146.prol, label %lor.lhs.false120.prol
 
-lor.lhs.false125.prol:                            ; preds = %lor.lhs.false117.prol
-  %add129.prol = add i32 %sub86.prol, 127
-  %idxprom130.prol = sext i32 %add129.prol to i64
-  %arrayidx131.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.prol
-  %29 = load i32, i32* %arrayidx131.prol, align 4
-  %cmp132.prol = icmp eq i32 %29, 255
-  br i1 %cmp132.prol, label %if.then151.prol, label %lor.lhs.false134.prol
+lor.lhs.false120.prol:                            ; preds = %lor.lhs.false112.prol
+  %add124.prol = add i32 %sub81.prol, 127
+  %idxprom125.prol = sext i32 %add124.prol to i64
+  %arrayidx126.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.prol
+  %30 = load i32, i32* %arrayidx126.prol, align 4
+  %cmp127.prol = icmp eq i32 %30, 255
+  br i1 %cmp127.prol, label %if.then146.prol, label %lor.lhs.false129.prol
 
-lor.lhs.false134.prol:                            ; preds = %lor.lhs.false125.prol
-  %30 = add nsw i64 %16, %indvars.iv.prol
-  %arrayidx139.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %30
-  %31 = load i32, i32* %arrayidx139.prol, align 4
-  %cmp140.prol = icmp eq i32 %31, 255
-  br i1 %cmp140.prol, label %if.then151.prol, label %lor.lhs.false142.prol
+lor.lhs.false129.prol:                            ; preds = %lor.lhs.false120.prol
+  %31 = add nsw i64 %17, %indvars.iv.prol
+  %arrayidx134.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %31
+  %32 = load i32, i32* %arrayidx134.prol, align 4
+  %cmp135.prol = icmp eq i32 %32, 255
+  br i1 %cmp135.prol, label %if.then146.prol, label %lor.lhs.false137.prol
 
-lor.lhs.false142.prol:                            ; preds = %lor.lhs.false134.prol
-  %add146.prol = add i32 %sub86.prol, 129
-  %idxprom147.prol = sext i32 %add146.prol to i64
-  %arrayidx148.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.prol
-  %32 = load i32, i32* %arrayidx148.prol, align 4
-  %cmp149.prol = icmp eq i32 %32, 255
-  br i1 %cmp149.prol, label %if.then151.prol, label %if.else154.prol
+lor.lhs.false137.prol:                            ; preds = %lor.lhs.false129.prol
+  %add141.prol = add i32 %sub81.prol, 129
+  %idxprom142.prol = sext i32 %add141.prol to i64
+  %arrayidx143.prol = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.prol
+  %33 = load i32, i32* %arrayidx143.prol, align 4
+  %cmp144.prol = icmp eq i32 %33, 255
+  br i1 %cmp144.prol, label %if.then146.prol, label %if.else149.prol
 
-if.else154.prol:                                  ; preds = %lor.lhs.false142.prol
-  %arrayidx156.prol = getelementptr inbounds i8, i8* %., i64 %18
-  store i8 0, i8* %arrayidx156.prol, align 1
-  br label %for.inc166.prol
+if.else149.prol:                                  ; preds = %lor.lhs.false137.prol
+  %arrayidx151.prol = getelementptr inbounds i8, i8* %0, i64 %19
+  store i8 0, i8* %arrayidx151.prol, align 1
+  br label %for.inc161.prol
 
-if.then151.prol:                                  ; preds = %lor.lhs.false142.prol, %lor.lhs.false134.prol, %lor.lhs.false125.prol, %lor.lhs.false117.prol, %lor.lhs.false109.prol, %lor.lhs.false100.prol, %lor.lhs.false92.prol, %if.then83.prol
-  %arrayidx153.prol = getelementptr inbounds i8, i8* %., i64 %18
-  store i8 -1, i8* %arrayidx153.prol, align 1
-  br label %for.inc166.prol
+if.then146.prol:                                  ; preds = %lor.lhs.false137.prol, %lor.lhs.false129.prol, %lor.lhs.false120.prol, %lor.lhs.false112.prol, %lor.lhs.false104.prol, %lor.lhs.false95.prol, %lor.lhs.false87.prol, %if.then78.prol
+  %arrayidx148.prol = getelementptr inbounds i8, i8* %0, i64 %19
+  store i8 -1, i8* %arrayidx148.prol, align 1
+  br label %for.inc161.prol
 
-if.then75.prol:                                   ; preds = %for.body61.prol
-  %arrayidx77.prol = getelementptr inbounds i8, i8* %., i64 %18
-  store i8 0, i8* %arrayidx77.prol, align 1
-  br label %for.inc166.prol
+if.then70.prol:                                   ; preds = %for.body56.prol
+  %arrayidx72.prol = getelementptr inbounds i8, i8* %0, i64 %19
+  store i8 0, i8* %arrayidx72.prol, align 1
+  br label %for.inc161.prol
 
-for.inc166.prol:                                  ; preds = %if.then75.prol, %if.then151.prol, %if.else154.prol, %if.else158.prol
+for.inc161.prol:                                  ; preds = %if.then70.prol, %if.then146.prol, %if.else149.prol, %if.else153.prol
   %indvars.iv.next.prol = add nuw nsw i64 %indvars.iv.prol, 1
   %lftr.wideiv.prol = trunc i64 %indvars.iv.next.prol to i32
   %exitcond.prol = icmp eq i32 %lftr.wideiv.prol, %img_width
-  br i1 %exitcond.prol, label %for.inc169.prol.loopexit, label %for.body61.prol, !llvm.loop !5
+  br i1 %exitcond.prol, label %for.inc164.prol.loopexit, label %for.body56.prol, !llvm.loop !5
 
-for.inc169.prol.loopexit:                         ; preds = %for.inc166.prol
-  br label %for.inc169.prol
+for.inc164.prol.loopexit:                         ; preds = %for.inc161.prol
+  br label %for.inc164.prol
 
-for.inc169.prol:                                  ; preds = %for.inc169.prol.loopexit, %for.cond58.preheader.prol
+for.inc164.prol:                                  ; preds = %for.inc164.prol.loopexit, %for.cond53.preheader.prol
   %indvars.iv.next20.prol = add nuw nsw i64 %indvars.iv19.prol, 1
   %prol.iter.sub = add i32 %prol.iter, -1
   %prol.iter.cmp = icmp eq i32 %prol.iter.sub, 0
-  br i1 %prol.iter.cmp, label %for.cond58.preheader.lr.ph.split.loopexit, label %for.cond58.preheader.prol, !llvm.loop !6
+  br i1 %prol.iter.cmp, label %for.cond53.preheader.lr.ph.split.loopexit, label %for.cond53.preheader.prol, !llvm.loop !6
 
-for.cond58.preheader.lr.ph.split.loopexit:        ; preds = %for.inc169.prol
-  %indvars.iv.next20.prol.lcssa = phi i64 [ %indvars.iv.next20.prol, %for.inc169.prol ]
-  br label %for.cond58.preheader.lr.ph.split
+for.cond53.preheader.lr.ph.split.loopexit:        ; preds = %for.inc164.prol
+  %indvars.iv.next20.prol.lcssa = phi i64 [ %indvars.iv.next20.prol, %for.inc164.prol ]
+  br label %for.cond53.preheader.lr.ph.split
 
-for.cond58.preheader.lr.ph.split:                 ; preds = %for.cond58.preheader.lr.ph.split.loopexit, %for.cond58.preheader.lr.ph
-  %indvars.iv19.unr = phi i64 [ 0, %for.cond58.preheader.lr.ph ], [ %indvars.iv.next20.prol.lcssa, %for.cond58.preheader.lr.ph.split.loopexit ]
-  %33 = icmp ult i32 %12, 31
-  br i1 %33, label %for.end171, label %for.cond58.preheader.preheader
+for.cond53.preheader.lr.ph.split:                 ; preds = %for.cond53.preheader.lr.ph.split.loopexit, %for.cond53.preheader.lr.ph
+  %indvars.iv19.unr = phi i64 [ 0, %for.cond53.preheader.lr.ph ], [ %indvars.iv.next20.prol.lcssa, %for.cond53.preheader.lr.ph.split.loopexit ]
+  %34 = icmp ult i32 %13, 31
+  br i1 %34, label %for.end166, label %for.cond53.preheader.preheader
 
-for.cond58.preheader.preheader:                   ; preds = %for.cond58.preheader.lr.ph.split
-  br label %for.cond58.preheader
+for.cond53.preheader.preheader:                   ; preds = %for.cond53.preheader.lr.ph.split
+  br label %for.cond53.preheader
 
-for.body22:                                       ; preds = %for.inc46, %for.body22.lr.ph
-  %indvars.iv23 = phi i64 [ 0, %for.body22.lr.ph ], [ %indvars.iv.next24, %for.inc46 ]
-  %34 = add nsw i64 %indvars.iv23, %9
-  %arrayidx25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %34
-  %35 = load i32, i32* %arrayidx25, align 4
-  %conv26 = uitofp i32 %35 to float
-  %cmp27 = fcmp olt float %conv26, %mul13
-  br i1 %cmp27, label %if.then29, label %if.else32
+for.body18:                                       ; preds = %for.inc41, %for.body18.lr.ph
+  %indvars.iv23 = phi i64 [ 0, %for.body18.lr.ph ], [ %indvars.iv.next24, %for.inc41 ]
+  %35 = add nsw i64 %indvars.iv23, %10
+  %arrayidx21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %35
+  %36 = load i32, i32* %arrayidx21, align 4
+  %conv22 = uitofp i32 %36 to float
+  %cmp23 = fcmp olt float %conv22, %mul9
+  br i1 %cmp23, label %if.then25, label %if.else
 
-if.then29:                                        ; preds = %for.body22
-  store i32 0, i32* %arrayidx25, align 4
-  br label %for.inc46
+if.then25:                                        ; preds = %for.body18
+  store i32 0, i32* %arrayidx21, align 4
+  br label %for.inc41
 
-if.else32:                                        ; preds = %for.body22
-  %cmp36 = fcmp ult float %conv26, %img_max.0.lcssa
-  br i1 %cmp36, label %if.else41, label %if.then38
+if.else:                                          ; preds = %for.body18
+  %cmp31 = fcmp ult float %conv22, %mul8
+  br i1 %cmp31, label %if.else36, label %if.then33
 
-if.then38:                                        ; preds = %if.else32
-  store i32 255, i32* %arrayidx25, align 4
-  br label %for.inc46
+if.then33:                                        ; preds = %if.else
+  store i32 255, i32* %arrayidx21, align 4
+  br label %for.inc41
 
-if.else41:                                        ; preds = %if.else32
-  store i32 75, i32* %arrayidx25, align 4
-  br label %for.inc46
+if.else36:                                        ; preds = %if.else
+  store i32 75, i32* %arrayidx21, align 4
+  br label %for.inc41
 
-for.inc46:                                        ; preds = %if.then29, %if.else41, %if.then38
+for.inc41:                                        ; preds = %if.then25, %if.else36, %if.then33
   %indvars.iv.next24 = add nuw nsw i64 %indvars.iv23, 1
   %lftr.wideiv26 = trunc i64 %indvars.iv.next24 to i32
   %exitcond27 = icmp eq i32 %lftr.wideiv26, %img_width
-  br i1 %exitcond27, label %for.inc49, label %for.body22, !llvm.loop !3
+  br i1 %exitcond27, label %for.inc44, label %for.body18, !llvm.loop !3
 
-for.inc49:                                        ; preds = %for.inc46
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.1
+for.inc44:                                        ; preds = %for.inc41
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.1
 
-for.cond58.preheader:                             ; preds = %for.cond58.preheader.preheader, %for.inc169.31
-  %indvars.iv19 = phi i64 [ %indvars.iv.next20.31, %for.inc169.31 ], [ %indvars.iv19.unr, %for.cond58.preheader.preheader ]
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph
+for.cond53.preheader:                             ; preds = %for.cond53.preheader.preheader, %for.inc164.31
+  %indvars.iv19 = phi i64 [ %indvars.iv.next20.31, %for.inc164.31 ], [ %indvars.iv19.unr, %for.cond53.preheader.preheader ]
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph
 
-for.body61.lr.ph:                                 ; preds = %for.cond58.preheader
-  %36 = trunc i64 %indvars.iv19 to i32
-  %mul63 = shl nsw i32 %36, 7
-  %cmp65 = icmp eq i64 %indvars.iv19, 0
-  %cmp67 = icmp eq i64 %indvars.iv19, %11
-  %or.cond = or i1 %cmp65, %cmp67
+for.body56.lr.ph:                                 ; preds = %for.cond53.preheader
   %37 = trunc i64 %indvars.iv19 to i32
-  %sub84 = shl i32 %37, 7
-  %mul94 = add i32 %sub84, -128
-  %sub111 = add i32 %mul63, -1
-  %add119 = or i32 %mul63, 1
-  %mul136 = add i32 %sub84, 128
-  %38 = sext i32 %mul63 to i64
-  %39 = sext i32 %mul136 to i64
-  %40 = sext i32 %mul94 to i64
-  br label %for.body61
+  %mul58 = shl nsw i32 %37, 7
+  %cmp60 = icmp eq i64 %indvars.iv19, 0
+  %cmp62 = icmp eq i64 %indvars.iv19, %12
+  %or.cond = or i1 %cmp60, %cmp62
+  %38 = trunc i64 %indvars.iv19 to i32
+  %sub79 = shl i32 %38, 7
+  %mul89 = add i32 %sub79, -128
+  %sub106 = add i32 %mul58, -1
+  %add114 = or i32 %mul58, 1
+  %mul131 = add i32 %sub79, 128
+  %39 = sext i32 %mul58 to i64
+  %40 = sext i32 %mul131 to i64
+  %41 = sext i32 %mul89 to i64
+  br label %for.body56
 
-for.body61:                                       ; preds = %for.inc166, %for.body61.lr.ph
-  %indvars.iv = phi i64 [ 0, %for.body61.lr.ph ], [ %indvars.iv.next, %for.inc166 ]
-  %41 = add nsw i64 %indvars.iv, %38
-  %cmp70 = icmp eq i64 %indvars.iv, 0
-  %or.cond1 = or i1 %or.cond, %cmp70
-  %cmp73 = icmp eq i64 %indvars.iv, %10
-  %or.cond2 = or i1 %cmp73, %or.cond1
-  br i1 %or.cond2, label %if.then75, label %if.else78
+for.body56:                                       ; preds = %for.inc161, %for.body56.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body56.lr.ph ], [ %indvars.iv.next, %for.inc161 ]
+  %42 = add nsw i64 %indvars.iv, %39
+  %cmp65 = icmp eq i64 %indvars.iv, 0
+  %or.cond1 = or i1 %or.cond, %cmp65
+  %cmp68 = icmp eq i64 %indvars.iv, %11
+  %or.cond2 = or i1 %cmp68, %or.cond1
+  br i1 %or.cond2, label %if.then70, label %if.else73
 
-if.then75:                                        ; preds = %for.body61
-  %arrayidx77 = getelementptr inbounds i8, i8* %., i64 %41
-  store i8 0, i8* %arrayidx77, align 1
-  br label %for.inc166
+if.then70:                                        ; preds = %for.body56
+  %arrayidx72 = getelementptr inbounds i8, i8* %0, i64 %42
+  store i8 0, i8* %arrayidx72, align 1
+  br label %for.inc161
 
-if.else78:                                        ; preds = %for.body61
-  %arrayidx80 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %41
-  %42 = load i32, i32* %arrayidx80, align 4
-  %cmp81 = icmp eq i32 %42, 75
-  br i1 %cmp81, label %if.then83, label %if.else158
+if.else73:                                        ; preds = %for.body56
+  %arrayidx75 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %42
+  %43 = load i32, i32* %arrayidx75, align 4
+  %cmp76 = icmp eq i32 %43, 75
+  br i1 %cmp76, label %if.then78, label %if.else153
 
-if.then83:                                        ; preds = %if.else78
-  %43 = trunc i64 %indvars.iv to i32
-  %sub86 = add i32 %43, %sub84
-  %add87 = add i32 %sub86, -129
-  %idxprom88 = sext i32 %add87 to i64
-  %arrayidx89 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88
-  %44 = load i32, i32* %arrayidx89, align 4
-  %cmp90 = icmp eq i32 %44, 255
-  br i1 %cmp90, label %if.then151, label %lor.lhs.false92
+if.then78:                                        ; preds = %if.else73
+  %44 = trunc i64 %indvars.iv to i32
+  %sub81 = add i32 %44, %sub79
+  %add82 = add i32 %sub81, -129
+  %idxprom83 = sext i32 %add82 to i64
+  %arrayidx84 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83
+  %45 = load i32, i32* %arrayidx84, align 4
+  %cmp85 = icmp eq i32 %45, 255
+  br i1 %cmp85, label %if.then146, label %lor.lhs.false87
 
-lor.lhs.false92:                                  ; preds = %if.then83
-  %45 = add nsw i64 %40, %indvars.iv
-  %arrayidx97 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %45
-  %46 = load i32, i32* %arrayidx97, align 4
-  %cmp98 = icmp eq i32 %46, 255
-  br i1 %cmp98, label %if.then151, label %lor.lhs.false100
+lor.lhs.false87:                                  ; preds = %if.then78
+  %46 = add nsw i64 %41, %indvars.iv
+  %arrayidx92 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %46
+  %47 = load i32, i32* %arrayidx92, align 4
+  %cmp93 = icmp eq i32 %47, 255
+  br i1 %cmp93, label %if.then146, label %lor.lhs.false95
 
-lor.lhs.false100:                                 ; preds = %lor.lhs.false92
-  %add104 = add i32 %sub86, -127
-  %idxprom105 = sext i32 %add104 to i64
-  %arrayidx106 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105
-  %47 = load i32, i32* %arrayidx106, align 4
-  %cmp107 = icmp eq i32 %47, 255
-  br i1 %cmp107, label %if.then151, label %lor.lhs.false109
+lor.lhs.false95:                                  ; preds = %lor.lhs.false87
+  %add99 = add i32 %sub81, -127
+  %idxprom100 = sext i32 %add99 to i64
+  %arrayidx101 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100
+  %48 = load i32, i32* %arrayidx101, align 4
+  %cmp102 = icmp eq i32 %48, 255
+  br i1 %cmp102, label %if.then146, label %lor.lhs.false104
 
-lor.lhs.false109:                                 ; preds = %lor.lhs.false100
-  %48 = trunc i64 %indvars.iv to i32
-  %add112 = add i32 %sub111, %48
-  %idxprom113 = sext i32 %add112 to i64
-  %arrayidx114 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113
-  %49 = load i32, i32* %arrayidx114, align 4
-  %cmp115 = icmp eq i32 %49, 255
-  br i1 %cmp115, label %if.then151, label %lor.lhs.false117
+lor.lhs.false104:                                 ; preds = %lor.lhs.false95
+  %49 = trunc i64 %indvars.iv to i32
+  %add107 = add i32 %sub106, %49
+  %idxprom108 = sext i32 %add107 to i64
+  %arrayidx109 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108
+  %50 = load i32, i32* %arrayidx109, align 4
+  %cmp110 = icmp eq i32 %50, 255
+  br i1 %cmp110, label %if.then146, label %lor.lhs.false112
 
-lor.lhs.false117:                                 ; preds = %lor.lhs.false109
-  %50 = trunc i64 %indvars.iv to i32
-  %add120 = add i32 %add119, %50
-  %idxprom121 = sext i32 %add120 to i64
-  %arrayidx122 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121
-  %51 = load i32, i32* %arrayidx122, align 4
-  %cmp123 = icmp eq i32 %51, 255
-  br i1 %cmp123, label %if.then151, label %lor.lhs.false125
+lor.lhs.false112:                                 ; preds = %lor.lhs.false104
+  %51 = trunc i64 %indvars.iv to i32
+  %add115 = add i32 %add114, %51
+  %idxprom116 = sext i32 %add115 to i64
+  %arrayidx117 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116
+  %52 = load i32, i32* %arrayidx117, align 4
+  %cmp118 = icmp eq i32 %52, 255
+  br i1 %cmp118, label %if.then146, label %lor.lhs.false120
 
-lor.lhs.false125:                                 ; preds = %lor.lhs.false117
-  %add129 = add i32 %sub86, 127
-  %idxprom130 = sext i32 %add129 to i64
-  %arrayidx131 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130
-  %52 = load i32, i32* %arrayidx131, align 4
-  %cmp132 = icmp eq i32 %52, 255
-  br i1 %cmp132, label %if.then151, label %lor.lhs.false134
+lor.lhs.false120:                                 ; preds = %lor.lhs.false112
+  %add124 = add i32 %sub81, 127
+  %idxprom125 = sext i32 %add124 to i64
+  %arrayidx126 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125
+  %53 = load i32, i32* %arrayidx126, align 4
+  %cmp127 = icmp eq i32 %53, 255
+  br i1 %cmp127, label %if.then146, label %lor.lhs.false129
 
-lor.lhs.false134:                                 ; preds = %lor.lhs.false125
-  %53 = add nsw i64 %39, %indvars.iv
-  %arrayidx139 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %53
-  %54 = load i32, i32* %arrayidx139, align 4
-  %cmp140 = icmp eq i32 %54, 255
-  br i1 %cmp140, label %if.then151, label %lor.lhs.false142
+lor.lhs.false129:                                 ; preds = %lor.lhs.false120
+  %54 = add nsw i64 %40, %indvars.iv
+  %arrayidx134 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %54
+  %55 = load i32, i32* %arrayidx134, align 4
+  %cmp135 = icmp eq i32 %55, 255
+  br i1 %cmp135, label %if.then146, label %lor.lhs.false137
 
-lor.lhs.false142:                                 ; preds = %lor.lhs.false134
-  %add146 = add i32 %sub86, 129
-  %idxprom147 = sext i32 %add146 to i64
-  %arrayidx148 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147
-  %55 = load i32, i32* %arrayidx148, align 4
-  %cmp149 = icmp eq i32 %55, 255
-  br i1 %cmp149, label %if.then151, label %if.else154
+lor.lhs.false137:                                 ; preds = %lor.lhs.false129
+  %add141 = add i32 %sub81, 129
+  %idxprom142 = sext i32 %add141 to i64
+  %arrayidx143 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142
+  %56 = load i32, i32* %arrayidx143, align 4
+  %cmp144 = icmp eq i32 %56, 255
+  br i1 %cmp144, label %if.then146, label %if.else149
 
-if.then151:                                       ; preds = %lor.lhs.false142, %lor.lhs.false134, %lor.lhs.false125, %lor.lhs.false117, %lor.lhs.false109, %lor.lhs.false100, %lor.lhs.false92, %if.then83
-  %arrayidx153 = getelementptr inbounds i8, i8* %., i64 %41
-  store i8 -1, i8* %arrayidx153, align 1
-  br label %for.inc166
+if.then146:                                       ; preds = %lor.lhs.false137, %lor.lhs.false129, %lor.lhs.false120, %lor.lhs.false112, %lor.lhs.false104, %lor.lhs.false95, %lor.lhs.false87, %if.then78
+  %arrayidx148 = getelementptr inbounds i8, i8* %0, i64 %42
+  store i8 -1, i8* %arrayidx148, align 1
+  br label %for.inc161
 
-if.else154:                                       ; preds = %lor.lhs.false142
-  %arrayidx156 = getelementptr inbounds i8, i8* %., i64 %41
-  store i8 0, i8* %arrayidx156, align 1
-  br label %for.inc166
+if.else149:                                       ; preds = %lor.lhs.false137
+  %arrayidx151 = getelementptr inbounds i8, i8* %0, i64 %42
+  store i8 0, i8* %arrayidx151, align 1
+  br label %for.inc161
 
-if.else158:                                       ; preds = %if.else78
-  %conv161 = trunc i32 %42 to i8
-  %arrayidx163 = getelementptr inbounds i8, i8* %., i64 %41
-  store i8 %conv161, i8* %arrayidx163, align 1
-  br label %for.inc166
+if.else153:                                       ; preds = %if.else73
+  %conv156 = trunc i32 %43 to i8
+  %arrayidx158 = getelementptr inbounds i8, i8* %0, i64 %42
+  store i8 %conv156, i8* %arrayidx158, align 1
+  br label %for.inc161
 
-for.inc166:                                       ; preds = %if.then75, %if.then151, %if.else154, %if.else158
+for.inc161:                                       ; preds = %if.then70, %if.then146, %if.else149, %if.else153
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %lftr.wideiv = trunc i64 %indvars.iv.next to i32
   %exitcond = icmp eq i32 %lftr.wideiv, %img_width
-  br i1 %exitcond, label %for.inc169, label %for.body61, !llvm.loop !5
+  br i1 %exitcond, label %for.inc164, label %for.body56, !llvm.loop !5
 
-for.inc169:                                       ; preds = %for.inc166
+for.inc164:                                       ; preds = %for.inc161
   %indvars.iv.next20 = add nuw nsw i64 %indvars.iv19, 1
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.1
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.1
 
-for.end171.loopexit:                              ; preds = %for.inc169.31
-  br label %for.end171
+for.end166.loopexit:                              ; preds = %for.inc164.31
+  br label %for.end166
 
-for.end171:                                       ; preds = %for.end171.loopexit, %for.end, %for.cond58.preheader.lr.ph.split, %for.cond53.preheader
+for.end166:                                       ; preds = %for.end166.loopexit, %for.end, %for.cond53.preheader.lr.ph.split, %for.cond48.preheader
   ret void
 
-for.body61.lr.ph.1:                               ; preds = %for.inc169
-  %56 = trunc i64 %indvars.iv.next20 to i32
-  %mul63.1 = shl nsw i32 %56, 7
-  %cmp67.1 = icmp eq i64 %indvars.iv.next20, %11
+for.body56.lr.ph.1:                               ; preds = %for.inc164
   %57 = trunc i64 %indvars.iv.next20 to i32
-  %sub84.1 = shl i32 %57, 7
-  %mul94.1 = add i32 %sub84.1, -128
-  %sub111.1 = add i32 %mul63.1, -1
-  %add119.1 = or i32 %mul63.1, 1
-  %mul136.1 = add i32 %sub84.1, 128
-  %58 = sext i32 %mul63.1 to i64
-  %59 = sext i32 %mul136.1 to i64
-  %60 = sext i32 %mul94.1 to i64
-  br label %for.body61.1
+  %mul58.1 = shl nsw i32 %57, 7
+  %cmp62.1 = icmp eq i64 %indvars.iv.next20, %12
+  %58 = trunc i64 %indvars.iv.next20 to i32
+  %sub79.1 = shl i32 %58, 7
+  %mul89.1 = add i32 %sub79.1, -128
+  %sub106.1 = add i32 %mul58.1, -1
+  %add114.1 = or i32 %mul58.1, 1
+  %mul131.1 = add i32 %sub79.1, 128
+  %59 = sext i32 %mul58.1 to i64
+  %60 = sext i32 %mul131.1 to i64
+  %61 = sext i32 %mul89.1 to i64
+  br label %for.body56.1
 
-for.body61.1:                                     ; preds = %for.inc166.1, %for.body61.lr.ph.1
-  %indvars.iv.1 = phi i64 [ 0, %for.body61.lr.ph.1 ], [ %indvars.iv.next.1, %for.inc166.1 ]
-  %61 = add nsw i64 %indvars.iv.1, %58
-  %cmp70.1 = icmp eq i64 %indvars.iv.1, 0
-  %or.cond1.1 = or i1 %cmp67.1, %cmp70.1
-  %cmp73.1 = icmp eq i64 %indvars.iv.1, %10
-  %or.cond2.1 = or i1 %cmp73.1, %or.cond1.1
-  br i1 %or.cond2.1, label %if.then75.1, label %if.else78.1
+for.body56.1:                                     ; preds = %for.inc161.1, %for.body56.lr.ph.1
+  %indvars.iv.1 = phi i64 [ 0, %for.body56.lr.ph.1 ], [ %indvars.iv.next.1, %for.inc161.1 ]
+  %62 = add nsw i64 %indvars.iv.1, %59
+  %cmp65.1 = icmp eq i64 %indvars.iv.1, 0
+  %or.cond1.1 = or i1 %cmp62.1, %cmp65.1
+  %cmp68.1 = icmp eq i64 %indvars.iv.1, %11
+  %or.cond2.1 = or i1 %cmp68.1, %or.cond1.1
+  br i1 %or.cond2.1, label %if.then70.1, label %if.else73.1
 
-if.else78.1:                                      ; preds = %for.body61.1
-  %arrayidx80.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %61
-  %62 = load i32, i32* %arrayidx80.1, align 4
-  %cmp81.1 = icmp eq i32 %62, 75
-  br i1 %cmp81.1, label %if.then83.1, label %if.else158.1
+if.else73.1:                                      ; preds = %for.body56.1
+  %arrayidx75.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %62
+  %63 = load i32, i32* %arrayidx75.1, align 4
+  %cmp76.1 = icmp eq i32 %63, 75
+  br i1 %cmp76.1, label %if.then78.1, label %if.else153.1
 
-if.else158.1:                                     ; preds = %if.else78.1
-  %conv161.1 = trunc i32 %62 to i8
-  %arrayidx163.1 = getelementptr inbounds i8, i8* %., i64 %61
-  store i8 %conv161.1, i8* %arrayidx163.1, align 1
-  br label %for.inc166.1
+if.else153.1:                                     ; preds = %if.else73.1
+  %conv156.1 = trunc i32 %63 to i8
+  %arrayidx158.1 = getelementptr inbounds i8, i8* %0, i64 %62
+  store i8 %conv156.1, i8* %arrayidx158.1, align 1
+  br label %for.inc161.1
 
-if.then83.1:                                      ; preds = %if.else78.1
-  %63 = trunc i64 %indvars.iv.1 to i32
-  %sub86.1 = add i32 %63, %sub84.1
-  %add87.1 = add i32 %sub86.1, -129
-  %idxprom88.1 = sext i32 %add87.1 to i64
-  %arrayidx89.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.1
-  %64 = load i32, i32* %arrayidx89.1, align 4
-  %cmp90.1 = icmp eq i32 %64, 255
-  br i1 %cmp90.1, label %if.then151.1, label %lor.lhs.false92.1
+if.then78.1:                                      ; preds = %if.else73.1
+  %64 = trunc i64 %indvars.iv.1 to i32
+  %sub81.1 = add i32 %64, %sub79.1
+  %add82.1 = add i32 %sub81.1, -129
+  %idxprom83.1 = sext i32 %add82.1 to i64
+  %arrayidx84.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.1
+  %65 = load i32, i32* %arrayidx84.1, align 4
+  %cmp85.1 = icmp eq i32 %65, 255
+  br i1 %cmp85.1, label %if.then146.1, label %lor.lhs.false87.1
 
-lor.lhs.false92.1:                                ; preds = %if.then83.1
-  %65 = add nsw i64 %60, %indvars.iv.1
-  %arrayidx97.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %65
-  %66 = load i32, i32* %arrayidx97.1, align 4
-  %cmp98.1 = icmp eq i32 %66, 255
-  br i1 %cmp98.1, label %if.then151.1, label %lor.lhs.false100.1
+lor.lhs.false87.1:                                ; preds = %if.then78.1
+  %66 = add nsw i64 %61, %indvars.iv.1
+  %arrayidx92.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %66
+  %67 = load i32, i32* %arrayidx92.1, align 4
+  %cmp93.1 = icmp eq i32 %67, 255
+  br i1 %cmp93.1, label %if.then146.1, label %lor.lhs.false95.1
 
-lor.lhs.false100.1:                               ; preds = %lor.lhs.false92.1
-  %add104.1 = add i32 %sub86.1, -127
-  %idxprom105.1 = sext i32 %add104.1 to i64
-  %arrayidx106.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.1
-  %67 = load i32, i32* %arrayidx106.1, align 4
-  %cmp107.1 = icmp eq i32 %67, 255
-  br i1 %cmp107.1, label %if.then151.1, label %lor.lhs.false109.1
+lor.lhs.false95.1:                                ; preds = %lor.lhs.false87.1
+  %add99.1 = add i32 %sub81.1, -127
+  %idxprom100.1 = sext i32 %add99.1 to i64
+  %arrayidx101.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.1
+  %68 = load i32, i32* %arrayidx101.1, align 4
+  %cmp102.1 = icmp eq i32 %68, 255
+  br i1 %cmp102.1, label %if.then146.1, label %lor.lhs.false104.1
 
-lor.lhs.false109.1:                               ; preds = %lor.lhs.false100.1
-  %68 = trunc i64 %indvars.iv.1 to i32
-  %add112.1 = add i32 %sub111.1, %68
-  %idxprom113.1 = sext i32 %add112.1 to i64
-  %arrayidx114.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.1
-  %69 = load i32, i32* %arrayidx114.1, align 4
-  %cmp115.1 = icmp eq i32 %69, 255
-  br i1 %cmp115.1, label %if.then151.1, label %lor.lhs.false117.1
+lor.lhs.false104.1:                               ; preds = %lor.lhs.false95.1
+  %69 = trunc i64 %indvars.iv.1 to i32
+  %add107.1 = add i32 %sub106.1, %69
+  %idxprom108.1 = sext i32 %add107.1 to i64
+  %arrayidx109.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.1
+  %70 = load i32, i32* %arrayidx109.1, align 4
+  %cmp110.1 = icmp eq i32 %70, 255
+  br i1 %cmp110.1, label %if.then146.1, label %lor.lhs.false112.1
 
-lor.lhs.false117.1:                               ; preds = %lor.lhs.false109.1
-  %70 = trunc i64 %indvars.iv.1 to i32
-  %add120.1 = add i32 %add119.1, %70
-  %idxprom121.1 = sext i32 %add120.1 to i64
-  %arrayidx122.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.1
-  %71 = load i32, i32* %arrayidx122.1, align 4
-  %cmp123.1 = icmp eq i32 %71, 255
-  br i1 %cmp123.1, label %if.then151.1, label %lor.lhs.false125.1
+lor.lhs.false112.1:                               ; preds = %lor.lhs.false104.1
+  %71 = trunc i64 %indvars.iv.1 to i32
+  %add115.1 = add i32 %add114.1, %71
+  %idxprom116.1 = sext i32 %add115.1 to i64
+  %arrayidx117.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.1
+  %72 = load i32, i32* %arrayidx117.1, align 4
+  %cmp118.1 = icmp eq i32 %72, 255
+  br i1 %cmp118.1, label %if.then146.1, label %lor.lhs.false120.1
 
-lor.lhs.false125.1:                               ; preds = %lor.lhs.false117.1
-  %add129.1 = add i32 %sub86.1, 127
-  %idxprom130.1 = sext i32 %add129.1 to i64
-  %arrayidx131.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.1
-  %72 = load i32, i32* %arrayidx131.1, align 4
-  %cmp132.1 = icmp eq i32 %72, 255
-  br i1 %cmp132.1, label %if.then151.1, label %lor.lhs.false134.1
+lor.lhs.false120.1:                               ; preds = %lor.lhs.false112.1
+  %add124.1 = add i32 %sub81.1, 127
+  %idxprom125.1 = sext i32 %add124.1 to i64
+  %arrayidx126.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.1
+  %73 = load i32, i32* %arrayidx126.1, align 4
+  %cmp127.1 = icmp eq i32 %73, 255
+  br i1 %cmp127.1, label %if.then146.1, label %lor.lhs.false129.1
 
-lor.lhs.false134.1:                               ; preds = %lor.lhs.false125.1
-  %73 = add nsw i64 %59, %indvars.iv.1
-  %arrayidx139.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %73
-  %74 = load i32, i32* %arrayidx139.1, align 4
-  %cmp140.1 = icmp eq i32 %74, 255
-  br i1 %cmp140.1, label %if.then151.1, label %lor.lhs.false142.1
+lor.lhs.false129.1:                               ; preds = %lor.lhs.false120.1
+  %74 = add nsw i64 %60, %indvars.iv.1
+  %arrayidx134.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %74
+  %75 = load i32, i32* %arrayidx134.1, align 4
+  %cmp135.1 = icmp eq i32 %75, 255
+  br i1 %cmp135.1, label %if.then146.1, label %lor.lhs.false137.1
 
-lor.lhs.false142.1:                               ; preds = %lor.lhs.false134.1
-  %add146.1 = add i32 %sub86.1, 129
-  %idxprom147.1 = sext i32 %add146.1 to i64
-  %arrayidx148.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.1
-  %75 = load i32, i32* %arrayidx148.1, align 4
-  %cmp149.1 = icmp eq i32 %75, 255
-  br i1 %cmp149.1, label %if.then151.1, label %if.else154.1
+lor.lhs.false137.1:                               ; preds = %lor.lhs.false129.1
+  %add141.1 = add i32 %sub81.1, 129
+  %idxprom142.1 = sext i32 %add141.1 to i64
+  %arrayidx143.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.1
+  %76 = load i32, i32* %arrayidx143.1, align 4
+  %cmp144.1 = icmp eq i32 %76, 255
+  br i1 %cmp144.1, label %if.then146.1, label %if.else149.1
 
-if.else154.1:                                     ; preds = %lor.lhs.false142.1
-  %arrayidx156.1 = getelementptr inbounds i8, i8* %., i64 %61
-  store i8 0, i8* %arrayidx156.1, align 1
-  br label %for.inc166.1
+if.else149.1:                                     ; preds = %lor.lhs.false137.1
+  %arrayidx151.1 = getelementptr inbounds i8, i8* %0, i64 %62
+  store i8 0, i8* %arrayidx151.1, align 1
+  br label %for.inc161.1
 
-if.then151.1:                                     ; preds = %lor.lhs.false142.1, %lor.lhs.false134.1, %lor.lhs.false125.1, %lor.lhs.false117.1, %lor.lhs.false109.1, %lor.lhs.false100.1, %lor.lhs.false92.1, %if.then83.1
-  %arrayidx153.1 = getelementptr inbounds i8, i8* %., i64 %61
-  store i8 -1, i8* %arrayidx153.1, align 1
-  br label %for.inc166.1
+if.then146.1:                                     ; preds = %lor.lhs.false137.1, %lor.lhs.false129.1, %lor.lhs.false120.1, %lor.lhs.false112.1, %lor.lhs.false104.1, %lor.lhs.false95.1, %lor.lhs.false87.1, %if.then78.1
+  %arrayidx148.1 = getelementptr inbounds i8, i8* %0, i64 %62
+  store i8 -1, i8* %arrayidx148.1, align 1
+  br label %for.inc161.1
 
-if.then75.1:                                      ; preds = %for.body61.1
-  %arrayidx77.1 = getelementptr inbounds i8, i8* %., i64 %61
-  store i8 0, i8* %arrayidx77.1, align 1
-  br label %for.inc166.1
+if.then70.1:                                      ; preds = %for.body56.1
+  %arrayidx72.1 = getelementptr inbounds i8, i8* %0, i64 %62
+  store i8 0, i8* %arrayidx72.1, align 1
+  br label %for.inc161.1
 
-for.inc166.1:                                     ; preds = %if.then75.1, %if.then151.1, %if.else154.1, %if.else158.1
+for.inc161.1:                                     ; preds = %if.then70.1, %if.then146.1, %if.else149.1, %if.else153.1
   %indvars.iv.next.1 = add nuw nsw i64 %indvars.iv.1, 1
   %lftr.wideiv.1 = trunc i64 %indvars.iv.next.1 to i32
   %exitcond.1 = icmp eq i32 %lftr.wideiv.1, %img_width
-  br i1 %exitcond.1, label %for.inc169.1, label %for.body61.1, !llvm.loop !5
+  br i1 %exitcond.1, label %for.inc164.1, label %for.body56.1, !llvm.loop !5
 
-for.inc169.1:                                     ; preds = %for.inc166.1
+for.inc164.1:                                     ; preds = %for.inc161.1
   %indvars.iv.next20.1 = add nsw i64 %indvars.iv19, 2
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.2
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.2
 
-for.body61.lr.ph.2:                               ; preds = %for.inc169.1
-  %76 = trunc i64 %indvars.iv.next20.1 to i32
-  %mul63.2 = shl nsw i32 %76, 7
-  %cmp67.2 = icmp eq i64 %indvars.iv.next20.1, %11
+for.body56.lr.ph.2:                               ; preds = %for.inc164.1
   %77 = trunc i64 %indvars.iv.next20.1 to i32
-  %sub84.2 = shl i32 %77, 7
-  %mul94.2 = add i32 %sub84.2, -128
-  %sub111.2 = add i32 %mul63.2, -1
-  %add119.2 = or i32 %mul63.2, 1
-  %mul136.2 = add i32 %sub84.2, 128
-  %78 = sext i32 %mul63.2 to i64
-  %79 = sext i32 %mul136.2 to i64
-  %80 = sext i32 %mul94.2 to i64
-  br label %for.body61.2
+  %mul58.2 = shl nsw i32 %77, 7
+  %cmp62.2 = icmp eq i64 %indvars.iv.next20.1, %12
+  %78 = trunc i64 %indvars.iv.next20.1 to i32
+  %sub79.2 = shl i32 %78, 7
+  %mul89.2 = add i32 %sub79.2, -128
+  %sub106.2 = add i32 %mul58.2, -1
+  %add114.2 = or i32 %mul58.2, 1
+  %mul131.2 = add i32 %sub79.2, 128
+  %79 = sext i32 %mul58.2 to i64
+  %80 = sext i32 %mul131.2 to i64
+  %81 = sext i32 %mul89.2 to i64
+  br label %for.body56.2
 
-for.body61.2:                                     ; preds = %for.inc166.2, %for.body61.lr.ph.2
-  %indvars.iv.2 = phi i64 [ 0, %for.body61.lr.ph.2 ], [ %indvars.iv.next.2, %for.inc166.2 ]
-  %81 = add nsw i64 %indvars.iv.2, %78
-  %cmp70.2 = icmp eq i64 %indvars.iv.2, 0
-  %or.cond1.2 = or i1 %cmp67.2, %cmp70.2
-  %cmp73.2 = icmp eq i64 %indvars.iv.2, %10
-  %or.cond2.2 = or i1 %cmp73.2, %or.cond1.2
-  br i1 %or.cond2.2, label %if.then75.2, label %if.else78.2
+for.body56.2:                                     ; preds = %for.inc161.2, %for.body56.lr.ph.2
+  %indvars.iv.2 = phi i64 [ 0, %for.body56.lr.ph.2 ], [ %indvars.iv.next.2, %for.inc161.2 ]
+  %82 = add nsw i64 %indvars.iv.2, %79
+  %cmp65.2 = icmp eq i64 %indvars.iv.2, 0
+  %or.cond1.2 = or i1 %cmp62.2, %cmp65.2
+  %cmp68.2 = icmp eq i64 %indvars.iv.2, %11
+  %or.cond2.2 = or i1 %cmp68.2, %or.cond1.2
+  br i1 %or.cond2.2, label %if.then70.2, label %if.else73.2
 
-if.else78.2:                                      ; preds = %for.body61.2
-  %arrayidx80.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %81
-  %82 = load i32, i32* %arrayidx80.2, align 4
-  %cmp81.2 = icmp eq i32 %82, 75
-  br i1 %cmp81.2, label %if.then83.2, label %if.else158.2
+if.else73.2:                                      ; preds = %for.body56.2
+  %arrayidx75.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %82
+  %83 = load i32, i32* %arrayidx75.2, align 4
+  %cmp76.2 = icmp eq i32 %83, 75
+  br i1 %cmp76.2, label %if.then78.2, label %if.else153.2
 
-if.else158.2:                                     ; preds = %if.else78.2
-  %conv161.2 = trunc i32 %82 to i8
-  %arrayidx163.2 = getelementptr inbounds i8, i8* %., i64 %81
-  store i8 %conv161.2, i8* %arrayidx163.2, align 1
-  br label %for.inc166.2
+if.else153.2:                                     ; preds = %if.else73.2
+  %conv156.2 = trunc i32 %83 to i8
+  %arrayidx158.2 = getelementptr inbounds i8, i8* %0, i64 %82
+  store i8 %conv156.2, i8* %arrayidx158.2, align 1
+  br label %for.inc161.2
 
-if.then83.2:                                      ; preds = %if.else78.2
-  %83 = trunc i64 %indvars.iv.2 to i32
-  %sub86.2 = add i32 %83, %sub84.2
-  %add87.2 = add i32 %sub86.2, -129
-  %idxprom88.2 = sext i32 %add87.2 to i64
-  %arrayidx89.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.2
-  %84 = load i32, i32* %arrayidx89.2, align 4
-  %cmp90.2 = icmp eq i32 %84, 255
-  br i1 %cmp90.2, label %if.then151.2, label %lor.lhs.false92.2
+if.then78.2:                                      ; preds = %if.else73.2
+  %84 = trunc i64 %indvars.iv.2 to i32
+  %sub81.2 = add i32 %84, %sub79.2
+  %add82.2 = add i32 %sub81.2, -129
+  %idxprom83.2 = sext i32 %add82.2 to i64
+  %arrayidx84.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.2
+  %85 = load i32, i32* %arrayidx84.2, align 4
+  %cmp85.2 = icmp eq i32 %85, 255
+  br i1 %cmp85.2, label %if.then146.2, label %lor.lhs.false87.2
 
-lor.lhs.false92.2:                                ; preds = %if.then83.2
-  %85 = add nsw i64 %80, %indvars.iv.2
-  %arrayidx97.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %85
-  %86 = load i32, i32* %arrayidx97.2, align 4
-  %cmp98.2 = icmp eq i32 %86, 255
-  br i1 %cmp98.2, label %if.then151.2, label %lor.lhs.false100.2
+lor.lhs.false87.2:                                ; preds = %if.then78.2
+  %86 = add nsw i64 %81, %indvars.iv.2
+  %arrayidx92.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %86
+  %87 = load i32, i32* %arrayidx92.2, align 4
+  %cmp93.2 = icmp eq i32 %87, 255
+  br i1 %cmp93.2, label %if.then146.2, label %lor.lhs.false95.2
 
-lor.lhs.false100.2:                               ; preds = %lor.lhs.false92.2
-  %add104.2 = add i32 %sub86.2, -127
-  %idxprom105.2 = sext i32 %add104.2 to i64
-  %arrayidx106.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.2
-  %87 = load i32, i32* %arrayidx106.2, align 4
-  %cmp107.2 = icmp eq i32 %87, 255
-  br i1 %cmp107.2, label %if.then151.2, label %lor.lhs.false109.2
+lor.lhs.false95.2:                                ; preds = %lor.lhs.false87.2
+  %add99.2 = add i32 %sub81.2, -127
+  %idxprom100.2 = sext i32 %add99.2 to i64
+  %arrayidx101.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.2
+  %88 = load i32, i32* %arrayidx101.2, align 4
+  %cmp102.2 = icmp eq i32 %88, 255
+  br i1 %cmp102.2, label %if.then146.2, label %lor.lhs.false104.2
 
-lor.lhs.false109.2:                               ; preds = %lor.lhs.false100.2
-  %88 = trunc i64 %indvars.iv.2 to i32
-  %add112.2 = add i32 %sub111.2, %88
-  %idxprom113.2 = sext i32 %add112.2 to i64
-  %arrayidx114.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.2
-  %89 = load i32, i32* %arrayidx114.2, align 4
-  %cmp115.2 = icmp eq i32 %89, 255
-  br i1 %cmp115.2, label %if.then151.2, label %lor.lhs.false117.2
+lor.lhs.false104.2:                               ; preds = %lor.lhs.false95.2
+  %89 = trunc i64 %indvars.iv.2 to i32
+  %add107.2 = add i32 %sub106.2, %89
+  %idxprom108.2 = sext i32 %add107.2 to i64
+  %arrayidx109.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.2
+  %90 = load i32, i32* %arrayidx109.2, align 4
+  %cmp110.2 = icmp eq i32 %90, 255
+  br i1 %cmp110.2, label %if.then146.2, label %lor.lhs.false112.2
 
-lor.lhs.false117.2:                               ; preds = %lor.lhs.false109.2
-  %90 = trunc i64 %indvars.iv.2 to i32
-  %add120.2 = add i32 %add119.2, %90
-  %idxprom121.2 = sext i32 %add120.2 to i64
-  %arrayidx122.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.2
-  %91 = load i32, i32* %arrayidx122.2, align 4
-  %cmp123.2 = icmp eq i32 %91, 255
-  br i1 %cmp123.2, label %if.then151.2, label %lor.lhs.false125.2
+lor.lhs.false112.2:                               ; preds = %lor.lhs.false104.2
+  %91 = trunc i64 %indvars.iv.2 to i32
+  %add115.2 = add i32 %add114.2, %91
+  %idxprom116.2 = sext i32 %add115.2 to i64
+  %arrayidx117.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.2
+  %92 = load i32, i32* %arrayidx117.2, align 4
+  %cmp118.2 = icmp eq i32 %92, 255
+  br i1 %cmp118.2, label %if.then146.2, label %lor.lhs.false120.2
 
-lor.lhs.false125.2:                               ; preds = %lor.lhs.false117.2
-  %add129.2 = add i32 %sub86.2, 127
-  %idxprom130.2 = sext i32 %add129.2 to i64
-  %arrayidx131.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.2
-  %92 = load i32, i32* %arrayidx131.2, align 4
-  %cmp132.2 = icmp eq i32 %92, 255
-  br i1 %cmp132.2, label %if.then151.2, label %lor.lhs.false134.2
+lor.lhs.false120.2:                               ; preds = %lor.lhs.false112.2
+  %add124.2 = add i32 %sub81.2, 127
+  %idxprom125.2 = sext i32 %add124.2 to i64
+  %arrayidx126.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.2
+  %93 = load i32, i32* %arrayidx126.2, align 4
+  %cmp127.2 = icmp eq i32 %93, 255
+  br i1 %cmp127.2, label %if.then146.2, label %lor.lhs.false129.2
 
-lor.lhs.false134.2:                               ; preds = %lor.lhs.false125.2
-  %93 = add nsw i64 %79, %indvars.iv.2
-  %arrayidx139.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %93
-  %94 = load i32, i32* %arrayidx139.2, align 4
-  %cmp140.2 = icmp eq i32 %94, 255
-  br i1 %cmp140.2, label %if.then151.2, label %lor.lhs.false142.2
+lor.lhs.false129.2:                               ; preds = %lor.lhs.false120.2
+  %94 = add nsw i64 %80, %indvars.iv.2
+  %arrayidx134.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %94
+  %95 = load i32, i32* %arrayidx134.2, align 4
+  %cmp135.2 = icmp eq i32 %95, 255
+  br i1 %cmp135.2, label %if.then146.2, label %lor.lhs.false137.2
 
-lor.lhs.false142.2:                               ; preds = %lor.lhs.false134.2
-  %add146.2 = add i32 %sub86.2, 129
-  %idxprom147.2 = sext i32 %add146.2 to i64
-  %arrayidx148.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.2
-  %95 = load i32, i32* %arrayidx148.2, align 4
-  %cmp149.2 = icmp eq i32 %95, 255
-  br i1 %cmp149.2, label %if.then151.2, label %if.else154.2
+lor.lhs.false137.2:                               ; preds = %lor.lhs.false129.2
+  %add141.2 = add i32 %sub81.2, 129
+  %idxprom142.2 = sext i32 %add141.2 to i64
+  %arrayidx143.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.2
+  %96 = load i32, i32* %arrayidx143.2, align 4
+  %cmp144.2 = icmp eq i32 %96, 255
+  br i1 %cmp144.2, label %if.then146.2, label %if.else149.2
 
-if.else154.2:                                     ; preds = %lor.lhs.false142.2
-  %arrayidx156.2 = getelementptr inbounds i8, i8* %., i64 %81
-  store i8 0, i8* %arrayidx156.2, align 1
-  br label %for.inc166.2
+if.else149.2:                                     ; preds = %lor.lhs.false137.2
+  %arrayidx151.2 = getelementptr inbounds i8, i8* %0, i64 %82
+  store i8 0, i8* %arrayidx151.2, align 1
+  br label %for.inc161.2
 
-if.then151.2:                                     ; preds = %lor.lhs.false142.2, %lor.lhs.false134.2, %lor.lhs.false125.2, %lor.lhs.false117.2, %lor.lhs.false109.2, %lor.lhs.false100.2, %lor.lhs.false92.2, %if.then83.2
-  %arrayidx153.2 = getelementptr inbounds i8, i8* %., i64 %81
-  store i8 -1, i8* %arrayidx153.2, align 1
-  br label %for.inc166.2
+if.then146.2:                                     ; preds = %lor.lhs.false137.2, %lor.lhs.false129.2, %lor.lhs.false120.2, %lor.lhs.false112.2, %lor.lhs.false104.2, %lor.lhs.false95.2, %lor.lhs.false87.2, %if.then78.2
+  %arrayidx148.2 = getelementptr inbounds i8, i8* %0, i64 %82
+  store i8 -1, i8* %arrayidx148.2, align 1
+  br label %for.inc161.2
 
-if.then75.2:                                      ; preds = %for.body61.2
-  %arrayidx77.2 = getelementptr inbounds i8, i8* %., i64 %81
-  store i8 0, i8* %arrayidx77.2, align 1
-  br label %for.inc166.2
+if.then70.2:                                      ; preds = %for.body56.2
+  %arrayidx72.2 = getelementptr inbounds i8, i8* %0, i64 %82
+  store i8 0, i8* %arrayidx72.2, align 1
+  br label %for.inc161.2
 
-for.inc166.2:                                     ; preds = %if.then75.2, %if.then151.2, %if.else154.2, %if.else158.2
+for.inc161.2:                                     ; preds = %if.then70.2, %if.then146.2, %if.else149.2, %if.else153.2
   %indvars.iv.next.2 = add nuw nsw i64 %indvars.iv.2, 1
   %lftr.wideiv.2 = trunc i64 %indvars.iv.next.2 to i32
   %exitcond.2 = icmp eq i32 %lftr.wideiv.2, %img_width
-  br i1 %exitcond.2, label %for.inc169.2, label %for.body61.2, !llvm.loop !5
+  br i1 %exitcond.2, label %for.inc164.2, label %for.body56.2, !llvm.loop !5
 
-for.inc169.2:                                     ; preds = %for.inc166.2
+for.inc164.2:                                     ; preds = %for.inc161.2
   %indvars.iv.next20.2 = add nsw i64 %indvars.iv19, 3
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.3
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.3
 
-for.body61.lr.ph.3:                               ; preds = %for.inc169.2
-  %96 = trunc i64 %indvars.iv.next20.2 to i32
-  %mul63.3 = shl nsw i32 %96, 7
-  %cmp67.3 = icmp eq i64 %indvars.iv.next20.2, %11
+for.body56.lr.ph.3:                               ; preds = %for.inc164.2
   %97 = trunc i64 %indvars.iv.next20.2 to i32
-  %sub84.3 = shl i32 %97, 7
-  %mul94.3 = add i32 %sub84.3, -128
-  %sub111.3 = add i32 %mul63.3, -1
-  %add119.3 = or i32 %mul63.3, 1
-  %mul136.3 = add i32 %sub84.3, 128
-  %98 = sext i32 %mul63.3 to i64
-  %99 = sext i32 %mul136.3 to i64
-  %100 = sext i32 %mul94.3 to i64
-  br label %for.body61.3
+  %mul58.3 = shl nsw i32 %97, 7
+  %cmp62.3 = icmp eq i64 %indvars.iv.next20.2, %12
+  %98 = trunc i64 %indvars.iv.next20.2 to i32
+  %sub79.3 = shl i32 %98, 7
+  %mul89.3 = add i32 %sub79.3, -128
+  %sub106.3 = add i32 %mul58.3, -1
+  %add114.3 = or i32 %mul58.3, 1
+  %mul131.3 = add i32 %sub79.3, 128
+  %99 = sext i32 %mul58.3 to i64
+  %100 = sext i32 %mul131.3 to i64
+  %101 = sext i32 %mul89.3 to i64
+  br label %for.body56.3
 
-for.body61.3:                                     ; preds = %for.inc166.3, %for.body61.lr.ph.3
-  %indvars.iv.3 = phi i64 [ 0, %for.body61.lr.ph.3 ], [ %indvars.iv.next.3, %for.inc166.3 ]
-  %101 = add nsw i64 %indvars.iv.3, %98
-  %cmp70.3 = icmp eq i64 %indvars.iv.3, 0
-  %or.cond1.3 = or i1 %cmp67.3, %cmp70.3
-  %cmp73.3 = icmp eq i64 %indvars.iv.3, %10
-  %or.cond2.3 = or i1 %cmp73.3, %or.cond1.3
-  br i1 %or.cond2.3, label %if.then75.3, label %if.else78.3
+for.body56.3:                                     ; preds = %for.inc161.3, %for.body56.lr.ph.3
+  %indvars.iv.3 = phi i64 [ 0, %for.body56.lr.ph.3 ], [ %indvars.iv.next.3, %for.inc161.3 ]
+  %102 = add nsw i64 %indvars.iv.3, %99
+  %cmp65.3 = icmp eq i64 %indvars.iv.3, 0
+  %or.cond1.3 = or i1 %cmp62.3, %cmp65.3
+  %cmp68.3 = icmp eq i64 %indvars.iv.3, %11
+  %or.cond2.3 = or i1 %cmp68.3, %or.cond1.3
+  br i1 %or.cond2.3, label %if.then70.3, label %if.else73.3
 
-if.else78.3:                                      ; preds = %for.body61.3
-  %arrayidx80.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %101
-  %102 = load i32, i32* %arrayidx80.3, align 4
-  %cmp81.3 = icmp eq i32 %102, 75
-  br i1 %cmp81.3, label %if.then83.3, label %if.else158.3
+if.else73.3:                                      ; preds = %for.body56.3
+  %arrayidx75.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %102
+  %103 = load i32, i32* %arrayidx75.3, align 4
+  %cmp76.3 = icmp eq i32 %103, 75
+  br i1 %cmp76.3, label %if.then78.3, label %if.else153.3
 
-if.else158.3:                                     ; preds = %if.else78.3
-  %conv161.3 = trunc i32 %102 to i8
-  %arrayidx163.3 = getelementptr inbounds i8, i8* %., i64 %101
-  store i8 %conv161.3, i8* %arrayidx163.3, align 1
-  br label %for.inc166.3
+if.else153.3:                                     ; preds = %if.else73.3
+  %conv156.3 = trunc i32 %103 to i8
+  %arrayidx158.3 = getelementptr inbounds i8, i8* %0, i64 %102
+  store i8 %conv156.3, i8* %arrayidx158.3, align 1
+  br label %for.inc161.3
 
-if.then83.3:                                      ; preds = %if.else78.3
-  %103 = trunc i64 %indvars.iv.3 to i32
-  %sub86.3 = add i32 %103, %sub84.3
-  %add87.3 = add i32 %sub86.3, -129
-  %idxprom88.3 = sext i32 %add87.3 to i64
-  %arrayidx89.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.3
-  %104 = load i32, i32* %arrayidx89.3, align 4
-  %cmp90.3 = icmp eq i32 %104, 255
-  br i1 %cmp90.3, label %if.then151.3, label %lor.lhs.false92.3
+if.then78.3:                                      ; preds = %if.else73.3
+  %104 = trunc i64 %indvars.iv.3 to i32
+  %sub81.3 = add i32 %104, %sub79.3
+  %add82.3 = add i32 %sub81.3, -129
+  %idxprom83.3 = sext i32 %add82.3 to i64
+  %arrayidx84.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.3
+  %105 = load i32, i32* %arrayidx84.3, align 4
+  %cmp85.3 = icmp eq i32 %105, 255
+  br i1 %cmp85.3, label %if.then146.3, label %lor.lhs.false87.3
 
-lor.lhs.false92.3:                                ; preds = %if.then83.3
-  %105 = add nsw i64 %100, %indvars.iv.3
-  %arrayidx97.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %105
-  %106 = load i32, i32* %arrayidx97.3, align 4
-  %cmp98.3 = icmp eq i32 %106, 255
-  br i1 %cmp98.3, label %if.then151.3, label %lor.lhs.false100.3
+lor.lhs.false87.3:                                ; preds = %if.then78.3
+  %106 = add nsw i64 %101, %indvars.iv.3
+  %arrayidx92.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %106
+  %107 = load i32, i32* %arrayidx92.3, align 4
+  %cmp93.3 = icmp eq i32 %107, 255
+  br i1 %cmp93.3, label %if.then146.3, label %lor.lhs.false95.3
 
-lor.lhs.false100.3:                               ; preds = %lor.lhs.false92.3
-  %add104.3 = add i32 %sub86.3, -127
-  %idxprom105.3 = sext i32 %add104.3 to i64
-  %arrayidx106.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.3
-  %107 = load i32, i32* %arrayidx106.3, align 4
-  %cmp107.3 = icmp eq i32 %107, 255
-  br i1 %cmp107.3, label %if.then151.3, label %lor.lhs.false109.3
+lor.lhs.false95.3:                                ; preds = %lor.lhs.false87.3
+  %add99.3 = add i32 %sub81.3, -127
+  %idxprom100.3 = sext i32 %add99.3 to i64
+  %arrayidx101.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.3
+  %108 = load i32, i32* %arrayidx101.3, align 4
+  %cmp102.3 = icmp eq i32 %108, 255
+  br i1 %cmp102.3, label %if.then146.3, label %lor.lhs.false104.3
 
-lor.lhs.false109.3:                               ; preds = %lor.lhs.false100.3
-  %108 = trunc i64 %indvars.iv.3 to i32
-  %add112.3 = add i32 %sub111.3, %108
-  %idxprom113.3 = sext i32 %add112.3 to i64
-  %arrayidx114.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.3
-  %109 = load i32, i32* %arrayidx114.3, align 4
-  %cmp115.3 = icmp eq i32 %109, 255
-  br i1 %cmp115.3, label %if.then151.3, label %lor.lhs.false117.3
+lor.lhs.false104.3:                               ; preds = %lor.lhs.false95.3
+  %109 = trunc i64 %indvars.iv.3 to i32
+  %add107.3 = add i32 %sub106.3, %109
+  %idxprom108.3 = sext i32 %add107.3 to i64
+  %arrayidx109.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.3
+  %110 = load i32, i32* %arrayidx109.3, align 4
+  %cmp110.3 = icmp eq i32 %110, 255
+  br i1 %cmp110.3, label %if.then146.3, label %lor.lhs.false112.3
 
-lor.lhs.false117.3:                               ; preds = %lor.lhs.false109.3
-  %110 = trunc i64 %indvars.iv.3 to i32
-  %add120.3 = add i32 %add119.3, %110
-  %idxprom121.3 = sext i32 %add120.3 to i64
-  %arrayidx122.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.3
-  %111 = load i32, i32* %arrayidx122.3, align 4
-  %cmp123.3 = icmp eq i32 %111, 255
-  br i1 %cmp123.3, label %if.then151.3, label %lor.lhs.false125.3
+lor.lhs.false112.3:                               ; preds = %lor.lhs.false104.3
+  %111 = trunc i64 %indvars.iv.3 to i32
+  %add115.3 = add i32 %add114.3, %111
+  %idxprom116.3 = sext i32 %add115.3 to i64
+  %arrayidx117.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.3
+  %112 = load i32, i32* %arrayidx117.3, align 4
+  %cmp118.3 = icmp eq i32 %112, 255
+  br i1 %cmp118.3, label %if.then146.3, label %lor.lhs.false120.3
 
-lor.lhs.false125.3:                               ; preds = %lor.lhs.false117.3
-  %add129.3 = add i32 %sub86.3, 127
-  %idxprom130.3 = sext i32 %add129.3 to i64
-  %arrayidx131.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.3
-  %112 = load i32, i32* %arrayidx131.3, align 4
-  %cmp132.3 = icmp eq i32 %112, 255
-  br i1 %cmp132.3, label %if.then151.3, label %lor.lhs.false134.3
+lor.lhs.false120.3:                               ; preds = %lor.lhs.false112.3
+  %add124.3 = add i32 %sub81.3, 127
+  %idxprom125.3 = sext i32 %add124.3 to i64
+  %arrayidx126.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.3
+  %113 = load i32, i32* %arrayidx126.3, align 4
+  %cmp127.3 = icmp eq i32 %113, 255
+  br i1 %cmp127.3, label %if.then146.3, label %lor.lhs.false129.3
 
-lor.lhs.false134.3:                               ; preds = %lor.lhs.false125.3
-  %113 = add nsw i64 %99, %indvars.iv.3
-  %arrayidx139.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %113
-  %114 = load i32, i32* %arrayidx139.3, align 4
-  %cmp140.3 = icmp eq i32 %114, 255
-  br i1 %cmp140.3, label %if.then151.3, label %lor.lhs.false142.3
+lor.lhs.false129.3:                               ; preds = %lor.lhs.false120.3
+  %114 = add nsw i64 %100, %indvars.iv.3
+  %arrayidx134.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %114
+  %115 = load i32, i32* %arrayidx134.3, align 4
+  %cmp135.3 = icmp eq i32 %115, 255
+  br i1 %cmp135.3, label %if.then146.3, label %lor.lhs.false137.3
 
-lor.lhs.false142.3:                               ; preds = %lor.lhs.false134.3
-  %add146.3 = add i32 %sub86.3, 129
-  %idxprom147.3 = sext i32 %add146.3 to i64
-  %arrayidx148.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.3
-  %115 = load i32, i32* %arrayidx148.3, align 4
-  %cmp149.3 = icmp eq i32 %115, 255
-  br i1 %cmp149.3, label %if.then151.3, label %if.else154.3
+lor.lhs.false137.3:                               ; preds = %lor.lhs.false129.3
+  %add141.3 = add i32 %sub81.3, 129
+  %idxprom142.3 = sext i32 %add141.3 to i64
+  %arrayidx143.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.3
+  %116 = load i32, i32* %arrayidx143.3, align 4
+  %cmp144.3 = icmp eq i32 %116, 255
+  br i1 %cmp144.3, label %if.then146.3, label %if.else149.3
 
-if.else154.3:                                     ; preds = %lor.lhs.false142.3
-  %arrayidx156.3 = getelementptr inbounds i8, i8* %., i64 %101
-  store i8 0, i8* %arrayidx156.3, align 1
-  br label %for.inc166.3
+if.else149.3:                                     ; preds = %lor.lhs.false137.3
+  %arrayidx151.3 = getelementptr inbounds i8, i8* %0, i64 %102
+  store i8 0, i8* %arrayidx151.3, align 1
+  br label %for.inc161.3
 
-if.then151.3:                                     ; preds = %lor.lhs.false142.3, %lor.lhs.false134.3, %lor.lhs.false125.3, %lor.lhs.false117.3, %lor.lhs.false109.3, %lor.lhs.false100.3, %lor.lhs.false92.3, %if.then83.3
-  %arrayidx153.3 = getelementptr inbounds i8, i8* %., i64 %101
-  store i8 -1, i8* %arrayidx153.3, align 1
-  br label %for.inc166.3
+if.then146.3:                                     ; preds = %lor.lhs.false137.3, %lor.lhs.false129.3, %lor.lhs.false120.3, %lor.lhs.false112.3, %lor.lhs.false104.3, %lor.lhs.false95.3, %lor.lhs.false87.3, %if.then78.3
+  %arrayidx148.3 = getelementptr inbounds i8, i8* %0, i64 %102
+  store i8 -1, i8* %arrayidx148.3, align 1
+  br label %for.inc161.3
 
-if.then75.3:                                      ; preds = %for.body61.3
-  %arrayidx77.3 = getelementptr inbounds i8, i8* %., i64 %101
-  store i8 0, i8* %arrayidx77.3, align 1
-  br label %for.inc166.3
+if.then70.3:                                      ; preds = %for.body56.3
+  %arrayidx72.3 = getelementptr inbounds i8, i8* %0, i64 %102
+  store i8 0, i8* %arrayidx72.3, align 1
+  br label %for.inc161.3
 
-for.inc166.3:                                     ; preds = %if.then75.3, %if.then151.3, %if.else154.3, %if.else158.3
+for.inc161.3:                                     ; preds = %if.then70.3, %if.then146.3, %if.else149.3, %if.else153.3
   %indvars.iv.next.3 = add nuw nsw i64 %indvars.iv.3, 1
   %lftr.wideiv.3 = trunc i64 %indvars.iv.next.3 to i32
   %exitcond.3 = icmp eq i32 %lftr.wideiv.3, %img_width
-  br i1 %exitcond.3, label %for.inc169.3, label %for.body61.3, !llvm.loop !5
+  br i1 %exitcond.3, label %for.inc164.3, label %for.body56.3, !llvm.loop !5
 
-for.inc169.3:                                     ; preds = %for.inc166.3
+for.inc164.3:                                     ; preds = %for.inc161.3
   %indvars.iv.next20.3 = add nsw i64 %indvars.iv19, 4
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.4
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.4
 
-for.body61.lr.ph.4:                               ; preds = %for.inc169.3
-  %116 = trunc i64 %indvars.iv.next20.3 to i32
-  %mul63.4 = shl nsw i32 %116, 7
-  %cmp67.4 = icmp eq i64 %indvars.iv.next20.3, %11
+for.body56.lr.ph.4:                               ; preds = %for.inc164.3
   %117 = trunc i64 %indvars.iv.next20.3 to i32
-  %sub84.4 = shl i32 %117, 7
-  %mul94.4 = add i32 %sub84.4, -128
-  %sub111.4 = add i32 %mul63.4, -1
-  %add119.4 = or i32 %mul63.4, 1
-  %mul136.4 = add i32 %sub84.4, 128
-  %118 = sext i32 %mul63.4 to i64
-  %119 = sext i32 %mul136.4 to i64
-  %120 = sext i32 %mul94.4 to i64
-  br label %for.body61.4
+  %mul58.4 = shl nsw i32 %117, 7
+  %cmp62.4 = icmp eq i64 %indvars.iv.next20.3, %12
+  %118 = trunc i64 %indvars.iv.next20.3 to i32
+  %sub79.4 = shl i32 %118, 7
+  %mul89.4 = add i32 %sub79.4, -128
+  %sub106.4 = add i32 %mul58.4, -1
+  %add114.4 = or i32 %mul58.4, 1
+  %mul131.4 = add i32 %sub79.4, 128
+  %119 = sext i32 %mul58.4 to i64
+  %120 = sext i32 %mul131.4 to i64
+  %121 = sext i32 %mul89.4 to i64
+  br label %for.body56.4
 
-for.body61.4:                                     ; preds = %for.inc166.4, %for.body61.lr.ph.4
-  %indvars.iv.4 = phi i64 [ 0, %for.body61.lr.ph.4 ], [ %indvars.iv.next.4, %for.inc166.4 ]
-  %121 = add nsw i64 %indvars.iv.4, %118
-  %cmp70.4 = icmp eq i64 %indvars.iv.4, 0
-  %or.cond1.4 = or i1 %cmp67.4, %cmp70.4
-  %cmp73.4 = icmp eq i64 %indvars.iv.4, %10
-  %or.cond2.4 = or i1 %cmp73.4, %or.cond1.4
-  br i1 %or.cond2.4, label %if.then75.4, label %if.else78.4
+for.body56.4:                                     ; preds = %for.inc161.4, %for.body56.lr.ph.4
+  %indvars.iv.4 = phi i64 [ 0, %for.body56.lr.ph.4 ], [ %indvars.iv.next.4, %for.inc161.4 ]
+  %122 = add nsw i64 %indvars.iv.4, %119
+  %cmp65.4 = icmp eq i64 %indvars.iv.4, 0
+  %or.cond1.4 = or i1 %cmp62.4, %cmp65.4
+  %cmp68.4 = icmp eq i64 %indvars.iv.4, %11
+  %or.cond2.4 = or i1 %cmp68.4, %or.cond1.4
+  br i1 %or.cond2.4, label %if.then70.4, label %if.else73.4
 
-if.else78.4:                                      ; preds = %for.body61.4
-  %arrayidx80.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %121
-  %122 = load i32, i32* %arrayidx80.4, align 4
-  %cmp81.4 = icmp eq i32 %122, 75
-  br i1 %cmp81.4, label %if.then83.4, label %if.else158.4
+if.else73.4:                                      ; preds = %for.body56.4
+  %arrayidx75.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %122
+  %123 = load i32, i32* %arrayidx75.4, align 4
+  %cmp76.4 = icmp eq i32 %123, 75
+  br i1 %cmp76.4, label %if.then78.4, label %if.else153.4
 
-if.else158.4:                                     ; preds = %if.else78.4
-  %conv161.4 = trunc i32 %122 to i8
-  %arrayidx163.4 = getelementptr inbounds i8, i8* %., i64 %121
-  store i8 %conv161.4, i8* %arrayidx163.4, align 1
-  br label %for.inc166.4
+if.else153.4:                                     ; preds = %if.else73.4
+  %conv156.4 = trunc i32 %123 to i8
+  %arrayidx158.4 = getelementptr inbounds i8, i8* %0, i64 %122
+  store i8 %conv156.4, i8* %arrayidx158.4, align 1
+  br label %for.inc161.4
 
-if.then83.4:                                      ; preds = %if.else78.4
-  %123 = trunc i64 %indvars.iv.4 to i32
-  %sub86.4 = add i32 %123, %sub84.4
-  %add87.4 = add i32 %sub86.4, -129
-  %idxprom88.4 = sext i32 %add87.4 to i64
-  %arrayidx89.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.4
-  %124 = load i32, i32* %arrayidx89.4, align 4
-  %cmp90.4 = icmp eq i32 %124, 255
-  br i1 %cmp90.4, label %if.then151.4, label %lor.lhs.false92.4
+if.then78.4:                                      ; preds = %if.else73.4
+  %124 = trunc i64 %indvars.iv.4 to i32
+  %sub81.4 = add i32 %124, %sub79.4
+  %add82.4 = add i32 %sub81.4, -129
+  %idxprom83.4 = sext i32 %add82.4 to i64
+  %arrayidx84.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.4
+  %125 = load i32, i32* %arrayidx84.4, align 4
+  %cmp85.4 = icmp eq i32 %125, 255
+  br i1 %cmp85.4, label %if.then146.4, label %lor.lhs.false87.4
 
-lor.lhs.false92.4:                                ; preds = %if.then83.4
-  %125 = add nsw i64 %120, %indvars.iv.4
-  %arrayidx97.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %125
-  %126 = load i32, i32* %arrayidx97.4, align 4
-  %cmp98.4 = icmp eq i32 %126, 255
-  br i1 %cmp98.4, label %if.then151.4, label %lor.lhs.false100.4
+lor.lhs.false87.4:                                ; preds = %if.then78.4
+  %126 = add nsw i64 %121, %indvars.iv.4
+  %arrayidx92.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %126
+  %127 = load i32, i32* %arrayidx92.4, align 4
+  %cmp93.4 = icmp eq i32 %127, 255
+  br i1 %cmp93.4, label %if.then146.4, label %lor.lhs.false95.4
 
-lor.lhs.false100.4:                               ; preds = %lor.lhs.false92.4
-  %add104.4 = add i32 %sub86.4, -127
-  %idxprom105.4 = sext i32 %add104.4 to i64
-  %arrayidx106.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.4
-  %127 = load i32, i32* %arrayidx106.4, align 4
-  %cmp107.4 = icmp eq i32 %127, 255
-  br i1 %cmp107.4, label %if.then151.4, label %lor.lhs.false109.4
+lor.lhs.false95.4:                                ; preds = %lor.lhs.false87.4
+  %add99.4 = add i32 %sub81.4, -127
+  %idxprom100.4 = sext i32 %add99.4 to i64
+  %arrayidx101.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.4
+  %128 = load i32, i32* %arrayidx101.4, align 4
+  %cmp102.4 = icmp eq i32 %128, 255
+  br i1 %cmp102.4, label %if.then146.4, label %lor.lhs.false104.4
 
-lor.lhs.false109.4:                               ; preds = %lor.lhs.false100.4
-  %128 = trunc i64 %indvars.iv.4 to i32
-  %add112.4 = add i32 %sub111.4, %128
-  %idxprom113.4 = sext i32 %add112.4 to i64
-  %arrayidx114.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.4
-  %129 = load i32, i32* %arrayidx114.4, align 4
-  %cmp115.4 = icmp eq i32 %129, 255
-  br i1 %cmp115.4, label %if.then151.4, label %lor.lhs.false117.4
+lor.lhs.false104.4:                               ; preds = %lor.lhs.false95.4
+  %129 = trunc i64 %indvars.iv.4 to i32
+  %add107.4 = add i32 %sub106.4, %129
+  %idxprom108.4 = sext i32 %add107.4 to i64
+  %arrayidx109.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.4
+  %130 = load i32, i32* %arrayidx109.4, align 4
+  %cmp110.4 = icmp eq i32 %130, 255
+  br i1 %cmp110.4, label %if.then146.4, label %lor.lhs.false112.4
 
-lor.lhs.false117.4:                               ; preds = %lor.lhs.false109.4
-  %130 = trunc i64 %indvars.iv.4 to i32
-  %add120.4 = add i32 %add119.4, %130
-  %idxprom121.4 = sext i32 %add120.4 to i64
-  %arrayidx122.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.4
-  %131 = load i32, i32* %arrayidx122.4, align 4
-  %cmp123.4 = icmp eq i32 %131, 255
-  br i1 %cmp123.4, label %if.then151.4, label %lor.lhs.false125.4
+lor.lhs.false112.4:                               ; preds = %lor.lhs.false104.4
+  %131 = trunc i64 %indvars.iv.4 to i32
+  %add115.4 = add i32 %add114.4, %131
+  %idxprom116.4 = sext i32 %add115.4 to i64
+  %arrayidx117.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.4
+  %132 = load i32, i32* %arrayidx117.4, align 4
+  %cmp118.4 = icmp eq i32 %132, 255
+  br i1 %cmp118.4, label %if.then146.4, label %lor.lhs.false120.4
 
-lor.lhs.false125.4:                               ; preds = %lor.lhs.false117.4
-  %add129.4 = add i32 %sub86.4, 127
-  %idxprom130.4 = sext i32 %add129.4 to i64
-  %arrayidx131.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.4
-  %132 = load i32, i32* %arrayidx131.4, align 4
-  %cmp132.4 = icmp eq i32 %132, 255
-  br i1 %cmp132.4, label %if.then151.4, label %lor.lhs.false134.4
+lor.lhs.false120.4:                               ; preds = %lor.lhs.false112.4
+  %add124.4 = add i32 %sub81.4, 127
+  %idxprom125.4 = sext i32 %add124.4 to i64
+  %arrayidx126.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.4
+  %133 = load i32, i32* %arrayidx126.4, align 4
+  %cmp127.4 = icmp eq i32 %133, 255
+  br i1 %cmp127.4, label %if.then146.4, label %lor.lhs.false129.4
 
-lor.lhs.false134.4:                               ; preds = %lor.lhs.false125.4
-  %133 = add nsw i64 %119, %indvars.iv.4
-  %arrayidx139.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %133
-  %134 = load i32, i32* %arrayidx139.4, align 4
-  %cmp140.4 = icmp eq i32 %134, 255
-  br i1 %cmp140.4, label %if.then151.4, label %lor.lhs.false142.4
+lor.lhs.false129.4:                               ; preds = %lor.lhs.false120.4
+  %134 = add nsw i64 %120, %indvars.iv.4
+  %arrayidx134.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %134
+  %135 = load i32, i32* %arrayidx134.4, align 4
+  %cmp135.4 = icmp eq i32 %135, 255
+  br i1 %cmp135.4, label %if.then146.4, label %lor.lhs.false137.4
 
-lor.lhs.false142.4:                               ; preds = %lor.lhs.false134.4
-  %add146.4 = add i32 %sub86.4, 129
-  %idxprom147.4 = sext i32 %add146.4 to i64
-  %arrayidx148.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.4
-  %135 = load i32, i32* %arrayidx148.4, align 4
-  %cmp149.4 = icmp eq i32 %135, 255
-  br i1 %cmp149.4, label %if.then151.4, label %if.else154.4
+lor.lhs.false137.4:                               ; preds = %lor.lhs.false129.4
+  %add141.4 = add i32 %sub81.4, 129
+  %idxprom142.4 = sext i32 %add141.4 to i64
+  %arrayidx143.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.4
+  %136 = load i32, i32* %arrayidx143.4, align 4
+  %cmp144.4 = icmp eq i32 %136, 255
+  br i1 %cmp144.4, label %if.then146.4, label %if.else149.4
 
-if.else154.4:                                     ; preds = %lor.lhs.false142.4
-  %arrayidx156.4 = getelementptr inbounds i8, i8* %., i64 %121
-  store i8 0, i8* %arrayidx156.4, align 1
-  br label %for.inc166.4
+if.else149.4:                                     ; preds = %lor.lhs.false137.4
+  %arrayidx151.4 = getelementptr inbounds i8, i8* %0, i64 %122
+  store i8 0, i8* %arrayidx151.4, align 1
+  br label %for.inc161.4
 
-if.then151.4:                                     ; preds = %lor.lhs.false142.4, %lor.lhs.false134.4, %lor.lhs.false125.4, %lor.lhs.false117.4, %lor.lhs.false109.4, %lor.lhs.false100.4, %lor.lhs.false92.4, %if.then83.4
-  %arrayidx153.4 = getelementptr inbounds i8, i8* %., i64 %121
-  store i8 -1, i8* %arrayidx153.4, align 1
-  br label %for.inc166.4
+if.then146.4:                                     ; preds = %lor.lhs.false137.4, %lor.lhs.false129.4, %lor.lhs.false120.4, %lor.lhs.false112.4, %lor.lhs.false104.4, %lor.lhs.false95.4, %lor.lhs.false87.4, %if.then78.4
+  %arrayidx148.4 = getelementptr inbounds i8, i8* %0, i64 %122
+  store i8 -1, i8* %arrayidx148.4, align 1
+  br label %for.inc161.4
 
-if.then75.4:                                      ; preds = %for.body61.4
-  %arrayidx77.4 = getelementptr inbounds i8, i8* %., i64 %121
-  store i8 0, i8* %arrayidx77.4, align 1
-  br label %for.inc166.4
+if.then70.4:                                      ; preds = %for.body56.4
+  %arrayidx72.4 = getelementptr inbounds i8, i8* %0, i64 %122
+  store i8 0, i8* %arrayidx72.4, align 1
+  br label %for.inc161.4
 
-for.inc166.4:                                     ; preds = %if.then75.4, %if.then151.4, %if.else154.4, %if.else158.4
+for.inc161.4:                                     ; preds = %if.then70.4, %if.then146.4, %if.else149.4, %if.else153.4
   %indvars.iv.next.4 = add nuw nsw i64 %indvars.iv.4, 1
   %lftr.wideiv.4 = trunc i64 %indvars.iv.next.4 to i32
   %exitcond.4 = icmp eq i32 %lftr.wideiv.4, %img_width
-  br i1 %exitcond.4, label %for.inc169.4, label %for.body61.4, !llvm.loop !5
+  br i1 %exitcond.4, label %for.inc164.4, label %for.body56.4, !llvm.loop !5
 
-for.inc169.4:                                     ; preds = %for.inc166.4
+for.inc164.4:                                     ; preds = %for.inc161.4
   %indvars.iv.next20.4 = add nsw i64 %indvars.iv19, 5
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.5
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.5
 
-for.body61.lr.ph.5:                               ; preds = %for.inc169.4
-  %136 = trunc i64 %indvars.iv.next20.4 to i32
-  %mul63.5 = shl nsw i32 %136, 7
-  %cmp67.5 = icmp eq i64 %indvars.iv.next20.4, %11
+for.body56.lr.ph.5:                               ; preds = %for.inc164.4
   %137 = trunc i64 %indvars.iv.next20.4 to i32
-  %sub84.5 = shl i32 %137, 7
-  %mul94.5 = add i32 %sub84.5, -128
-  %sub111.5 = add i32 %mul63.5, -1
-  %add119.5 = or i32 %mul63.5, 1
-  %mul136.5 = add i32 %sub84.5, 128
-  %138 = sext i32 %mul63.5 to i64
-  %139 = sext i32 %mul136.5 to i64
-  %140 = sext i32 %mul94.5 to i64
-  br label %for.body61.5
+  %mul58.5 = shl nsw i32 %137, 7
+  %cmp62.5 = icmp eq i64 %indvars.iv.next20.4, %12
+  %138 = trunc i64 %indvars.iv.next20.4 to i32
+  %sub79.5 = shl i32 %138, 7
+  %mul89.5 = add i32 %sub79.5, -128
+  %sub106.5 = add i32 %mul58.5, -1
+  %add114.5 = or i32 %mul58.5, 1
+  %mul131.5 = add i32 %sub79.5, 128
+  %139 = sext i32 %mul58.5 to i64
+  %140 = sext i32 %mul131.5 to i64
+  %141 = sext i32 %mul89.5 to i64
+  br label %for.body56.5
 
-for.body61.5:                                     ; preds = %for.inc166.5, %for.body61.lr.ph.5
-  %indvars.iv.5 = phi i64 [ 0, %for.body61.lr.ph.5 ], [ %indvars.iv.next.5, %for.inc166.5 ]
-  %141 = add nsw i64 %indvars.iv.5, %138
-  %cmp70.5 = icmp eq i64 %indvars.iv.5, 0
-  %or.cond1.5 = or i1 %cmp67.5, %cmp70.5
-  %cmp73.5 = icmp eq i64 %indvars.iv.5, %10
-  %or.cond2.5 = or i1 %cmp73.5, %or.cond1.5
-  br i1 %or.cond2.5, label %if.then75.5, label %if.else78.5
+for.body56.5:                                     ; preds = %for.inc161.5, %for.body56.lr.ph.5
+  %indvars.iv.5 = phi i64 [ 0, %for.body56.lr.ph.5 ], [ %indvars.iv.next.5, %for.inc161.5 ]
+  %142 = add nsw i64 %indvars.iv.5, %139
+  %cmp65.5 = icmp eq i64 %indvars.iv.5, 0
+  %or.cond1.5 = or i1 %cmp62.5, %cmp65.5
+  %cmp68.5 = icmp eq i64 %indvars.iv.5, %11
+  %or.cond2.5 = or i1 %cmp68.5, %or.cond1.5
+  br i1 %or.cond2.5, label %if.then70.5, label %if.else73.5
 
-if.else78.5:                                      ; preds = %for.body61.5
-  %arrayidx80.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %141
-  %142 = load i32, i32* %arrayidx80.5, align 4
-  %cmp81.5 = icmp eq i32 %142, 75
-  br i1 %cmp81.5, label %if.then83.5, label %if.else158.5
+if.else73.5:                                      ; preds = %for.body56.5
+  %arrayidx75.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %142
+  %143 = load i32, i32* %arrayidx75.5, align 4
+  %cmp76.5 = icmp eq i32 %143, 75
+  br i1 %cmp76.5, label %if.then78.5, label %if.else153.5
 
-if.else158.5:                                     ; preds = %if.else78.5
-  %conv161.5 = trunc i32 %142 to i8
-  %arrayidx163.5 = getelementptr inbounds i8, i8* %., i64 %141
-  store i8 %conv161.5, i8* %arrayidx163.5, align 1
-  br label %for.inc166.5
+if.else153.5:                                     ; preds = %if.else73.5
+  %conv156.5 = trunc i32 %143 to i8
+  %arrayidx158.5 = getelementptr inbounds i8, i8* %0, i64 %142
+  store i8 %conv156.5, i8* %arrayidx158.5, align 1
+  br label %for.inc161.5
 
-if.then83.5:                                      ; preds = %if.else78.5
-  %143 = trunc i64 %indvars.iv.5 to i32
-  %sub86.5 = add i32 %143, %sub84.5
-  %add87.5 = add i32 %sub86.5, -129
-  %idxprom88.5 = sext i32 %add87.5 to i64
-  %arrayidx89.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.5
-  %144 = load i32, i32* %arrayidx89.5, align 4
-  %cmp90.5 = icmp eq i32 %144, 255
-  br i1 %cmp90.5, label %if.then151.5, label %lor.lhs.false92.5
+if.then78.5:                                      ; preds = %if.else73.5
+  %144 = trunc i64 %indvars.iv.5 to i32
+  %sub81.5 = add i32 %144, %sub79.5
+  %add82.5 = add i32 %sub81.5, -129
+  %idxprom83.5 = sext i32 %add82.5 to i64
+  %arrayidx84.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.5
+  %145 = load i32, i32* %arrayidx84.5, align 4
+  %cmp85.5 = icmp eq i32 %145, 255
+  br i1 %cmp85.5, label %if.then146.5, label %lor.lhs.false87.5
 
-lor.lhs.false92.5:                                ; preds = %if.then83.5
-  %145 = add nsw i64 %140, %indvars.iv.5
-  %arrayidx97.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %145
-  %146 = load i32, i32* %arrayidx97.5, align 4
-  %cmp98.5 = icmp eq i32 %146, 255
-  br i1 %cmp98.5, label %if.then151.5, label %lor.lhs.false100.5
+lor.lhs.false87.5:                                ; preds = %if.then78.5
+  %146 = add nsw i64 %141, %indvars.iv.5
+  %arrayidx92.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %146
+  %147 = load i32, i32* %arrayidx92.5, align 4
+  %cmp93.5 = icmp eq i32 %147, 255
+  br i1 %cmp93.5, label %if.then146.5, label %lor.lhs.false95.5
 
-lor.lhs.false100.5:                               ; preds = %lor.lhs.false92.5
-  %add104.5 = add i32 %sub86.5, -127
-  %idxprom105.5 = sext i32 %add104.5 to i64
-  %arrayidx106.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.5
-  %147 = load i32, i32* %arrayidx106.5, align 4
-  %cmp107.5 = icmp eq i32 %147, 255
-  br i1 %cmp107.5, label %if.then151.5, label %lor.lhs.false109.5
+lor.lhs.false95.5:                                ; preds = %lor.lhs.false87.5
+  %add99.5 = add i32 %sub81.5, -127
+  %idxprom100.5 = sext i32 %add99.5 to i64
+  %arrayidx101.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.5
+  %148 = load i32, i32* %arrayidx101.5, align 4
+  %cmp102.5 = icmp eq i32 %148, 255
+  br i1 %cmp102.5, label %if.then146.5, label %lor.lhs.false104.5
 
-lor.lhs.false109.5:                               ; preds = %lor.lhs.false100.5
-  %148 = trunc i64 %indvars.iv.5 to i32
-  %add112.5 = add i32 %sub111.5, %148
-  %idxprom113.5 = sext i32 %add112.5 to i64
-  %arrayidx114.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.5
-  %149 = load i32, i32* %arrayidx114.5, align 4
-  %cmp115.5 = icmp eq i32 %149, 255
-  br i1 %cmp115.5, label %if.then151.5, label %lor.lhs.false117.5
+lor.lhs.false104.5:                               ; preds = %lor.lhs.false95.5
+  %149 = trunc i64 %indvars.iv.5 to i32
+  %add107.5 = add i32 %sub106.5, %149
+  %idxprom108.5 = sext i32 %add107.5 to i64
+  %arrayidx109.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.5
+  %150 = load i32, i32* %arrayidx109.5, align 4
+  %cmp110.5 = icmp eq i32 %150, 255
+  br i1 %cmp110.5, label %if.then146.5, label %lor.lhs.false112.5
 
-lor.lhs.false117.5:                               ; preds = %lor.lhs.false109.5
-  %150 = trunc i64 %indvars.iv.5 to i32
-  %add120.5 = add i32 %add119.5, %150
-  %idxprom121.5 = sext i32 %add120.5 to i64
-  %arrayidx122.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.5
-  %151 = load i32, i32* %arrayidx122.5, align 4
-  %cmp123.5 = icmp eq i32 %151, 255
-  br i1 %cmp123.5, label %if.then151.5, label %lor.lhs.false125.5
+lor.lhs.false112.5:                               ; preds = %lor.lhs.false104.5
+  %151 = trunc i64 %indvars.iv.5 to i32
+  %add115.5 = add i32 %add114.5, %151
+  %idxprom116.5 = sext i32 %add115.5 to i64
+  %arrayidx117.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.5
+  %152 = load i32, i32* %arrayidx117.5, align 4
+  %cmp118.5 = icmp eq i32 %152, 255
+  br i1 %cmp118.5, label %if.then146.5, label %lor.lhs.false120.5
 
-lor.lhs.false125.5:                               ; preds = %lor.lhs.false117.5
-  %add129.5 = add i32 %sub86.5, 127
-  %idxprom130.5 = sext i32 %add129.5 to i64
-  %arrayidx131.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.5
-  %152 = load i32, i32* %arrayidx131.5, align 4
-  %cmp132.5 = icmp eq i32 %152, 255
-  br i1 %cmp132.5, label %if.then151.5, label %lor.lhs.false134.5
+lor.lhs.false120.5:                               ; preds = %lor.lhs.false112.5
+  %add124.5 = add i32 %sub81.5, 127
+  %idxprom125.5 = sext i32 %add124.5 to i64
+  %arrayidx126.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.5
+  %153 = load i32, i32* %arrayidx126.5, align 4
+  %cmp127.5 = icmp eq i32 %153, 255
+  br i1 %cmp127.5, label %if.then146.5, label %lor.lhs.false129.5
 
-lor.lhs.false134.5:                               ; preds = %lor.lhs.false125.5
-  %153 = add nsw i64 %139, %indvars.iv.5
-  %arrayidx139.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %153
-  %154 = load i32, i32* %arrayidx139.5, align 4
-  %cmp140.5 = icmp eq i32 %154, 255
-  br i1 %cmp140.5, label %if.then151.5, label %lor.lhs.false142.5
+lor.lhs.false129.5:                               ; preds = %lor.lhs.false120.5
+  %154 = add nsw i64 %140, %indvars.iv.5
+  %arrayidx134.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %154
+  %155 = load i32, i32* %arrayidx134.5, align 4
+  %cmp135.5 = icmp eq i32 %155, 255
+  br i1 %cmp135.5, label %if.then146.5, label %lor.lhs.false137.5
 
-lor.lhs.false142.5:                               ; preds = %lor.lhs.false134.5
-  %add146.5 = add i32 %sub86.5, 129
-  %idxprom147.5 = sext i32 %add146.5 to i64
-  %arrayidx148.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.5
-  %155 = load i32, i32* %arrayidx148.5, align 4
-  %cmp149.5 = icmp eq i32 %155, 255
-  br i1 %cmp149.5, label %if.then151.5, label %if.else154.5
+lor.lhs.false137.5:                               ; preds = %lor.lhs.false129.5
+  %add141.5 = add i32 %sub81.5, 129
+  %idxprom142.5 = sext i32 %add141.5 to i64
+  %arrayidx143.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.5
+  %156 = load i32, i32* %arrayidx143.5, align 4
+  %cmp144.5 = icmp eq i32 %156, 255
+  br i1 %cmp144.5, label %if.then146.5, label %if.else149.5
 
-if.else154.5:                                     ; preds = %lor.lhs.false142.5
-  %arrayidx156.5 = getelementptr inbounds i8, i8* %., i64 %141
-  store i8 0, i8* %arrayidx156.5, align 1
-  br label %for.inc166.5
+if.else149.5:                                     ; preds = %lor.lhs.false137.5
+  %arrayidx151.5 = getelementptr inbounds i8, i8* %0, i64 %142
+  store i8 0, i8* %arrayidx151.5, align 1
+  br label %for.inc161.5
 
-if.then151.5:                                     ; preds = %lor.lhs.false142.5, %lor.lhs.false134.5, %lor.lhs.false125.5, %lor.lhs.false117.5, %lor.lhs.false109.5, %lor.lhs.false100.5, %lor.lhs.false92.5, %if.then83.5
-  %arrayidx153.5 = getelementptr inbounds i8, i8* %., i64 %141
-  store i8 -1, i8* %arrayidx153.5, align 1
-  br label %for.inc166.5
+if.then146.5:                                     ; preds = %lor.lhs.false137.5, %lor.lhs.false129.5, %lor.lhs.false120.5, %lor.lhs.false112.5, %lor.lhs.false104.5, %lor.lhs.false95.5, %lor.lhs.false87.5, %if.then78.5
+  %arrayidx148.5 = getelementptr inbounds i8, i8* %0, i64 %142
+  store i8 -1, i8* %arrayidx148.5, align 1
+  br label %for.inc161.5
 
-if.then75.5:                                      ; preds = %for.body61.5
-  %arrayidx77.5 = getelementptr inbounds i8, i8* %., i64 %141
-  store i8 0, i8* %arrayidx77.5, align 1
-  br label %for.inc166.5
+if.then70.5:                                      ; preds = %for.body56.5
+  %arrayidx72.5 = getelementptr inbounds i8, i8* %0, i64 %142
+  store i8 0, i8* %arrayidx72.5, align 1
+  br label %for.inc161.5
 
-for.inc166.5:                                     ; preds = %if.then75.5, %if.then151.5, %if.else154.5, %if.else158.5
+for.inc161.5:                                     ; preds = %if.then70.5, %if.then146.5, %if.else149.5, %if.else153.5
   %indvars.iv.next.5 = add nuw nsw i64 %indvars.iv.5, 1
   %lftr.wideiv.5 = trunc i64 %indvars.iv.next.5 to i32
   %exitcond.5 = icmp eq i32 %lftr.wideiv.5, %img_width
-  br i1 %exitcond.5, label %for.inc169.5, label %for.body61.5, !llvm.loop !5
+  br i1 %exitcond.5, label %for.inc164.5, label %for.body56.5, !llvm.loop !5
 
-for.inc169.5:                                     ; preds = %for.inc166.5
+for.inc164.5:                                     ; preds = %for.inc161.5
   %indvars.iv.next20.5 = add nsw i64 %indvars.iv19, 6
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.6
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.6
 
-for.body61.lr.ph.6:                               ; preds = %for.inc169.5
-  %156 = trunc i64 %indvars.iv.next20.5 to i32
-  %mul63.6 = shl nsw i32 %156, 7
-  %cmp67.6 = icmp eq i64 %indvars.iv.next20.5, %11
+for.body56.lr.ph.6:                               ; preds = %for.inc164.5
   %157 = trunc i64 %indvars.iv.next20.5 to i32
-  %sub84.6 = shl i32 %157, 7
-  %mul94.6 = add i32 %sub84.6, -128
-  %sub111.6 = add i32 %mul63.6, -1
-  %add119.6 = or i32 %mul63.6, 1
-  %mul136.6 = add i32 %sub84.6, 128
-  %158 = sext i32 %mul63.6 to i64
-  %159 = sext i32 %mul136.6 to i64
-  %160 = sext i32 %mul94.6 to i64
-  br label %for.body61.6
+  %mul58.6 = shl nsw i32 %157, 7
+  %cmp62.6 = icmp eq i64 %indvars.iv.next20.5, %12
+  %158 = trunc i64 %indvars.iv.next20.5 to i32
+  %sub79.6 = shl i32 %158, 7
+  %mul89.6 = add i32 %sub79.6, -128
+  %sub106.6 = add i32 %mul58.6, -1
+  %add114.6 = or i32 %mul58.6, 1
+  %mul131.6 = add i32 %sub79.6, 128
+  %159 = sext i32 %mul58.6 to i64
+  %160 = sext i32 %mul131.6 to i64
+  %161 = sext i32 %mul89.6 to i64
+  br label %for.body56.6
 
-for.body61.6:                                     ; preds = %for.inc166.6, %for.body61.lr.ph.6
-  %indvars.iv.6 = phi i64 [ 0, %for.body61.lr.ph.6 ], [ %indvars.iv.next.6, %for.inc166.6 ]
-  %161 = add nsw i64 %indvars.iv.6, %158
-  %cmp70.6 = icmp eq i64 %indvars.iv.6, 0
-  %or.cond1.6 = or i1 %cmp67.6, %cmp70.6
-  %cmp73.6 = icmp eq i64 %indvars.iv.6, %10
-  %or.cond2.6 = or i1 %cmp73.6, %or.cond1.6
-  br i1 %or.cond2.6, label %if.then75.6, label %if.else78.6
+for.body56.6:                                     ; preds = %for.inc161.6, %for.body56.lr.ph.6
+  %indvars.iv.6 = phi i64 [ 0, %for.body56.lr.ph.6 ], [ %indvars.iv.next.6, %for.inc161.6 ]
+  %162 = add nsw i64 %indvars.iv.6, %159
+  %cmp65.6 = icmp eq i64 %indvars.iv.6, 0
+  %or.cond1.6 = or i1 %cmp62.6, %cmp65.6
+  %cmp68.6 = icmp eq i64 %indvars.iv.6, %11
+  %or.cond2.6 = or i1 %cmp68.6, %or.cond1.6
+  br i1 %or.cond2.6, label %if.then70.6, label %if.else73.6
 
-if.else78.6:                                      ; preds = %for.body61.6
-  %arrayidx80.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %161
-  %162 = load i32, i32* %arrayidx80.6, align 4
-  %cmp81.6 = icmp eq i32 %162, 75
-  br i1 %cmp81.6, label %if.then83.6, label %if.else158.6
+if.else73.6:                                      ; preds = %for.body56.6
+  %arrayidx75.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %162
+  %163 = load i32, i32* %arrayidx75.6, align 4
+  %cmp76.6 = icmp eq i32 %163, 75
+  br i1 %cmp76.6, label %if.then78.6, label %if.else153.6
 
-if.else158.6:                                     ; preds = %if.else78.6
-  %conv161.6 = trunc i32 %162 to i8
-  %arrayidx163.6 = getelementptr inbounds i8, i8* %., i64 %161
-  store i8 %conv161.6, i8* %arrayidx163.6, align 1
-  br label %for.inc166.6
+if.else153.6:                                     ; preds = %if.else73.6
+  %conv156.6 = trunc i32 %163 to i8
+  %arrayidx158.6 = getelementptr inbounds i8, i8* %0, i64 %162
+  store i8 %conv156.6, i8* %arrayidx158.6, align 1
+  br label %for.inc161.6
 
-if.then83.6:                                      ; preds = %if.else78.6
-  %163 = trunc i64 %indvars.iv.6 to i32
-  %sub86.6 = add i32 %163, %sub84.6
-  %add87.6 = add i32 %sub86.6, -129
-  %idxprom88.6 = sext i32 %add87.6 to i64
-  %arrayidx89.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.6
-  %164 = load i32, i32* %arrayidx89.6, align 4
-  %cmp90.6 = icmp eq i32 %164, 255
-  br i1 %cmp90.6, label %if.then151.6, label %lor.lhs.false92.6
+if.then78.6:                                      ; preds = %if.else73.6
+  %164 = trunc i64 %indvars.iv.6 to i32
+  %sub81.6 = add i32 %164, %sub79.6
+  %add82.6 = add i32 %sub81.6, -129
+  %idxprom83.6 = sext i32 %add82.6 to i64
+  %arrayidx84.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.6
+  %165 = load i32, i32* %arrayidx84.6, align 4
+  %cmp85.6 = icmp eq i32 %165, 255
+  br i1 %cmp85.6, label %if.then146.6, label %lor.lhs.false87.6
 
-lor.lhs.false92.6:                                ; preds = %if.then83.6
-  %165 = add nsw i64 %160, %indvars.iv.6
-  %arrayidx97.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %165
-  %166 = load i32, i32* %arrayidx97.6, align 4
-  %cmp98.6 = icmp eq i32 %166, 255
-  br i1 %cmp98.6, label %if.then151.6, label %lor.lhs.false100.6
+lor.lhs.false87.6:                                ; preds = %if.then78.6
+  %166 = add nsw i64 %161, %indvars.iv.6
+  %arrayidx92.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %166
+  %167 = load i32, i32* %arrayidx92.6, align 4
+  %cmp93.6 = icmp eq i32 %167, 255
+  br i1 %cmp93.6, label %if.then146.6, label %lor.lhs.false95.6
 
-lor.lhs.false100.6:                               ; preds = %lor.lhs.false92.6
-  %add104.6 = add i32 %sub86.6, -127
-  %idxprom105.6 = sext i32 %add104.6 to i64
-  %arrayidx106.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.6
-  %167 = load i32, i32* %arrayidx106.6, align 4
-  %cmp107.6 = icmp eq i32 %167, 255
-  br i1 %cmp107.6, label %if.then151.6, label %lor.lhs.false109.6
+lor.lhs.false95.6:                                ; preds = %lor.lhs.false87.6
+  %add99.6 = add i32 %sub81.6, -127
+  %idxprom100.6 = sext i32 %add99.6 to i64
+  %arrayidx101.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.6
+  %168 = load i32, i32* %arrayidx101.6, align 4
+  %cmp102.6 = icmp eq i32 %168, 255
+  br i1 %cmp102.6, label %if.then146.6, label %lor.lhs.false104.6
 
-lor.lhs.false109.6:                               ; preds = %lor.lhs.false100.6
-  %168 = trunc i64 %indvars.iv.6 to i32
-  %add112.6 = add i32 %sub111.6, %168
-  %idxprom113.6 = sext i32 %add112.6 to i64
-  %arrayidx114.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.6
-  %169 = load i32, i32* %arrayidx114.6, align 4
-  %cmp115.6 = icmp eq i32 %169, 255
-  br i1 %cmp115.6, label %if.then151.6, label %lor.lhs.false117.6
+lor.lhs.false104.6:                               ; preds = %lor.lhs.false95.6
+  %169 = trunc i64 %indvars.iv.6 to i32
+  %add107.6 = add i32 %sub106.6, %169
+  %idxprom108.6 = sext i32 %add107.6 to i64
+  %arrayidx109.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.6
+  %170 = load i32, i32* %arrayidx109.6, align 4
+  %cmp110.6 = icmp eq i32 %170, 255
+  br i1 %cmp110.6, label %if.then146.6, label %lor.lhs.false112.6
 
-lor.lhs.false117.6:                               ; preds = %lor.lhs.false109.6
-  %170 = trunc i64 %indvars.iv.6 to i32
-  %add120.6 = add i32 %add119.6, %170
-  %idxprom121.6 = sext i32 %add120.6 to i64
-  %arrayidx122.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.6
-  %171 = load i32, i32* %arrayidx122.6, align 4
-  %cmp123.6 = icmp eq i32 %171, 255
-  br i1 %cmp123.6, label %if.then151.6, label %lor.lhs.false125.6
+lor.lhs.false112.6:                               ; preds = %lor.lhs.false104.6
+  %171 = trunc i64 %indvars.iv.6 to i32
+  %add115.6 = add i32 %add114.6, %171
+  %idxprom116.6 = sext i32 %add115.6 to i64
+  %arrayidx117.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.6
+  %172 = load i32, i32* %arrayidx117.6, align 4
+  %cmp118.6 = icmp eq i32 %172, 255
+  br i1 %cmp118.6, label %if.then146.6, label %lor.lhs.false120.6
 
-lor.lhs.false125.6:                               ; preds = %lor.lhs.false117.6
-  %add129.6 = add i32 %sub86.6, 127
-  %idxprom130.6 = sext i32 %add129.6 to i64
-  %arrayidx131.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.6
-  %172 = load i32, i32* %arrayidx131.6, align 4
-  %cmp132.6 = icmp eq i32 %172, 255
-  br i1 %cmp132.6, label %if.then151.6, label %lor.lhs.false134.6
+lor.lhs.false120.6:                               ; preds = %lor.lhs.false112.6
+  %add124.6 = add i32 %sub81.6, 127
+  %idxprom125.6 = sext i32 %add124.6 to i64
+  %arrayidx126.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.6
+  %173 = load i32, i32* %arrayidx126.6, align 4
+  %cmp127.6 = icmp eq i32 %173, 255
+  br i1 %cmp127.6, label %if.then146.6, label %lor.lhs.false129.6
 
-lor.lhs.false134.6:                               ; preds = %lor.lhs.false125.6
-  %173 = add nsw i64 %159, %indvars.iv.6
-  %arrayidx139.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %173
-  %174 = load i32, i32* %arrayidx139.6, align 4
-  %cmp140.6 = icmp eq i32 %174, 255
-  br i1 %cmp140.6, label %if.then151.6, label %lor.lhs.false142.6
+lor.lhs.false129.6:                               ; preds = %lor.lhs.false120.6
+  %174 = add nsw i64 %160, %indvars.iv.6
+  %arrayidx134.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %174
+  %175 = load i32, i32* %arrayidx134.6, align 4
+  %cmp135.6 = icmp eq i32 %175, 255
+  br i1 %cmp135.6, label %if.then146.6, label %lor.lhs.false137.6
 
-lor.lhs.false142.6:                               ; preds = %lor.lhs.false134.6
-  %add146.6 = add i32 %sub86.6, 129
-  %idxprom147.6 = sext i32 %add146.6 to i64
-  %arrayidx148.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.6
-  %175 = load i32, i32* %arrayidx148.6, align 4
-  %cmp149.6 = icmp eq i32 %175, 255
-  br i1 %cmp149.6, label %if.then151.6, label %if.else154.6
+lor.lhs.false137.6:                               ; preds = %lor.lhs.false129.6
+  %add141.6 = add i32 %sub81.6, 129
+  %idxprom142.6 = sext i32 %add141.6 to i64
+  %arrayidx143.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.6
+  %176 = load i32, i32* %arrayidx143.6, align 4
+  %cmp144.6 = icmp eq i32 %176, 255
+  br i1 %cmp144.6, label %if.then146.6, label %if.else149.6
 
-if.else154.6:                                     ; preds = %lor.lhs.false142.6
-  %arrayidx156.6 = getelementptr inbounds i8, i8* %., i64 %161
-  store i8 0, i8* %arrayidx156.6, align 1
-  br label %for.inc166.6
+if.else149.6:                                     ; preds = %lor.lhs.false137.6
+  %arrayidx151.6 = getelementptr inbounds i8, i8* %0, i64 %162
+  store i8 0, i8* %arrayidx151.6, align 1
+  br label %for.inc161.6
 
-if.then151.6:                                     ; preds = %lor.lhs.false142.6, %lor.lhs.false134.6, %lor.lhs.false125.6, %lor.lhs.false117.6, %lor.lhs.false109.6, %lor.lhs.false100.6, %lor.lhs.false92.6, %if.then83.6
-  %arrayidx153.6 = getelementptr inbounds i8, i8* %., i64 %161
-  store i8 -1, i8* %arrayidx153.6, align 1
-  br label %for.inc166.6
+if.then146.6:                                     ; preds = %lor.lhs.false137.6, %lor.lhs.false129.6, %lor.lhs.false120.6, %lor.lhs.false112.6, %lor.lhs.false104.6, %lor.lhs.false95.6, %lor.lhs.false87.6, %if.then78.6
+  %arrayidx148.6 = getelementptr inbounds i8, i8* %0, i64 %162
+  store i8 -1, i8* %arrayidx148.6, align 1
+  br label %for.inc161.6
 
-if.then75.6:                                      ; preds = %for.body61.6
-  %arrayidx77.6 = getelementptr inbounds i8, i8* %., i64 %161
-  store i8 0, i8* %arrayidx77.6, align 1
-  br label %for.inc166.6
+if.then70.6:                                      ; preds = %for.body56.6
+  %arrayidx72.6 = getelementptr inbounds i8, i8* %0, i64 %162
+  store i8 0, i8* %arrayidx72.6, align 1
+  br label %for.inc161.6
 
-for.inc166.6:                                     ; preds = %if.then75.6, %if.then151.6, %if.else154.6, %if.else158.6
+for.inc161.6:                                     ; preds = %if.then70.6, %if.then146.6, %if.else149.6, %if.else153.6
   %indvars.iv.next.6 = add nuw nsw i64 %indvars.iv.6, 1
   %lftr.wideiv.6 = trunc i64 %indvars.iv.next.6 to i32
   %exitcond.6 = icmp eq i32 %lftr.wideiv.6, %img_width
-  br i1 %exitcond.6, label %for.inc169.6, label %for.body61.6, !llvm.loop !5
+  br i1 %exitcond.6, label %for.inc164.6, label %for.body56.6, !llvm.loop !5
 
-for.inc169.6:                                     ; preds = %for.inc166.6
+for.inc164.6:                                     ; preds = %for.inc161.6
   %indvars.iv.next20.6 = add nsw i64 %indvars.iv19, 7
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.7
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.7
 
-for.body61.lr.ph.7:                               ; preds = %for.inc169.6
-  %176 = trunc i64 %indvars.iv.next20.6 to i32
-  %mul63.7 = shl nsw i32 %176, 7
-  %cmp67.7 = icmp eq i64 %indvars.iv.next20.6, %11
+for.body56.lr.ph.7:                               ; preds = %for.inc164.6
   %177 = trunc i64 %indvars.iv.next20.6 to i32
-  %sub84.7 = shl i32 %177, 7
-  %mul94.7 = add i32 %sub84.7, -128
-  %sub111.7 = add i32 %mul63.7, -1
-  %add119.7 = or i32 %mul63.7, 1
-  %mul136.7 = add i32 %sub84.7, 128
-  %178 = sext i32 %mul63.7 to i64
-  %179 = sext i32 %mul136.7 to i64
-  %180 = sext i32 %mul94.7 to i64
-  br label %for.body61.7
+  %mul58.7 = shl nsw i32 %177, 7
+  %cmp62.7 = icmp eq i64 %indvars.iv.next20.6, %12
+  %178 = trunc i64 %indvars.iv.next20.6 to i32
+  %sub79.7 = shl i32 %178, 7
+  %mul89.7 = add i32 %sub79.7, -128
+  %sub106.7 = add i32 %mul58.7, -1
+  %add114.7 = or i32 %mul58.7, 1
+  %mul131.7 = add i32 %sub79.7, 128
+  %179 = sext i32 %mul58.7 to i64
+  %180 = sext i32 %mul131.7 to i64
+  %181 = sext i32 %mul89.7 to i64
+  br label %for.body56.7
 
-for.body61.7:                                     ; preds = %for.inc166.7, %for.body61.lr.ph.7
-  %indvars.iv.7 = phi i64 [ 0, %for.body61.lr.ph.7 ], [ %indvars.iv.next.7, %for.inc166.7 ]
-  %181 = add nsw i64 %indvars.iv.7, %178
-  %cmp70.7 = icmp eq i64 %indvars.iv.7, 0
-  %or.cond1.7 = or i1 %cmp67.7, %cmp70.7
-  %cmp73.7 = icmp eq i64 %indvars.iv.7, %10
-  %or.cond2.7 = or i1 %cmp73.7, %or.cond1.7
-  br i1 %or.cond2.7, label %if.then75.7, label %if.else78.7
+for.body56.7:                                     ; preds = %for.inc161.7, %for.body56.lr.ph.7
+  %indvars.iv.7 = phi i64 [ 0, %for.body56.lr.ph.7 ], [ %indvars.iv.next.7, %for.inc161.7 ]
+  %182 = add nsw i64 %indvars.iv.7, %179
+  %cmp65.7 = icmp eq i64 %indvars.iv.7, 0
+  %or.cond1.7 = or i1 %cmp62.7, %cmp65.7
+  %cmp68.7 = icmp eq i64 %indvars.iv.7, %11
+  %or.cond2.7 = or i1 %cmp68.7, %or.cond1.7
+  br i1 %or.cond2.7, label %if.then70.7, label %if.else73.7
 
-if.else78.7:                                      ; preds = %for.body61.7
-  %arrayidx80.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %181
-  %182 = load i32, i32* %arrayidx80.7, align 4
-  %cmp81.7 = icmp eq i32 %182, 75
-  br i1 %cmp81.7, label %if.then83.7, label %if.else158.7
+if.else73.7:                                      ; preds = %for.body56.7
+  %arrayidx75.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %182
+  %183 = load i32, i32* %arrayidx75.7, align 4
+  %cmp76.7 = icmp eq i32 %183, 75
+  br i1 %cmp76.7, label %if.then78.7, label %if.else153.7
 
-if.else158.7:                                     ; preds = %if.else78.7
-  %conv161.7 = trunc i32 %182 to i8
-  %arrayidx163.7 = getelementptr inbounds i8, i8* %., i64 %181
-  store i8 %conv161.7, i8* %arrayidx163.7, align 1
-  br label %for.inc166.7
+if.else153.7:                                     ; preds = %if.else73.7
+  %conv156.7 = trunc i32 %183 to i8
+  %arrayidx158.7 = getelementptr inbounds i8, i8* %0, i64 %182
+  store i8 %conv156.7, i8* %arrayidx158.7, align 1
+  br label %for.inc161.7
 
-if.then83.7:                                      ; preds = %if.else78.7
-  %183 = trunc i64 %indvars.iv.7 to i32
-  %sub86.7 = add i32 %183, %sub84.7
-  %add87.7 = add i32 %sub86.7, -129
-  %idxprom88.7 = sext i32 %add87.7 to i64
-  %arrayidx89.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.7
-  %184 = load i32, i32* %arrayidx89.7, align 4
-  %cmp90.7 = icmp eq i32 %184, 255
-  br i1 %cmp90.7, label %if.then151.7, label %lor.lhs.false92.7
+if.then78.7:                                      ; preds = %if.else73.7
+  %184 = trunc i64 %indvars.iv.7 to i32
+  %sub81.7 = add i32 %184, %sub79.7
+  %add82.7 = add i32 %sub81.7, -129
+  %idxprom83.7 = sext i32 %add82.7 to i64
+  %arrayidx84.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.7
+  %185 = load i32, i32* %arrayidx84.7, align 4
+  %cmp85.7 = icmp eq i32 %185, 255
+  br i1 %cmp85.7, label %if.then146.7, label %lor.lhs.false87.7
 
-lor.lhs.false92.7:                                ; preds = %if.then83.7
-  %185 = add nsw i64 %180, %indvars.iv.7
-  %arrayidx97.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %185
-  %186 = load i32, i32* %arrayidx97.7, align 4
-  %cmp98.7 = icmp eq i32 %186, 255
-  br i1 %cmp98.7, label %if.then151.7, label %lor.lhs.false100.7
+lor.lhs.false87.7:                                ; preds = %if.then78.7
+  %186 = add nsw i64 %181, %indvars.iv.7
+  %arrayidx92.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %186
+  %187 = load i32, i32* %arrayidx92.7, align 4
+  %cmp93.7 = icmp eq i32 %187, 255
+  br i1 %cmp93.7, label %if.then146.7, label %lor.lhs.false95.7
 
-lor.lhs.false100.7:                               ; preds = %lor.lhs.false92.7
-  %add104.7 = add i32 %sub86.7, -127
-  %idxprom105.7 = sext i32 %add104.7 to i64
-  %arrayidx106.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.7
-  %187 = load i32, i32* %arrayidx106.7, align 4
-  %cmp107.7 = icmp eq i32 %187, 255
-  br i1 %cmp107.7, label %if.then151.7, label %lor.lhs.false109.7
+lor.lhs.false95.7:                                ; preds = %lor.lhs.false87.7
+  %add99.7 = add i32 %sub81.7, -127
+  %idxprom100.7 = sext i32 %add99.7 to i64
+  %arrayidx101.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.7
+  %188 = load i32, i32* %arrayidx101.7, align 4
+  %cmp102.7 = icmp eq i32 %188, 255
+  br i1 %cmp102.7, label %if.then146.7, label %lor.lhs.false104.7
 
-lor.lhs.false109.7:                               ; preds = %lor.lhs.false100.7
-  %188 = trunc i64 %indvars.iv.7 to i32
-  %add112.7 = add i32 %sub111.7, %188
-  %idxprom113.7 = sext i32 %add112.7 to i64
-  %arrayidx114.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.7
-  %189 = load i32, i32* %arrayidx114.7, align 4
-  %cmp115.7 = icmp eq i32 %189, 255
-  br i1 %cmp115.7, label %if.then151.7, label %lor.lhs.false117.7
+lor.lhs.false104.7:                               ; preds = %lor.lhs.false95.7
+  %189 = trunc i64 %indvars.iv.7 to i32
+  %add107.7 = add i32 %sub106.7, %189
+  %idxprom108.7 = sext i32 %add107.7 to i64
+  %arrayidx109.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.7
+  %190 = load i32, i32* %arrayidx109.7, align 4
+  %cmp110.7 = icmp eq i32 %190, 255
+  br i1 %cmp110.7, label %if.then146.7, label %lor.lhs.false112.7
 
-lor.lhs.false117.7:                               ; preds = %lor.lhs.false109.7
-  %190 = trunc i64 %indvars.iv.7 to i32
-  %add120.7 = add i32 %add119.7, %190
-  %idxprom121.7 = sext i32 %add120.7 to i64
-  %arrayidx122.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.7
-  %191 = load i32, i32* %arrayidx122.7, align 4
-  %cmp123.7 = icmp eq i32 %191, 255
-  br i1 %cmp123.7, label %if.then151.7, label %lor.lhs.false125.7
+lor.lhs.false112.7:                               ; preds = %lor.lhs.false104.7
+  %191 = trunc i64 %indvars.iv.7 to i32
+  %add115.7 = add i32 %add114.7, %191
+  %idxprom116.7 = sext i32 %add115.7 to i64
+  %arrayidx117.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.7
+  %192 = load i32, i32* %arrayidx117.7, align 4
+  %cmp118.7 = icmp eq i32 %192, 255
+  br i1 %cmp118.7, label %if.then146.7, label %lor.lhs.false120.7
 
-lor.lhs.false125.7:                               ; preds = %lor.lhs.false117.7
-  %add129.7 = add i32 %sub86.7, 127
-  %idxprom130.7 = sext i32 %add129.7 to i64
-  %arrayidx131.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.7
-  %192 = load i32, i32* %arrayidx131.7, align 4
-  %cmp132.7 = icmp eq i32 %192, 255
-  br i1 %cmp132.7, label %if.then151.7, label %lor.lhs.false134.7
+lor.lhs.false120.7:                               ; preds = %lor.lhs.false112.7
+  %add124.7 = add i32 %sub81.7, 127
+  %idxprom125.7 = sext i32 %add124.7 to i64
+  %arrayidx126.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.7
+  %193 = load i32, i32* %arrayidx126.7, align 4
+  %cmp127.7 = icmp eq i32 %193, 255
+  br i1 %cmp127.7, label %if.then146.7, label %lor.lhs.false129.7
 
-lor.lhs.false134.7:                               ; preds = %lor.lhs.false125.7
-  %193 = add nsw i64 %179, %indvars.iv.7
-  %arrayidx139.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %193
-  %194 = load i32, i32* %arrayidx139.7, align 4
-  %cmp140.7 = icmp eq i32 %194, 255
-  br i1 %cmp140.7, label %if.then151.7, label %lor.lhs.false142.7
+lor.lhs.false129.7:                               ; preds = %lor.lhs.false120.7
+  %194 = add nsw i64 %180, %indvars.iv.7
+  %arrayidx134.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %194
+  %195 = load i32, i32* %arrayidx134.7, align 4
+  %cmp135.7 = icmp eq i32 %195, 255
+  br i1 %cmp135.7, label %if.then146.7, label %lor.lhs.false137.7
 
-lor.lhs.false142.7:                               ; preds = %lor.lhs.false134.7
-  %add146.7 = add i32 %sub86.7, 129
-  %idxprom147.7 = sext i32 %add146.7 to i64
-  %arrayidx148.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.7
-  %195 = load i32, i32* %arrayidx148.7, align 4
-  %cmp149.7 = icmp eq i32 %195, 255
-  br i1 %cmp149.7, label %if.then151.7, label %if.else154.7
+lor.lhs.false137.7:                               ; preds = %lor.lhs.false129.7
+  %add141.7 = add i32 %sub81.7, 129
+  %idxprom142.7 = sext i32 %add141.7 to i64
+  %arrayidx143.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.7
+  %196 = load i32, i32* %arrayidx143.7, align 4
+  %cmp144.7 = icmp eq i32 %196, 255
+  br i1 %cmp144.7, label %if.then146.7, label %if.else149.7
 
-if.else154.7:                                     ; preds = %lor.lhs.false142.7
-  %arrayidx156.7 = getelementptr inbounds i8, i8* %., i64 %181
-  store i8 0, i8* %arrayidx156.7, align 1
-  br label %for.inc166.7
+if.else149.7:                                     ; preds = %lor.lhs.false137.7
+  %arrayidx151.7 = getelementptr inbounds i8, i8* %0, i64 %182
+  store i8 0, i8* %arrayidx151.7, align 1
+  br label %for.inc161.7
 
-if.then151.7:                                     ; preds = %lor.lhs.false142.7, %lor.lhs.false134.7, %lor.lhs.false125.7, %lor.lhs.false117.7, %lor.lhs.false109.7, %lor.lhs.false100.7, %lor.lhs.false92.7, %if.then83.7
-  %arrayidx153.7 = getelementptr inbounds i8, i8* %., i64 %181
-  store i8 -1, i8* %arrayidx153.7, align 1
-  br label %for.inc166.7
+if.then146.7:                                     ; preds = %lor.lhs.false137.7, %lor.lhs.false129.7, %lor.lhs.false120.7, %lor.lhs.false112.7, %lor.lhs.false104.7, %lor.lhs.false95.7, %lor.lhs.false87.7, %if.then78.7
+  %arrayidx148.7 = getelementptr inbounds i8, i8* %0, i64 %182
+  store i8 -1, i8* %arrayidx148.7, align 1
+  br label %for.inc161.7
 
-if.then75.7:                                      ; preds = %for.body61.7
-  %arrayidx77.7 = getelementptr inbounds i8, i8* %., i64 %181
-  store i8 0, i8* %arrayidx77.7, align 1
-  br label %for.inc166.7
+if.then70.7:                                      ; preds = %for.body56.7
+  %arrayidx72.7 = getelementptr inbounds i8, i8* %0, i64 %182
+  store i8 0, i8* %arrayidx72.7, align 1
+  br label %for.inc161.7
 
-for.inc166.7:                                     ; preds = %if.then75.7, %if.then151.7, %if.else154.7, %if.else158.7
+for.inc161.7:                                     ; preds = %if.then70.7, %if.then146.7, %if.else149.7, %if.else153.7
   %indvars.iv.next.7 = add nuw nsw i64 %indvars.iv.7, 1
   %lftr.wideiv.7 = trunc i64 %indvars.iv.next.7 to i32
   %exitcond.7 = icmp eq i32 %lftr.wideiv.7, %img_width
-  br i1 %exitcond.7, label %for.inc169.7, label %for.body61.7, !llvm.loop !5
+  br i1 %exitcond.7, label %for.inc164.7, label %for.body56.7, !llvm.loop !5
 
-for.inc169.7:                                     ; preds = %for.inc166.7
+for.inc164.7:                                     ; preds = %for.inc161.7
   %indvars.iv.next20.7 = add nsw i64 %indvars.iv19, 8
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.8
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.8
 
-for.body61.lr.ph.8:                               ; preds = %for.inc169.7
-  %196 = trunc i64 %indvars.iv.next20.7 to i32
-  %mul63.8 = shl nsw i32 %196, 7
-  %cmp67.8 = icmp eq i64 %indvars.iv.next20.7, %11
+for.body56.lr.ph.8:                               ; preds = %for.inc164.7
   %197 = trunc i64 %indvars.iv.next20.7 to i32
-  %sub84.8 = shl i32 %197, 7
-  %mul94.8 = add i32 %sub84.8, -128
-  %sub111.8 = add i32 %mul63.8, -1
-  %add119.8 = or i32 %mul63.8, 1
-  %mul136.8 = add i32 %sub84.8, 128
-  %198 = sext i32 %mul63.8 to i64
-  %199 = sext i32 %mul136.8 to i64
-  %200 = sext i32 %mul94.8 to i64
-  br label %for.body61.8
+  %mul58.8 = shl nsw i32 %197, 7
+  %cmp62.8 = icmp eq i64 %indvars.iv.next20.7, %12
+  %198 = trunc i64 %indvars.iv.next20.7 to i32
+  %sub79.8 = shl i32 %198, 7
+  %mul89.8 = add i32 %sub79.8, -128
+  %sub106.8 = add i32 %mul58.8, -1
+  %add114.8 = or i32 %mul58.8, 1
+  %mul131.8 = add i32 %sub79.8, 128
+  %199 = sext i32 %mul58.8 to i64
+  %200 = sext i32 %mul131.8 to i64
+  %201 = sext i32 %mul89.8 to i64
+  br label %for.body56.8
 
-for.body61.8:                                     ; preds = %for.inc166.8, %for.body61.lr.ph.8
-  %indvars.iv.8 = phi i64 [ 0, %for.body61.lr.ph.8 ], [ %indvars.iv.next.8, %for.inc166.8 ]
-  %201 = add nsw i64 %indvars.iv.8, %198
-  %cmp70.8 = icmp eq i64 %indvars.iv.8, 0
-  %or.cond1.8 = or i1 %cmp67.8, %cmp70.8
-  %cmp73.8 = icmp eq i64 %indvars.iv.8, %10
-  %or.cond2.8 = or i1 %cmp73.8, %or.cond1.8
-  br i1 %or.cond2.8, label %if.then75.8, label %if.else78.8
+for.body56.8:                                     ; preds = %for.inc161.8, %for.body56.lr.ph.8
+  %indvars.iv.8 = phi i64 [ 0, %for.body56.lr.ph.8 ], [ %indvars.iv.next.8, %for.inc161.8 ]
+  %202 = add nsw i64 %indvars.iv.8, %199
+  %cmp65.8 = icmp eq i64 %indvars.iv.8, 0
+  %or.cond1.8 = or i1 %cmp62.8, %cmp65.8
+  %cmp68.8 = icmp eq i64 %indvars.iv.8, %11
+  %or.cond2.8 = or i1 %cmp68.8, %or.cond1.8
+  br i1 %or.cond2.8, label %if.then70.8, label %if.else73.8
 
-if.else78.8:                                      ; preds = %for.body61.8
-  %arrayidx80.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %201
-  %202 = load i32, i32* %arrayidx80.8, align 4
-  %cmp81.8 = icmp eq i32 %202, 75
-  br i1 %cmp81.8, label %if.then83.8, label %if.else158.8
+if.else73.8:                                      ; preds = %for.body56.8
+  %arrayidx75.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %202
+  %203 = load i32, i32* %arrayidx75.8, align 4
+  %cmp76.8 = icmp eq i32 %203, 75
+  br i1 %cmp76.8, label %if.then78.8, label %if.else153.8
 
-if.else158.8:                                     ; preds = %if.else78.8
-  %conv161.8 = trunc i32 %202 to i8
-  %arrayidx163.8 = getelementptr inbounds i8, i8* %., i64 %201
-  store i8 %conv161.8, i8* %arrayidx163.8, align 1
-  br label %for.inc166.8
+if.else153.8:                                     ; preds = %if.else73.8
+  %conv156.8 = trunc i32 %203 to i8
+  %arrayidx158.8 = getelementptr inbounds i8, i8* %0, i64 %202
+  store i8 %conv156.8, i8* %arrayidx158.8, align 1
+  br label %for.inc161.8
 
-if.then83.8:                                      ; preds = %if.else78.8
-  %203 = trunc i64 %indvars.iv.8 to i32
-  %sub86.8 = add i32 %203, %sub84.8
-  %add87.8 = add i32 %sub86.8, -129
-  %idxprom88.8 = sext i32 %add87.8 to i64
-  %arrayidx89.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.8
-  %204 = load i32, i32* %arrayidx89.8, align 4
-  %cmp90.8 = icmp eq i32 %204, 255
-  br i1 %cmp90.8, label %if.then151.8, label %lor.lhs.false92.8
+if.then78.8:                                      ; preds = %if.else73.8
+  %204 = trunc i64 %indvars.iv.8 to i32
+  %sub81.8 = add i32 %204, %sub79.8
+  %add82.8 = add i32 %sub81.8, -129
+  %idxprom83.8 = sext i32 %add82.8 to i64
+  %arrayidx84.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.8
+  %205 = load i32, i32* %arrayidx84.8, align 4
+  %cmp85.8 = icmp eq i32 %205, 255
+  br i1 %cmp85.8, label %if.then146.8, label %lor.lhs.false87.8
 
-lor.lhs.false92.8:                                ; preds = %if.then83.8
-  %205 = add nsw i64 %200, %indvars.iv.8
-  %arrayidx97.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %205
-  %206 = load i32, i32* %arrayidx97.8, align 4
-  %cmp98.8 = icmp eq i32 %206, 255
-  br i1 %cmp98.8, label %if.then151.8, label %lor.lhs.false100.8
+lor.lhs.false87.8:                                ; preds = %if.then78.8
+  %206 = add nsw i64 %201, %indvars.iv.8
+  %arrayidx92.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %206
+  %207 = load i32, i32* %arrayidx92.8, align 4
+  %cmp93.8 = icmp eq i32 %207, 255
+  br i1 %cmp93.8, label %if.then146.8, label %lor.lhs.false95.8
 
-lor.lhs.false100.8:                               ; preds = %lor.lhs.false92.8
-  %add104.8 = add i32 %sub86.8, -127
-  %idxprom105.8 = sext i32 %add104.8 to i64
-  %arrayidx106.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.8
-  %207 = load i32, i32* %arrayidx106.8, align 4
-  %cmp107.8 = icmp eq i32 %207, 255
-  br i1 %cmp107.8, label %if.then151.8, label %lor.lhs.false109.8
+lor.lhs.false95.8:                                ; preds = %lor.lhs.false87.8
+  %add99.8 = add i32 %sub81.8, -127
+  %idxprom100.8 = sext i32 %add99.8 to i64
+  %arrayidx101.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.8
+  %208 = load i32, i32* %arrayidx101.8, align 4
+  %cmp102.8 = icmp eq i32 %208, 255
+  br i1 %cmp102.8, label %if.then146.8, label %lor.lhs.false104.8
 
-lor.lhs.false109.8:                               ; preds = %lor.lhs.false100.8
-  %208 = trunc i64 %indvars.iv.8 to i32
-  %add112.8 = add i32 %sub111.8, %208
-  %idxprom113.8 = sext i32 %add112.8 to i64
-  %arrayidx114.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.8
-  %209 = load i32, i32* %arrayidx114.8, align 4
-  %cmp115.8 = icmp eq i32 %209, 255
-  br i1 %cmp115.8, label %if.then151.8, label %lor.lhs.false117.8
+lor.lhs.false104.8:                               ; preds = %lor.lhs.false95.8
+  %209 = trunc i64 %indvars.iv.8 to i32
+  %add107.8 = add i32 %sub106.8, %209
+  %idxprom108.8 = sext i32 %add107.8 to i64
+  %arrayidx109.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.8
+  %210 = load i32, i32* %arrayidx109.8, align 4
+  %cmp110.8 = icmp eq i32 %210, 255
+  br i1 %cmp110.8, label %if.then146.8, label %lor.lhs.false112.8
 
-lor.lhs.false117.8:                               ; preds = %lor.lhs.false109.8
-  %210 = trunc i64 %indvars.iv.8 to i32
-  %add120.8 = add i32 %add119.8, %210
-  %idxprom121.8 = sext i32 %add120.8 to i64
-  %arrayidx122.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.8
-  %211 = load i32, i32* %arrayidx122.8, align 4
-  %cmp123.8 = icmp eq i32 %211, 255
-  br i1 %cmp123.8, label %if.then151.8, label %lor.lhs.false125.8
+lor.lhs.false112.8:                               ; preds = %lor.lhs.false104.8
+  %211 = trunc i64 %indvars.iv.8 to i32
+  %add115.8 = add i32 %add114.8, %211
+  %idxprom116.8 = sext i32 %add115.8 to i64
+  %arrayidx117.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.8
+  %212 = load i32, i32* %arrayidx117.8, align 4
+  %cmp118.8 = icmp eq i32 %212, 255
+  br i1 %cmp118.8, label %if.then146.8, label %lor.lhs.false120.8
 
-lor.lhs.false125.8:                               ; preds = %lor.lhs.false117.8
-  %add129.8 = add i32 %sub86.8, 127
-  %idxprom130.8 = sext i32 %add129.8 to i64
-  %arrayidx131.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.8
-  %212 = load i32, i32* %arrayidx131.8, align 4
-  %cmp132.8 = icmp eq i32 %212, 255
-  br i1 %cmp132.8, label %if.then151.8, label %lor.lhs.false134.8
+lor.lhs.false120.8:                               ; preds = %lor.lhs.false112.8
+  %add124.8 = add i32 %sub81.8, 127
+  %idxprom125.8 = sext i32 %add124.8 to i64
+  %arrayidx126.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.8
+  %213 = load i32, i32* %arrayidx126.8, align 4
+  %cmp127.8 = icmp eq i32 %213, 255
+  br i1 %cmp127.8, label %if.then146.8, label %lor.lhs.false129.8
 
-lor.lhs.false134.8:                               ; preds = %lor.lhs.false125.8
-  %213 = add nsw i64 %199, %indvars.iv.8
-  %arrayidx139.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %213
-  %214 = load i32, i32* %arrayidx139.8, align 4
-  %cmp140.8 = icmp eq i32 %214, 255
-  br i1 %cmp140.8, label %if.then151.8, label %lor.lhs.false142.8
+lor.lhs.false129.8:                               ; preds = %lor.lhs.false120.8
+  %214 = add nsw i64 %200, %indvars.iv.8
+  %arrayidx134.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %214
+  %215 = load i32, i32* %arrayidx134.8, align 4
+  %cmp135.8 = icmp eq i32 %215, 255
+  br i1 %cmp135.8, label %if.then146.8, label %lor.lhs.false137.8
 
-lor.lhs.false142.8:                               ; preds = %lor.lhs.false134.8
-  %add146.8 = add i32 %sub86.8, 129
-  %idxprom147.8 = sext i32 %add146.8 to i64
-  %arrayidx148.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.8
-  %215 = load i32, i32* %arrayidx148.8, align 4
-  %cmp149.8 = icmp eq i32 %215, 255
-  br i1 %cmp149.8, label %if.then151.8, label %if.else154.8
+lor.lhs.false137.8:                               ; preds = %lor.lhs.false129.8
+  %add141.8 = add i32 %sub81.8, 129
+  %idxprom142.8 = sext i32 %add141.8 to i64
+  %arrayidx143.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.8
+  %216 = load i32, i32* %arrayidx143.8, align 4
+  %cmp144.8 = icmp eq i32 %216, 255
+  br i1 %cmp144.8, label %if.then146.8, label %if.else149.8
 
-if.else154.8:                                     ; preds = %lor.lhs.false142.8
-  %arrayidx156.8 = getelementptr inbounds i8, i8* %., i64 %201
-  store i8 0, i8* %arrayidx156.8, align 1
-  br label %for.inc166.8
+if.else149.8:                                     ; preds = %lor.lhs.false137.8
+  %arrayidx151.8 = getelementptr inbounds i8, i8* %0, i64 %202
+  store i8 0, i8* %arrayidx151.8, align 1
+  br label %for.inc161.8
 
-if.then151.8:                                     ; preds = %lor.lhs.false142.8, %lor.lhs.false134.8, %lor.lhs.false125.8, %lor.lhs.false117.8, %lor.lhs.false109.8, %lor.lhs.false100.8, %lor.lhs.false92.8, %if.then83.8
-  %arrayidx153.8 = getelementptr inbounds i8, i8* %., i64 %201
-  store i8 -1, i8* %arrayidx153.8, align 1
-  br label %for.inc166.8
+if.then146.8:                                     ; preds = %lor.lhs.false137.8, %lor.lhs.false129.8, %lor.lhs.false120.8, %lor.lhs.false112.8, %lor.lhs.false104.8, %lor.lhs.false95.8, %lor.lhs.false87.8, %if.then78.8
+  %arrayidx148.8 = getelementptr inbounds i8, i8* %0, i64 %202
+  store i8 -1, i8* %arrayidx148.8, align 1
+  br label %for.inc161.8
 
-if.then75.8:                                      ; preds = %for.body61.8
-  %arrayidx77.8 = getelementptr inbounds i8, i8* %., i64 %201
-  store i8 0, i8* %arrayidx77.8, align 1
-  br label %for.inc166.8
+if.then70.8:                                      ; preds = %for.body56.8
+  %arrayidx72.8 = getelementptr inbounds i8, i8* %0, i64 %202
+  store i8 0, i8* %arrayidx72.8, align 1
+  br label %for.inc161.8
 
-for.inc166.8:                                     ; preds = %if.then75.8, %if.then151.8, %if.else154.8, %if.else158.8
+for.inc161.8:                                     ; preds = %if.then70.8, %if.then146.8, %if.else149.8, %if.else153.8
   %indvars.iv.next.8 = add nuw nsw i64 %indvars.iv.8, 1
   %lftr.wideiv.8 = trunc i64 %indvars.iv.next.8 to i32
   %exitcond.8 = icmp eq i32 %lftr.wideiv.8, %img_width
-  br i1 %exitcond.8, label %for.inc169.8, label %for.body61.8, !llvm.loop !5
+  br i1 %exitcond.8, label %for.inc164.8, label %for.body56.8, !llvm.loop !5
 
-for.inc169.8:                                     ; preds = %for.inc166.8
+for.inc164.8:                                     ; preds = %for.inc161.8
   %indvars.iv.next20.8 = add nsw i64 %indvars.iv19, 9
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.9
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.9
 
-for.body61.lr.ph.9:                               ; preds = %for.inc169.8
-  %216 = trunc i64 %indvars.iv.next20.8 to i32
-  %mul63.9 = shl nsw i32 %216, 7
-  %cmp67.9 = icmp eq i64 %indvars.iv.next20.8, %11
+for.body56.lr.ph.9:                               ; preds = %for.inc164.8
   %217 = trunc i64 %indvars.iv.next20.8 to i32
-  %sub84.9 = shl i32 %217, 7
-  %mul94.9 = add i32 %sub84.9, -128
-  %sub111.9 = add i32 %mul63.9, -1
-  %add119.9 = or i32 %mul63.9, 1
-  %mul136.9 = add i32 %sub84.9, 128
-  %218 = sext i32 %mul63.9 to i64
-  %219 = sext i32 %mul136.9 to i64
-  %220 = sext i32 %mul94.9 to i64
-  br label %for.body61.9
+  %mul58.9 = shl nsw i32 %217, 7
+  %cmp62.9 = icmp eq i64 %indvars.iv.next20.8, %12
+  %218 = trunc i64 %indvars.iv.next20.8 to i32
+  %sub79.9 = shl i32 %218, 7
+  %mul89.9 = add i32 %sub79.9, -128
+  %sub106.9 = add i32 %mul58.9, -1
+  %add114.9 = or i32 %mul58.9, 1
+  %mul131.9 = add i32 %sub79.9, 128
+  %219 = sext i32 %mul58.9 to i64
+  %220 = sext i32 %mul131.9 to i64
+  %221 = sext i32 %mul89.9 to i64
+  br label %for.body56.9
 
-for.body61.9:                                     ; preds = %for.inc166.9, %for.body61.lr.ph.9
-  %indvars.iv.9 = phi i64 [ 0, %for.body61.lr.ph.9 ], [ %indvars.iv.next.9, %for.inc166.9 ]
-  %221 = add nsw i64 %indvars.iv.9, %218
-  %cmp70.9 = icmp eq i64 %indvars.iv.9, 0
-  %or.cond1.9 = or i1 %cmp67.9, %cmp70.9
-  %cmp73.9 = icmp eq i64 %indvars.iv.9, %10
-  %or.cond2.9 = or i1 %cmp73.9, %or.cond1.9
-  br i1 %or.cond2.9, label %if.then75.9, label %if.else78.9
+for.body56.9:                                     ; preds = %for.inc161.9, %for.body56.lr.ph.9
+  %indvars.iv.9 = phi i64 [ 0, %for.body56.lr.ph.9 ], [ %indvars.iv.next.9, %for.inc161.9 ]
+  %222 = add nsw i64 %indvars.iv.9, %219
+  %cmp65.9 = icmp eq i64 %indvars.iv.9, 0
+  %or.cond1.9 = or i1 %cmp62.9, %cmp65.9
+  %cmp68.9 = icmp eq i64 %indvars.iv.9, %11
+  %or.cond2.9 = or i1 %cmp68.9, %or.cond1.9
+  br i1 %or.cond2.9, label %if.then70.9, label %if.else73.9
 
-if.else78.9:                                      ; preds = %for.body61.9
-  %arrayidx80.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %221
-  %222 = load i32, i32* %arrayidx80.9, align 4
-  %cmp81.9 = icmp eq i32 %222, 75
-  br i1 %cmp81.9, label %if.then83.9, label %if.else158.9
+if.else73.9:                                      ; preds = %for.body56.9
+  %arrayidx75.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %222
+  %223 = load i32, i32* %arrayidx75.9, align 4
+  %cmp76.9 = icmp eq i32 %223, 75
+  br i1 %cmp76.9, label %if.then78.9, label %if.else153.9
 
-if.else158.9:                                     ; preds = %if.else78.9
-  %conv161.9 = trunc i32 %222 to i8
-  %arrayidx163.9 = getelementptr inbounds i8, i8* %., i64 %221
-  store i8 %conv161.9, i8* %arrayidx163.9, align 1
-  br label %for.inc166.9
+if.else153.9:                                     ; preds = %if.else73.9
+  %conv156.9 = trunc i32 %223 to i8
+  %arrayidx158.9 = getelementptr inbounds i8, i8* %0, i64 %222
+  store i8 %conv156.9, i8* %arrayidx158.9, align 1
+  br label %for.inc161.9
 
-if.then83.9:                                      ; preds = %if.else78.9
-  %223 = trunc i64 %indvars.iv.9 to i32
-  %sub86.9 = add i32 %223, %sub84.9
-  %add87.9 = add i32 %sub86.9, -129
-  %idxprom88.9 = sext i32 %add87.9 to i64
-  %arrayidx89.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.9
-  %224 = load i32, i32* %arrayidx89.9, align 4
-  %cmp90.9 = icmp eq i32 %224, 255
-  br i1 %cmp90.9, label %if.then151.9, label %lor.lhs.false92.9
+if.then78.9:                                      ; preds = %if.else73.9
+  %224 = trunc i64 %indvars.iv.9 to i32
+  %sub81.9 = add i32 %224, %sub79.9
+  %add82.9 = add i32 %sub81.9, -129
+  %idxprom83.9 = sext i32 %add82.9 to i64
+  %arrayidx84.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.9
+  %225 = load i32, i32* %arrayidx84.9, align 4
+  %cmp85.9 = icmp eq i32 %225, 255
+  br i1 %cmp85.9, label %if.then146.9, label %lor.lhs.false87.9
 
-lor.lhs.false92.9:                                ; preds = %if.then83.9
-  %225 = add nsw i64 %220, %indvars.iv.9
-  %arrayidx97.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %225
-  %226 = load i32, i32* %arrayidx97.9, align 4
-  %cmp98.9 = icmp eq i32 %226, 255
-  br i1 %cmp98.9, label %if.then151.9, label %lor.lhs.false100.9
+lor.lhs.false87.9:                                ; preds = %if.then78.9
+  %226 = add nsw i64 %221, %indvars.iv.9
+  %arrayidx92.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %226
+  %227 = load i32, i32* %arrayidx92.9, align 4
+  %cmp93.9 = icmp eq i32 %227, 255
+  br i1 %cmp93.9, label %if.then146.9, label %lor.lhs.false95.9
 
-lor.lhs.false100.9:                               ; preds = %lor.lhs.false92.9
-  %add104.9 = add i32 %sub86.9, -127
-  %idxprom105.9 = sext i32 %add104.9 to i64
-  %arrayidx106.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.9
-  %227 = load i32, i32* %arrayidx106.9, align 4
-  %cmp107.9 = icmp eq i32 %227, 255
-  br i1 %cmp107.9, label %if.then151.9, label %lor.lhs.false109.9
+lor.lhs.false95.9:                                ; preds = %lor.lhs.false87.9
+  %add99.9 = add i32 %sub81.9, -127
+  %idxprom100.9 = sext i32 %add99.9 to i64
+  %arrayidx101.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.9
+  %228 = load i32, i32* %arrayidx101.9, align 4
+  %cmp102.9 = icmp eq i32 %228, 255
+  br i1 %cmp102.9, label %if.then146.9, label %lor.lhs.false104.9
 
-lor.lhs.false109.9:                               ; preds = %lor.lhs.false100.9
-  %228 = trunc i64 %indvars.iv.9 to i32
-  %add112.9 = add i32 %sub111.9, %228
-  %idxprom113.9 = sext i32 %add112.9 to i64
-  %arrayidx114.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.9
-  %229 = load i32, i32* %arrayidx114.9, align 4
-  %cmp115.9 = icmp eq i32 %229, 255
-  br i1 %cmp115.9, label %if.then151.9, label %lor.lhs.false117.9
+lor.lhs.false104.9:                               ; preds = %lor.lhs.false95.9
+  %229 = trunc i64 %indvars.iv.9 to i32
+  %add107.9 = add i32 %sub106.9, %229
+  %idxprom108.9 = sext i32 %add107.9 to i64
+  %arrayidx109.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.9
+  %230 = load i32, i32* %arrayidx109.9, align 4
+  %cmp110.9 = icmp eq i32 %230, 255
+  br i1 %cmp110.9, label %if.then146.9, label %lor.lhs.false112.9
 
-lor.lhs.false117.9:                               ; preds = %lor.lhs.false109.9
-  %230 = trunc i64 %indvars.iv.9 to i32
-  %add120.9 = add i32 %add119.9, %230
-  %idxprom121.9 = sext i32 %add120.9 to i64
-  %arrayidx122.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.9
-  %231 = load i32, i32* %arrayidx122.9, align 4
-  %cmp123.9 = icmp eq i32 %231, 255
-  br i1 %cmp123.9, label %if.then151.9, label %lor.lhs.false125.9
+lor.lhs.false112.9:                               ; preds = %lor.lhs.false104.9
+  %231 = trunc i64 %indvars.iv.9 to i32
+  %add115.9 = add i32 %add114.9, %231
+  %idxprom116.9 = sext i32 %add115.9 to i64
+  %arrayidx117.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.9
+  %232 = load i32, i32* %arrayidx117.9, align 4
+  %cmp118.9 = icmp eq i32 %232, 255
+  br i1 %cmp118.9, label %if.then146.9, label %lor.lhs.false120.9
 
-lor.lhs.false125.9:                               ; preds = %lor.lhs.false117.9
-  %add129.9 = add i32 %sub86.9, 127
-  %idxprom130.9 = sext i32 %add129.9 to i64
-  %arrayidx131.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.9
-  %232 = load i32, i32* %arrayidx131.9, align 4
-  %cmp132.9 = icmp eq i32 %232, 255
-  br i1 %cmp132.9, label %if.then151.9, label %lor.lhs.false134.9
+lor.lhs.false120.9:                               ; preds = %lor.lhs.false112.9
+  %add124.9 = add i32 %sub81.9, 127
+  %idxprom125.9 = sext i32 %add124.9 to i64
+  %arrayidx126.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.9
+  %233 = load i32, i32* %arrayidx126.9, align 4
+  %cmp127.9 = icmp eq i32 %233, 255
+  br i1 %cmp127.9, label %if.then146.9, label %lor.lhs.false129.9
 
-lor.lhs.false134.9:                               ; preds = %lor.lhs.false125.9
-  %233 = add nsw i64 %219, %indvars.iv.9
-  %arrayidx139.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %233
-  %234 = load i32, i32* %arrayidx139.9, align 4
-  %cmp140.9 = icmp eq i32 %234, 255
-  br i1 %cmp140.9, label %if.then151.9, label %lor.lhs.false142.9
+lor.lhs.false129.9:                               ; preds = %lor.lhs.false120.9
+  %234 = add nsw i64 %220, %indvars.iv.9
+  %arrayidx134.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %234
+  %235 = load i32, i32* %arrayidx134.9, align 4
+  %cmp135.9 = icmp eq i32 %235, 255
+  br i1 %cmp135.9, label %if.then146.9, label %lor.lhs.false137.9
 
-lor.lhs.false142.9:                               ; preds = %lor.lhs.false134.9
-  %add146.9 = add i32 %sub86.9, 129
-  %idxprom147.9 = sext i32 %add146.9 to i64
-  %arrayidx148.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.9
-  %235 = load i32, i32* %arrayidx148.9, align 4
-  %cmp149.9 = icmp eq i32 %235, 255
-  br i1 %cmp149.9, label %if.then151.9, label %if.else154.9
+lor.lhs.false137.9:                               ; preds = %lor.lhs.false129.9
+  %add141.9 = add i32 %sub81.9, 129
+  %idxprom142.9 = sext i32 %add141.9 to i64
+  %arrayidx143.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.9
+  %236 = load i32, i32* %arrayidx143.9, align 4
+  %cmp144.9 = icmp eq i32 %236, 255
+  br i1 %cmp144.9, label %if.then146.9, label %if.else149.9
 
-if.else154.9:                                     ; preds = %lor.lhs.false142.9
-  %arrayidx156.9 = getelementptr inbounds i8, i8* %., i64 %221
-  store i8 0, i8* %arrayidx156.9, align 1
-  br label %for.inc166.9
+if.else149.9:                                     ; preds = %lor.lhs.false137.9
+  %arrayidx151.9 = getelementptr inbounds i8, i8* %0, i64 %222
+  store i8 0, i8* %arrayidx151.9, align 1
+  br label %for.inc161.9
 
-if.then151.9:                                     ; preds = %lor.lhs.false142.9, %lor.lhs.false134.9, %lor.lhs.false125.9, %lor.lhs.false117.9, %lor.lhs.false109.9, %lor.lhs.false100.9, %lor.lhs.false92.9, %if.then83.9
-  %arrayidx153.9 = getelementptr inbounds i8, i8* %., i64 %221
-  store i8 -1, i8* %arrayidx153.9, align 1
-  br label %for.inc166.9
+if.then146.9:                                     ; preds = %lor.lhs.false137.9, %lor.lhs.false129.9, %lor.lhs.false120.9, %lor.lhs.false112.9, %lor.lhs.false104.9, %lor.lhs.false95.9, %lor.lhs.false87.9, %if.then78.9
+  %arrayidx148.9 = getelementptr inbounds i8, i8* %0, i64 %222
+  store i8 -1, i8* %arrayidx148.9, align 1
+  br label %for.inc161.9
 
-if.then75.9:                                      ; preds = %for.body61.9
-  %arrayidx77.9 = getelementptr inbounds i8, i8* %., i64 %221
-  store i8 0, i8* %arrayidx77.9, align 1
-  br label %for.inc166.9
+if.then70.9:                                      ; preds = %for.body56.9
+  %arrayidx72.9 = getelementptr inbounds i8, i8* %0, i64 %222
+  store i8 0, i8* %arrayidx72.9, align 1
+  br label %for.inc161.9
 
-for.inc166.9:                                     ; preds = %if.then75.9, %if.then151.9, %if.else154.9, %if.else158.9
+for.inc161.9:                                     ; preds = %if.then70.9, %if.then146.9, %if.else149.9, %if.else153.9
   %indvars.iv.next.9 = add nuw nsw i64 %indvars.iv.9, 1
   %lftr.wideiv.9 = trunc i64 %indvars.iv.next.9 to i32
   %exitcond.9 = icmp eq i32 %lftr.wideiv.9, %img_width
-  br i1 %exitcond.9, label %for.inc169.9, label %for.body61.9, !llvm.loop !5
+  br i1 %exitcond.9, label %for.inc164.9, label %for.body56.9, !llvm.loop !5
 
-for.inc169.9:                                     ; preds = %for.inc166.9
+for.inc164.9:                                     ; preds = %for.inc161.9
   %indvars.iv.next20.9 = add nsw i64 %indvars.iv19, 10
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.10
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.10
 
-for.body61.lr.ph.10:                              ; preds = %for.inc169.9
-  %236 = trunc i64 %indvars.iv.next20.9 to i32
-  %mul63.10 = shl nsw i32 %236, 7
-  %cmp67.10 = icmp eq i64 %indvars.iv.next20.9, %11
+for.body56.lr.ph.10:                              ; preds = %for.inc164.9
   %237 = trunc i64 %indvars.iv.next20.9 to i32
-  %sub84.10 = shl i32 %237, 7
-  %mul94.10 = add i32 %sub84.10, -128
-  %sub111.10 = add i32 %mul63.10, -1
-  %add119.10 = or i32 %mul63.10, 1
-  %mul136.10 = add i32 %sub84.10, 128
-  %238 = sext i32 %mul63.10 to i64
-  %239 = sext i32 %mul136.10 to i64
-  %240 = sext i32 %mul94.10 to i64
-  br label %for.body61.10
+  %mul58.10 = shl nsw i32 %237, 7
+  %cmp62.10 = icmp eq i64 %indvars.iv.next20.9, %12
+  %238 = trunc i64 %indvars.iv.next20.9 to i32
+  %sub79.10 = shl i32 %238, 7
+  %mul89.10 = add i32 %sub79.10, -128
+  %sub106.10 = add i32 %mul58.10, -1
+  %add114.10 = or i32 %mul58.10, 1
+  %mul131.10 = add i32 %sub79.10, 128
+  %239 = sext i32 %mul58.10 to i64
+  %240 = sext i32 %mul131.10 to i64
+  %241 = sext i32 %mul89.10 to i64
+  br label %for.body56.10
 
-for.body61.10:                                    ; preds = %for.inc166.10, %for.body61.lr.ph.10
-  %indvars.iv.10 = phi i64 [ 0, %for.body61.lr.ph.10 ], [ %indvars.iv.next.10, %for.inc166.10 ]
-  %241 = add nsw i64 %indvars.iv.10, %238
-  %cmp70.10 = icmp eq i64 %indvars.iv.10, 0
-  %or.cond1.10 = or i1 %cmp67.10, %cmp70.10
-  %cmp73.10 = icmp eq i64 %indvars.iv.10, %10
-  %or.cond2.10 = or i1 %cmp73.10, %or.cond1.10
-  br i1 %or.cond2.10, label %if.then75.10, label %if.else78.10
+for.body56.10:                                    ; preds = %for.inc161.10, %for.body56.lr.ph.10
+  %indvars.iv.10 = phi i64 [ 0, %for.body56.lr.ph.10 ], [ %indvars.iv.next.10, %for.inc161.10 ]
+  %242 = add nsw i64 %indvars.iv.10, %239
+  %cmp65.10 = icmp eq i64 %indvars.iv.10, 0
+  %or.cond1.10 = or i1 %cmp62.10, %cmp65.10
+  %cmp68.10 = icmp eq i64 %indvars.iv.10, %11
+  %or.cond2.10 = or i1 %cmp68.10, %or.cond1.10
+  br i1 %or.cond2.10, label %if.then70.10, label %if.else73.10
 
-if.else78.10:                                     ; preds = %for.body61.10
-  %arrayidx80.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %241
-  %242 = load i32, i32* %arrayidx80.10, align 4
-  %cmp81.10 = icmp eq i32 %242, 75
-  br i1 %cmp81.10, label %if.then83.10, label %if.else158.10
+if.else73.10:                                     ; preds = %for.body56.10
+  %arrayidx75.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %242
+  %243 = load i32, i32* %arrayidx75.10, align 4
+  %cmp76.10 = icmp eq i32 %243, 75
+  br i1 %cmp76.10, label %if.then78.10, label %if.else153.10
 
-if.else158.10:                                    ; preds = %if.else78.10
-  %conv161.10 = trunc i32 %242 to i8
-  %arrayidx163.10 = getelementptr inbounds i8, i8* %., i64 %241
-  store i8 %conv161.10, i8* %arrayidx163.10, align 1
-  br label %for.inc166.10
+if.else153.10:                                    ; preds = %if.else73.10
+  %conv156.10 = trunc i32 %243 to i8
+  %arrayidx158.10 = getelementptr inbounds i8, i8* %0, i64 %242
+  store i8 %conv156.10, i8* %arrayidx158.10, align 1
+  br label %for.inc161.10
 
-if.then83.10:                                     ; preds = %if.else78.10
-  %243 = trunc i64 %indvars.iv.10 to i32
-  %sub86.10 = add i32 %243, %sub84.10
-  %add87.10 = add i32 %sub86.10, -129
-  %idxprom88.10 = sext i32 %add87.10 to i64
-  %arrayidx89.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.10
-  %244 = load i32, i32* %arrayidx89.10, align 4
-  %cmp90.10 = icmp eq i32 %244, 255
-  br i1 %cmp90.10, label %if.then151.10, label %lor.lhs.false92.10
+if.then78.10:                                     ; preds = %if.else73.10
+  %244 = trunc i64 %indvars.iv.10 to i32
+  %sub81.10 = add i32 %244, %sub79.10
+  %add82.10 = add i32 %sub81.10, -129
+  %idxprom83.10 = sext i32 %add82.10 to i64
+  %arrayidx84.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.10
+  %245 = load i32, i32* %arrayidx84.10, align 4
+  %cmp85.10 = icmp eq i32 %245, 255
+  br i1 %cmp85.10, label %if.then146.10, label %lor.lhs.false87.10
 
-lor.lhs.false92.10:                               ; preds = %if.then83.10
-  %245 = add nsw i64 %240, %indvars.iv.10
-  %arrayidx97.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %245
-  %246 = load i32, i32* %arrayidx97.10, align 4
-  %cmp98.10 = icmp eq i32 %246, 255
-  br i1 %cmp98.10, label %if.then151.10, label %lor.lhs.false100.10
+lor.lhs.false87.10:                               ; preds = %if.then78.10
+  %246 = add nsw i64 %241, %indvars.iv.10
+  %arrayidx92.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %246
+  %247 = load i32, i32* %arrayidx92.10, align 4
+  %cmp93.10 = icmp eq i32 %247, 255
+  br i1 %cmp93.10, label %if.then146.10, label %lor.lhs.false95.10
 
-lor.lhs.false100.10:                              ; preds = %lor.lhs.false92.10
-  %add104.10 = add i32 %sub86.10, -127
-  %idxprom105.10 = sext i32 %add104.10 to i64
-  %arrayidx106.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.10
-  %247 = load i32, i32* %arrayidx106.10, align 4
-  %cmp107.10 = icmp eq i32 %247, 255
-  br i1 %cmp107.10, label %if.then151.10, label %lor.lhs.false109.10
+lor.lhs.false95.10:                               ; preds = %lor.lhs.false87.10
+  %add99.10 = add i32 %sub81.10, -127
+  %idxprom100.10 = sext i32 %add99.10 to i64
+  %arrayidx101.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.10
+  %248 = load i32, i32* %arrayidx101.10, align 4
+  %cmp102.10 = icmp eq i32 %248, 255
+  br i1 %cmp102.10, label %if.then146.10, label %lor.lhs.false104.10
 
-lor.lhs.false109.10:                              ; preds = %lor.lhs.false100.10
-  %248 = trunc i64 %indvars.iv.10 to i32
-  %add112.10 = add i32 %sub111.10, %248
-  %idxprom113.10 = sext i32 %add112.10 to i64
-  %arrayidx114.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.10
-  %249 = load i32, i32* %arrayidx114.10, align 4
-  %cmp115.10 = icmp eq i32 %249, 255
-  br i1 %cmp115.10, label %if.then151.10, label %lor.lhs.false117.10
+lor.lhs.false104.10:                              ; preds = %lor.lhs.false95.10
+  %249 = trunc i64 %indvars.iv.10 to i32
+  %add107.10 = add i32 %sub106.10, %249
+  %idxprom108.10 = sext i32 %add107.10 to i64
+  %arrayidx109.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.10
+  %250 = load i32, i32* %arrayidx109.10, align 4
+  %cmp110.10 = icmp eq i32 %250, 255
+  br i1 %cmp110.10, label %if.then146.10, label %lor.lhs.false112.10
 
-lor.lhs.false117.10:                              ; preds = %lor.lhs.false109.10
-  %250 = trunc i64 %indvars.iv.10 to i32
-  %add120.10 = add i32 %add119.10, %250
-  %idxprom121.10 = sext i32 %add120.10 to i64
-  %arrayidx122.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.10
-  %251 = load i32, i32* %arrayidx122.10, align 4
-  %cmp123.10 = icmp eq i32 %251, 255
-  br i1 %cmp123.10, label %if.then151.10, label %lor.lhs.false125.10
+lor.lhs.false112.10:                              ; preds = %lor.lhs.false104.10
+  %251 = trunc i64 %indvars.iv.10 to i32
+  %add115.10 = add i32 %add114.10, %251
+  %idxprom116.10 = sext i32 %add115.10 to i64
+  %arrayidx117.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.10
+  %252 = load i32, i32* %arrayidx117.10, align 4
+  %cmp118.10 = icmp eq i32 %252, 255
+  br i1 %cmp118.10, label %if.then146.10, label %lor.lhs.false120.10
 
-lor.lhs.false125.10:                              ; preds = %lor.lhs.false117.10
-  %add129.10 = add i32 %sub86.10, 127
-  %idxprom130.10 = sext i32 %add129.10 to i64
-  %arrayidx131.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.10
-  %252 = load i32, i32* %arrayidx131.10, align 4
-  %cmp132.10 = icmp eq i32 %252, 255
-  br i1 %cmp132.10, label %if.then151.10, label %lor.lhs.false134.10
+lor.lhs.false120.10:                              ; preds = %lor.lhs.false112.10
+  %add124.10 = add i32 %sub81.10, 127
+  %idxprom125.10 = sext i32 %add124.10 to i64
+  %arrayidx126.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.10
+  %253 = load i32, i32* %arrayidx126.10, align 4
+  %cmp127.10 = icmp eq i32 %253, 255
+  br i1 %cmp127.10, label %if.then146.10, label %lor.lhs.false129.10
 
-lor.lhs.false134.10:                              ; preds = %lor.lhs.false125.10
-  %253 = add nsw i64 %239, %indvars.iv.10
-  %arrayidx139.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %253
-  %254 = load i32, i32* %arrayidx139.10, align 4
-  %cmp140.10 = icmp eq i32 %254, 255
-  br i1 %cmp140.10, label %if.then151.10, label %lor.lhs.false142.10
+lor.lhs.false129.10:                              ; preds = %lor.lhs.false120.10
+  %254 = add nsw i64 %240, %indvars.iv.10
+  %arrayidx134.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %254
+  %255 = load i32, i32* %arrayidx134.10, align 4
+  %cmp135.10 = icmp eq i32 %255, 255
+  br i1 %cmp135.10, label %if.then146.10, label %lor.lhs.false137.10
 
-lor.lhs.false142.10:                              ; preds = %lor.lhs.false134.10
-  %add146.10 = add i32 %sub86.10, 129
-  %idxprom147.10 = sext i32 %add146.10 to i64
-  %arrayidx148.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.10
-  %255 = load i32, i32* %arrayidx148.10, align 4
-  %cmp149.10 = icmp eq i32 %255, 255
-  br i1 %cmp149.10, label %if.then151.10, label %if.else154.10
+lor.lhs.false137.10:                              ; preds = %lor.lhs.false129.10
+  %add141.10 = add i32 %sub81.10, 129
+  %idxprom142.10 = sext i32 %add141.10 to i64
+  %arrayidx143.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.10
+  %256 = load i32, i32* %arrayidx143.10, align 4
+  %cmp144.10 = icmp eq i32 %256, 255
+  br i1 %cmp144.10, label %if.then146.10, label %if.else149.10
 
-if.else154.10:                                    ; preds = %lor.lhs.false142.10
-  %arrayidx156.10 = getelementptr inbounds i8, i8* %., i64 %241
-  store i8 0, i8* %arrayidx156.10, align 1
-  br label %for.inc166.10
+if.else149.10:                                    ; preds = %lor.lhs.false137.10
+  %arrayidx151.10 = getelementptr inbounds i8, i8* %0, i64 %242
+  store i8 0, i8* %arrayidx151.10, align 1
+  br label %for.inc161.10
 
-if.then151.10:                                    ; preds = %lor.lhs.false142.10, %lor.lhs.false134.10, %lor.lhs.false125.10, %lor.lhs.false117.10, %lor.lhs.false109.10, %lor.lhs.false100.10, %lor.lhs.false92.10, %if.then83.10
-  %arrayidx153.10 = getelementptr inbounds i8, i8* %., i64 %241
-  store i8 -1, i8* %arrayidx153.10, align 1
-  br label %for.inc166.10
+if.then146.10:                                    ; preds = %lor.lhs.false137.10, %lor.lhs.false129.10, %lor.lhs.false120.10, %lor.lhs.false112.10, %lor.lhs.false104.10, %lor.lhs.false95.10, %lor.lhs.false87.10, %if.then78.10
+  %arrayidx148.10 = getelementptr inbounds i8, i8* %0, i64 %242
+  store i8 -1, i8* %arrayidx148.10, align 1
+  br label %for.inc161.10
 
-if.then75.10:                                     ; preds = %for.body61.10
-  %arrayidx77.10 = getelementptr inbounds i8, i8* %., i64 %241
-  store i8 0, i8* %arrayidx77.10, align 1
-  br label %for.inc166.10
+if.then70.10:                                     ; preds = %for.body56.10
+  %arrayidx72.10 = getelementptr inbounds i8, i8* %0, i64 %242
+  store i8 0, i8* %arrayidx72.10, align 1
+  br label %for.inc161.10
 
-for.inc166.10:                                    ; preds = %if.then75.10, %if.then151.10, %if.else154.10, %if.else158.10
+for.inc161.10:                                    ; preds = %if.then70.10, %if.then146.10, %if.else149.10, %if.else153.10
   %indvars.iv.next.10 = add nuw nsw i64 %indvars.iv.10, 1
   %lftr.wideiv.10 = trunc i64 %indvars.iv.next.10 to i32
   %exitcond.10 = icmp eq i32 %lftr.wideiv.10, %img_width
-  br i1 %exitcond.10, label %for.inc169.10, label %for.body61.10, !llvm.loop !5
+  br i1 %exitcond.10, label %for.inc164.10, label %for.body56.10, !llvm.loop !5
 
-for.inc169.10:                                    ; preds = %for.inc166.10
+for.inc164.10:                                    ; preds = %for.inc161.10
   %indvars.iv.next20.10 = add nsw i64 %indvars.iv19, 11
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.11
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.11
 
-for.body61.lr.ph.11:                              ; preds = %for.inc169.10
-  %256 = trunc i64 %indvars.iv.next20.10 to i32
-  %mul63.11 = shl nsw i32 %256, 7
-  %cmp67.11 = icmp eq i64 %indvars.iv.next20.10, %11
+for.body56.lr.ph.11:                              ; preds = %for.inc164.10
   %257 = trunc i64 %indvars.iv.next20.10 to i32
-  %sub84.11 = shl i32 %257, 7
-  %mul94.11 = add i32 %sub84.11, -128
-  %sub111.11 = add i32 %mul63.11, -1
-  %add119.11 = or i32 %mul63.11, 1
-  %mul136.11 = add i32 %sub84.11, 128
-  %258 = sext i32 %mul63.11 to i64
-  %259 = sext i32 %mul136.11 to i64
-  %260 = sext i32 %mul94.11 to i64
-  br label %for.body61.11
+  %mul58.11 = shl nsw i32 %257, 7
+  %cmp62.11 = icmp eq i64 %indvars.iv.next20.10, %12
+  %258 = trunc i64 %indvars.iv.next20.10 to i32
+  %sub79.11 = shl i32 %258, 7
+  %mul89.11 = add i32 %sub79.11, -128
+  %sub106.11 = add i32 %mul58.11, -1
+  %add114.11 = or i32 %mul58.11, 1
+  %mul131.11 = add i32 %sub79.11, 128
+  %259 = sext i32 %mul58.11 to i64
+  %260 = sext i32 %mul131.11 to i64
+  %261 = sext i32 %mul89.11 to i64
+  br label %for.body56.11
 
-for.body61.11:                                    ; preds = %for.inc166.11, %for.body61.lr.ph.11
-  %indvars.iv.11 = phi i64 [ 0, %for.body61.lr.ph.11 ], [ %indvars.iv.next.11, %for.inc166.11 ]
-  %261 = add nsw i64 %indvars.iv.11, %258
-  %cmp70.11 = icmp eq i64 %indvars.iv.11, 0
-  %or.cond1.11 = or i1 %cmp67.11, %cmp70.11
-  %cmp73.11 = icmp eq i64 %indvars.iv.11, %10
-  %or.cond2.11 = or i1 %cmp73.11, %or.cond1.11
-  br i1 %or.cond2.11, label %if.then75.11, label %if.else78.11
+for.body56.11:                                    ; preds = %for.inc161.11, %for.body56.lr.ph.11
+  %indvars.iv.11 = phi i64 [ 0, %for.body56.lr.ph.11 ], [ %indvars.iv.next.11, %for.inc161.11 ]
+  %262 = add nsw i64 %indvars.iv.11, %259
+  %cmp65.11 = icmp eq i64 %indvars.iv.11, 0
+  %or.cond1.11 = or i1 %cmp62.11, %cmp65.11
+  %cmp68.11 = icmp eq i64 %indvars.iv.11, %11
+  %or.cond2.11 = or i1 %cmp68.11, %or.cond1.11
+  br i1 %or.cond2.11, label %if.then70.11, label %if.else73.11
 
-if.else78.11:                                     ; preds = %for.body61.11
-  %arrayidx80.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %261
-  %262 = load i32, i32* %arrayidx80.11, align 4
-  %cmp81.11 = icmp eq i32 %262, 75
-  br i1 %cmp81.11, label %if.then83.11, label %if.else158.11
+if.else73.11:                                     ; preds = %for.body56.11
+  %arrayidx75.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %262
+  %263 = load i32, i32* %arrayidx75.11, align 4
+  %cmp76.11 = icmp eq i32 %263, 75
+  br i1 %cmp76.11, label %if.then78.11, label %if.else153.11
 
-if.else158.11:                                    ; preds = %if.else78.11
-  %conv161.11 = trunc i32 %262 to i8
-  %arrayidx163.11 = getelementptr inbounds i8, i8* %., i64 %261
-  store i8 %conv161.11, i8* %arrayidx163.11, align 1
-  br label %for.inc166.11
+if.else153.11:                                    ; preds = %if.else73.11
+  %conv156.11 = trunc i32 %263 to i8
+  %arrayidx158.11 = getelementptr inbounds i8, i8* %0, i64 %262
+  store i8 %conv156.11, i8* %arrayidx158.11, align 1
+  br label %for.inc161.11
 
-if.then83.11:                                     ; preds = %if.else78.11
-  %263 = trunc i64 %indvars.iv.11 to i32
-  %sub86.11 = add i32 %263, %sub84.11
-  %add87.11 = add i32 %sub86.11, -129
-  %idxprom88.11 = sext i32 %add87.11 to i64
-  %arrayidx89.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.11
-  %264 = load i32, i32* %arrayidx89.11, align 4
-  %cmp90.11 = icmp eq i32 %264, 255
-  br i1 %cmp90.11, label %if.then151.11, label %lor.lhs.false92.11
+if.then78.11:                                     ; preds = %if.else73.11
+  %264 = trunc i64 %indvars.iv.11 to i32
+  %sub81.11 = add i32 %264, %sub79.11
+  %add82.11 = add i32 %sub81.11, -129
+  %idxprom83.11 = sext i32 %add82.11 to i64
+  %arrayidx84.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.11
+  %265 = load i32, i32* %arrayidx84.11, align 4
+  %cmp85.11 = icmp eq i32 %265, 255
+  br i1 %cmp85.11, label %if.then146.11, label %lor.lhs.false87.11
 
-lor.lhs.false92.11:                               ; preds = %if.then83.11
-  %265 = add nsw i64 %260, %indvars.iv.11
-  %arrayidx97.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %265
-  %266 = load i32, i32* %arrayidx97.11, align 4
-  %cmp98.11 = icmp eq i32 %266, 255
-  br i1 %cmp98.11, label %if.then151.11, label %lor.lhs.false100.11
+lor.lhs.false87.11:                               ; preds = %if.then78.11
+  %266 = add nsw i64 %261, %indvars.iv.11
+  %arrayidx92.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %266
+  %267 = load i32, i32* %arrayidx92.11, align 4
+  %cmp93.11 = icmp eq i32 %267, 255
+  br i1 %cmp93.11, label %if.then146.11, label %lor.lhs.false95.11
 
-lor.lhs.false100.11:                              ; preds = %lor.lhs.false92.11
-  %add104.11 = add i32 %sub86.11, -127
-  %idxprom105.11 = sext i32 %add104.11 to i64
-  %arrayidx106.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.11
-  %267 = load i32, i32* %arrayidx106.11, align 4
-  %cmp107.11 = icmp eq i32 %267, 255
-  br i1 %cmp107.11, label %if.then151.11, label %lor.lhs.false109.11
+lor.lhs.false95.11:                               ; preds = %lor.lhs.false87.11
+  %add99.11 = add i32 %sub81.11, -127
+  %idxprom100.11 = sext i32 %add99.11 to i64
+  %arrayidx101.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.11
+  %268 = load i32, i32* %arrayidx101.11, align 4
+  %cmp102.11 = icmp eq i32 %268, 255
+  br i1 %cmp102.11, label %if.then146.11, label %lor.lhs.false104.11
 
-lor.lhs.false109.11:                              ; preds = %lor.lhs.false100.11
-  %268 = trunc i64 %indvars.iv.11 to i32
-  %add112.11 = add i32 %sub111.11, %268
-  %idxprom113.11 = sext i32 %add112.11 to i64
-  %arrayidx114.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.11
-  %269 = load i32, i32* %arrayidx114.11, align 4
-  %cmp115.11 = icmp eq i32 %269, 255
-  br i1 %cmp115.11, label %if.then151.11, label %lor.lhs.false117.11
+lor.lhs.false104.11:                              ; preds = %lor.lhs.false95.11
+  %269 = trunc i64 %indvars.iv.11 to i32
+  %add107.11 = add i32 %sub106.11, %269
+  %idxprom108.11 = sext i32 %add107.11 to i64
+  %arrayidx109.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.11
+  %270 = load i32, i32* %arrayidx109.11, align 4
+  %cmp110.11 = icmp eq i32 %270, 255
+  br i1 %cmp110.11, label %if.then146.11, label %lor.lhs.false112.11
 
-lor.lhs.false117.11:                              ; preds = %lor.lhs.false109.11
-  %270 = trunc i64 %indvars.iv.11 to i32
-  %add120.11 = add i32 %add119.11, %270
-  %idxprom121.11 = sext i32 %add120.11 to i64
-  %arrayidx122.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.11
-  %271 = load i32, i32* %arrayidx122.11, align 4
-  %cmp123.11 = icmp eq i32 %271, 255
-  br i1 %cmp123.11, label %if.then151.11, label %lor.lhs.false125.11
+lor.lhs.false112.11:                              ; preds = %lor.lhs.false104.11
+  %271 = trunc i64 %indvars.iv.11 to i32
+  %add115.11 = add i32 %add114.11, %271
+  %idxprom116.11 = sext i32 %add115.11 to i64
+  %arrayidx117.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.11
+  %272 = load i32, i32* %arrayidx117.11, align 4
+  %cmp118.11 = icmp eq i32 %272, 255
+  br i1 %cmp118.11, label %if.then146.11, label %lor.lhs.false120.11
 
-lor.lhs.false125.11:                              ; preds = %lor.lhs.false117.11
-  %add129.11 = add i32 %sub86.11, 127
-  %idxprom130.11 = sext i32 %add129.11 to i64
-  %arrayidx131.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.11
-  %272 = load i32, i32* %arrayidx131.11, align 4
-  %cmp132.11 = icmp eq i32 %272, 255
-  br i1 %cmp132.11, label %if.then151.11, label %lor.lhs.false134.11
+lor.lhs.false120.11:                              ; preds = %lor.lhs.false112.11
+  %add124.11 = add i32 %sub81.11, 127
+  %idxprom125.11 = sext i32 %add124.11 to i64
+  %arrayidx126.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.11
+  %273 = load i32, i32* %arrayidx126.11, align 4
+  %cmp127.11 = icmp eq i32 %273, 255
+  br i1 %cmp127.11, label %if.then146.11, label %lor.lhs.false129.11
 
-lor.lhs.false134.11:                              ; preds = %lor.lhs.false125.11
-  %273 = add nsw i64 %259, %indvars.iv.11
-  %arrayidx139.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %273
-  %274 = load i32, i32* %arrayidx139.11, align 4
-  %cmp140.11 = icmp eq i32 %274, 255
-  br i1 %cmp140.11, label %if.then151.11, label %lor.lhs.false142.11
+lor.lhs.false129.11:                              ; preds = %lor.lhs.false120.11
+  %274 = add nsw i64 %260, %indvars.iv.11
+  %arrayidx134.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %274
+  %275 = load i32, i32* %arrayidx134.11, align 4
+  %cmp135.11 = icmp eq i32 %275, 255
+  br i1 %cmp135.11, label %if.then146.11, label %lor.lhs.false137.11
 
-lor.lhs.false142.11:                              ; preds = %lor.lhs.false134.11
-  %add146.11 = add i32 %sub86.11, 129
-  %idxprom147.11 = sext i32 %add146.11 to i64
-  %arrayidx148.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.11
-  %275 = load i32, i32* %arrayidx148.11, align 4
-  %cmp149.11 = icmp eq i32 %275, 255
-  br i1 %cmp149.11, label %if.then151.11, label %if.else154.11
+lor.lhs.false137.11:                              ; preds = %lor.lhs.false129.11
+  %add141.11 = add i32 %sub81.11, 129
+  %idxprom142.11 = sext i32 %add141.11 to i64
+  %arrayidx143.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.11
+  %276 = load i32, i32* %arrayidx143.11, align 4
+  %cmp144.11 = icmp eq i32 %276, 255
+  br i1 %cmp144.11, label %if.then146.11, label %if.else149.11
 
-if.else154.11:                                    ; preds = %lor.lhs.false142.11
-  %arrayidx156.11 = getelementptr inbounds i8, i8* %., i64 %261
-  store i8 0, i8* %arrayidx156.11, align 1
-  br label %for.inc166.11
+if.else149.11:                                    ; preds = %lor.lhs.false137.11
+  %arrayidx151.11 = getelementptr inbounds i8, i8* %0, i64 %262
+  store i8 0, i8* %arrayidx151.11, align 1
+  br label %for.inc161.11
 
-if.then151.11:                                    ; preds = %lor.lhs.false142.11, %lor.lhs.false134.11, %lor.lhs.false125.11, %lor.lhs.false117.11, %lor.lhs.false109.11, %lor.lhs.false100.11, %lor.lhs.false92.11, %if.then83.11
-  %arrayidx153.11 = getelementptr inbounds i8, i8* %., i64 %261
-  store i8 -1, i8* %arrayidx153.11, align 1
-  br label %for.inc166.11
+if.then146.11:                                    ; preds = %lor.lhs.false137.11, %lor.lhs.false129.11, %lor.lhs.false120.11, %lor.lhs.false112.11, %lor.lhs.false104.11, %lor.lhs.false95.11, %lor.lhs.false87.11, %if.then78.11
+  %arrayidx148.11 = getelementptr inbounds i8, i8* %0, i64 %262
+  store i8 -1, i8* %arrayidx148.11, align 1
+  br label %for.inc161.11
 
-if.then75.11:                                     ; preds = %for.body61.11
-  %arrayidx77.11 = getelementptr inbounds i8, i8* %., i64 %261
-  store i8 0, i8* %arrayidx77.11, align 1
-  br label %for.inc166.11
+if.then70.11:                                     ; preds = %for.body56.11
+  %arrayidx72.11 = getelementptr inbounds i8, i8* %0, i64 %262
+  store i8 0, i8* %arrayidx72.11, align 1
+  br label %for.inc161.11
 
-for.inc166.11:                                    ; preds = %if.then75.11, %if.then151.11, %if.else154.11, %if.else158.11
+for.inc161.11:                                    ; preds = %if.then70.11, %if.then146.11, %if.else149.11, %if.else153.11
   %indvars.iv.next.11 = add nuw nsw i64 %indvars.iv.11, 1
   %lftr.wideiv.11 = trunc i64 %indvars.iv.next.11 to i32
   %exitcond.11 = icmp eq i32 %lftr.wideiv.11, %img_width
-  br i1 %exitcond.11, label %for.inc169.11, label %for.body61.11, !llvm.loop !5
+  br i1 %exitcond.11, label %for.inc164.11, label %for.body56.11, !llvm.loop !5
 
-for.inc169.11:                                    ; preds = %for.inc166.11
+for.inc164.11:                                    ; preds = %for.inc161.11
   %indvars.iv.next20.11 = add nsw i64 %indvars.iv19, 12
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.12
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.12
 
-for.body61.lr.ph.12:                              ; preds = %for.inc169.11
-  %276 = trunc i64 %indvars.iv.next20.11 to i32
-  %mul63.12 = shl nsw i32 %276, 7
-  %cmp67.12 = icmp eq i64 %indvars.iv.next20.11, %11
+for.body56.lr.ph.12:                              ; preds = %for.inc164.11
   %277 = trunc i64 %indvars.iv.next20.11 to i32
-  %sub84.12 = shl i32 %277, 7
-  %mul94.12 = add i32 %sub84.12, -128
-  %sub111.12 = add i32 %mul63.12, -1
-  %add119.12 = or i32 %mul63.12, 1
-  %mul136.12 = add i32 %sub84.12, 128
-  %278 = sext i32 %mul63.12 to i64
-  %279 = sext i32 %mul136.12 to i64
-  %280 = sext i32 %mul94.12 to i64
-  br label %for.body61.12
+  %mul58.12 = shl nsw i32 %277, 7
+  %cmp62.12 = icmp eq i64 %indvars.iv.next20.11, %12
+  %278 = trunc i64 %indvars.iv.next20.11 to i32
+  %sub79.12 = shl i32 %278, 7
+  %mul89.12 = add i32 %sub79.12, -128
+  %sub106.12 = add i32 %mul58.12, -1
+  %add114.12 = or i32 %mul58.12, 1
+  %mul131.12 = add i32 %sub79.12, 128
+  %279 = sext i32 %mul58.12 to i64
+  %280 = sext i32 %mul131.12 to i64
+  %281 = sext i32 %mul89.12 to i64
+  br label %for.body56.12
 
-for.body61.12:                                    ; preds = %for.inc166.12, %for.body61.lr.ph.12
-  %indvars.iv.12 = phi i64 [ 0, %for.body61.lr.ph.12 ], [ %indvars.iv.next.12, %for.inc166.12 ]
-  %281 = add nsw i64 %indvars.iv.12, %278
-  %cmp70.12 = icmp eq i64 %indvars.iv.12, 0
-  %or.cond1.12 = or i1 %cmp67.12, %cmp70.12
-  %cmp73.12 = icmp eq i64 %indvars.iv.12, %10
-  %or.cond2.12 = or i1 %cmp73.12, %or.cond1.12
-  br i1 %or.cond2.12, label %if.then75.12, label %if.else78.12
+for.body56.12:                                    ; preds = %for.inc161.12, %for.body56.lr.ph.12
+  %indvars.iv.12 = phi i64 [ 0, %for.body56.lr.ph.12 ], [ %indvars.iv.next.12, %for.inc161.12 ]
+  %282 = add nsw i64 %indvars.iv.12, %279
+  %cmp65.12 = icmp eq i64 %indvars.iv.12, 0
+  %or.cond1.12 = or i1 %cmp62.12, %cmp65.12
+  %cmp68.12 = icmp eq i64 %indvars.iv.12, %11
+  %or.cond2.12 = or i1 %cmp68.12, %or.cond1.12
+  br i1 %or.cond2.12, label %if.then70.12, label %if.else73.12
 
-if.else78.12:                                     ; preds = %for.body61.12
-  %arrayidx80.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %281
-  %282 = load i32, i32* %arrayidx80.12, align 4
-  %cmp81.12 = icmp eq i32 %282, 75
-  br i1 %cmp81.12, label %if.then83.12, label %if.else158.12
+if.else73.12:                                     ; preds = %for.body56.12
+  %arrayidx75.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %282
+  %283 = load i32, i32* %arrayidx75.12, align 4
+  %cmp76.12 = icmp eq i32 %283, 75
+  br i1 %cmp76.12, label %if.then78.12, label %if.else153.12
 
-if.else158.12:                                    ; preds = %if.else78.12
-  %conv161.12 = trunc i32 %282 to i8
-  %arrayidx163.12 = getelementptr inbounds i8, i8* %., i64 %281
-  store i8 %conv161.12, i8* %arrayidx163.12, align 1
-  br label %for.inc166.12
+if.else153.12:                                    ; preds = %if.else73.12
+  %conv156.12 = trunc i32 %283 to i8
+  %arrayidx158.12 = getelementptr inbounds i8, i8* %0, i64 %282
+  store i8 %conv156.12, i8* %arrayidx158.12, align 1
+  br label %for.inc161.12
 
-if.then83.12:                                     ; preds = %if.else78.12
-  %283 = trunc i64 %indvars.iv.12 to i32
-  %sub86.12 = add i32 %283, %sub84.12
-  %add87.12 = add i32 %sub86.12, -129
-  %idxprom88.12 = sext i32 %add87.12 to i64
-  %arrayidx89.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.12
-  %284 = load i32, i32* %arrayidx89.12, align 4
-  %cmp90.12 = icmp eq i32 %284, 255
-  br i1 %cmp90.12, label %if.then151.12, label %lor.lhs.false92.12
+if.then78.12:                                     ; preds = %if.else73.12
+  %284 = trunc i64 %indvars.iv.12 to i32
+  %sub81.12 = add i32 %284, %sub79.12
+  %add82.12 = add i32 %sub81.12, -129
+  %idxprom83.12 = sext i32 %add82.12 to i64
+  %arrayidx84.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.12
+  %285 = load i32, i32* %arrayidx84.12, align 4
+  %cmp85.12 = icmp eq i32 %285, 255
+  br i1 %cmp85.12, label %if.then146.12, label %lor.lhs.false87.12
 
-lor.lhs.false92.12:                               ; preds = %if.then83.12
-  %285 = add nsw i64 %280, %indvars.iv.12
-  %arrayidx97.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %285
-  %286 = load i32, i32* %arrayidx97.12, align 4
-  %cmp98.12 = icmp eq i32 %286, 255
-  br i1 %cmp98.12, label %if.then151.12, label %lor.lhs.false100.12
+lor.lhs.false87.12:                               ; preds = %if.then78.12
+  %286 = add nsw i64 %281, %indvars.iv.12
+  %arrayidx92.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %286
+  %287 = load i32, i32* %arrayidx92.12, align 4
+  %cmp93.12 = icmp eq i32 %287, 255
+  br i1 %cmp93.12, label %if.then146.12, label %lor.lhs.false95.12
 
-lor.lhs.false100.12:                              ; preds = %lor.lhs.false92.12
-  %add104.12 = add i32 %sub86.12, -127
-  %idxprom105.12 = sext i32 %add104.12 to i64
-  %arrayidx106.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.12
-  %287 = load i32, i32* %arrayidx106.12, align 4
-  %cmp107.12 = icmp eq i32 %287, 255
-  br i1 %cmp107.12, label %if.then151.12, label %lor.lhs.false109.12
+lor.lhs.false95.12:                               ; preds = %lor.lhs.false87.12
+  %add99.12 = add i32 %sub81.12, -127
+  %idxprom100.12 = sext i32 %add99.12 to i64
+  %arrayidx101.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.12
+  %288 = load i32, i32* %arrayidx101.12, align 4
+  %cmp102.12 = icmp eq i32 %288, 255
+  br i1 %cmp102.12, label %if.then146.12, label %lor.lhs.false104.12
 
-lor.lhs.false109.12:                              ; preds = %lor.lhs.false100.12
-  %288 = trunc i64 %indvars.iv.12 to i32
-  %add112.12 = add i32 %sub111.12, %288
-  %idxprom113.12 = sext i32 %add112.12 to i64
-  %arrayidx114.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.12
-  %289 = load i32, i32* %arrayidx114.12, align 4
-  %cmp115.12 = icmp eq i32 %289, 255
-  br i1 %cmp115.12, label %if.then151.12, label %lor.lhs.false117.12
+lor.lhs.false104.12:                              ; preds = %lor.lhs.false95.12
+  %289 = trunc i64 %indvars.iv.12 to i32
+  %add107.12 = add i32 %sub106.12, %289
+  %idxprom108.12 = sext i32 %add107.12 to i64
+  %arrayidx109.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.12
+  %290 = load i32, i32* %arrayidx109.12, align 4
+  %cmp110.12 = icmp eq i32 %290, 255
+  br i1 %cmp110.12, label %if.then146.12, label %lor.lhs.false112.12
 
-lor.lhs.false117.12:                              ; preds = %lor.lhs.false109.12
-  %290 = trunc i64 %indvars.iv.12 to i32
-  %add120.12 = add i32 %add119.12, %290
-  %idxprom121.12 = sext i32 %add120.12 to i64
-  %arrayidx122.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.12
-  %291 = load i32, i32* %arrayidx122.12, align 4
-  %cmp123.12 = icmp eq i32 %291, 255
-  br i1 %cmp123.12, label %if.then151.12, label %lor.lhs.false125.12
+lor.lhs.false112.12:                              ; preds = %lor.lhs.false104.12
+  %291 = trunc i64 %indvars.iv.12 to i32
+  %add115.12 = add i32 %add114.12, %291
+  %idxprom116.12 = sext i32 %add115.12 to i64
+  %arrayidx117.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.12
+  %292 = load i32, i32* %arrayidx117.12, align 4
+  %cmp118.12 = icmp eq i32 %292, 255
+  br i1 %cmp118.12, label %if.then146.12, label %lor.lhs.false120.12
 
-lor.lhs.false125.12:                              ; preds = %lor.lhs.false117.12
-  %add129.12 = add i32 %sub86.12, 127
-  %idxprom130.12 = sext i32 %add129.12 to i64
-  %arrayidx131.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.12
-  %292 = load i32, i32* %arrayidx131.12, align 4
-  %cmp132.12 = icmp eq i32 %292, 255
-  br i1 %cmp132.12, label %if.then151.12, label %lor.lhs.false134.12
+lor.lhs.false120.12:                              ; preds = %lor.lhs.false112.12
+  %add124.12 = add i32 %sub81.12, 127
+  %idxprom125.12 = sext i32 %add124.12 to i64
+  %arrayidx126.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.12
+  %293 = load i32, i32* %arrayidx126.12, align 4
+  %cmp127.12 = icmp eq i32 %293, 255
+  br i1 %cmp127.12, label %if.then146.12, label %lor.lhs.false129.12
 
-lor.lhs.false134.12:                              ; preds = %lor.lhs.false125.12
-  %293 = add nsw i64 %279, %indvars.iv.12
-  %arrayidx139.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %293
-  %294 = load i32, i32* %arrayidx139.12, align 4
-  %cmp140.12 = icmp eq i32 %294, 255
-  br i1 %cmp140.12, label %if.then151.12, label %lor.lhs.false142.12
+lor.lhs.false129.12:                              ; preds = %lor.lhs.false120.12
+  %294 = add nsw i64 %280, %indvars.iv.12
+  %arrayidx134.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %294
+  %295 = load i32, i32* %arrayidx134.12, align 4
+  %cmp135.12 = icmp eq i32 %295, 255
+  br i1 %cmp135.12, label %if.then146.12, label %lor.lhs.false137.12
 
-lor.lhs.false142.12:                              ; preds = %lor.lhs.false134.12
-  %add146.12 = add i32 %sub86.12, 129
-  %idxprom147.12 = sext i32 %add146.12 to i64
-  %arrayidx148.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.12
-  %295 = load i32, i32* %arrayidx148.12, align 4
-  %cmp149.12 = icmp eq i32 %295, 255
-  br i1 %cmp149.12, label %if.then151.12, label %if.else154.12
+lor.lhs.false137.12:                              ; preds = %lor.lhs.false129.12
+  %add141.12 = add i32 %sub81.12, 129
+  %idxprom142.12 = sext i32 %add141.12 to i64
+  %arrayidx143.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.12
+  %296 = load i32, i32* %arrayidx143.12, align 4
+  %cmp144.12 = icmp eq i32 %296, 255
+  br i1 %cmp144.12, label %if.then146.12, label %if.else149.12
 
-if.else154.12:                                    ; preds = %lor.lhs.false142.12
-  %arrayidx156.12 = getelementptr inbounds i8, i8* %., i64 %281
-  store i8 0, i8* %arrayidx156.12, align 1
-  br label %for.inc166.12
+if.else149.12:                                    ; preds = %lor.lhs.false137.12
+  %arrayidx151.12 = getelementptr inbounds i8, i8* %0, i64 %282
+  store i8 0, i8* %arrayidx151.12, align 1
+  br label %for.inc161.12
 
-if.then151.12:                                    ; preds = %lor.lhs.false142.12, %lor.lhs.false134.12, %lor.lhs.false125.12, %lor.lhs.false117.12, %lor.lhs.false109.12, %lor.lhs.false100.12, %lor.lhs.false92.12, %if.then83.12
-  %arrayidx153.12 = getelementptr inbounds i8, i8* %., i64 %281
-  store i8 -1, i8* %arrayidx153.12, align 1
-  br label %for.inc166.12
+if.then146.12:                                    ; preds = %lor.lhs.false137.12, %lor.lhs.false129.12, %lor.lhs.false120.12, %lor.lhs.false112.12, %lor.lhs.false104.12, %lor.lhs.false95.12, %lor.lhs.false87.12, %if.then78.12
+  %arrayidx148.12 = getelementptr inbounds i8, i8* %0, i64 %282
+  store i8 -1, i8* %arrayidx148.12, align 1
+  br label %for.inc161.12
 
-if.then75.12:                                     ; preds = %for.body61.12
-  %arrayidx77.12 = getelementptr inbounds i8, i8* %., i64 %281
-  store i8 0, i8* %arrayidx77.12, align 1
-  br label %for.inc166.12
+if.then70.12:                                     ; preds = %for.body56.12
+  %arrayidx72.12 = getelementptr inbounds i8, i8* %0, i64 %282
+  store i8 0, i8* %arrayidx72.12, align 1
+  br label %for.inc161.12
 
-for.inc166.12:                                    ; preds = %if.then75.12, %if.then151.12, %if.else154.12, %if.else158.12
+for.inc161.12:                                    ; preds = %if.then70.12, %if.then146.12, %if.else149.12, %if.else153.12
   %indvars.iv.next.12 = add nuw nsw i64 %indvars.iv.12, 1
   %lftr.wideiv.12 = trunc i64 %indvars.iv.next.12 to i32
   %exitcond.12 = icmp eq i32 %lftr.wideiv.12, %img_width
-  br i1 %exitcond.12, label %for.inc169.12, label %for.body61.12, !llvm.loop !5
+  br i1 %exitcond.12, label %for.inc164.12, label %for.body56.12, !llvm.loop !5
 
-for.inc169.12:                                    ; preds = %for.inc166.12
+for.inc164.12:                                    ; preds = %for.inc161.12
   %indvars.iv.next20.12 = add nsw i64 %indvars.iv19, 13
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.13
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.13
 
-for.body61.lr.ph.13:                              ; preds = %for.inc169.12
-  %296 = trunc i64 %indvars.iv.next20.12 to i32
-  %mul63.13 = shl nsw i32 %296, 7
-  %cmp67.13 = icmp eq i64 %indvars.iv.next20.12, %11
+for.body56.lr.ph.13:                              ; preds = %for.inc164.12
   %297 = trunc i64 %indvars.iv.next20.12 to i32
-  %sub84.13 = shl i32 %297, 7
-  %mul94.13 = add i32 %sub84.13, -128
-  %sub111.13 = add i32 %mul63.13, -1
-  %add119.13 = or i32 %mul63.13, 1
-  %mul136.13 = add i32 %sub84.13, 128
-  %298 = sext i32 %mul63.13 to i64
-  %299 = sext i32 %mul136.13 to i64
-  %300 = sext i32 %mul94.13 to i64
-  br label %for.body61.13
+  %mul58.13 = shl nsw i32 %297, 7
+  %cmp62.13 = icmp eq i64 %indvars.iv.next20.12, %12
+  %298 = trunc i64 %indvars.iv.next20.12 to i32
+  %sub79.13 = shl i32 %298, 7
+  %mul89.13 = add i32 %sub79.13, -128
+  %sub106.13 = add i32 %mul58.13, -1
+  %add114.13 = or i32 %mul58.13, 1
+  %mul131.13 = add i32 %sub79.13, 128
+  %299 = sext i32 %mul58.13 to i64
+  %300 = sext i32 %mul131.13 to i64
+  %301 = sext i32 %mul89.13 to i64
+  br label %for.body56.13
 
-for.body61.13:                                    ; preds = %for.inc166.13, %for.body61.lr.ph.13
-  %indvars.iv.13 = phi i64 [ 0, %for.body61.lr.ph.13 ], [ %indvars.iv.next.13, %for.inc166.13 ]
-  %301 = add nsw i64 %indvars.iv.13, %298
-  %cmp70.13 = icmp eq i64 %indvars.iv.13, 0
-  %or.cond1.13 = or i1 %cmp67.13, %cmp70.13
-  %cmp73.13 = icmp eq i64 %indvars.iv.13, %10
-  %or.cond2.13 = or i1 %cmp73.13, %or.cond1.13
-  br i1 %or.cond2.13, label %if.then75.13, label %if.else78.13
+for.body56.13:                                    ; preds = %for.inc161.13, %for.body56.lr.ph.13
+  %indvars.iv.13 = phi i64 [ 0, %for.body56.lr.ph.13 ], [ %indvars.iv.next.13, %for.inc161.13 ]
+  %302 = add nsw i64 %indvars.iv.13, %299
+  %cmp65.13 = icmp eq i64 %indvars.iv.13, 0
+  %or.cond1.13 = or i1 %cmp62.13, %cmp65.13
+  %cmp68.13 = icmp eq i64 %indvars.iv.13, %11
+  %or.cond2.13 = or i1 %cmp68.13, %or.cond1.13
+  br i1 %or.cond2.13, label %if.then70.13, label %if.else73.13
 
-if.else78.13:                                     ; preds = %for.body61.13
-  %arrayidx80.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %301
-  %302 = load i32, i32* %arrayidx80.13, align 4
-  %cmp81.13 = icmp eq i32 %302, 75
-  br i1 %cmp81.13, label %if.then83.13, label %if.else158.13
+if.else73.13:                                     ; preds = %for.body56.13
+  %arrayidx75.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %302
+  %303 = load i32, i32* %arrayidx75.13, align 4
+  %cmp76.13 = icmp eq i32 %303, 75
+  br i1 %cmp76.13, label %if.then78.13, label %if.else153.13
 
-if.else158.13:                                    ; preds = %if.else78.13
-  %conv161.13 = trunc i32 %302 to i8
-  %arrayidx163.13 = getelementptr inbounds i8, i8* %., i64 %301
-  store i8 %conv161.13, i8* %arrayidx163.13, align 1
-  br label %for.inc166.13
+if.else153.13:                                    ; preds = %if.else73.13
+  %conv156.13 = trunc i32 %303 to i8
+  %arrayidx158.13 = getelementptr inbounds i8, i8* %0, i64 %302
+  store i8 %conv156.13, i8* %arrayidx158.13, align 1
+  br label %for.inc161.13
 
-if.then83.13:                                     ; preds = %if.else78.13
-  %303 = trunc i64 %indvars.iv.13 to i32
-  %sub86.13 = add i32 %303, %sub84.13
-  %add87.13 = add i32 %sub86.13, -129
-  %idxprom88.13 = sext i32 %add87.13 to i64
-  %arrayidx89.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.13
-  %304 = load i32, i32* %arrayidx89.13, align 4
-  %cmp90.13 = icmp eq i32 %304, 255
-  br i1 %cmp90.13, label %if.then151.13, label %lor.lhs.false92.13
+if.then78.13:                                     ; preds = %if.else73.13
+  %304 = trunc i64 %indvars.iv.13 to i32
+  %sub81.13 = add i32 %304, %sub79.13
+  %add82.13 = add i32 %sub81.13, -129
+  %idxprom83.13 = sext i32 %add82.13 to i64
+  %arrayidx84.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.13
+  %305 = load i32, i32* %arrayidx84.13, align 4
+  %cmp85.13 = icmp eq i32 %305, 255
+  br i1 %cmp85.13, label %if.then146.13, label %lor.lhs.false87.13
 
-lor.lhs.false92.13:                               ; preds = %if.then83.13
-  %305 = add nsw i64 %300, %indvars.iv.13
-  %arrayidx97.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %305
-  %306 = load i32, i32* %arrayidx97.13, align 4
-  %cmp98.13 = icmp eq i32 %306, 255
-  br i1 %cmp98.13, label %if.then151.13, label %lor.lhs.false100.13
+lor.lhs.false87.13:                               ; preds = %if.then78.13
+  %306 = add nsw i64 %301, %indvars.iv.13
+  %arrayidx92.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %306
+  %307 = load i32, i32* %arrayidx92.13, align 4
+  %cmp93.13 = icmp eq i32 %307, 255
+  br i1 %cmp93.13, label %if.then146.13, label %lor.lhs.false95.13
 
-lor.lhs.false100.13:                              ; preds = %lor.lhs.false92.13
-  %add104.13 = add i32 %sub86.13, -127
-  %idxprom105.13 = sext i32 %add104.13 to i64
-  %arrayidx106.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.13
-  %307 = load i32, i32* %arrayidx106.13, align 4
-  %cmp107.13 = icmp eq i32 %307, 255
-  br i1 %cmp107.13, label %if.then151.13, label %lor.lhs.false109.13
+lor.lhs.false95.13:                               ; preds = %lor.lhs.false87.13
+  %add99.13 = add i32 %sub81.13, -127
+  %idxprom100.13 = sext i32 %add99.13 to i64
+  %arrayidx101.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.13
+  %308 = load i32, i32* %arrayidx101.13, align 4
+  %cmp102.13 = icmp eq i32 %308, 255
+  br i1 %cmp102.13, label %if.then146.13, label %lor.lhs.false104.13
 
-lor.lhs.false109.13:                              ; preds = %lor.lhs.false100.13
-  %308 = trunc i64 %indvars.iv.13 to i32
-  %add112.13 = add i32 %sub111.13, %308
-  %idxprom113.13 = sext i32 %add112.13 to i64
-  %arrayidx114.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.13
-  %309 = load i32, i32* %arrayidx114.13, align 4
-  %cmp115.13 = icmp eq i32 %309, 255
-  br i1 %cmp115.13, label %if.then151.13, label %lor.lhs.false117.13
+lor.lhs.false104.13:                              ; preds = %lor.lhs.false95.13
+  %309 = trunc i64 %indvars.iv.13 to i32
+  %add107.13 = add i32 %sub106.13, %309
+  %idxprom108.13 = sext i32 %add107.13 to i64
+  %arrayidx109.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.13
+  %310 = load i32, i32* %arrayidx109.13, align 4
+  %cmp110.13 = icmp eq i32 %310, 255
+  br i1 %cmp110.13, label %if.then146.13, label %lor.lhs.false112.13
 
-lor.lhs.false117.13:                              ; preds = %lor.lhs.false109.13
-  %310 = trunc i64 %indvars.iv.13 to i32
-  %add120.13 = add i32 %add119.13, %310
-  %idxprom121.13 = sext i32 %add120.13 to i64
-  %arrayidx122.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.13
-  %311 = load i32, i32* %arrayidx122.13, align 4
-  %cmp123.13 = icmp eq i32 %311, 255
-  br i1 %cmp123.13, label %if.then151.13, label %lor.lhs.false125.13
+lor.lhs.false112.13:                              ; preds = %lor.lhs.false104.13
+  %311 = trunc i64 %indvars.iv.13 to i32
+  %add115.13 = add i32 %add114.13, %311
+  %idxprom116.13 = sext i32 %add115.13 to i64
+  %arrayidx117.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.13
+  %312 = load i32, i32* %arrayidx117.13, align 4
+  %cmp118.13 = icmp eq i32 %312, 255
+  br i1 %cmp118.13, label %if.then146.13, label %lor.lhs.false120.13
 
-lor.lhs.false125.13:                              ; preds = %lor.lhs.false117.13
-  %add129.13 = add i32 %sub86.13, 127
-  %idxprom130.13 = sext i32 %add129.13 to i64
-  %arrayidx131.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.13
-  %312 = load i32, i32* %arrayidx131.13, align 4
-  %cmp132.13 = icmp eq i32 %312, 255
-  br i1 %cmp132.13, label %if.then151.13, label %lor.lhs.false134.13
+lor.lhs.false120.13:                              ; preds = %lor.lhs.false112.13
+  %add124.13 = add i32 %sub81.13, 127
+  %idxprom125.13 = sext i32 %add124.13 to i64
+  %arrayidx126.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.13
+  %313 = load i32, i32* %arrayidx126.13, align 4
+  %cmp127.13 = icmp eq i32 %313, 255
+  br i1 %cmp127.13, label %if.then146.13, label %lor.lhs.false129.13
 
-lor.lhs.false134.13:                              ; preds = %lor.lhs.false125.13
-  %313 = add nsw i64 %299, %indvars.iv.13
-  %arrayidx139.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %313
-  %314 = load i32, i32* %arrayidx139.13, align 4
-  %cmp140.13 = icmp eq i32 %314, 255
-  br i1 %cmp140.13, label %if.then151.13, label %lor.lhs.false142.13
+lor.lhs.false129.13:                              ; preds = %lor.lhs.false120.13
+  %314 = add nsw i64 %300, %indvars.iv.13
+  %arrayidx134.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %314
+  %315 = load i32, i32* %arrayidx134.13, align 4
+  %cmp135.13 = icmp eq i32 %315, 255
+  br i1 %cmp135.13, label %if.then146.13, label %lor.lhs.false137.13
 
-lor.lhs.false142.13:                              ; preds = %lor.lhs.false134.13
-  %add146.13 = add i32 %sub86.13, 129
-  %idxprom147.13 = sext i32 %add146.13 to i64
-  %arrayidx148.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.13
-  %315 = load i32, i32* %arrayidx148.13, align 4
-  %cmp149.13 = icmp eq i32 %315, 255
-  br i1 %cmp149.13, label %if.then151.13, label %if.else154.13
+lor.lhs.false137.13:                              ; preds = %lor.lhs.false129.13
+  %add141.13 = add i32 %sub81.13, 129
+  %idxprom142.13 = sext i32 %add141.13 to i64
+  %arrayidx143.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.13
+  %316 = load i32, i32* %arrayidx143.13, align 4
+  %cmp144.13 = icmp eq i32 %316, 255
+  br i1 %cmp144.13, label %if.then146.13, label %if.else149.13
 
-if.else154.13:                                    ; preds = %lor.lhs.false142.13
-  %arrayidx156.13 = getelementptr inbounds i8, i8* %., i64 %301
-  store i8 0, i8* %arrayidx156.13, align 1
-  br label %for.inc166.13
+if.else149.13:                                    ; preds = %lor.lhs.false137.13
+  %arrayidx151.13 = getelementptr inbounds i8, i8* %0, i64 %302
+  store i8 0, i8* %arrayidx151.13, align 1
+  br label %for.inc161.13
 
-if.then151.13:                                    ; preds = %lor.lhs.false142.13, %lor.lhs.false134.13, %lor.lhs.false125.13, %lor.lhs.false117.13, %lor.lhs.false109.13, %lor.lhs.false100.13, %lor.lhs.false92.13, %if.then83.13
-  %arrayidx153.13 = getelementptr inbounds i8, i8* %., i64 %301
-  store i8 -1, i8* %arrayidx153.13, align 1
-  br label %for.inc166.13
+if.then146.13:                                    ; preds = %lor.lhs.false137.13, %lor.lhs.false129.13, %lor.lhs.false120.13, %lor.lhs.false112.13, %lor.lhs.false104.13, %lor.lhs.false95.13, %lor.lhs.false87.13, %if.then78.13
+  %arrayidx148.13 = getelementptr inbounds i8, i8* %0, i64 %302
+  store i8 -1, i8* %arrayidx148.13, align 1
+  br label %for.inc161.13
 
-if.then75.13:                                     ; preds = %for.body61.13
-  %arrayidx77.13 = getelementptr inbounds i8, i8* %., i64 %301
-  store i8 0, i8* %arrayidx77.13, align 1
-  br label %for.inc166.13
+if.then70.13:                                     ; preds = %for.body56.13
+  %arrayidx72.13 = getelementptr inbounds i8, i8* %0, i64 %302
+  store i8 0, i8* %arrayidx72.13, align 1
+  br label %for.inc161.13
 
-for.inc166.13:                                    ; preds = %if.then75.13, %if.then151.13, %if.else154.13, %if.else158.13
+for.inc161.13:                                    ; preds = %if.then70.13, %if.then146.13, %if.else149.13, %if.else153.13
   %indvars.iv.next.13 = add nuw nsw i64 %indvars.iv.13, 1
   %lftr.wideiv.13 = trunc i64 %indvars.iv.next.13 to i32
   %exitcond.13 = icmp eq i32 %lftr.wideiv.13, %img_width
-  br i1 %exitcond.13, label %for.inc169.13, label %for.body61.13, !llvm.loop !5
+  br i1 %exitcond.13, label %for.inc164.13, label %for.body56.13, !llvm.loop !5
 
-for.inc169.13:                                    ; preds = %for.inc166.13
+for.inc164.13:                                    ; preds = %for.inc161.13
   %indvars.iv.next20.13 = add nsw i64 %indvars.iv19, 14
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.14
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.14
 
-for.body61.lr.ph.14:                              ; preds = %for.inc169.13
-  %316 = trunc i64 %indvars.iv.next20.13 to i32
-  %mul63.14 = shl nsw i32 %316, 7
-  %cmp67.14 = icmp eq i64 %indvars.iv.next20.13, %11
+for.body56.lr.ph.14:                              ; preds = %for.inc164.13
   %317 = trunc i64 %indvars.iv.next20.13 to i32
-  %sub84.14 = shl i32 %317, 7
-  %mul94.14 = add i32 %sub84.14, -128
-  %sub111.14 = add i32 %mul63.14, -1
-  %add119.14 = or i32 %mul63.14, 1
-  %mul136.14 = add i32 %sub84.14, 128
-  %318 = sext i32 %mul63.14 to i64
-  %319 = sext i32 %mul136.14 to i64
-  %320 = sext i32 %mul94.14 to i64
-  br label %for.body61.14
+  %mul58.14 = shl nsw i32 %317, 7
+  %cmp62.14 = icmp eq i64 %indvars.iv.next20.13, %12
+  %318 = trunc i64 %indvars.iv.next20.13 to i32
+  %sub79.14 = shl i32 %318, 7
+  %mul89.14 = add i32 %sub79.14, -128
+  %sub106.14 = add i32 %mul58.14, -1
+  %add114.14 = or i32 %mul58.14, 1
+  %mul131.14 = add i32 %sub79.14, 128
+  %319 = sext i32 %mul58.14 to i64
+  %320 = sext i32 %mul131.14 to i64
+  %321 = sext i32 %mul89.14 to i64
+  br label %for.body56.14
 
-for.body61.14:                                    ; preds = %for.inc166.14, %for.body61.lr.ph.14
-  %indvars.iv.14 = phi i64 [ 0, %for.body61.lr.ph.14 ], [ %indvars.iv.next.14, %for.inc166.14 ]
-  %321 = add nsw i64 %indvars.iv.14, %318
-  %cmp70.14 = icmp eq i64 %indvars.iv.14, 0
-  %or.cond1.14 = or i1 %cmp67.14, %cmp70.14
-  %cmp73.14 = icmp eq i64 %indvars.iv.14, %10
-  %or.cond2.14 = or i1 %cmp73.14, %or.cond1.14
-  br i1 %or.cond2.14, label %if.then75.14, label %if.else78.14
+for.body56.14:                                    ; preds = %for.inc161.14, %for.body56.lr.ph.14
+  %indvars.iv.14 = phi i64 [ 0, %for.body56.lr.ph.14 ], [ %indvars.iv.next.14, %for.inc161.14 ]
+  %322 = add nsw i64 %indvars.iv.14, %319
+  %cmp65.14 = icmp eq i64 %indvars.iv.14, 0
+  %or.cond1.14 = or i1 %cmp62.14, %cmp65.14
+  %cmp68.14 = icmp eq i64 %indvars.iv.14, %11
+  %or.cond2.14 = or i1 %cmp68.14, %or.cond1.14
+  br i1 %or.cond2.14, label %if.then70.14, label %if.else73.14
 
-if.else78.14:                                     ; preds = %for.body61.14
-  %arrayidx80.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %321
-  %322 = load i32, i32* %arrayidx80.14, align 4
-  %cmp81.14 = icmp eq i32 %322, 75
-  br i1 %cmp81.14, label %if.then83.14, label %if.else158.14
+if.else73.14:                                     ; preds = %for.body56.14
+  %arrayidx75.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %322
+  %323 = load i32, i32* %arrayidx75.14, align 4
+  %cmp76.14 = icmp eq i32 %323, 75
+  br i1 %cmp76.14, label %if.then78.14, label %if.else153.14
 
-if.else158.14:                                    ; preds = %if.else78.14
-  %conv161.14 = trunc i32 %322 to i8
-  %arrayidx163.14 = getelementptr inbounds i8, i8* %., i64 %321
-  store i8 %conv161.14, i8* %arrayidx163.14, align 1
-  br label %for.inc166.14
+if.else153.14:                                    ; preds = %if.else73.14
+  %conv156.14 = trunc i32 %323 to i8
+  %arrayidx158.14 = getelementptr inbounds i8, i8* %0, i64 %322
+  store i8 %conv156.14, i8* %arrayidx158.14, align 1
+  br label %for.inc161.14
 
-if.then83.14:                                     ; preds = %if.else78.14
-  %323 = trunc i64 %indvars.iv.14 to i32
-  %sub86.14 = add i32 %323, %sub84.14
-  %add87.14 = add i32 %sub86.14, -129
-  %idxprom88.14 = sext i32 %add87.14 to i64
-  %arrayidx89.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.14
-  %324 = load i32, i32* %arrayidx89.14, align 4
-  %cmp90.14 = icmp eq i32 %324, 255
-  br i1 %cmp90.14, label %if.then151.14, label %lor.lhs.false92.14
+if.then78.14:                                     ; preds = %if.else73.14
+  %324 = trunc i64 %indvars.iv.14 to i32
+  %sub81.14 = add i32 %324, %sub79.14
+  %add82.14 = add i32 %sub81.14, -129
+  %idxprom83.14 = sext i32 %add82.14 to i64
+  %arrayidx84.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.14
+  %325 = load i32, i32* %arrayidx84.14, align 4
+  %cmp85.14 = icmp eq i32 %325, 255
+  br i1 %cmp85.14, label %if.then146.14, label %lor.lhs.false87.14
 
-lor.lhs.false92.14:                               ; preds = %if.then83.14
-  %325 = add nsw i64 %320, %indvars.iv.14
-  %arrayidx97.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %325
-  %326 = load i32, i32* %arrayidx97.14, align 4
-  %cmp98.14 = icmp eq i32 %326, 255
-  br i1 %cmp98.14, label %if.then151.14, label %lor.lhs.false100.14
+lor.lhs.false87.14:                               ; preds = %if.then78.14
+  %326 = add nsw i64 %321, %indvars.iv.14
+  %arrayidx92.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %326
+  %327 = load i32, i32* %arrayidx92.14, align 4
+  %cmp93.14 = icmp eq i32 %327, 255
+  br i1 %cmp93.14, label %if.then146.14, label %lor.lhs.false95.14
 
-lor.lhs.false100.14:                              ; preds = %lor.lhs.false92.14
-  %add104.14 = add i32 %sub86.14, -127
-  %idxprom105.14 = sext i32 %add104.14 to i64
-  %arrayidx106.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.14
-  %327 = load i32, i32* %arrayidx106.14, align 4
-  %cmp107.14 = icmp eq i32 %327, 255
-  br i1 %cmp107.14, label %if.then151.14, label %lor.lhs.false109.14
+lor.lhs.false95.14:                               ; preds = %lor.lhs.false87.14
+  %add99.14 = add i32 %sub81.14, -127
+  %idxprom100.14 = sext i32 %add99.14 to i64
+  %arrayidx101.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.14
+  %328 = load i32, i32* %arrayidx101.14, align 4
+  %cmp102.14 = icmp eq i32 %328, 255
+  br i1 %cmp102.14, label %if.then146.14, label %lor.lhs.false104.14
 
-lor.lhs.false109.14:                              ; preds = %lor.lhs.false100.14
-  %328 = trunc i64 %indvars.iv.14 to i32
-  %add112.14 = add i32 %sub111.14, %328
-  %idxprom113.14 = sext i32 %add112.14 to i64
-  %arrayidx114.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.14
-  %329 = load i32, i32* %arrayidx114.14, align 4
-  %cmp115.14 = icmp eq i32 %329, 255
-  br i1 %cmp115.14, label %if.then151.14, label %lor.lhs.false117.14
+lor.lhs.false104.14:                              ; preds = %lor.lhs.false95.14
+  %329 = trunc i64 %indvars.iv.14 to i32
+  %add107.14 = add i32 %sub106.14, %329
+  %idxprom108.14 = sext i32 %add107.14 to i64
+  %arrayidx109.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.14
+  %330 = load i32, i32* %arrayidx109.14, align 4
+  %cmp110.14 = icmp eq i32 %330, 255
+  br i1 %cmp110.14, label %if.then146.14, label %lor.lhs.false112.14
 
-lor.lhs.false117.14:                              ; preds = %lor.lhs.false109.14
-  %330 = trunc i64 %indvars.iv.14 to i32
-  %add120.14 = add i32 %add119.14, %330
-  %idxprom121.14 = sext i32 %add120.14 to i64
-  %arrayidx122.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.14
-  %331 = load i32, i32* %arrayidx122.14, align 4
-  %cmp123.14 = icmp eq i32 %331, 255
-  br i1 %cmp123.14, label %if.then151.14, label %lor.lhs.false125.14
+lor.lhs.false112.14:                              ; preds = %lor.lhs.false104.14
+  %331 = trunc i64 %indvars.iv.14 to i32
+  %add115.14 = add i32 %add114.14, %331
+  %idxprom116.14 = sext i32 %add115.14 to i64
+  %arrayidx117.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.14
+  %332 = load i32, i32* %arrayidx117.14, align 4
+  %cmp118.14 = icmp eq i32 %332, 255
+  br i1 %cmp118.14, label %if.then146.14, label %lor.lhs.false120.14
 
-lor.lhs.false125.14:                              ; preds = %lor.lhs.false117.14
-  %add129.14 = add i32 %sub86.14, 127
-  %idxprom130.14 = sext i32 %add129.14 to i64
-  %arrayidx131.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.14
-  %332 = load i32, i32* %arrayidx131.14, align 4
-  %cmp132.14 = icmp eq i32 %332, 255
-  br i1 %cmp132.14, label %if.then151.14, label %lor.lhs.false134.14
+lor.lhs.false120.14:                              ; preds = %lor.lhs.false112.14
+  %add124.14 = add i32 %sub81.14, 127
+  %idxprom125.14 = sext i32 %add124.14 to i64
+  %arrayidx126.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.14
+  %333 = load i32, i32* %arrayidx126.14, align 4
+  %cmp127.14 = icmp eq i32 %333, 255
+  br i1 %cmp127.14, label %if.then146.14, label %lor.lhs.false129.14
 
-lor.lhs.false134.14:                              ; preds = %lor.lhs.false125.14
-  %333 = add nsw i64 %319, %indvars.iv.14
-  %arrayidx139.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %333
-  %334 = load i32, i32* %arrayidx139.14, align 4
-  %cmp140.14 = icmp eq i32 %334, 255
-  br i1 %cmp140.14, label %if.then151.14, label %lor.lhs.false142.14
+lor.lhs.false129.14:                              ; preds = %lor.lhs.false120.14
+  %334 = add nsw i64 %320, %indvars.iv.14
+  %arrayidx134.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %334
+  %335 = load i32, i32* %arrayidx134.14, align 4
+  %cmp135.14 = icmp eq i32 %335, 255
+  br i1 %cmp135.14, label %if.then146.14, label %lor.lhs.false137.14
 
-lor.lhs.false142.14:                              ; preds = %lor.lhs.false134.14
-  %add146.14 = add i32 %sub86.14, 129
-  %idxprom147.14 = sext i32 %add146.14 to i64
-  %arrayidx148.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.14
-  %335 = load i32, i32* %arrayidx148.14, align 4
-  %cmp149.14 = icmp eq i32 %335, 255
-  br i1 %cmp149.14, label %if.then151.14, label %if.else154.14
+lor.lhs.false137.14:                              ; preds = %lor.lhs.false129.14
+  %add141.14 = add i32 %sub81.14, 129
+  %idxprom142.14 = sext i32 %add141.14 to i64
+  %arrayidx143.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.14
+  %336 = load i32, i32* %arrayidx143.14, align 4
+  %cmp144.14 = icmp eq i32 %336, 255
+  br i1 %cmp144.14, label %if.then146.14, label %if.else149.14
 
-if.else154.14:                                    ; preds = %lor.lhs.false142.14
-  %arrayidx156.14 = getelementptr inbounds i8, i8* %., i64 %321
-  store i8 0, i8* %arrayidx156.14, align 1
-  br label %for.inc166.14
+if.else149.14:                                    ; preds = %lor.lhs.false137.14
+  %arrayidx151.14 = getelementptr inbounds i8, i8* %0, i64 %322
+  store i8 0, i8* %arrayidx151.14, align 1
+  br label %for.inc161.14
 
-if.then151.14:                                    ; preds = %lor.lhs.false142.14, %lor.lhs.false134.14, %lor.lhs.false125.14, %lor.lhs.false117.14, %lor.lhs.false109.14, %lor.lhs.false100.14, %lor.lhs.false92.14, %if.then83.14
-  %arrayidx153.14 = getelementptr inbounds i8, i8* %., i64 %321
-  store i8 -1, i8* %arrayidx153.14, align 1
-  br label %for.inc166.14
+if.then146.14:                                    ; preds = %lor.lhs.false137.14, %lor.lhs.false129.14, %lor.lhs.false120.14, %lor.lhs.false112.14, %lor.lhs.false104.14, %lor.lhs.false95.14, %lor.lhs.false87.14, %if.then78.14
+  %arrayidx148.14 = getelementptr inbounds i8, i8* %0, i64 %322
+  store i8 -1, i8* %arrayidx148.14, align 1
+  br label %for.inc161.14
 
-if.then75.14:                                     ; preds = %for.body61.14
-  %arrayidx77.14 = getelementptr inbounds i8, i8* %., i64 %321
-  store i8 0, i8* %arrayidx77.14, align 1
-  br label %for.inc166.14
+if.then70.14:                                     ; preds = %for.body56.14
+  %arrayidx72.14 = getelementptr inbounds i8, i8* %0, i64 %322
+  store i8 0, i8* %arrayidx72.14, align 1
+  br label %for.inc161.14
 
-for.inc166.14:                                    ; preds = %if.then75.14, %if.then151.14, %if.else154.14, %if.else158.14
+for.inc161.14:                                    ; preds = %if.then70.14, %if.then146.14, %if.else149.14, %if.else153.14
   %indvars.iv.next.14 = add nuw nsw i64 %indvars.iv.14, 1
   %lftr.wideiv.14 = trunc i64 %indvars.iv.next.14 to i32
   %exitcond.14 = icmp eq i32 %lftr.wideiv.14, %img_width
-  br i1 %exitcond.14, label %for.inc169.14, label %for.body61.14, !llvm.loop !5
+  br i1 %exitcond.14, label %for.inc164.14, label %for.body56.14, !llvm.loop !5
 
-for.inc169.14:                                    ; preds = %for.inc166.14
+for.inc164.14:                                    ; preds = %for.inc161.14
   %indvars.iv.next20.14 = add nsw i64 %indvars.iv19, 15
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.15
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.15
 
-for.body61.lr.ph.15:                              ; preds = %for.inc169.14
-  %336 = trunc i64 %indvars.iv.next20.14 to i32
-  %mul63.15 = shl nsw i32 %336, 7
-  %cmp67.15 = icmp eq i64 %indvars.iv.next20.14, %11
+for.body56.lr.ph.15:                              ; preds = %for.inc164.14
   %337 = trunc i64 %indvars.iv.next20.14 to i32
-  %sub84.15 = shl i32 %337, 7
-  %mul94.15 = add i32 %sub84.15, -128
-  %sub111.15 = add i32 %mul63.15, -1
-  %add119.15 = or i32 %mul63.15, 1
-  %mul136.15 = add i32 %sub84.15, 128
-  %338 = sext i32 %mul63.15 to i64
-  %339 = sext i32 %mul136.15 to i64
-  %340 = sext i32 %mul94.15 to i64
-  br label %for.body61.15
+  %mul58.15 = shl nsw i32 %337, 7
+  %cmp62.15 = icmp eq i64 %indvars.iv.next20.14, %12
+  %338 = trunc i64 %indvars.iv.next20.14 to i32
+  %sub79.15 = shl i32 %338, 7
+  %mul89.15 = add i32 %sub79.15, -128
+  %sub106.15 = add i32 %mul58.15, -1
+  %add114.15 = or i32 %mul58.15, 1
+  %mul131.15 = add i32 %sub79.15, 128
+  %339 = sext i32 %mul58.15 to i64
+  %340 = sext i32 %mul131.15 to i64
+  %341 = sext i32 %mul89.15 to i64
+  br label %for.body56.15
 
-for.body61.15:                                    ; preds = %for.inc166.15, %for.body61.lr.ph.15
-  %indvars.iv.15 = phi i64 [ 0, %for.body61.lr.ph.15 ], [ %indvars.iv.next.15, %for.inc166.15 ]
-  %341 = add nsw i64 %indvars.iv.15, %338
-  %cmp70.15 = icmp eq i64 %indvars.iv.15, 0
-  %or.cond1.15 = or i1 %cmp67.15, %cmp70.15
-  %cmp73.15 = icmp eq i64 %indvars.iv.15, %10
-  %or.cond2.15 = or i1 %cmp73.15, %or.cond1.15
-  br i1 %or.cond2.15, label %if.then75.15, label %if.else78.15
+for.body56.15:                                    ; preds = %for.inc161.15, %for.body56.lr.ph.15
+  %indvars.iv.15 = phi i64 [ 0, %for.body56.lr.ph.15 ], [ %indvars.iv.next.15, %for.inc161.15 ]
+  %342 = add nsw i64 %indvars.iv.15, %339
+  %cmp65.15 = icmp eq i64 %indvars.iv.15, 0
+  %or.cond1.15 = or i1 %cmp62.15, %cmp65.15
+  %cmp68.15 = icmp eq i64 %indvars.iv.15, %11
+  %or.cond2.15 = or i1 %cmp68.15, %or.cond1.15
+  br i1 %or.cond2.15, label %if.then70.15, label %if.else73.15
 
-if.else78.15:                                     ; preds = %for.body61.15
-  %arrayidx80.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %341
-  %342 = load i32, i32* %arrayidx80.15, align 4
-  %cmp81.15 = icmp eq i32 %342, 75
-  br i1 %cmp81.15, label %if.then83.15, label %if.else158.15
+if.else73.15:                                     ; preds = %for.body56.15
+  %arrayidx75.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %342
+  %343 = load i32, i32* %arrayidx75.15, align 4
+  %cmp76.15 = icmp eq i32 %343, 75
+  br i1 %cmp76.15, label %if.then78.15, label %if.else153.15
 
-if.else158.15:                                    ; preds = %if.else78.15
-  %conv161.15 = trunc i32 %342 to i8
-  %arrayidx163.15 = getelementptr inbounds i8, i8* %., i64 %341
-  store i8 %conv161.15, i8* %arrayidx163.15, align 1
-  br label %for.inc166.15
+if.else153.15:                                    ; preds = %if.else73.15
+  %conv156.15 = trunc i32 %343 to i8
+  %arrayidx158.15 = getelementptr inbounds i8, i8* %0, i64 %342
+  store i8 %conv156.15, i8* %arrayidx158.15, align 1
+  br label %for.inc161.15
 
-if.then83.15:                                     ; preds = %if.else78.15
-  %343 = trunc i64 %indvars.iv.15 to i32
-  %sub86.15 = add i32 %343, %sub84.15
-  %add87.15 = add i32 %sub86.15, -129
-  %idxprom88.15 = sext i32 %add87.15 to i64
-  %arrayidx89.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.15
-  %344 = load i32, i32* %arrayidx89.15, align 4
-  %cmp90.15 = icmp eq i32 %344, 255
-  br i1 %cmp90.15, label %if.then151.15, label %lor.lhs.false92.15
+if.then78.15:                                     ; preds = %if.else73.15
+  %344 = trunc i64 %indvars.iv.15 to i32
+  %sub81.15 = add i32 %344, %sub79.15
+  %add82.15 = add i32 %sub81.15, -129
+  %idxprom83.15 = sext i32 %add82.15 to i64
+  %arrayidx84.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.15
+  %345 = load i32, i32* %arrayidx84.15, align 4
+  %cmp85.15 = icmp eq i32 %345, 255
+  br i1 %cmp85.15, label %if.then146.15, label %lor.lhs.false87.15
 
-lor.lhs.false92.15:                               ; preds = %if.then83.15
-  %345 = add nsw i64 %340, %indvars.iv.15
-  %arrayidx97.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %345
-  %346 = load i32, i32* %arrayidx97.15, align 4
-  %cmp98.15 = icmp eq i32 %346, 255
-  br i1 %cmp98.15, label %if.then151.15, label %lor.lhs.false100.15
+lor.lhs.false87.15:                               ; preds = %if.then78.15
+  %346 = add nsw i64 %341, %indvars.iv.15
+  %arrayidx92.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %346
+  %347 = load i32, i32* %arrayidx92.15, align 4
+  %cmp93.15 = icmp eq i32 %347, 255
+  br i1 %cmp93.15, label %if.then146.15, label %lor.lhs.false95.15
 
-lor.lhs.false100.15:                              ; preds = %lor.lhs.false92.15
-  %add104.15 = add i32 %sub86.15, -127
-  %idxprom105.15 = sext i32 %add104.15 to i64
-  %arrayidx106.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.15
-  %347 = load i32, i32* %arrayidx106.15, align 4
-  %cmp107.15 = icmp eq i32 %347, 255
-  br i1 %cmp107.15, label %if.then151.15, label %lor.lhs.false109.15
+lor.lhs.false95.15:                               ; preds = %lor.lhs.false87.15
+  %add99.15 = add i32 %sub81.15, -127
+  %idxprom100.15 = sext i32 %add99.15 to i64
+  %arrayidx101.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.15
+  %348 = load i32, i32* %arrayidx101.15, align 4
+  %cmp102.15 = icmp eq i32 %348, 255
+  br i1 %cmp102.15, label %if.then146.15, label %lor.lhs.false104.15
 
-lor.lhs.false109.15:                              ; preds = %lor.lhs.false100.15
-  %348 = trunc i64 %indvars.iv.15 to i32
-  %add112.15 = add i32 %sub111.15, %348
-  %idxprom113.15 = sext i32 %add112.15 to i64
-  %arrayidx114.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.15
-  %349 = load i32, i32* %arrayidx114.15, align 4
-  %cmp115.15 = icmp eq i32 %349, 255
-  br i1 %cmp115.15, label %if.then151.15, label %lor.lhs.false117.15
+lor.lhs.false104.15:                              ; preds = %lor.lhs.false95.15
+  %349 = trunc i64 %indvars.iv.15 to i32
+  %add107.15 = add i32 %sub106.15, %349
+  %idxprom108.15 = sext i32 %add107.15 to i64
+  %arrayidx109.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.15
+  %350 = load i32, i32* %arrayidx109.15, align 4
+  %cmp110.15 = icmp eq i32 %350, 255
+  br i1 %cmp110.15, label %if.then146.15, label %lor.lhs.false112.15
 
-lor.lhs.false117.15:                              ; preds = %lor.lhs.false109.15
-  %350 = trunc i64 %indvars.iv.15 to i32
-  %add120.15 = add i32 %add119.15, %350
-  %idxprom121.15 = sext i32 %add120.15 to i64
-  %arrayidx122.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.15
-  %351 = load i32, i32* %arrayidx122.15, align 4
-  %cmp123.15 = icmp eq i32 %351, 255
-  br i1 %cmp123.15, label %if.then151.15, label %lor.lhs.false125.15
+lor.lhs.false112.15:                              ; preds = %lor.lhs.false104.15
+  %351 = trunc i64 %indvars.iv.15 to i32
+  %add115.15 = add i32 %add114.15, %351
+  %idxprom116.15 = sext i32 %add115.15 to i64
+  %arrayidx117.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.15
+  %352 = load i32, i32* %arrayidx117.15, align 4
+  %cmp118.15 = icmp eq i32 %352, 255
+  br i1 %cmp118.15, label %if.then146.15, label %lor.lhs.false120.15
 
-lor.lhs.false125.15:                              ; preds = %lor.lhs.false117.15
-  %add129.15 = add i32 %sub86.15, 127
-  %idxprom130.15 = sext i32 %add129.15 to i64
-  %arrayidx131.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.15
-  %352 = load i32, i32* %arrayidx131.15, align 4
-  %cmp132.15 = icmp eq i32 %352, 255
-  br i1 %cmp132.15, label %if.then151.15, label %lor.lhs.false134.15
+lor.lhs.false120.15:                              ; preds = %lor.lhs.false112.15
+  %add124.15 = add i32 %sub81.15, 127
+  %idxprom125.15 = sext i32 %add124.15 to i64
+  %arrayidx126.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.15
+  %353 = load i32, i32* %arrayidx126.15, align 4
+  %cmp127.15 = icmp eq i32 %353, 255
+  br i1 %cmp127.15, label %if.then146.15, label %lor.lhs.false129.15
 
-lor.lhs.false134.15:                              ; preds = %lor.lhs.false125.15
-  %353 = add nsw i64 %339, %indvars.iv.15
-  %arrayidx139.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %353
-  %354 = load i32, i32* %arrayidx139.15, align 4
-  %cmp140.15 = icmp eq i32 %354, 255
-  br i1 %cmp140.15, label %if.then151.15, label %lor.lhs.false142.15
+lor.lhs.false129.15:                              ; preds = %lor.lhs.false120.15
+  %354 = add nsw i64 %340, %indvars.iv.15
+  %arrayidx134.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %354
+  %355 = load i32, i32* %arrayidx134.15, align 4
+  %cmp135.15 = icmp eq i32 %355, 255
+  br i1 %cmp135.15, label %if.then146.15, label %lor.lhs.false137.15
 
-lor.lhs.false142.15:                              ; preds = %lor.lhs.false134.15
-  %add146.15 = add i32 %sub86.15, 129
-  %idxprom147.15 = sext i32 %add146.15 to i64
-  %arrayidx148.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.15
-  %355 = load i32, i32* %arrayidx148.15, align 4
-  %cmp149.15 = icmp eq i32 %355, 255
-  br i1 %cmp149.15, label %if.then151.15, label %if.else154.15
+lor.lhs.false137.15:                              ; preds = %lor.lhs.false129.15
+  %add141.15 = add i32 %sub81.15, 129
+  %idxprom142.15 = sext i32 %add141.15 to i64
+  %arrayidx143.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.15
+  %356 = load i32, i32* %arrayidx143.15, align 4
+  %cmp144.15 = icmp eq i32 %356, 255
+  br i1 %cmp144.15, label %if.then146.15, label %if.else149.15
 
-if.else154.15:                                    ; preds = %lor.lhs.false142.15
-  %arrayidx156.15 = getelementptr inbounds i8, i8* %., i64 %341
-  store i8 0, i8* %arrayidx156.15, align 1
-  br label %for.inc166.15
+if.else149.15:                                    ; preds = %lor.lhs.false137.15
+  %arrayidx151.15 = getelementptr inbounds i8, i8* %0, i64 %342
+  store i8 0, i8* %arrayidx151.15, align 1
+  br label %for.inc161.15
 
-if.then151.15:                                    ; preds = %lor.lhs.false142.15, %lor.lhs.false134.15, %lor.lhs.false125.15, %lor.lhs.false117.15, %lor.lhs.false109.15, %lor.lhs.false100.15, %lor.lhs.false92.15, %if.then83.15
-  %arrayidx153.15 = getelementptr inbounds i8, i8* %., i64 %341
-  store i8 -1, i8* %arrayidx153.15, align 1
-  br label %for.inc166.15
+if.then146.15:                                    ; preds = %lor.lhs.false137.15, %lor.lhs.false129.15, %lor.lhs.false120.15, %lor.lhs.false112.15, %lor.lhs.false104.15, %lor.lhs.false95.15, %lor.lhs.false87.15, %if.then78.15
+  %arrayidx148.15 = getelementptr inbounds i8, i8* %0, i64 %342
+  store i8 -1, i8* %arrayidx148.15, align 1
+  br label %for.inc161.15
 
-if.then75.15:                                     ; preds = %for.body61.15
-  %arrayidx77.15 = getelementptr inbounds i8, i8* %., i64 %341
-  store i8 0, i8* %arrayidx77.15, align 1
-  br label %for.inc166.15
+if.then70.15:                                     ; preds = %for.body56.15
+  %arrayidx72.15 = getelementptr inbounds i8, i8* %0, i64 %342
+  store i8 0, i8* %arrayidx72.15, align 1
+  br label %for.inc161.15
 
-for.inc166.15:                                    ; preds = %if.then75.15, %if.then151.15, %if.else154.15, %if.else158.15
+for.inc161.15:                                    ; preds = %if.then70.15, %if.then146.15, %if.else149.15, %if.else153.15
   %indvars.iv.next.15 = add nuw nsw i64 %indvars.iv.15, 1
   %lftr.wideiv.15 = trunc i64 %indvars.iv.next.15 to i32
   %exitcond.15 = icmp eq i32 %lftr.wideiv.15, %img_width
-  br i1 %exitcond.15, label %for.inc169.15, label %for.body61.15, !llvm.loop !5
+  br i1 %exitcond.15, label %for.inc164.15, label %for.body56.15, !llvm.loop !5
 
-for.inc169.15:                                    ; preds = %for.inc166.15
+for.inc164.15:                                    ; preds = %for.inc161.15
   %indvars.iv.next20.15 = add nsw i64 %indvars.iv19, 16
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.16
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.16
 
-for.body61.lr.ph.16:                              ; preds = %for.inc169.15
-  %356 = trunc i64 %indvars.iv.next20.15 to i32
-  %mul63.16 = shl nsw i32 %356, 7
-  %cmp67.16 = icmp eq i64 %indvars.iv.next20.15, %11
+for.body56.lr.ph.16:                              ; preds = %for.inc164.15
   %357 = trunc i64 %indvars.iv.next20.15 to i32
-  %sub84.16 = shl i32 %357, 7
-  %mul94.16 = add i32 %sub84.16, -128
-  %sub111.16 = add i32 %mul63.16, -1
-  %add119.16 = or i32 %mul63.16, 1
-  %mul136.16 = add i32 %sub84.16, 128
-  %358 = sext i32 %mul63.16 to i64
-  %359 = sext i32 %mul136.16 to i64
-  %360 = sext i32 %mul94.16 to i64
-  br label %for.body61.16
+  %mul58.16 = shl nsw i32 %357, 7
+  %cmp62.16 = icmp eq i64 %indvars.iv.next20.15, %12
+  %358 = trunc i64 %indvars.iv.next20.15 to i32
+  %sub79.16 = shl i32 %358, 7
+  %mul89.16 = add i32 %sub79.16, -128
+  %sub106.16 = add i32 %mul58.16, -1
+  %add114.16 = or i32 %mul58.16, 1
+  %mul131.16 = add i32 %sub79.16, 128
+  %359 = sext i32 %mul58.16 to i64
+  %360 = sext i32 %mul131.16 to i64
+  %361 = sext i32 %mul89.16 to i64
+  br label %for.body56.16
 
-for.body61.16:                                    ; preds = %for.inc166.16, %for.body61.lr.ph.16
-  %indvars.iv.16 = phi i64 [ 0, %for.body61.lr.ph.16 ], [ %indvars.iv.next.16, %for.inc166.16 ]
-  %361 = add nsw i64 %indvars.iv.16, %358
-  %cmp70.16 = icmp eq i64 %indvars.iv.16, 0
-  %or.cond1.16 = or i1 %cmp67.16, %cmp70.16
-  %cmp73.16 = icmp eq i64 %indvars.iv.16, %10
-  %or.cond2.16 = or i1 %cmp73.16, %or.cond1.16
-  br i1 %or.cond2.16, label %if.then75.16, label %if.else78.16
+for.body56.16:                                    ; preds = %for.inc161.16, %for.body56.lr.ph.16
+  %indvars.iv.16 = phi i64 [ 0, %for.body56.lr.ph.16 ], [ %indvars.iv.next.16, %for.inc161.16 ]
+  %362 = add nsw i64 %indvars.iv.16, %359
+  %cmp65.16 = icmp eq i64 %indvars.iv.16, 0
+  %or.cond1.16 = or i1 %cmp62.16, %cmp65.16
+  %cmp68.16 = icmp eq i64 %indvars.iv.16, %11
+  %or.cond2.16 = or i1 %cmp68.16, %or.cond1.16
+  br i1 %or.cond2.16, label %if.then70.16, label %if.else73.16
 
-if.else78.16:                                     ; preds = %for.body61.16
-  %arrayidx80.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %361
-  %362 = load i32, i32* %arrayidx80.16, align 4
-  %cmp81.16 = icmp eq i32 %362, 75
-  br i1 %cmp81.16, label %if.then83.16, label %if.else158.16
+if.else73.16:                                     ; preds = %for.body56.16
+  %arrayidx75.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %362
+  %363 = load i32, i32* %arrayidx75.16, align 4
+  %cmp76.16 = icmp eq i32 %363, 75
+  br i1 %cmp76.16, label %if.then78.16, label %if.else153.16
 
-if.else158.16:                                    ; preds = %if.else78.16
-  %conv161.16 = trunc i32 %362 to i8
-  %arrayidx163.16 = getelementptr inbounds i8, i8* %., i64 %361
-  store i8 %conv161.16, i8* %arrayidx163.16, align 1
-  br label %for.inc166.16
+if.else153.16:                                    ; preds = %if.else73.16
+  %conv156.16 = trunc i32 %363 to i8
+  %arrayidx158.16 = getelementptr inbounds i8, i8* %0, i64 %362
+  store i8 %conv156.16, i8* %arrayidx158.16, align 1
+  br label %for.inc161.16
 
-if.then83.16:                                     ; preds = %if.else78.16
-  %363 = trunc i64 %indvars.iv.16 to i32
-  %sub86.16 = add i32 %363, %sub84.16
-  %add87.16 = add i32 %sub86.16, -129
-  %idxprom88.16 = sext i32 %add87.16 to i64
-  %arrayidx89.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.16
-  %364 = load i32, i32* %arrayidx89.16, align 4
-  %cmp90.16 = icmp eq i32 %364, 255
-  br i1 %cmp90.16, label %if.then151.16, label %lor.lhs.false92.16
+if.then78.16:                                     ; preds = %if.else73.16
+  %364 = trunc i64 %indvars.iv.16 to i32
+  %sub81.16 = add i32 %364, %sub79.16
+  %add82.16 = add i32 %sub81.16, -129
+  %idxprom83.16 = sext i32 %add82.16 to i64
+  %arrayidx84.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.16
+  %365 = load i32, i32* %arrayidx84.16, align 4
+  %cmp85.16 = icmp eq i32 %365, 255
+  br i1 %cmp85.16, label %if.then146.16, label %lor.lhs.false87.16
 
-lor.lhs.false92.16:                               ; preds = %if.then83.16
-  %365 = add nsw i64 %360, %indvars.iv.16
-  %arrayidx97.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %365
-  %366 = load i32, i32* %arrayidx97.16, align 4
-  %cmp98.16 = icmp eq i32 %366, 255
-  br i1 %cmp98.16, label %if.then151.16, label %lor.lhs.false100.16
+lor.lhs.false87.16:                               ; preds = %if.then78.16
+  %366 = add nsw i64 %361, %indvars.iv.16
+  %arrayidx92.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %366
+  %367 = load i32, i32* %arrayidx92.16, align 4
+  %cmp93.16 = icmp eq i32 %367, 255
+  br i1 %cmp93.16, label %if.then146.16, label %lor.lhs.false95.16
 
-lor.lhs.false100.16:                              ; preds = %lor.lhs.false92.16
-  %add104.16 = add i32 %sub86.16, -127
-  %idxprom105.16 = sext i32 %add104.16 to i64
-  %arrayidx106.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.16
-  %367 = load i32, i32* %arrayidx106.16, align 4
-  %cmp107.16 = icmp eq i32 %367, 255
-  br i1 %cmp107.16, label %if.then151.16, label %lor.lhs.false109.16
+lor.lhs.false95.16:                               ; preds = %lor.lhs.false87.16
+  %add99.16 = add i32 %sub81.16, -127
+  %idxprom100.16 = sext i32 %add99.16 to i64
+  %arrayidx101.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.16
+  %368 = load i32, i32* %arrayidx101.16, align 4
+  %cmp102.16 = icmp eq i32 %368, 255
+  br i1 %cmp102.16, label %if.then146.16, label %lor.lhs.false104.16
 
-lor.lhs.false109.16:                              ; preds = %lor.lhs.false100.16
-  %368 = trunc i64 %indvars.iv.16 to i32
-  %add112.16 = add i32 %sub111.16, %368
-  %idxprom113.16 = sext i32 %add112.16 to i64
-  %arrayidx114.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.16
-  %369 = load i32, i32* %arrayidx114.16, align 4
-  %cmp115.16 = icmp eq i32 %369, 255
-  br i1 %cmp115.16, label %if.then151.16, label %lor.lhs.false117.16
+lor.lhs.false104.16:                              ; preds = %lor.lhs.false95.16
+  %369 = trunc i64 %indvars.iv.16 to i32
+  %add107.16 = add i32 %sub106.16, %369
+  %idxprom108.16 = sext i32 %add107.16 to i64
+  %arrayidx109.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.16
+  %370 = load i32, i32* %arrayidx109.16, align 4
+  %cmp110.16 = icmp eq i32 %370, 255
+  br i1 %cmp110.16, label %if.then146.16, label %lor.lhs.false112.16
 
-lor.lhs.false117.16:                              ; preds = %lor.lhs.false109.16
-  %370 = trunc i64 %indvars.iv.16 to i32
-  %add120.16 = add i32 %add119.16, %370
-  %idxprom121.16 = sext i32 %add120.16 to i64
-  %arrayidx122.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.16
-  %371 = load i32, i32* %arrayidx122.16, align 4
-  %cmp123.16 = icmp eq i32 %371, 255
-  br i1 %cmp123.16, label %if.then151.16, label %lor.lhs.false125.16
+lor.lhs.false112.16:                              ; preds = %lor.lhs.false104.16
+  %371 = trunc i64 %indvars.iv.16 to i32
+  %add115.16 = add i32 %add114.16, %371
+  %idxprom116.16 = sext i32 %add115.16 to i64
+  %arrayidx117.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.16
+  %372 = load i32, i32* %arrayidx117.16, align 4
+  %cmp118.16 = icmp eq i32 %372, 255
+  br i1 %cmp118.16, label %if.then146.16, label %lor.lhs.false120.16
 
-lor.lhs.false125.16:                              ; preds = %lor.lhs.false117.16
-  %add129.16 = add i32 %sub86.16, 127
-  %idxprom130.16 = sext i32 %add129.16 to i64
-  %arrayidx131.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.16
-  %372 = load i32, i32* %arrayidx131.16, align 4
-  %cmp132.16 = icmp eq i32 %372, 255
-  br i1 %cmp132.16, label %if.then151.16, label %lor.lhs.false134.16
+lor.lhs.false120.16:                              ; preds = %lor.lhs.false112.16
+  %add124.16 = add i32 %sub81.16, 127
+  %idxprom125.16 = sext i32 %add124.16 to i64
+  %arrayidx126.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.16
+  %373 = load i32, i32* %arrayidx126.16, align 4
+  %cmp127.16 = icmp eq i32 %373, 255
+  br i1 %cmp127.16, label %if.then146.16, label %lor.lhs.false129.16
 
-lor.lhs.false134.16:                              ; preds = %lor.lhs.false125.16
-  %373 = add nsw i64 %359, %indvars.iv.16
-  %arrayidx139.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %373
-  %374 = load i32, i32* %arrayidx139.16, align 4
-  %cmp140.16 = icmp eq i32 %374, 255
-  br i1 %cmp140.16, label %if.then151.16, label %lor.lhs.false142.16
+lor.lhs.false129.16:                              ; preds = %lor.lhs.false120.16
+  %374 = add nsw i64 %360, %indvars.iv.16
+  %arrayidx134.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %374
+  %375 = load i32, i32* %arrayidx134.16, align 4
+  %cmp135.16 = icmp eq i32 %375, 255
+  br i1 %cmp135.16, label %if.then146.16, label %lor.lhs.false137.16
 
-lor.lhs.false142.16:                              ; preds = %lor.lhs.false134.16
-  %add146.16 = add i32 %sub86.16, 129
-  %idxprom147.16 = sext i32 %add146.16 to i64
-  %arrayidx148.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.16
-  %375 = load i32, i32* %arrayidx148.16, align 4
-  %cmp149.16 = icmp eq i32 %375, 255
-  br i1 %cmp149.16, label %if.then151.16, label %if.else154.16
+lor.lhs.false137.16:                              ; preds = %lor.lhs.false129.16
+  %add141.16 = add i32 %sub81.16, 129
+  %idxprom142.16 = sext i32 %add141.16 to i64
+  %arrayidx143.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.16
+  %376 = load i32, i32* %arrayidx143.16, align 4
+  %cmp144.16 = icmp eq i32 %376, 255
+  br i1 %cmp144.16, label %if.then146.16, label %if.else149.16
 
-if.else154.16:                                    ; preds = %lor.lhs.false142.16
-  %arrayidx156.16 = getelementptr inbounds i8, i8* %., i64 %361
-  store i8 0, i8* %arrayidx156.16, align 1
-  br label %for.inc166.16
+if.else149.16:                                    ; preds = %lor.lhs.false137.16
+  %arrayidx151.16 = getelementptr inbounds i8, i8* %0, i64 %362
+  store i8 0, i8* %arrayidx151.16, align 1
+  br label %for.inc161.16
 
-if.then151.16:                                    ; preds = %lor.lhs.false142.16, %lor.lhs.false134.16, %lor.lhs.false125.16, %lor.lhs.false117.16, %lor.lhs.false109.16, %lor.lhs.false100.16, %lor.lhs.false92.16, %if.then83.16
-  %arrayidx153.16 = getelementptr inbounds i8, i8* %., i64 %361
-  store i8 -1, i8* %arrayidx153.16, align 1
-  br label %for.inc166.16
+if.then146.16:                                    ; preds = %lor.lhs.false137.16, %lor.lhs.false129.16, %lor.lhs.false120.16, %lor.lhs.false112.16, %lor.lhs.false104.16, %lor.lhs.false95.16, %lor.lhs.false87.16, %if.then78.16
+  %arrayidx148.16 = getelementptr inbounds i8, i8* %0, i64 %362
+  store i8 -1, i8* %arrayidx148.16, align 1
+  br label %for.inc161.16
 
-if.then75.16:                                     ; preds = %for.body61.16
-  %arrayidx77.16 = getelementptr inbounds i8, i8* %., i64 %361
-  store i8 0, i8* %arrayidx77.16, align 1
-  br label %for.inc166.16
+if.then70.16:                                     ; preds = %for.body56.16
+  %arrayidx72.16 = getelementptr inbounds i8, i8* %0, i64 %362
+  store i8 0, i8* %arrayidx72.16, align 1
+  br label %for.inc161.16
 
-for.inc166.16:                                    ; preds = %if.then75.16, %if.then151.16, %if.else154.16, %if.else158.16
+for.inc161.16:                                    ; preds = %if.then70.16, %if.then146.16, %if.else149.16, %if.else153.16
   %indvars.iv.next.16 = add nuw nsw i64 %indvars.iv.16, 1
   %lftr.wideiv.16 = trunc i64 %indvars.iv.next.16 to i32
   %exitcond.16 = icmp eq i32 %lftr.wideiv.16, %img_width
-  br i1 %exitcond.16, label %for.inc169.16, label %for.body61.16, !llvm.loop !5
+  br i1 %exitcond.16, label %for.inc164.16, label %for.body56.16, !llvm.loop !5
 
-for.inc169.16:                                    ; preds = %for.inc166.16
+for.inc164.16:                                    ; preds = %for.inc161.16
   %indvars.iv.next20.16 = add nsw i64 %indvars.iv19, 17
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.17
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.17
 
-for.body61.lr.ph.17:                              ; preds = %for.inc169.16
-  %376 = trunc i64 %indvars.iv.next20.16 to i32
-  %mul63.17 = shl nsw i32 %376, 7
-  %cmp67.17 = icmp eq i64 %indvars.iv.next20.16, %11
+for.body56.lr.ph.17:                              ; preds = %for.inc164.16
   %377 = trunc i64 %indvars.iv.next20.16 to i32
-  %sub84.17 = shl i32 %377, 7
-  %mul94.17 = add i32 %sub84.17, -128
-  %sub111.17 = add i32 %mul63.17, -1
-  %add119.17 = or i32 %mul63.17, 1
-  %mul136.17 = add i32 %sub84.17, 128
-  %378 = sext i32 %mul63.17 to i64
-  %379 = sext i32 %mul136.17 to i64
-  %380 = sext i32 %mul94.17 to i64
-  br label %for.body61.17
+  %mul58.17 = shl nsw i32 %377, 7
+  %cmp62.17 = icmp eq i64 %indvars.iv.next20.16, %12
+  %378 = trunc i64 %indvars.iv.next20.16 to i32
+  %sub79.17 = shl i32 %378, 7
+  %mul89.17 = add i32 %sub79.17, -128
+  %sub106.17 = add i32 %mul58.17, -1
+  %add114.17 = or i32 %mul58.17, 1
+  %mul131.17 = add i32 %sub79.17, 128
+  %379 = sext i32 %mul58.17 to i64
+  %380 = sext i32 %mul131.17 to i64
+  %381 = sext i32 %mul89.17 to i64
+  br label %for.body56.17
 
-for.body61.17:                                    ; preds = %for.inc166.17, %for.body61.lr.ph.17
-  %indvars.iv.17 = phi i64 [ 0, %for.body61.lr.ph.17 ], [ %indvars.iv.next.17, %for.inc166.17 ]
-  %381 = add nsw i64 %indvars.iv.17, %378
-  %cmp70.17 = icmp eq i64 %indvars.iv.17, 0
-  %or.cond1.17 = or i1 %cmp67.17, %cmp70.17
-  %cmp73.17 = icmp eq i64 %indvars.iv.17, %10
-  %or.cond2.17 = or i1 %cmp73.17, %or.cond1.17
-  br i1 %or.cond2.17, label %if.then75.17, label %if.else78.17
+for.body56.17:                                    ; preds = %for.inc161.17, %for.body56.lr.ph.17
+  %indvars.iv.17 = phi i64 [ 0, %for.body56.lr.ph.17 ], [ %indvars.iv.next.17, %for.inc161.17 ]
+  %382 = add nsw i64 %indvars.iv.17, %379
+  %cmp65.17 = icmp eq i64 %indvars.iv.17, 0
+  %or.cond1.17 = or i1 %cmp62.17, %cmp65.17
+  %cmp68.17 = icmp eq i64 %indvars.iv.17, %11
+  %or.cond2.17 = or i1 %cmp68.17, %or.cond1.17
+  br i1 %or.cond2.17, label %if.then70.17, label %if.else73.17
 
-if.else78.17:                                     ; preds = %for.body61.17
-  %arrayidx80.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %381
-  %382 = load i32, i32* %arrayidx80.17, align 4
-  %cmp81.17 = icmp eq i32 %382, 75
-  br i1 %cmp81.17, label %if.then83.17, label %if.else158.17
+if.else73.17:                                     ; preds = %for.body56.17
+  %arrayidx75.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %382
+  %383 = load i32, i32* %arrayidx75.17, align 4
+  %cmp76.17 = icmp eq i32 %383, 75
+  br i1 %cmp76.17, label %if.then78.17, label %if.else153.17
 
-if.else158.17:                                    ; preds = %if.else78.17
-  %conv161.17 = trunc i32 %382 to i8
-  %arrayidx163.17 = getelementptr inbounds i8, i8* %., i64 %381
-  store i8 %conv161.17, i8* %arrayidx163.17, align 1
-  br label %for.inc166.17
+if.else153.17:                                    ; preds = %if.else73.17
+  %conv156.17 = trunc i32 %383 to i8
+  %arrayidx158.17 = getelementptr inbounds i8, i8* %0, i64 %382
+  store i8 %conv156.17, i8* %arrayidx158.17, align 1
+  br label %for.inc161.17
 
-if.then83.17:                                     ; preds = %if.else78.17
-  %383 = trunc i64 %indvars.iv.17 to i32
-  %sub86.17 = add i32 %383, %sub84.17
-  %add87.17 = add i32 %sub86.17, -129
-  %idxprom88.17 = sext i32 %add87.17 to i64
-  %arrayidx89.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.17
-  %384 = load i32, i32* %arrayidx89.17, align 4
-  %cmp90.17 = icmp eq i32 %384, 255
-  br i1 %cmp90.17, label %if.then151.17, label %lor.lhs.false92.17
+if.then78.17:                                     ; preds = %if.else73.17
+  %384 = trunc i64 %indvars.iv.17 to i32
+  %sub81.17 = add i32 %384, %sub79.17
+  %add82.17 = add i32 %sub81.17, -129
+  %idxprom83.17 = sext i32 %add82.17 to i64
+  %arrayidx84.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.17
+  %385 = load i32, i32* %arrayidx84.17, align 4
+  %cmp85.17 = icmp eq i32 %385, 255
+  br i1 %cmp85.17, label %if.then146.17, label %lor.lhs.false87.17
 
-lor.lhs.false92.17:                               ; preds = %if.then83.17
-  %385 = add nsw i64 %380, %indvars.iv.17
-  %arrayidx97.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %385
-  %386 = load i32, i32* %arrayidx97.17, align 4
-  %cmp98.17 = icmp eq i32 %386, 255
-  br i1 %cmp98.17, label %if.then151.17, label %lor.lhs.false100.17
+lor.lhs.false87.17:                               ; preds = %if.then78.17
+  %386 = add nsw i64 %381, %indvars.iv.17
+  %arrayidx92.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %386
+  %387 = load i32, i32* %arrayidx92.17, align 4
+  %cmp93.17 = icmp eq i32 %387, 255
+  br i1 %cmp93.17, label %if.then146.17, label %lor.lhs.false95.17
 
-lor.lhs.false100.17:                              ; preds = %lor.lhs.false92.17
-  %add104.17 = add i32 %sub86.17, -127
-  %idxprom105.17 = sext i32 %add104.17 to i64
-  %arrayidx106.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.17
-  %387 = load i32, i32* %arrayidx106.17, align 4
-  %cmp107.17 = icmp eq i32 %387, 255
-  br i1 %cmp107.17, label %if.then151.17, label %lor.lhs.false109.17
+lor.lhs.false95.17:                               ; preds = %lor.lhs.false87.17
+  %add99.17 = add i32 %sub81.17, -127
+  %idxprom100.17 = sext i32 %add99.17 to i64
+  %arrayidx101.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.17
+  %388 = load i32, i32* %arrayidx101.17, align 4
+  %cmp102.17 = icmp eq i32 %388, 255
+  br i1 %cmp102.17, label %if.then146.17, label %lor.lhs.false104.17
 
-lor.lhs.false109.17:                              ; preds = %lor.lhs.false100.17
-  %388 = trunc i64 %indvars.iv.17 to i32
-  %add112.17 = add i32 %sub111.17, %388
-  %idxprom113.17 = sext i32 %add112.17 to i64
-  %arrayidx114.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.17
-  %389 = load i32, i32* %arrayidx114.17, align 4
-  %cmp115.17 = icmp eq i32 %389, 255
-  br i1 %cmp115.17, label %if.then151.17, label %lor.lhs.false117.17
+lor.lhs.false104.17:                              ; preds = %lor.lhs.false95.17
+  %389 = trunc i64 %indvars.iv.17 to i32
+  %add107.17 = add i32 %sub106.17, %389
+  %idxprom108.17 = sext i32 %add107.17 to i64
+  %arrayidx109.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.17
+  %390 = load i32, i32* %arrayidx109.17, align 4
+  %cmp110.17 = icmp eq i32 %390, 255
+  br i1 %cmp110.17, label %if.then146.17, label %lor.lhs.false112.17
 
-lor.lhs.false117.17:                              ; preds = %lor.lhs.false109.17
-  %390 = trunc i64 %indvars.iv.17 to i32
-  %add120.17 = add i32 %add119.17, %390
-  %idxprom121.17 = sext i32 %add120.17 to i64
-  %arrayidx122.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.17
-  %391 = load i32, i32* %arrayidx122.17, align 4
-  %cmp123.17 = icmp eq i32 %391, 255
-  br i1 %cmp123.17, label %if.then151.17, label %lor.lhs.false125.17
+lor.lhs.false112.17:                              ; preds = %lor.lhs.false104.17
+  %391 = trunc i64 %indvars.iv.17 to i32
+  %add115.17 = add i32 %add114.17, %391
+  %idxprom116.17 = sext i32 %add115.17 to i64
+  %arrayidx117.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.17
+  %392 = load i32, i32* %arrayidx117.17, align 4
+  %cmp118.17 = icmp eq i32 %392, 255
+  br i1 %cmp118.17, label %if.then146.17, label %lor.lhs.false120.17
 
-lor.lhs.false125.17:                              ; preds = %lor.lhs.false117.17
-  %add129.17 = add i32 %sub86.17, 127
-  %idxprom130.17 = sext i32 %add129.17 to i64
-  %arrayidx131.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.17
-  %392 = load i32, i32* %arrayidx131.17, align 4
-  %cmp132.17 = icmp eq i32 %392, 255
-  br i1 %cmp132.17, label %if.then151.17, label %lor.lhs.false134.17
+lor.lhs.false120.17:                              ; preds = %lor.lhs.false112.17
+  %add124.17 = add i32 %sub81.17, 127
+  %idxprom125.17 = sext i32 %add124.17 to i64
+  %arrayidx126.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.17
+  %393 = load i32, i32* %arrayidx126.17, align 4
+  %cmp127.17 = icmp eq i32 %393, 255
+  br i1 %cmp127.17, label %if.then146.17, label %lor.lhs.false129.17
 
-lor.lhs.false134.17:                              ; preds = %lor.lhs.false125.17
-  %393 = add nsw i64 %379, %indvars.iv.17
-  %arrayidx139.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %393
-  %394 = load i32, i32* %arrayidx139.17, align 4
-  %cmp140.17 = icmp eq i32 %394, 255
-  br i1 %cmp140.17, label %if.then151.17, label %lor.lhs.false142.17
+lor.lhs.false129.17:                              ; preds = %lor.lhs.false120.17
+  %394 = add nsw i64 %380, %indvars.iv.17
+  %arrayidx134.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %394
+  %395 = load i32, i32* %arrayidx134.17, align 4
+  %cmp135.17 = icmp eq i32 %395, 255
+  br i1 %cmp135.17, label %if.then146.17, label %lor.lhs.false137.17
 
-lor.lhs.false142.17:                              ; preds = %lor.lhs.false134.17
-  %add146.17 = add i32 %sub86.17, 129
-  %idxprom147.17 = sext i32 %add146.17 to i64
-  %arrayidx148.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.17
-  %395 = load i32, i32* %arrayidx148.17, align 4
-  %cmp149.17 = icmp eq i32 %395, 255
-  br i1 %cmp149.17, label %if.then151.17, label %if.else154.17
+lor.lhs.false137.17:                              ; preds = %lor.lhs.false129.17
+  %add141.17 = add i32 %sub81.17, 129
+  %idxprom142.17 = sext i32 %add141.17 to i64
+  %arrayidx143.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.17
+  %396 = load i32, i32* %arrayidx143.17, align 4
+  %cmp144.17 = icmp eq i32 %396, 255
+  br i1 %cmp144.17, label %if.then146.17, label %if.else149.17
 
-if.else154.17:                                    ; preds = %lor.lhs.false142.17
-  %arrayidx156.17 = getelementptr inbounds i8, i8* %., i64 %381
-  store i8 0, i8* %arrayidx156.17, align 1
-  br label %for.inc166.17
+if.else149.17:                                    ; preds = %lor.lhs.false137.17
+  %arrayidx151.17 = getelementptr inbounds i8, i8* %0, i64 %382
+  store i8 0, i8* %arrayidx151.17, align 1
+  br label %for.inc161.17
 
-if.then151.17:                                    ; preds = %lor.lhs.false142.17, %lor.lhs.false134.17, %lor.lhs.false125.17, %lor.lhs.false117.17, %lor.lhs.false109.17, %lor.lhs.false100.17, %lor.lhs.false92.17, %if.then83.17
-  %arrayidx153.17 = getelementptr inbounds i8, i8* %., i64 %381
-  store i8 -1, i8* %arrayidx153.17, align 1
-  br label %for.inc166.17
+if.then146.17:                                    ; preds = %lor.lhs.false137.17, %lor.lhs.false129.17, %lor.lhs.false120.17, %lor.lhs.false112.17, %lor.lhs.false104.17, %lor.lhs.false95.17, %lor.lhs.false87.17, %if.then78.17
+  %arrayidx148.17 = getelementptr inbounds i8, i8* %0, i64 %382
+  store i8 -1, i8* %arrayidx148.17, align 1
+  br label %for.inc161.17
 
-if.then75.17:                                     ; preds = %for.body61.17
-  %arrayidx77.17 = getelementptr inbounds i8, i8* %., i64 %381
-  store i8 0, i8* %arrayidx77.17, align 1
-  br label %for.inc166.17
+if.then70.17:                                     ; preds = %for.body56.17
+  %arrayidx72.17 = getelementptr inbounds i8, i8* %0, i64 %382
+  store i8 0, i8* %arrayidx72.17, align 1
+  br label %for.inc161.17
 
-for.inc166.17:                                    ; preds = %if.then75.17, %if.then151.17, %if.else154.17, %if.else158.17
+for.inc161.17:                                    ; preds = %if.then70.17, %if.then146.17, %if.else149.17, %if.else153.17
   %indvars.iv.next.17 = add nuw nsw i64 %indvars.iv.17, 1
   %lftr.wideiv.17 = trunc i64 %indvars.iv.next.17 to i32
   %exitcond.17 = icmp eq i32 %lftr.wideiv.17, %img_width
-  br i1 %exitcond.17, label %for.inc169.17, label %for.body61.17, !llvm.loop !5
+  br i1 %exitcond.17, label %for.inc164.17, label %for.body56.17, !llvm.loop !5
 
-for.inc169.17:                                    ; preds = %for.inc166.17
+for.inc164.17:                                    ; preds = %for.inc161.17
   %indvars.iv.next20.17 = add nsw i64 %indvars.iv19, 18
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.18
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.18
 
-for.body61.lr.ph.18:                              ; preds = %for.inc169.17
-  %396 = trunc i64 %indvars.iv.next20.17 to i32
-  %mul63.18 = shl nsw i32 %396, 7
-  %cmp67.18 = icmp eq i64 %indvars.iv.next20.17, %11
+for.body56.lr.ph.18:                              ; preds = %for.inc164.17
   %397 = trunc i64 %indvars.iv.next20.17 to i32
-  %sub84.18 = shl i32 %397, 7
-  %mul94.18 = add i32 %sub84.18, -128
-  %sub111.18 = add i32 %mul63.18, -1
-  %add119.18 = or i32 %mul63.18, 1
-  %mul136.18 = add i32 %sub84.18, 128
-  %398 = sext i32 %mul63.18 to i64
-  %399 = sext i32 %mul136.18 to i64
-  %400 = sext i32 %mul94.18 to i64
-  br label %for.body61.18
+  %mul58.18 = shl nsw i32 %397, 7
+  %cmp62.18 = icmp eq i64 %indvars.iv.next20.17, %12
+  %398 = trunc i64 %indvars.iv.next20.17 to i32
+  %sub79.18 = shl i32 %398, 7
+  %mul89.18 = add i32 %sub79.18, -128
+  %sub106.18 = add i32 %mul58.18, -1
+  %add114.18 = or i32 %mul58.18, 1
+  %mul131.18 = add i32 %sub79.18, 128
+  %399 = sext i32 %mul58.18 to i64
+  %400 = sext i32 %mul131.18 to i64
+  %401 = sext i32 %mul89.18 to i64
+  br label %for.body56.18
 
-for.body61.18:                                    ; preds = %for.inc166.18, %for.body61.lr.ph.18
-  %indvars.iv.18 = phi i64 [ 0, %for.body61.lr.ph.18 ], [ %indvars.iv.next.18, %for.inc166.18 ]
-  %401 = add nsw i64 %indvars.iv.18, %398
-  %cmp70.18 = icmp eq i64 %indvars.iv.18, 0
-  %or.cond1.18 = or i1 %cmp67.18, %cmp70.18
-  %cmp73.18 = icmp eq i64 %indvars.iv.18, %10
-  %or.cond2.18 = or i1 %cmp73.18, %or.cond1.18
-  br i1 %or.cond2.18, label %if.then75.18, label %if.else78.18
+for.body56.18:                                    ; preds = %for.inc161.18, %for.body56.lr.ph.18
+  %indvars.iv.18 = phi i64 [ 0, %for.body56.lr.ph.18 ], [ %indvars.iv.next.18, %for.inc161.18 ]
+  %402 = add nsw i64 %indvars.iv.18, %399
+  %cmp65.18 = icmp eq i64 %indvars.iv.18, 0
+  %or.cond1.18 = or i1 %cmp62.18, %cmp65.18
+  %cmp68.18 = icmp eq i64 %indvars.iv.18, %11
+  %or.cond2.18 = or i1 %cmp68.18, %or.cond1.18
+  br i1 %or.cond2.18, label %if.then70.18, label %if.else73.18
 
-if.else78.18:                                     ; preds = %for.body61.18
-  %arrayidx80.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %401
-  %402 = load i32, i32* %arrayidx80.18, align 4
-  %cmp81.18 = icmp eq i32 %402, 75
-  br i1 %cmp81.18, label %if.then83.18, label %if.else158.18
+if.else73.18:                                     ; preds = %for.body56.18
+  %arrayidx75.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %402
+  %403 = load i32, i32* %arrayidx75.18, align 4
+  %cmp76.18 = icmp eq i32 %403, 75
+  br i1 %cmp76.18, label %if.then78.18, label %if.else153.18
 
-if.else158.18:                                    ; preds = %if.else78.18
-  %conv161.18 = trunc i32 %402 to i8
-  %arrayidx163.18 = getelementptr inbounds i8, i8* %., i64 %401
-  store i8 %conv161.18, i8* %arrayidx163.18, align 1
-  br label %for.inc166.18
+if.else153.18:                                    ; preds = %if.else73.18
+  %conv156.18 = trunc i32 %403 to i8
+  %arrayidx158.18 = getelementptr inbounds i8, i8* %0, i64 %402
+  store i8 %conv156.18, i8* %arrayidx158.18, align 1
+  br label %for.inc161.18
 
-if.then83.18:                                     ; preds = %if.else78.18
-  %403 = trunc i64 %indvars.iv.18 to i32
-  %sub86.18 = add i32 %403, %sub84.18
-  %add87.18 = add i32 %sub86.18, -129
-  %idxprom88.18 = sext i32 %add87.18 to i64
-  %arrayidx89.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.18
-  %404 = load i32, i32* %arrayidx89.18, align 4
-  %cmp90.18 = icmp eq i32 %404, 255
-  br i1 %cmp90.18, label %if.then151.18, label %lor.lhs.false92.18
+if.then78.18:                                     ; preds = %if.else73.18
+  %404 = trunc i64 %indvars.iv.18 to i32
+  %sub81.18 = add i32 %404, %sub79.18
+  %add82.18 = add i32 %sub81.18, -129
+  %idxprom83.18 = sext i32 %add82.18 to i64
+  %arrayidx84.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.18
+  %405 = load i32, i32* %arrayidx84.18, align 4
+  %cmp85.18 = icmp eq i32 %405, 255
+  br i1 %cmp85.18, label %if.then146.18, label %lor.lhs.false87.18
 
-lor.lhs.false92.18:                               ; preds = %if.then83.18
-  %405 = add nsw i64 %400, %indvars.iv.18
-  %arrayidx97.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %405
-  %406 = load i32, i32* %arrayidx97.18, align 4
-  %cmp98.18 = icmp eq i32 %406, 255
-  br i1 %cmp98.18, label %if.then151.18, label %lor.lhs.false100.18
+lor.lhs.false87.18:                               ; preds = %if.then78.18
+  %406 = add nsw i64 %401, %indvars.iv.18
+  %arrayidx92.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %406
+  %407 = load i32, i32* %arrayidx92.18, align 4
+  %cmp93.18 = icmp eq i32 %407, 255
+  br i1 %cmp93.18, label %if.then146.18, label %lor.lhs.false95.18
 
-lor.lhs.false100.18:                              ; preds = %lor.lhs.false92.18
-  %add104.18 = add i32 %sub86.18, -127
-  %idxprom105.18 = sext i32 %add104.18 to i64
-  %arrayidx106.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.18
-  %407 = load i32, i32* %arrayidx106.18, align 4
-  %cmp107.18 = icmp eq i32 %407, 255
-  br i1 %cmp107.18, label %if.then151.18, label %lor.lhs.false109.18
+lor.lhs.false95.18:                               ; preds = %lor.lhs.false87.18
+  %add99.18 = add i32 %sub81.18, -127
+  %idxprom100.18 = sext i32 %add99.18 to i64
+  %arrayidx101.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.18
+  %408 = load i32, i32* %arrayidx101.18, align 4
+  %cmp102.18 = icmp eq i32 %408, 255
+  br i1 %cmp102.18, label %if.then146.18, label %lor.lhs.false104.18
 
-lor.lhs.false109.18:                              ; preds = %lor.lhs.false100.18
-  %408 = trunc i64 %indvars.iv.18 to i32
-  %add112.18 = add i32 %sub111.18, %408
-  %idxprom113.18 = sext i32 %add112.18 to i64
-  %arrayidx114.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.18
-  %409 = load i32, i32* %arrayidx114.18, align 4
-  %cmp115.18 = icmp eq i32 %409, 255
-  br i1 %cmp115.18, label %if.then151.18, label %lor.lhs.false117.18
+lor.lhs.false104.18:                              ; preds = %lor.lhs.false95.18
+  %409 = trunc i64 %indvars.iv.18 to i32
+  %add107.18 = add i32 %sub106.18, %409
+  %idxprom108.18 = sext i32 %add107.18 to i64
+  %arrayidx109.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.18
+  %410 = load i32, i32* %arrayidx109.18, align 4
+  %cmp110.18 = icmp eq i32 %410, 255
+  br i1 %cmp110.18, label %if.then146.18, label %lor.lhs.false112.18
 
-lor.lhs.false117.18:                              ; preds = %lor.lhs.false109.18
-  %410 = trunc i64 %indvars.iv.18 to i32
-  %add120.18 = add i32 %add119.18, %410
-  %idxprom121.18 = sext i32 %add120.18 to i64
-  %arrayidx122.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.18
-  %411 = load i32, i32* %arrayidx122.18, align 4
-  %cmp123.18 = icmp eq i32 %411, 255
-  br i1 %cmp123.18, label %if.then151.18, label %lor.lhs.false125.18
+lor.lhs.false112.18:                              ; preds = %lor.lhs.false104.18
+  %411 = trunc i64 %indvars.iv.18 to i32
+  %add115.18 = add i32 %add114.18, %411
+  %idxprom116.18 = sext i32 %add115.18 to i64
+  %arrayidx117.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.18
+  %412 = load i32, i32* %arrayidx117.18, align 4
+  %cmp118.18 = icmp eq i32 %412, 255
+  br i1 %cmp118.18, label %if.then146.18, label %lor.lhs.false120.18
 
-lor.lhs.false125.18:                              ; preds = %lor.lhs.false117.18
-  %add129.18 = add i32 %sub86.18, 127
-  %idxprom130.18 = sext i32 %add129.18 to i64
-  %arrayidx131.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.18
-  %412 = load i32, i32* %arrayidx131.18, align 4
-  %cmp132.18 = icmp eq i32 %412, 255
-  br i1 %cmp132.18, label %if.then151.18, label %lor.lhs.false134.18
+lor.lhs.false120.18:                              ; preds = %lor.lhs.false112.18
+  %add124.18 = add i32 %sub81.18, 127
+  %idxprom125.18 = sext i32 %add124.18 to i64
+  %arrayidx126.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.18
+  %413 = load i32, i32* %arrayidx126.18, align 4
+  %cmp127.18 = icmp eq i32 %413, 255
+  br i1 %cmp127.18, label %if.then146.18, label %lor.lhs.false129.18
 
-lor.lhs.false134.18:                              ; preds = %lor.lhs.false125.18
-  %413 = add nsw i64 %399, %indvars.iv.18
-  %arrayidx139.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %413
-  %414 = load i32, i32* %arrayidx139.18, align 4
-  %cmp140.18 = icmp eq i32 %414, 255
-  br i1 %cmp140.18, label %if.then151.18, label %lor.lhs.false142.18
+lor.lhs.false129.18:                              ; preds = %lor.lhs.false120.18
+  %414 = add nsw i64 %400, %indvars.iv.18
+  %arrayidx134.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %414
+  %415 = load i32, i32* %arrayidx134.18, align 4
+  %cmp135.18 = icmp eq i32 %415, 255
+  br i1 %cmp135.18, label %if.then146.18, label %lor.lhs.false137.18
 
-lor.lhs.false142.18:                              ; preds = %lor.lhs.false134.18
-  %add146.18 = add i32 %sub86.18, 129
-  %idxprom147.18 = sext i32 %add146.18 to i64
-  %arrayidx148.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.18
-  %415 = load i32, i32* %arrayidx148.18, align 4
-  %cmp149.18 = icmp eq i32 %415, 255
-  br i1 %cmp149.18, label %if.then151.18, label %if.else154.18
+lor.lhs.false137.18:                              ; preds = %lor.lhs.false129.18
+  %add141.18 = add i32 %sub81.18, 129
+  %idxprom142.18 = sext i32 %add141.18 to i64
+  %arrayidx143.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.18
+  %416 = load i32, i32* %arrayidx143.18, align 4
+  %cmp144.18 = icmp eq i32 %416, 255
+  br i1 %cmp144.18, label %if.then146.18, label %if.else149.18
 
-if.else154.18:                                    ; preds = %lor.lhs.false142.18
-  %arrayidx156.18 = getelementptr inbounds i8, i8* %., i64 %401
-  store i8 0, i8* %arrayidx156.18, align 1
-  br label %for.inc166.18
+if.else149.18:                                    ; preds = %lor.lhs.false137.18
+  %arrayidx151.18 = getelementptr inbounds i8, i8* %0, i64 %402
+  store i8 0, i8* %arrayidx151.18, align 1
+  br label %for.inc161.18
 
-if.then151.18:                                    ; preds = %lor.lhs.false142.18, %lor.lhs.false134.18, %lor.lhs.false125.18, %lor.lhs.false117.18, %lor.lhs.false109.18, %lor.lhs.false100.18, %lor.lhs.false92.18, %if.then83.18
-  %arrayidx153.18 = getelementptr inbounds i8, i8* %., i64 %401
-  store i8 -1, i8* %arrayidx153.18, align 1
-  br label %for.inc166.18
+if.then146.18:                                    ; preds = %lor.lhs.false137.18, %lor.lhs.false129.18, %lor.lhs.false120.18, %lor.lhs.false112.18, %lor.lhs.false104.18, %lor.lhs.false95.18, %lor.lhs.false87.18, %if.then78.18
+  %arrayidx148.18 = getelementptr inbounds i8, i8* %0, i64 %402
+  store i8 -1, i8* %arrayidx148.18, align 1
+  br label %for.inc161.18
 
-if.then75.18:                                     ; preds = %for.body61.18
-  %arrayidx77.18 = getelementptr inbounds i8, i8* %., i64 %401
-  store i8 0, i8* %arrayidx77.18, align 1
-  br label %for.inc166.18
+if.then70.18:                                     ; preds = %for.body56.18
+  %arrayidx72.18 = getelementptr inbounds i8, i8* %0, i64 %402
+  store i8 0, i8* %arrayidx72.18, align 1
+  br label %for.inc161.18
 
-for.inc166.18:                                    ; preds = %if.then75.18, %if.then151.18, %if.else154.18, %if.else158.18
+for.inc161.18:                                    ; preds = %if.then70.18, %if.then146.18, %if.else149.18, %if.else153.18
   %indvars.iv.next.18 = add nuw nsw i64 %indvars.iv.18, 1
   %lftr.wideiv.18 = trunc i64 %indvars.iv.next.18 to i32
   %exitcond.18 = icmp eq i32 %lftr.wideiv.18, %img_width
-  br i1 %exitcond.18, label %for.inc169.18, label %for.body61.18, !llvm.loop !5
+  br i1 %exitcond.18, label %for.inc164.18, label %for.body56.18, !llvm.loop !5
 
-for.inc169.18:                                    ; preds = %for.inc166.18
+for.inc164.18:                                    ; preds = %for.inc161.18
   %indvars.iv.next20.18 = add nsw i64 %indvars.iv19, 19
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.19
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.19
 
-for.body61.lr.ph.19:                              ; preds = %for.inc169.18
-  %416 = trunc i64 %indvars.iv.next20.18 to i32
-  %mul63.19 = shl nsw i32 %416, 7
-  %cmp67.19 = icmp eq i64 %indvars.iv.next20.18, %11
+for.body56.lr.ph.19:                              ; preds = %for.inc164.18
   %417 = trunc i64 %indvars.iv.next20.18 to i32
-  %sub84.19 = shl i32 %417, 7
-  %mul94.19 = add i32 %sub84.19, -128
-  %sub111.19 = add i32 %mul63.19, -1
-  %add119.19 = or i32 %mul63.19, 1
-  %mul136.19 = add i32 %sub84.19, 128
-  %418 = sext i32 %mul63.19 to i64
-  %419 = sext i32 %mul136.19 to i64
-  %420 = sext i32 %mul94.19 to i64
-  br label %for.body61.19
+  %mul58.19 = shl nsw i32 %417, 7
+  %cmp62.19 = icmp eq i64 %indvars.iv.next20.18, %12
+  %418 = trunc i64 %indvars.iv.next20.18 to i32
+  %sub79.19 = shl i32 %418, 7
+  %mul89.19 = add i32 %sub79.19, -128
+  %sub106.19 = add i32 %mul58.19, -1
+  %add114.19 = or i32 %mul58.19, 1
+  %mul131.19 = add i32 %sub79.19, 128
+  %419 = sext i32 %mul58.19 to i64
+  %420 = sext i32 %mul131.19 to i64
+  %421 = sext i32 %mul89.19 to i64
+  br label %for.body56.19
 
-for.body61.19:                                    ; preds = %for.inc166.19, %for.body61.lr.ph.19
-  %indvars.iv.19 = phi i64 [ 0, %for.body61.lr.ph.19 ], [ %indvars.iv.next.19, %for.inc166.19 ]
-  %421 = add nsw i64 %indvars.iv.19, %418
-  %cmp70.19 = icmp eq i64 %indvars.iv.19, 0
-  %or.cond1.19 = or i1 %cmp67.19, %cmp70.19
-  %cmp73.19 = icmp eq i64 %indvars.iv.19, %10
-  %or.cond2.19 = or i1 %cmp73.19, %or.cond1.19
-  br i1 %or.cond2.19, label %if.then75.19, label %if.else78.19
+for.body56.19:                                    ; preds = %for.inc161.19, %for.body56.lr.ph.19
+  %indvars.iv.19 = phi i64 [ 0, %for.body56.lr.ph.19 ], [ %indvars.iv.next.19, %for.inc161.19 ]
+  %422 = add nsw i64 %indvars.iv.19, %419
+  %cmp65.19 = icmp eq i64 %indvars.iv.19, 0
+  %or.cond1.19 = or i1 %cmp62.19, %cmp65.19
+  %cmp68.19 = icmp eq i64 %indvars.iv.19, %11
+  %or.cond2.19 = or i1 %cmp68.19, %or.cond1.19
+  br i1 %or.cond2.19, label %if.then70.19, label %if.else73.19
 
-if.else78.19:                                     ; preds = %for.body61.19
-  %arrayidx80.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %421
-  %422 = load i32, i32* %arrayidx80.19, align 4
-  %cmp81.19 = icmp eq i32 %422, 75
-  br i1 %cmp81.19, label %if.then83.19, label %if.else158.19
+if.else73.19:                                     ; preds = %for.body56.19
+  %arrayidx75.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %422
+  %423 = load i32, i32* %arrayidx75.19, align 4
+  %cmp76.19 = icmp eq i32 %423, 75
+  br i1 %cmp76.19, label %if.then78.19, label %if.else153.19
 
-if.else158.19:                                    ; preds = %if.else78.19
-  %conv161.19 = trunc i32 %422 to i8
-  %arrayidx163.19 = getelementptr inbounds i8, i8* %., i64 %421
-  store i8 %conv161.19, i8* %arrayidx163.19, align 1
-  br label %for.inc166.19
+if.else153.19:                                    ; preds = %if.else73.19
+  %conv156.19 = trunc i32 %423 to i8
+  %arrayidx158.19 = getelementptr inbounds i8, i8* %0, i64 %422
+  store i8 %conv156.19, i8* %arrayidx158.19, align 1
+  br label %for.inc161.19
 
-if.then83.19:                                     ; preds = %if.else78.19
-  %423 = trunc i64 %indvars.iv.19 to i32
-  %sub86.19 = add i32 %423, %sub84.19
-  %add87.19 = add i32 %sub86.19, -129
-  %idxprom88.19 = sext i32 %add87.19 to i64
-  %arrayidx89.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.19
-  %424 = load i32, i32* %arrayidx89.19, align 4
-  %cmp90.19 = icmp eq i32 %424, 255
-  br i1 %cmp90.19, label %if.then151.19, label %lor.lhs.false92.19
+if.then78.19:                                     ; preds = %if.else73.19
+  %424 = trunc i64 %indvars.iv.19 to i32
+  %sub81.19 = add i32 %424, %sub79.19
+  %add82.19 = add i32 %sub81.19, -129
+  %idxprom83.19 = sext i32 %add82.19 to i64
+  %arrayidx84.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.19
+  %425 = load i32, i32* %arrayidx84.19, align 4
+  %cmp85.19 = icmp eq i32 %425, 255
+  br i1 %cmp85.19, label %if.then146.19, label %lor.lhs.false87.19
 
-lor.lhs.false92.19:                               ; preds = %if.then83.19
-  %425 = add nsw i64 %420, %indvars.iv.19
-  %arrayidx97.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %425
-  %426 = load i32, i32* %arrayidx97.19, align 4
-  %cmp98.19 = icmp eq i32 %426, 255
-  br i1 %cmp98.19, label %if.then151.19, label %lor.lhs.false100.19
+lor.lhs.false87.19:                               ; preds = %if.then78.19
+  %426 = add nsw i64 %421, %indvars.iv.19
+  %arrayidx92.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %426
+  %427 = load i32, i32* %arrayidx92.19, align 4
+  %cmp93.19 = icmp eq i32 %427, 255
+  br i1 %cmp93.19, label %if.then146.19, label %lor.lhs.false95.19
 
-lor.lhs.false100.19:                              ; preds = %lor.lhs.false92.19
-  %add104.19 = add i32 %sub86.19, -127
-  %idxprom105.19 = sext i32 %add104.19 to i64
-  %arrayidx106.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.19
-  %427 = load i32, i32* %arrayidx106.19, align 4
-  %cmp107.19 = icmp eq i32 %427, 255
-  br i1 %cmp107.19, label %if.then151.19, label %lor.lhs.false109.19
+lor.lhs.false95.19:                               ; preds = %lor.lhs.false87.19
+  %add99.19 = add i32 %sub81.19, -127
+  %idxprom100.19 = sext i32 %add99.19 to i64
+  %arrayidx101.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.19
+  %428 = load i32, i32* %arrayidx101.19, align 4
+  %cmp102.19 = icmp eq i32 %428, 255
+  br i1 %cmp102.19, label %if.then146.19, label %lor.lhs.false104.19
 
-lor.lhs.false109.19:                              ; preds = %lor.lhs.false100.19
-  %428 = trunc i64 %indvars.iv.19 to i32
-  %add112.19 = add i32 %sub111.19, %428
-  %idxprom113.19 = sext i32 %add112.19 to i64
-  %arrayidx114.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.19
-  %429 = load i32, i32* %arrayidx114.19, align 4
-  %cmp115.19 = icmp eq i32 %429, 255
-  br i1 %cmp115.19, label %if.then151.19, label %lor.lhs.false117.19
+lor.lhs.false104.19:                              ; preds = %lor.lhs.false95.19
+  %429 = trunc i64 %indvars.iv.19 to i32
+  %add107.19 = add i32 %sub106.19, %429
+  %idxprom108.19 = sext i32 %add107.19 to i64
+  %arrayidx109.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.19
+  %430 = load i32, i32* %arrayidx109.19, align 4
+  %cmp110.19 = icmp eq i32 %430, 255
+  br i1 %cmp110.19, label %if.then146.19, label %lor.lhs.false112.19
 
-lor.lhs.false117.19:                              ; preds = %lor.lhs.false109.19
-  %430 = trunc i64 %indvars.iv.19 to i32
-  %add120.19 = add i32 %add119.19, %430
-  %idxprom121.19 = sext i32 %add120.19 to i64
-  %arrayidx122.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.19
-  %431 = load i32, i32* %arrayidx122.19, align 4
-  %cmp123.19 = icmp eq i32 %431, 255
-  br i1 %cmp123.19, label %if.then151.19, label %lor.lhs.false125.19
+lor.lhs.false112.19:                              ; preds = %lor.lhs.false104.19
+  %431 = trunc i64 %indvars.iv.19 to i32
+  %add115.19 = add i32 %add114.19, %431
+  %idxprom116.19 = sext i32 %add115.19 to i64
+  %arrayidx117.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.19
+  %432 = load i32, i32* %arrayidx117.19, align 4
+  %cmp118.19 = icmp eq i32 %432, 255
+  br i1 %cmp118.19, label %if.then146.19, label %lor.lhs.false120.19
 
-lor.lhs.false125.19:                              ; preds = %lor.lhs.false117.19
-  %add129.19 = add i32 %sub86.19, 127
-  %idxprom130.19 = sext i32 %add129.19 to i64
-  %arrayidx131.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.19
-  %432 = load i32, i32* %arrayidx131.19, align 4
-  %cmp132.19 = icmp eq i32 %432, 255
-  br i1 %cmp132.19, label %if.then151.19, label %lor.lhs.false134.19
+lor.lhs.false120.19:                              ; preds = %lor.lhs.false112.19
+  %add124.19 = add i32 %sub81.19, 127
+  %idxprom125.19 = sext i32 %add124.19 to i64
+  %arrayidx126.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.19
+  %433 = load i32, i32* %arrayidx126.19, align 4
+  %cmp127.19 = icmp eq i32 %433, 255
+  br i1 %cmp127.19, label %if.then146.19, label %lor.lhs.false129.19
 
-lor.lhs.false134.19:                              ; preds = %lor.lhs.false125.19
-  %433 = add nsw i64 %419, %indvars.iv.19
-  %arrayidx139.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %433
-  %434 = load i32, i32* %arrayidx139.19, align 4
-  %cmp140.19 = icmp eq i32 %434, 255
-  br i1 %cmp140.19, label %if.then151.19, label %lor.lhs.false142.19
+lor.lhs.false129.19:                              ; preds = %lor.lhs.false120.19
+  %434 = add nsw i64 %420, %indvars.iv.19
+  %arrayidx134.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %434
+  %435 = load i32, i32* %arrayidx134.19, align 4
+  %cmp135.19 = icmp eq i32 %435, 255
+  br i1 %cmp135.19, label %if.then146.19, label %lor.lhs.false137.19
 
-lor.lhs.false142.19:                              ; preds = %lor.lhs.false134.19
-  %add146.19 = add i32 %sub86.19, 129
-  %idxprom147.19 = sext i32 %add146.19 to i64
-  %arrayidx148.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.19
-  %435 = load i32, i32* %arrayidx148.19, align 4
-  %cmp149.19 = icmp eq i32 %435, 255
-  br i1 %cmp149.19, label %if.then151.19, label %if.else154.19
+lor.lhs.false137.19:                              ; preds = %lor.lhs.false129.19
+  %add141.19 = add i32 %sub81.19, 129
+  %idxprom142.19 = sext i32 %add141.19 to i64
+  %arrayidx143.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.19
+  %436 = load i32, i32* %arrayidx143.19, align 4
+  %cmp144.19 = icmp eq i32 %436, 255
+  br i1 %cmp144.19, label %if.then146.19, label %if.else149.19
 
-if.else154.19:                                    ; preds = %lor.lhs.false142.19
-  %arrayidx156.19 = getelementptr inbounds i8, i8* %., i64 %421
-  store i8 0, i8* %arrayidx156.19, align 1
-  br label %for.inc166.19
+if.else149.19:                                    ; preds = %lor.lhs.false137.19
+  %arrayidx151.19 = getelementptr inbounds i8, i8* %0, i64 %422
+  store i8 0, i8* %arrayidx151.19, align 1
+  br label %for.inc161.19
 
-if.then151.19:                                    ; preds = %lor.lhs.false142.19, %lor.lhs.false134.19, %lor.lhs.false125.19, %lor.lhs.false117.19, %lor.lhs.false109.19, %lor.lhs.false100.19, %lor.lhs.false92.19, %if.then83.19
-  %arrayidx153.19 = getelementptr inbounds i8, i8* %., i64 %421
-  store i8 -1, i8* %arrayidx153.19, align 1
-  br label %for.inc166.19
+if.then146.19:                                    ; preds = %lor.lhs.false137.19, %lor.lhs.false129.19, %lor.lhs.false120.19, %lor.lhs.false112.19, %lor.lhs.false104.19, %lor.lhs.false95.19, %lor.lhs.false87.19, %if.then78.19
+  %arrayidx148.19 = getelementptr inbounds i8, i8* %0, i64 %422
+  store i8 -1, i8* %arrayidx148.19, align 1
+  br label %for.inc161.19
 
-if.then75.19:                                     ; preds = %for.body61.19
-  %arrayidx77.19 = getelementptr inbounds i8, i8* %., i64 %421
-  store i8 0, i8* %arrayidx77.19, align 1
-  br label %for.inc166.19
+if.then70.19:                                     ; preds = %for.body56.19
+  %arrayidx72.19 = getelementptr inbounds i8, i8* %0, i64 %422
+  store i8 0, i8* %arrayidx72.19, align 1
+  br label %for.inc161.19
 
-for.inc166.19:                                    ; preds = %if.then75.19, %if.then151.19, %if.else154.19, %if.else158.19
+for.inc161.19:                                    ; preds = %if.then70.19, %if.then146.19, %if.else149.19, %if.else153.19
   %indvars.iv.next.19 = add nuw nsw i64 %indvars.iv.19, 1
   %lftr.wideiv.19 = trunc i64 %indvars.iv.next.19 to i32
   %exitcond.19 = icmp eq i32 %lftr.wideiv.19, %img_width
-  br i1 %exitcond.19, label %for.inc169.19, label %for.body61.19, !llvm.loop !5
+  br i1 %exitcond.19, label %for.inc164.19, label %for.body56.19, !llvm.loop !5
 
-for.inc169.19:                                    ; preds = %for.inc166.19
+for.inc164.19:                                    ; preds = %for.inc161.19
   %indvars.iv.next20.19 = add nsw i64 %indvars.iv19, 20
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.20
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.20
 
-for.body61.lr.ph.20:                              ; preds = %for.inc169.19
-  %436 = trunc i64 %indvars.iv.next20.19 to i32
-  %mul63.20 = shl nsw i32 %436, 7
-  %cmp67.20 = icmp eq i64 %indvars.iv.next20.19, %11
+for.body56.lr.ph.20:                              ; preds = %for.inc164.19
   %437 = trunc i64 %indvars.iv.next20.19 to i32
-  %sub84.20 = shl i32 %437, 7
-  %mul94.20 = add i32 %sub84.20, -128
-  %sub111.20 = add i32 %mul63.20, -1
-  %add119.20 = or i32 %mul63.20, 1
-  %mul136.20 = add i32 %sub84.20, 128
-  %438 = sext i32 %mul63.20 to i64
-  %439 = sext i32 %mul136.20 to i64
-  %440 = sext i32 %mul94.20 to i64
-  br label %for.body61.20
+  %mul58.20 = shl nsw i32 %437, 7
+  %cmp62.20 = icmp eq i64 %indvars.iv.next20.19, %12
+  %438 = trunc i64 %indvars.iv.next20.19 to i32
+  %sub79.20 = shl i32 %438, 7
+  %mul89.20 = add i32 %sub79.20, -128
+  %sub106.20 = add i32 %mul58.20, -1
+  %add114.20 = or i32 %mul58.20, 1
+  %mul131.20 = add i32 %sub79.20, 128
+  %439 = sext i32 %mul58.20 to i64
+  %440 = sext i32 %mul131.20 to i64
+  %441 = sext i32 %mul89.20 to i64
+  br label %for.body56.20
 
-for.body61.20:                                    ; preds = %for.inc166.20, %for.body61.lr.ph.20
-  %indvars.iv.20 = phi i64 [ 0, %for.body61.lr.ph.20 ], [ %indvars.iv.next.20, %for.inc166.20 ]
-  %441 = add nsw i64 %indvars.iv.20, %438
-  %cmp70.20 = icmp eq i64 %indvars.iv.20, 0
-  %or.cond1.20 = or i1 %cmp67.20, %cmp70.20
-  %cmp73.20 = icmp eq i64 %indvars.iv.20, %10
-  %or.cond2.20 = or i1 %cmp73.20, %or.cond1.20
-  br i1 %or.cond2.20, label %if.then75.20, label %if.else78.20
+for.body56.20:                                    ; preds = %for.inc161.20, %for.body56.lr.ph.20
+  %indvars.iv.20 = phi i64 [ 0, %for.body56.lr.ph.20 ], [ %indvars.iv.next.20, %for.inc161.20 ]
+  %442 = add nsw i64 %indvars.iv.20, %439
+  %cmp65.20 = icmp eq i64 %indvars.iv.20, 0
+  %or.cond1.20 = or i1 %cmp62.20, %cmp65.20
+  %cmp68.20 = icmp eq i64 %indvars.iv.20, %11
+  %or.cond2.20 = or i1 %cmp68.20, %or.cond1.20
+  br i1 %or.cond2.20, label %if.then70.20, label %if.else73.20
 
-if.else78.20:                                     ; preds = %for.body61.20
-  %arrayidx80.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %441
-  %442 = load i32, i32* %arrayidx80.20, align 4
-  %cmp81.20 = icmp eq i32 %442, 75
-  br i1 %cmp81.20, label %if.then83.20, label %if.else158.20
+if.else73.20:                                     ; preds = %for.body56.20
+  %arrayidx75.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %442
+  %443 = load i32, i32* %arrayidx75.20, align 4
+  %cmp76.20 = icmp eq i32 %443, 75
+  br i1 %cmp76.20, label %if.then78.20, label %if.else153.20
 
-if.else158.20:                                    ; preds = %if.else78.20
-  %conv161.20 = trunc i32 %442 to i8
-  %arrayidx163.20 = getelementptr inbounds i8, i8* %., i64 %441
-  store i8 %conv161.20, i8* %arrayidx163.20, align 1
-  br label %for.inc166.20
+if.else153.20:                                    ; preds = %if.else73.20
+  %conv156.20 = trunc i32 %443 to i8
+  %arrayidx158.20 = getelementptr inbounds i8, i8* %0, i64 %442
+  store i8 %conv156.20, i8* %arrayidx158.20, align 1
+  br label %for.inc161.20
 
-if.then83.20:                                     ; preds = %if.else78.20
-  %443 = trunc i64 %indvars.iv.20 to i32
-  %sub86.20 = add i32 %443, %sub84.20
-  %add87.20 = add i32 %sub86.20, -129
-  %idxprom88.20 = sext i32 %add87.20 to i64
-  %arrayidx89.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.20
-  %444 = load i32, i32* %arrayidx89.20, align 4
-  %cmp90.20 = icmp eq i32 %444, 255
-  br i1 %cmp90.20, label %if.then151.20, label %lor.lhs.false92.20
+if.then78.20:                                     ; preds = %if.else73.20
+  %444 = trunc i64 %indvars.iv.20 to i32
+  %sub81.20 = add i32 %444, %sub79.20
+  %add82.20 = add i32 %sub81.20, -129
+  %idxprom83.20 = sext i32 %add82.20 to i64
+  %arrayidx84.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.20
+  %445 = load i32, i32* %arrayidx84.20, align 4
+  %cmp85.20 = icmp eq i32 %445, 255
+  br i1 %cmp85.20, label %if.then146.20, label %lor.lhs.false87.20
 
-lor.lhs.false92.20:                               ; preds = %if.then83.20
-  %445 = add nsw i64 %440, %indvars.iv.20
-  %arrayidx97.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %445
-  %446 = load i32, i32* %arrayidx97.20, align 4
-  %cmp98.20 = icmp eq i32 %446, 255
-  br i1 %cmp98.20, label %if.then151.20, label %lor.lhs.false100.20
+lor.lhs.false87.20:                               ; preds = %if.then78.20
+  %446 = add nsw i64 %441, %indvars.iv.20
+  %arrayidx92.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %446
+  %447 = load i32, i32* %arrayidx92.20, align 4
+  %cmp93.20 = icmp eq i32 %447, 255
+  br i1 %cmp93.20, label %if.then146.20, label %lor.lhs.false95.20
 
-lor.lhs.false100.20:                              ; preds = %lor.lhs.false92.20
-  %add104.20 = add i32 %sub86.20, -127
-  %idxprom105.20 = sext i32 %add104.20 to i64
-  %arrayidx106.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.20
-  %447 = load i32, i32* %arrayidx106.20, align 4
-  %cmp107.20 = icmp eq i32 %447, 255
-  br i1 %cmp107.20, label %if.then151.20, label %lor.lhs.false109.20
+lor.lhs.false95.20:                               ; preds = %lor.lhs.false87.20
+  %add99.20 = add i32 %sub81.20, -127
+  %idxprom100.20 = sext i32 %add99.20 to i64
+  %arrayidx101.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.20
+  %448 = load i32, i32* %arrayidx101.20, align 4
+  %cmp102.20 = icmp eq i32 %448, 255
+  br i1 %cmp102.20, label %if.then146.20, label %lor.lhs.false104.20
 
-lor.lhs.false109.20:                              ; preds = %lor.lhs.false100.20
-  %448 = trunc i64 %indvars.iv.20 to i32
-  %add112.20 = add i32 %sub111.20, %448
-  %idxprom113.20 = sext i32 %add112.20 to i64
-  %arrayidx114.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.20
-  %449 = load i32, i32* %arrayidx114.20, align 4
-  %cmp115.20 = icmp eq i32 %449, 255
-  br i1 %cmp115.20, label %if.then151.20, label %lor.lhs.false117.20
+lor.lhs.false104.20:                              ; preds = %lor.lhs.false95.20
+  %449 = trunc i64 %indvars.iv.20 to i32
+  %add107.20 = add i32 %sub106.20, %449
+  %idxprom108.20 = sext i32 %add107.20 to i64
+  %arrayidx109.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.20
+  %450 = load i32, i32* %arrayidx109.20, align 4
+  %cmp110.20 = icmp eq i32 %450, 255
+  br i1 %cmp110.20, label %if.then146.20, label %lor.lhs.false112.20
 
-lor.lhs.false117.20:                              ; preds = %lor.lhs.false109.20
-  %450 = trunc i64 %indvars.iv.20 to i32
-  %add120.20 = add i32 %add119.20, %450
-  %idxprom121.20 = sext i32 %add120.20 to i64
-  %arrayidx122.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.20
-  %451 = load i32, i32* %arrayidx122.20, align 4
-  %cmp123.20 = icmp eq i32 %451, 255
-  br i1 %cmp123.20, label %if.then151.20, label %lor.lhs.false125.20
+lor.lhs.false112.20:                              ; preds = %lor.lhs.false104.20
+  %451 = trunc i64 %indvars.iv.20 to i32
+  %add115.20 = add i32 %add114.20, %451
+  %idxprom116.20 = sext i32 %add115.20 to i64
+  %arrayidx117.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.20
+  %452 = load i32, i32* %arrayidx117.20, align 4
+  %cmp118.20 = icmp eq i32 %452, 255
+  br i1 %cmp118.20, label %if.then146.20, label %lor.lhs.false120.20
 
-lor.lhs.false125.20:                              ; preds = %lor.lhs.false117.20
-  %add129.20 = add i32 %sub86.20, 127
-  %idxprom130.20 = sext i32 %add129.20 to i64
-  %arrayidx131.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.20
-  %452 = load i32, i32* %arrayidx131.20, align 4
-  %cmp132.20 = icmp eq i32 %452, 255
-  br i1 %cmp132.20, label %if.then151.20, label %lor.lhs.false134.20
+lor.lhs.false120.20:                              ; preds = %lor.lhs.false112.20
+  %add124.20 = add i32 %sub81.20, 127
+  %idxprom125.20 = sext i32 %add124.20 to i64
+  %arrayidx126.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.20
+  %453 = load i32, i32* %arrayidx126.20, align 4
+  %cmp127.20 = icmp eq i32 %453, 255
+  br i1 %cmp127.20, label %if.then146.20, label %lor.lhs.false129.20
 
-lor.lhs.false134.20:                              ; preds = %lor.lhs.false125.20
-  %453 = add nsw i64 %439, %indvars.iv.20
-  %arrayidx139.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %453
-  %454 = load i32, i32* %arrayidx139.20, align 4
-  %cmp140.20 = icmp eq i32 %454, 255
-  br i1 %cmp140.20, label %if.then151.20, label %lor.lhs.false142.20
+lor.lhs.false129.20:                              ; preds = %lor.lhs.false120.20
+  %454 = add nsw i64 %440, %indvars.iv.20
+  %arrayidx134.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %454
+  %455 = load i32, i32* %arrayidx134.20, align 4
+  %cmp135.20 = icmp eq i32 %455, 255
+  br i1 %cmp135.20, label %if.then146.20, label %lor.lhs.false137.20
 
-lor.lhs.false142.20:                              ; preds = %lor.lhs.false134.20
-  %add146.20 = add i32 %sub86.20, 129
-  %idxprom147.20 = sext i32 %add146.20 to i64
-  %arrayidx148.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.20
-  %455 = load i32, i32* %arrayidx148.20, align 4
-  %cmp149.20 = icmp eq i32 %455, 255
-  br i1 %cmp149.20, label %if.then151.20, label %if.else154.20
+lor.lhs.false137.20:                              ; preds = %lor.lhs.false129.20
+  %add141.20 = add i32 %sub81.20, 129
+  %idxprom142.20 = sext i32 %add141.20 to i64
+  %arrayidx143.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.20
+  %456 = load i32, i32* %arrayidx143.20, align 4
+  %cmp144.20 = icmp eq i32 %456, 255
+  br i1 %cmp144.20, label %if.then146.20, label %if.else149.20
 
-if.else154.20:                                    ; preds = %lor.lhs.false142.20
-  %arrayidx156.20 = getelementptr inbounds i8, i8* %., i64 %441
-  store i8 0, i8* %arrayidx156.20, align 1
-  br label %for.inc166.20
+if.else149.20:                                    ; preds = %lor.lhs.false137.20
+  %arrayidx151.20 = getelementptr inbounds i8, i8* %0, i64 %442
+  store i8 0, i8* %arrayidx151.20, align 1
+  br label %for.inc161.20
 
-if.then151.20:                                    ; preds = %lor.lhs.false142.20, %lor.lhs.false134.20, %lor.lhs.false125.20, %lor.lhs.false117.20, %lor.lhs.false109.20, %lor.lhs.false100.20, %lor.lhs.false92.20, %if.then83.20
-  %arrayidx153.20 = getelementptr inbounds i8, i8* %., i64 %441
-  store i8 -1, i8* %arrayidx153.20, align 1
-  br label %for.inc166.20
+if.then146.20:                                    ; preds = %lor.lhs.false137.20, %lor.lhs.false129.20, %lor.lhs.false120.20, %lor.lhs.false112.20, %lor.lhs.false104.20, %lor.lhs.false95.20, %lor.lhs.false87.20, %if.then78.20
+  %arrayidx148.20 = getelementptr inbounds i8, i8* %0, i64 %442
+  store i8 -1, i8* %arrayidx148.20, align 1
+  br label %for.inc161.20
 
-if.then75.20:                                     ; preds = %for.body61.20
-  %arrayidx77.20 = getelementptr inbounds i8, i8* %., i64 %441
-  store i8 0, i8* %arrayidx77.20, align 1
-  br label %for.inc166.20
+if.then70.20:                                     ; preds = %for.body56.20
+  %arrayidx72.20 = getelementptr inbounds i8, i8* %0, i64 %442
+  store i8 0, i8* %arrayidx72.20, align 1
+  br label %for.inc161.20
 
-for.inc166.20:                                    ; preds = %if.then75.20, %if.then151.20, %if.else154.20, %if.else158.20
+for.inc161.20:                                    ; preds = %if.then70.20, %if.then146.20, %if.else149.20, %if.else153.20
   %indvars.iv.next.20 = add nuw nsw i64 %indvars.iv.20, 1
   %lftr.wideiv.20 = trunc i64 %indvars.iv.next.20 to i32
   %exitcond.20 = icmp eq i32 %lftr.wideiv.20, %img_width
-  br i1 %exitcond.20, label %for.inc169.20, label %for.body61.20, !llvm.loop !5
+  br i1 %exitcond.20, label %for.inc164.20, label %for.body56.20, !llvm.loop !5
 
-for.inc169.20:                                    ; preds = %for.inc166.20
+for.inc164.20:                                    ; preds = %for.inc161.20
   %indvars.iv.next20.20 = add nsw i64 %indvars.iv19, 21
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.21
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.21
 
-for.body61.lr.ph.21:                              ; preds = %for.inc169.20
-  %456 = trunc i64 %indvars.iv.next20.20 to i32
-  %mul63.21 = shl nsw i32 %456, 7
-  %cmp67.21 = icmp eq i64 %indvars.iv.next20.20, %11
+for.body56.lr.ph.21:                              ; preds = %for.inc164.20
   %457 = trunc i64 %indvars.iv.next20.20 to i32
-  %sub84.21 = shl i32 %457, 7
-  %mul94.21 = add i32 %sub84.21, -128
-  %sub111.21 = add i32 %mul63.21, -1
-  %add119.21 = or i32 %mul63.21, 1
-  %mul136.21 = add i32 %sub84.21, 128
-  %458 = sext i32 %mul63.21 to i64
-  %459 = sext i32 %mul136.21 to i64
-  %460 = sext i32 %mul94.21 to i64
-  br label %for.body61.21
+  %mul58.21 = shl nsw i32 %457, 7
+  %cmp62.21 = icmp eq i64 %indvars.iv.next20.20, %12
+  %458 = trunc i64 %indvars.iv.next20.20 to i32
+  %sub79.21 = shl i32 %458, 7
+  %mul89.21 = add i32 %sub79.21, -128
+  %sub106.21 = add i32 %mul58.21, -1
+  %add114.21 = or i32 %mul58.21, 1
+  %mul131.21 = add i32 %sub79.21, 128
+  %459 = sext i32 %mul58.21 to i64
+  %460 = sext i32 %mul131.21 to i64
+  %461 = sext i32 %mul89.21 to i64
+  br label %for.body56.21
 
-for.body61.21:                                    ; preds = %for.inc166.21, %for.body61.lr.ph.21
-  %indvars.iv.21 = phi i64 [ 0, %for.body61.lr.ph.21 ], [ %indvars.iv.next.21, %for.inc166.21 ]
-  %461 = add nsw i64 %indvars.iv.21, %458
-  %cmp70.21 = icmp eq i64 %indvars.iv.21, 0
-  %or.cond1.21 = or i1 %cmp67.21, %cmp70.21
-  %cmp73.21 = icmp eq i64 %indvars.iv.21, %10
-  %or.cond2.21 = or i1 %cmp73.21, %or.cond1.21
-  br i1 %or.cond2.21, label %if.then75.21, label %if.else78.21
+for.body56.21:                                    ; preds = %for.inc161.21, %for.body56.lr.ph.21
+  %indvars.iv.21 = phi i64 [ 0, %for.body56.lr.ph.21 ], [ %indvars.iv.next.21, %for.inc161.21 ]
+  %462 = add nsw i64 %indvars.iv.21, %459
+  %cmp65.21 = icmp eq i64 %indvars.iv.21, 0
+  %or.cond1.21 = or i1 %cmp62.21, %cmp65.21
+  %cmp68.21 = icmp eq i64 %indvars.iv.21, %11
+  %or.cond2.21 = or i1 %cmp68.21, %or.cond1.21
+  br i1 %or.cond2.21, label %if.then70.21, label %if.else73.21
 
-if.else78.21:                                     ; preds = %for.body61.21
-  %arrayidx80.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %461
-  %462 = load i32, i32* %arrayidx80.21, align 4
-  %cmp81.21 = icmp eq i32 %462, 75
-  br i1 %cmp81.21, label %if.then83.21, label %if.else158.21
+if.else73.21:                                     ; preds = %for.body56.21
+  %arrayidx75.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %462
+  %463 = load i32, i32* %arrayidx75.21, align 4
+  %cmp76.21 = icmp eq i32 %463, 75
+  br i1 %cmp76.21, label %if.then78.21, label %if.else153.21
 
-if.else158.21:                                    ; preds = %if.else78.21
-  %conv161.21 = trunc i32 %462 to i8
-  %arrayidx163.21 = getelementptr inbounds i8, i8* %., i64 %461
-  store i8 %conv161.21, i8* %arrayidx163.21, align 1
-  br label %for.inc166.21
+if.else153.21:                                    ; preds = %if.else73.21
+  %conv156.21 = trunc i32 %463 to i8
+  %arrayidx158.21 = getelementptr inbounds i8, i8* %0, i64 %462
+  store i8 %conv156.21, i8* %arrayidx158.21, align 1
+  br label %for.inc161.21
 
-if.then83.21:                                     ; preds = %if.else78.21
-  %463 = trunc i64 %indvars.iv.21 to i32
-  %sub86.21 = add i32 %463, %sub84.21
-  %add87.21 = add i32 %sub86.21, -129
-  %idxprom88.21 = sext i32 %add87.21 to i64
-  %arrayidx89.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.21
-  %464 = load i32, i32* %arrayidx89.21, align 4
-  %cmp90.21 = icmp eq i32 %464, 255
-  br i1 %cmp90.21, label %if.then151.21, label %lor.lhs.false92.21
+if.then78.21:                                     ; preds = %if.else73.21
+  %464 = trunc i64 %indvars.iv.21 to i32
+  %sub81.21 = add i32 %464, %sub79.21
+  %add82.21 = add i32 %sub81.21, -129
+  %idxprom83.21 = sext i32 %add82.21 to i64
+  %arrayidx84.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.21
+  %465 = load i32, i32* %arrayidx84.21, align 4
+  %cmp85.21 = icmp eq i32 %465, 255
+  br i1 %cmp85.21, label %if.then146.21, label %lor.lhs.false87.21
 
-lor.lhs.false92.21:                               ; preds = %if.then83.21
-  %465 = add nsw i64 %460, %indvars.iv.21
-  %arrayidx97.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %465
-  %466 = load i32, i32* %arrayidx97.21, align 4
-  %cmp98.21 = icmp eq i32 %466, 255
-  br i1 %cmp98.21, label %if.then151.21, label %lor.lhs.false100.21
+lor.lhs.false87.21:                               ; preds = %if.then78.21
+  %466 = add nsw i64 %461, %indvars.iv.21
+  %arrayidx92.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %466
+  %467 = load i32, i32* %arrayidx92.21, align 4
+  %cmp93.21 = icmp eq i32 %467, 255
+  br i1 %cmp93.21, label %if.then146.21, label %lor.lhs.false95.21
 
-lor.lhs.false100.21:                              ; preds = %lor.lhs.false92.21
-  %add104.21 = add i32 %sub86.21, -127
-  %idxprom105.21 = sext i32 %add104.21 to i64
-  %arrayidx106.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.21
-  %467 = load i32, i32* %arrayidx106.21, align 4
-  %cmp107.21 = icmp eq i32 %467, 255
-  br i1 %cmp107.21, label %if.then151.21, label %lor.lhs.false109.21
+lor.lhs.false95.21:                               ; preds = %lor.lhs.false87.21
+  %add99.21 = add i32 %sub81.21, -127
+  %idxprom100.21 = sext i32 %add99.21 to i64
+  %arrayidx101.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.21
+  %468 = load i32, i32* %arrayidx101.21, align 4
+  %cmp102.21 = icmp eq i32 %468, 255
+  br i1 %cmp102.21, label %if.then146.21, label %lor.lhs.false104.21
 
-lor.lhs.false109.21:                              ; preds = %lor.lhs.false100.21
-  %468 = trunc i64 %indvars.iv.21 to i32
-  %add112.21 = add i32 %sub111.21, %468
-  %idxprom113.21 = sext i32 %add112.21 to i64
-  %arrayidx114.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.21
-  %469 = load i32, i32* %arrayidx114.21, align 4
-  %cmp115.21 = icmp eq i32 %469, 255
-  br i1 %cmp115.21, label %if.then151.21, label %lor.lhs.false117.21
+lor.lhs.false104.21:                              ; preds = %lor.lhs.false95.21
+  %469 = trunc i64 %indvars.iv.21 to i32
+  %add107.21 = add i32 %sub106.21, %469
+  %idxprom108.21 = sext i32 %add107.21 to i64
+  %arrayidx109.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.21
+  %470 = load i32, i32* %arrayidx109.21, align 4
+  %cmp110.21 = icmp eq i32 %470, 255
+  br i1 %cmp110.21, label %if.then146.21, label %lor.lhs.false112.21
 
-lor.lhs.false117.21:                              ; preds = %lor.lhs.false109.21
-  %470 = trunc i64 %indvars.iv.21 to i32
-  %add120.21 = add i32 %add119.21, %470
-  %idxprom121.21 = sext i32 %add120.21 to i64
-  %arrayidx122.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.21
-  %471 = load i32, i32* %arrayidx122.21, align 4
-  %cmp123.21 = icmp eq i32 %471, 255
-  br i1 %cmp123.21, label %if.then151.21, label %lor.lhs.false125.21
+lor.lhs.false112.21:                              ; preds = %lor.lhs.false104.21
+  %471 = trunc i64 %indvars.iv.21 to i32
+  %add115.21 = add i32 %add114.21, %471
+  %idxprom116.21 = sext i32 %add115.21 to i64
+  %arrayidx117.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.21
+  %472 = load i32, i32* %arrayidx117.21, align 4
+  %cmp118.21 = icmp eq i32 %472, 255
+  br i1 %cmp118.21, label %if.then146.21, label %lor.lhs.false120.21
 
-lor.lhs.false125.21:                              ; preds = %lor.lhs.false117.21
-  %add129.21 = add i32 %sub86.21, 127
-  %idxprom130.21 = sext i32 %add129.21 to i64
-  %arrayidx131.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.21
-  %472 = load i32, i32* %arrayidx131.21, align 4
-  %cmp132.21 = icmp eq i32 %472, 255
-  br i1 %cmp132.21, label %if.then151.21, label %lor.lhs.false134.21
+lor.lhs.false120.21:                              ; preds = %lor.lhs.false112.21
+  %add124.21 = add i32 %sub81.21, 127
+  %idxprom125.21 = sext i32 %add124.21 to i64
+  %arrayidx126.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.21
+  %473 = load i32, i32* %arrayidx126.21, align 4
+  %cmp127.21 = icmp eq i32 %473, 255
+  br i1 %cmp127.21, label %if.then146.21, label %lor.lhs.false129.21
 
-lor.lhs.false134.21:                              ; preds = %lor.lhs.false125.21
-  %473 = add nsw i64 %459, %indvars.iv.21
-  %arrayidx139.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %473
-  %474 = load i32, i32* %arrayidx139.21, align 4
-  %cmp140.21 = icmp eq i32 %474, 255
-  br i1 %cmp140.21, label %if.then151.21, label %lor.lhs.false142.21
+lor.lhs.false129.21:                              ; preds = %lor.lhs.false120.21
+  %474 = add nsw i64 %460, %indvars.iv.21
+  %arrayidx134.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %474
+  %475 = load i32, i32* %arrayidx134.21, align 4
+  %cmp135.21 = icmp eq i32 %475, 255
+  br i1 %cmp135.21, label %if.then146.21, label %lor.lhs.false137.21
 
-lor.lhs.false142.21:                              ; preds = %lor.lhs.false134.21
-  %add146.21 = add i32 %sub86.21, 129
-  %idxprom147.21 = sext i32 %add146.21 to i64
-  %arrayidx148.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.21
-  %475 = load i32, i32* %arrayidx148.21, align 4
-  %cmp149.21 = icmp eq i32 %475, 255
-  br i1 %cmp149.21, label %if.then151.21, label %if.else154.21
+lor.lhs.false137.21:                              ; preds = %lor.lhs.false129.21
+  %add141.21 = add i32 %sub81.21, 129
+  %idxprom142.21 = sext i32 %add141.21 to i64
+  %arrayidx143.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.21
+  %476 = load i32, i32* %arrayidx143.21, align 4
+  %cmp144.21 = icmp eq i32 %476, 255
+  br i1 %cmp144.21, label %if.then146.21, label %if.else149.21
 
-if.else154.21:                                    ; preds = %lor.lhs.false142.21
-  %arrayidx156.21 = getelementptr inbounds i8, i8* %., i64 %461
-  store i8 0, i8* %arrayidx156.21, align 1
-  br label %for.inc166.21
+if.else149.21:                                    ; preds = %lor.lhs.false137.21
+  %arrayidx151.21 = getelementptr inbounds i8, i8* %0, i64 %462
+  store i8 0, i8* %arrayidx151.21, align 1
+  br label %for.inc161.21
 
-if.then151.21:                                    ; preds = %lor.lhs.false142.21, %lor.lhs.false134.21, %lor.lhs.false125.21, %lor.lhs.false117.21, %lor.lhs.false109.21, %lor.lhs.false100.21, %lor.lhs.false92.21, %if.then83.21
-  %arrayidx153.21 = getelementptr inbounds i8, i8* %., i64 %461
-  store i8 -1, i8* %arrayidx153.21, align 1
-  br label %for.inc166.21
+if.then146.21:                                    ; preds = %lor.lhs.false137.21, %lor.lhs.false129.21, %lor.lhs.false120.21, %lor.lhs.false112.21, %lor.lhs.false104.21, %lor.lhs.false95.21, %lor.lhs.false87.21, %if.then78.21
+  %arrayidx148.21 = getelementptr inbounds i8, i8* %0, i64 %462
+  store i8 -1, i8* %arrayidx148.21, align 1
+  br label %for.inc161.21
 
-if.then75.21:                                     ; preds = %for.body61.21
-  %arrayidx77.21 = getelementptr inbounds i8, i8* %., i64 %461
-  store i8 0, i8* %arrayidx77.21, align 1
-  br label %for.inc166.21
+if.then70.21:                                     ; preds = %for.body56.21
+  %arrayidx72.21 = getelementptr inbounds i8, i8* %0, i64 %462
+  store i8 0, i8* %arrayidx72.21, align 1
+  br label %for.inc161.21
 
-for.inc166.21:                                    ; preds = %if.then75.21, %if.then151.21, %if.else154.21, %if.else158.21
+for.inc161.21:                                    ; preds = %if.then70.21, %if.then146.21, %if.else149.21, %if.else153.21
   %indvars.iv.next.21 = add nuw nsw i64 %indvars.iv.21, 1
   %lftr.wideiv.21 = trunc i64 %indvars.iv.next.21 to i32
   %exitcond.21 = icmp eq i32 %lftr.wideiv.21, %img_width
-  br i1 %exitcond.21, label %for.inc169.21, label %for.body61.21, !llvm.loop !5
+  br i1 %exitcond.21, label %for.inc164.21, label %for.body56.21, !llvm.loop !5
 
-for.inc169.21:                                    ; preds = %for.inc166.21
+for.inc164.21:                                    ; preds = %for.inc161.21
   %indvars.iv.next20.21 = add nsw i64 %indvars.iv19, 22
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.22
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.22
 
-for.body61.lr.ph.22:                              ; preds = %for.inc169.21
-  %476 = trunc i64 %indvars.iv.next20.21 to i32
-  %mul63.22 = shl nsw i32 %476, 7
-  %cmp67.22 = icmp eq i64 %indvars.iv.next20.21, %11
+for.body56.lr.ph.22:                              ; preds = %for.inc164.21
   %477 = trunc i64 %indvars.iv.next20.21 to i32
-  %sub84.22 = shl i32 %477, 7
-  %mul94.22 = add i32 %sub84.22, -128
-  %sub111.22 = add i32 %mul63.22, -1
-  %add119.22 = or i32 %mul63.22, 1
-  %mul136.22 = add i32 %sub84.22, 128
-  %478 = sext i32 %mul63.22 to i64
-  %479 = sext i32 %mul136.22 to i64
-  %480 = sext i32 %mul94.22 to i64
-  br label %for.body61.22
+  %mul58.22 = shl nsw i32 %477, 7
+  %cmp62.22 = icmp eq i64 %indvars.iv.next20.21, %12
+  %478 = trunc i64 %indvars.iv.next20.21 to i32
+  %sub79.22 = shl i32 %478, 7
+  %mul89.22 = add i32 %sub79.22, -128
+  %sub106.22 = add i32 %mul58.22, -1
+  %add114.22 = or i32 %mul58.22, 1
+  %mul131.22 = add i32 %sub79.22, 128
+  %479 = sext i32 %mul58.22 to i64
+  %480 = sext i32 %mul131.22 to i64
+  %481 = sext i32 %mul89.22 to i64
+  br label %for.body56.22
 
-for.body61.22:                                    ; preds = %for.inc166.22, %for.body61.lr.ph.22
-  %indvars.iv.22 = phi i64 [ 0, %for.body61.lr.ph.22 ], [ %indvars.iv.next.22, %for.inc166.22 ]
-  %481 = add nsw i64 %indvars.iv.22, %478
-  %cmp70.22 = icmp eq i64 %indvars.iv.22, 0
-  %or.cond1.22 = or i1 %cmp67.22, %cmp70.22
-  %cmp73.22 = icmp eq i64 %indvars.iv.22, %10
-  %or.cond2.22 = or i1 %cmp73.22, %or.cond1.22
-  br i1 %or.cond2.22, label %if.then75.22, label %if.else78.22
+for.body56.22:                                    ; preds = %for.inc161.22, %for.body56.lr.ph.22
+  %indvars.iv.22 = phi i64 [ 0, %for.body56.lr.ph.22 ], [ %indvars.iv.next.22, %for.inc161.22 ]
+  %482 = add nsw i64 %indvars.iv.22, %479
+  %cmp65.22 = icmp eq i64 %indvars.iv.22, 0
+  %or.cond1.22 = or i1 %cmp62.22, %cmp65.22
+  %cmp68.22 = icmp eq i64 %indvars.iv.22, %11
+  %or.cond2.22 = or i1 %cmp68.22, %or.cond1.22
+  br i1 %or.cond2.22, label %if.then70.22, label %if.else73.22
 
-if.else78.22:                                     ; preds = %for.body61.22
-  %arrayidx80.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %481
-  %482 = load i32, i32* %arrayidx80.22, align 4
-  %cmp81.22 = icmp eq i32 %482, 75
-  br i1 %cmp81.22, label %if.then83.22, label %if.else158.22
+if.else73.22:                                     ; preds = %for.body56.22
+  %arrayidx75.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %482
+  %483 = load i32, i32* %arrayidx75.22, align 4
+  %cmp76.22 = icmp eq i32 %483, 75
+  br i1 %cmp76.22, label %if.then78.22, label %if.else153.22
 
-if.else158.22:                                    ; preds = %if.else78.22
-  %conv161.22 = trunc i32 %482 to i8
-  %arrayidx163.22 = getelementptr inbounds i8, i8* %., i64 %481
-  store i8 %conv161.22, i8* %arrayidx163.22, align 1
-  br label %for.inc166.22
+if.else153.22:                                    ; preds = %if.else73.22
+  %conv156.22 = trunc i32 %483 to i8
+  %arrayidx158.22 = getelementptr inbounds i8, i8* %0, i64 %482
+  store i8 %conv156.22, i8* %arrayidx158.22, align 1
+  br label %for.inc161.22
 
-if.then83.22:                                     ; preds = %if.else78.22
-  %483 = trunc i64 %indvars.iv.22 to i32
-  %sub86.22 = add i32 %483, %sub84.22
-  %add87.22 = add i32 %sub86.22, -129
-  %idxprom88.22 = sext i32 %add87.22 to i64
-  %arrayidx89.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.22
-  %484 = load i32, i32* %arrayidx89.22, align 4
-  %cmp90.22 = icmp eq i32 %484, 255
-  br i1 %cmp90.22, label %if.then151.22, label %lor.lhs.false92.22
+if.then78.22:                                     ; preds = %if.else73.22
+  %484 = trunc i64 %indvars.iv.22 to i32
+  %sub81.22 = add i32 %484, %sub79.22
+  %add82.22 = add i32 %sub81.22, -129
+  %idxprom83.22 = sext i32 %add82.22 to i64
+  %arrayidx84.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.22
+  %485 = load i32, i32* %arrayidx84.22, align 4
+  %cmp85.22 = icmp eq i32 %485, 255
+  br i1 %cmp85.22, label %if.then146.22, label %lor.lhs.false87.22
 
-lor.lhs.false92.22:                               ; preds = %if.then83.22
-  %485 = add nsw i64 %480, %indvars.iv.22
-  %arrayidx97.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %485
-  %486 = load i32, i32* %arrayidx97.22, align 4
-  %cmp98.22 = icmp eq i32 %486, 255
-  br i1 %cmp98.22, label %if.then151.22, label %lor.lhs.false100.22
+lor.lhs.false87.22:                               ; preds = %if.then78.22
+  %486 = add nsw i64 %481, %indvars.iv.22
+  %arrayidx92.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %486
+  %487 = load i32, i32* %arrayidx92.22, align 4
+  %cmp93.22 = icmp eq i32 %487, 255
+  br i1 %cmp93.22, label %if.then146.22, label %lor.lhs.false95.22
 
-lor.lhs.false100.22:                              ; preds = %lor.lhs.false92.22
-  %add104.22 = add i32 %sub86.22, -127
-  %idxprom105.22 = sext i32 %add104.22 to i64
-  %arrayidx106.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.22
-  %487 = load i32, i32* %arrayidx106.22, align 4
-  %cmp107.22 = icmp eq i32 %487, 255
-  br i1 %cmp107.22, label %if.then151.22, label %lor.lhs.false109.22
+lor.lhs.false95.22:                               ; preds = %lor.lhs.false87.22
+  %add99.22 = add i32 %sub81.22, -127
+  %idxprom100.22 = sext i32 %add99.22 to i64
+  %arrayidx101.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.22
+  %488 = load i32, i32* %arrayidx101.22, align 4
+  %cmp102.22 = icmp eq i32 %488, 255
+  br i1 %cmp102.22, label %if.then146.22, label %lor.lhs.false104.22
 
-lor.lhs.false109.22:                              ; preds = %lor.lhs.false100.22
-  %488 = trunc i64 %indvars.iv.22 to i32
-  %add112.22 = add i32 %sub111.22, %488
-  %idxprom113.22 = sext i32 %add112.22 to i64
-  %arrayidx114.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.22
-  %489 = load i32, i32* %arrayidx114.22, align 4
-  %cmp115.22 = icmp eq i32 %489, 255
-  br i1 %cmp115.22, label %if.then151.22, label %lor.lhs.false117.22
+lor.lhs.false104.22:                              ; preds = %lor.lhs.false95.22
+  %489 = trunc i64 %indvars.iv.22 to i32
+  %add107.22 = add i32 %sub106.22, %489
+  %idxprom108.22 = sext i32 %add107.22 to i64
+  %arrayidx109.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.22
+  %490 = load i32, i32* %arrayidx109.22, align 4
+  %cmp110.22 = icmp eq i32 %490, 255
+  br i1 %cmp110.22, label %if.then146.22, label %lor.lhs.false112.22
 
-lor.lhs.false117.22:                              ; preds = %lor.lhs.false109.22
-  %490 = trunc i64 %indvars.iv.22 to i32
-  %add120.22 = add i32 %add119.22, %490
-  %idxprom121.22 = sext i32 %add120.22 to i64
-  %arrayidx122.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.22
-  %491 = load i32, i32* %arrayidx122.22, align 4
-  %cmp123.22 = icmp eq i32 %491, 255
-  br i1 %cmp123.22, label %if.then151.22, label %lor.lhs.false125.22
+lor.lhs.false112.22:                              ; preds = %lor.lhs.false104.22
+  %491 = trunc i64 %indvars.iv.22 to i32
+  %add115.22 = add i32 %add114.22, %491
+  %idxprom116.22 = sext i32 %add115.22 to i64
+  %arrayidx117.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.22
+  %492 = load i32, i32* %arrayidx117.22, align 4
+  %cmp118.22 = icmp eq i32 %492, 255
+  br i1 %cmp118.22, label %if.then146.22, label %lor.lhs.false120.22
 
-lor.lhs.false125.22:                              ; preds = %lor.lhs.false117.22
-  %add129.22 = add i32 %sub86.22, 127
-  %idxprom130.22 = sext i32 %add129.22 to i64
-  %arrayidx131.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.22
-  %492 = load i32, i32* %arrayidx131.22, align 4
-  %cmp132.22 = icmp eq i32 %492, 255
-  br i1 %cmp132.22, label %if.then151.22, label %lor.lhs.false134.22
+lor.lhs.false120.22:                              ; preds = %lor.lhs.false112.22
+  %add124.22 = add i32 %sub81.22, 127
+  %idxprom125.22 = sext i32 %add124.22 to i64
+  %arrayidx126.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.22
+  %493 = load i32, i32* %arrayidx126.22, align 4
+  %cmp127.22 = icmp eq i32 %493, 255
+  br i1 %cmp127.22, label %if.then146.22, label %lor.lhs.false129.22
 
-lor.lhs.false134.22:                              ; preds = %lor.lhs.false125.22
-  %493 = add nsw i64 %479, %indvars.iv.22
-  %arrayidx139.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %493
-  %494 = load i32, i32* %arrayidx139.22, align 4
-  %cmp140.22 = icmp eq i32 %494, 255
-  br i1 %cmp140.22, label %if.then151.22, label %lor.lhs.false142.22
+lor.lhs.false129.22:                              ; preds = %lor.lhs.false120.22
+  %494 = add nsw i64 %480, %indvars.iv.22
+  %arrayidx134.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %494
+  %495 = load i32, i32* %arrayidx134.22, align 4
+  %cmp135.22 = icmp eq i32 %495, 255
+  br i1 %cmp135.22, label %if.then146.22, label %lor.lhs.false137.22
 
-lor.lhs.false142.22:                              ; preds = %lor.lhs.false134.22
-  %add146.22 = add i32 %sub86.22, 129
-  %idxprom147.22 = sext i32 %add146.22 to i64
-  %arrayidx148.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.22
-  %495 = load i32, i32* %arrayidx148.22, align 4
-  %cmp149.22 = icmp eq i32 %495, 255
-  br i1 %cmp149.22, label %if.then151.22, label %if.else154.22
+lor.lhs.false137.22:                              ; preds = %lor.lhs.false129.22
+  %add141.22 = add i32 %sub81.22, 129
+  %idxprom142.22 = sext i32 %add141.22 to i64
+  %arrayidx143.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.22
+  %496 = load i32, i32* %arrayidx143.22, align 4
+  %cmp144.22 = icmp eq i32 %496, 255
+  br i1 %cmp144.22, label %if.then146.22, label %if.else149.22
 
-if.else154.22:                                    ; preds = %lor.lhs.false142.22
-  %arrayidx156.22 = getelementptr inbounds i8, i8* %., i64 %481
-  store i8 0, i8* %arrayidx156.22, align 1
-  br label %for.inc166.22
+if.else149.22:                                    ; preds = %lor.lhs.false137.22
+  %arrayidx151.22 = getelementptr inbounds i8, i8* %0, i64 %482
+  store i8 0, i8* %arrayidx151.22, align 1
+  br label %for.inc161.22
 
-if.then151.22:                                    ; preds = %lor.lhs.false142.22, %lor.lhs.false134.22, %lor.lhs.false125.22, %lor.lhs.false117.22, %lor.lhs.false109.22, %lor.lhs.false100.22, %lor.lhs.false92.22, %if.then83.22
-  %arrayidx153.22 = getelementptr inbounds i8, i8* %., i64 %481
-  store i8 -1, i8* %arrayidx153.22, align 1
-  br label %for.inc166.22
+if.then146.22:                                    ; preds = %lor.lhs.false137.22, %lor.lhs.false129.22, %lor.lhs.false120.22, %lor.lhs.false112.22, %lor.lhs.false104.22, %lor.lhs.false95.22, %lor.lhs.false87.22, %if.then78.22
+  %arrayidx148.22 = getelementptr inbounds i8, i8* %0, i64 %482
+  store i8 -1, i8* %arrayidx148.22, align 1
+  br label %for.inc161.22
 
-if.then75.22:                                     ; preds = %for.body61.22
-  %arrayidx77.22 = getelementptr inbounds i8, i8* %., i64 %481
-  store i8 0, i8* %arrayidx77.22, align 1
-  br label %for.inc166.22
+if.then70.22:                                     ; preds = %for.body56.22
+  %arrayidx72.22 = getelementptr inbounds i8, i8* %0, i64 %482
+  store i8 0, i8* %arrayidx72.22, align 1
+  br label %for.inc161.22
 
-for.inc166.22:                                    ; preds = %if.then75.22, %if.then151.22, %if.else154.22, %if.else158.22
+for.inc161.22:                                    ; preds = %if.then70.22, %if.then146.22, %if.else149.22, %if.else153.22
   %indvars.iv.next.22 = add nuw nsw i64 %indvars.iv.22, 1
   %lftr.wideiv.22 = trunc i64 %indvars.iv.next.22 to i32
   %exitcond.22 = icmp eq i32 %lftr.wideiv.22, %img_width
-  br i1 %exitcond.22, label %for.inc169.22, label %for.body61.22, !llvm.loop !5
+  br i1 %exitcond.22, label %for.inc164.22, label %for.body56.22, !llvm.loop !5
 
-for.inc169.22:                                    ; preds = %for.inc166.22
+for.inc164.22:                                    ; preds = %for.inc161.22
   %indvars.iv.next20.22 = add nsw i64 %indvars.iv19, 23
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.23
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.23
 
-for.body61.lr.ph.23:                              ; preds = %for.inc169.22
-  %496 = trunc i64 %indvars.iv.next20.22 to i32
-  %mul63.23 = shl nsw i32 %496, 7
-  %cmp67.23 = icmp eq i64 %indvars.iv.next20.22, %11
+for.body56.lr.ph.23:                              ; preds = %for.inc164.22
   %497 = trunc i64 %indvars.iv.next20.22 to i32
-  %sub84.23 = shl i32 %497, 7
-  %mul94.23 = add i32 %sub84.23, -128
-  %sub111.23 = add i32 %mul63.23, -1
-  %add119.23 = or i32 %mul63.23, 1
-  %mul136.23 = add i32 %sub84.23, 128
-  %498 = sext i32 %mul63.23 to i64
-  %499 = sext i32 %mul136.23 to i64
-  %500 = sext i32 %mul94.23 to i64
-  br label %for.body61.23
+  %mul58.23 = shl nsw i32 %497, 7
+  %cmp62.23 = icmp eq i64 %indvars.iv.next20.22, %12
+  %498 = trunc i64 %indvars.iv.next20.22 to i32
+  %sub79.23 = shl i32 %498, 7
+  %mul89.23 = add i32 %sub79.23, -128
+  %sub106.23 = add i32 %mul58.23, -1
+  %add114.23 = or i32 %mul58.23, 1
+  %mul131.23 = add i32 %sub79.23, 128
+  %499 = sext i32 %mul58.23 to i64
+  %500 = sext i32 %mul131.23 to i64
+  %501 = sext i32 %mul89.23 to i64
+  br label %for.body56.23
 
-for.body61.23:                                    ; preds = %for.inc166.23, %for.body61.lr.ph.23
-  %indvars.iv.23 = phi i64 [ 0, %for.body61.lr.ph.23 ], [ %indvars.iv.next.23, %for.inc166.23 ]
-  %501 = add nsw i64 %indvars.iv.23, %498
-  %cmp70.23 = icmp eq i64 %indvars.iv.23, 0
-  %or.cond1.23 = or i1 %cmp67.23, %cmp70.23
-  %cmp73.23 = icmp eq i64 %indvars.iv.23, %10
-  %or.cond2.23 = or i1 %cmp73.23, %or.cond1.23
-  br i1 %or.cond2.23, label %if.then75.23, label %if.else78.23
+for.body56.23:                                    ; preds = %for.inc161.23, %for.body56.lr.ph.23
+  %indvars.iv.23 = phi i64 [ 0, %for.body56.lr.ph.23 ], [ %indvars.iv.next.23, %for.inc161.23 ]
+  %502 = add nsw i64 %indvars.iv.23, %499
+  %cmp65.23 = icmp eq i64 %indvars.iv.23, 0
+  %or.cond1.23 = or i1 %cmp62.23, %cmp65.23
+  %cmp68.23 = icmp eq i64 %indvars.iv.23, %11
+  %or.cond2.23 = or i1 %cmp68.23, %or.cond1.23
+  br i1 %or.cond2.23, label %if.then70.23, label %if.else73.23
 
-if.else78.23:                                     ; preds = %for.body61.23
-  %arrayidx80.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %501
-  %502 = load i32, i32* %arrayidx80.23, align 4
-  %cmp81.23 = icmp eq i32 %502, 75
-  br i1 %cmp81.23, label %if.then83.23, label %if.else158.23
+if.else73.23:                                     ; preds = %for.body56.23
+  %arrayidx75.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %502
+  %503 = load i32, i32* %arrayidx75.23, align 4
+  %cmp76.23 = icmp eq i32 %503, 75
+  br i1 %cmp76.23, label %if.then78.23, label %if.else153.23
 
-if.else158.23:                                    ; preds = %if.else78.23
-  %conv161.23 = trunc i32 %502 to i8
-  %arrayidx163.23 = getelementptr inbounds i8, i8* %., i64 %501
-  store i8 %conv161.23, i8* %arrayidx163.23, align 1
-  br label %for.inc166.23
+if.else153.23:                                    ; preds = %if.else73.23
+  %conv156.23 = trunc i32 %503 to i8
+  %arrayidx158.23 = getelementptr inbounds i8, i8* %0, i64 %502
+  store i8 %conv156.23, i8* %arrayidx158.23, align 1
+  br label %for.inc161.23
 
-if.then83.23:                                     ; preds = %if.else78.23
-  %503 = trunc i64 %indvars.iv.23 to i32
-  %sub86.23 = add i32 %503, %sub84.23
-  %add87.23 = add i32 %sub86.23, -129
-  %idxprom88.23 = sext i32 %add87.23 to i64
-  %arrayidx89.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.23
-  %504 = load i32, i32* %arrayidx89.23, align 4
-  %cmp90.23 = icmp eq i32 %504, 255
-  br i1 %cmp90.23, label %if.then151.23, label %lor.lhs.false92.23
+if.then78.23:                                     ; preds = %if.else73.23
+  %504 = trunc i64 %indvars.iv.23 to i32
+  %sub81.23 = add i32 %504, %sub79.23
+  %add82.23 = add i32 %sub81.23, -129
+  %idxprom83.23 = sext i32 %add82.23 to i64
+  %arrayidx84.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.23
+  %505 = load i32, i32* %arrayidx84.23, align 4
+  %cmp85.23 = icmp eq i32 %505, 255
+  br i1 %cmp85.23, label %if.then146.23, label %lor.lhs.false87.23
 
-lor.lhs.false92.23:                               ; preds = %if.then83.23
-  %505 = add nsw i64 %500, %indvars.iv.23
-  %arrayidx97.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %505
-  %506 = load i32, i32* %arrayidx97.23, align 4
-  %cmp98.23 = icmp eq i32 %506, 255
-  br i1 %cmp98.23, label %if.then151.23, label %lor.lhs.false100.23
+lor.lhs.false87.23:                               ; preds = %if.then78.23
+  %506 = add nsw i64 %501, %indvars.iv.23
+  %arrayidx92.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %506
+  %507 = load i32, i32* %arrayidx92.23, align 4
+  %cmp93.23 = icmp eq i32 %507, 255
+  br i1 %cmp93.23, label %if.then146.23, label %lor.lhs.false95.23
 
-lor.lhs.false100.23:                              ; preds = %lor.lhs.false92.23
-  %add104.23 = add i32 %sub86.23, -127
-  %idxprom105.23 = sext i32 %add104.23 to i64
-  %arrayidx106.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.23
-  %507 = load i32, i32* %arrayidx106.23, align 4
-  %cmp107.23 = icmp eq i32 %507, 255
-  br i1 %cmp107.23, label %if.then151.23, label %lor.lhs.false109.23
+lor.lhs.false95.23:                               ; preds = %lor.lhs.false87.23
+  %add99.23 = add i32 %sub81.23, -127
+  %idxprom100.23 = sext i32 %add99.23 to i64
+  %arrayidx101.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.23
+  %508 = load i32, i32* %arrayidx101.23, align 4
+  %cmp102.23 = icmp eq i32 %508, 255
+  br i1 %cmp102.23, label %if.then146.23, label %lor.lhs.false104.23
 
-lor.lhs.false109.23:                              ; preds = %lor.lhs.false100.23
-  %508 = trunc i64 %indvars.iv.23 to i32
-  %add112.23 = add i32 %sub111.23, %508
-  %idxprom113.23 = sext i32 %add112.23 to i64
-  %arrayidx114.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.23
-  %509 = load i32, i32* %arrayidx114.23, align 4
-  %cmp115.23 = icmp eq i32 %509, 255
-  br i1 %cmp115.23, label %if.then151.23, label %lor.lhs.false117.23
+lor.lhs.false104.23:                              ; preds = %lor.lhs.false95.23
+  %509 = trunc i64 %indvars.iv.23 to i32
+  %add107.23 = add i32 %sub106.23, %509
+  %idxprom108.23 = sext i32 %add107.23 to i64
+  %arrayidx109.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.23
+  %510 = load i32, i32* %arrayidx109.23, align 4
+  %cmp110.23 = icmp eq i32 %510, 255
+  br i1 %cmp110.23, label %if.then146.23, label %lor.lhs.false112.23
 
-lor.lhs.false117.23:                              ; preds = %lor.lhs.false109.23
-  %510 = trunc i64 %indvars.iv.23 to i32
-  %add120.23 = add i32 %add119.23, %510
-  %idxprom121.23 = sext i32 %add120.23 to i64
-  %arrayidx122.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.23
-  %511 = load i32, i32* %arrayidx122.23, align 4
-  %cmp123.23 = icmp eq i32 %511, 255
-  br i1 %cmp123.23, label %if.then151.23, label %lor.lhs.false125.23
+lor.lhs.false112.23:                              ; preds = %lor.lhs.false104.23
+  %511 = trunc i64 %indvars.iv.23 to i32
+  %add115.23 = add i32 %add114.23, %511
+  %idxprom116.23 = sext i32 %add115.23 to i64
+  %arrayidx117.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.23
+  %512 = load i32, i32* %arrayidx117.23, align 4
+  %cmp118.23 = icmp eq i32 %512, 255
+  br i1 %cmp118.23, label %if.then146.23, label %lor.lhs.false120.23
 
-lor.lhs.false125.23:                              ; preds = %lor.lhs.false117.23
-  %add129.23 = add i32 %sub86.23, 127
-  %idxprom130.23 = sext i32 %add129.23 to i64
-  %arrayidx131.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.23
-  %512 = load i32, i32* %arrayidx131.23, align 4
-  %cmp132.23 = icmp eq i32 %512, 255
-  br i1 %cmp132.23, label %if.then151.23, label %lor.lhs.false134.23
+lor.lhs.false120.23:                              ; preds = %lor.lhs.false112.23
+  %add124.23 = add i32 %sub81.23, 127
+  %idxprom125.23 = sext i32 %add124.23 to i64
+  %arrayidx126.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.23
+  %513 = load i32, i32* %arrayidx126.23, align 4
+  %cmp127.23 = icmp eq i32 %513, 255
+  br i1 %cmp127.23, label %if.then146.23, label %lor.lhs.false129.23
 
-lor.lhs.false134.23:                              ; preds = %lor.lhs.false125.23
-  %513 = add nsw i64 %499, %indvars.iv.23
-  %arrayidx139.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %513
-  %514 = load i32, i32* %arrayidx139.23, align 4
-  %cmp140.23 = icmp eq i32 %514, 255
-  br i1 %cmp140.23, label %if.then151.23, label %lor.lhs.false142.23
+lor.lhs.false129.23:                              ; preds = %lor.lhs.false120.23
+  %514 = add nsw i64 %500, %indvars.iv.23
+  %arrayidx134.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %514
+  %515 = load i32, i32* %arrayidx134.23, align 4
+  %cmp135.23 = icmp eq i32 %515, 255
+  br i1 %cmp135.23, label %if.then146.23, label %lor.lhs.false137.23
 
-lor.lhs.false142.23:                              ; preds = %lor.lhs.false134.23
-  %add146.23 = add i32 %sub86.23, 129
-  %idxprom147.23 = sext i32 %add146.23 to i64
-  %arrayidx148.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.23
-  %515 = load i32, i32* %arrayidx148.23, align 4
-  %cmp149.23 = icmp eq i32 %515, 255
-  br i1 %cmp149.23, label %if.then151.23, label %if.else154.23
+lor.lhs.false137.23:                              ; preds = %lor.lhs.false129.23
+  %add141.23 = add i32 %sub81.23, 129
+  %idxprom142.23 = sext i32 %add141.23 to i64
+  %arrayidx143.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.23
+  %516 = load i32, i32* %arrayidx143.23, align 4
+  %cmp144.23 = icmp eq i32 %516, 255
+  br i1 %cmp144.23, label %if.then146.23, label %if.else149.23
 
-if.else154.23:                                    ; preds = %lor.lhs.false142.23
-  %arrayidx156.23 = getelementptr inbounds i8, i8* %., i64 %501
-  store i8 0, i8* %arrayidx156.23, align 1
-  br label %for.inc166.23
+if.else149.23:                                    ; preds = %lor.lhs.false137.23
+  %arrayidx151.23 = getelementptr inbounds i8, i8* %0, i64 %502
+  store i8 0, i8* %arrayidx151.23, align 1
+  br label %for.inc161.23
 
-if.then151.23:                                    ; preds = %lor.lhs.false142.23, %lor.lhs.false134.23, %lor.lhs.false125.23, %lor.lhs.false117.23, %lor.lhs.false109.23, %lor.lhs.false100.23, %lor.lhs.false92.23, %if.then83.23
-  %arrayidx153.23 = getelementptr inbounds i8, i8* %., i64 %501
-  store i8 -1, i8* %arrayidx153.23, align 1
-  br label %for.inc166.23
+if.then146.23:                                    ; preds = %lor.lhs.false137.23, %lor.lhs.false129.23, %lor.lhs.false120.23, %lor.lhs.false112.23, %lor.lhs.false104.23, %lor.lhs.false95.23, %lor.lhs.false87.23, %if.then78.23
+  %arrayidx148.23 = getelementptr inbounds i8, i8* %0, i64 %502
+  store i8 -1, i8* %arrayidx148.23, align 1
+  br label %for.inc161.23
 
-if.then75.23:                                     ; preds = %for.body61.23
-  %arrayidx77.23 = getelementptr inbounds i8, i8* %., i64 %501
-  store i8 0, i8* %arrayidx77.23, align 1
-  br label %for.inc166.23
+if.then70.23:                                     ; preds = %for.body56.23
+  %arrayidx72.23 = getelementptr inbounds i8, i8* %0, i64 %502
+  store i8 0, i8* %arrayidx72.23, align 1
+  br label %for.inc161.23
 
-for.inc166.23:                                    ; preds = %if.then75.23, %if.then151.23, %if.else154.23, %if.else158.23
+for.inc161.23:                                    ; preds = %if.then70.23, %if.then146.23, %if.else149.23, %if.else153.23
   %indvars.iv.next.23 = add nuw nsw i64 %indvars.iv.23, 1
   %lftr.wideiv.23 = trunc i64 %indvars.iv.next.23 to i32
   %exitcond.23 = icmp eq i32 %lftr.wideiv.23, %img_width
-  br i1 %exitcond.23, label %for.inc169.23, label %for.body61.23, !llvm.loop !5
+  br i1 %exitcond.23, label %for.inc164.23, label %for.body56.23, !llvm.loop !5
 
-for.inc169.23:                                    ; preds = %for.inc166.23
+for.inc164.23:                                    ; preds = %for.inc161.23
   %indvars.iv.next20.23 = add nsw i64 %indvars.iv19, 24
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.24
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.24
 
-for.body61.lr.ph.24:                              ; preds = %for.inc169.23
-  %516 = trunc i64 %indvars.iv.next20.23 to i32
-  %mul63.24 = shl nsw i32 %516, 7
-  %cmp67.24 = icmp eq i64 %indvars.iv.next20.23, %11
+for.body56.lr.ph.24:                              ; preds = %for.inc164.23
   %517 = trunc i64 %indvars.iv.next20.23 to i32
-  %sub84.24 = shl i32 %517, 7
-  %mul94.24 = add i32 %sub84.24, -128
-  %sub111.24 = add i32 %mul63.24, -1
-  %add119.24 = or i32 %mul63.24, 1
-  %mul136.24 = add i32 %sub84.24, 128
-  %518 = sext i32 %mul63.24 to i64
-  %519 = sext i32 %mul136.24 to i64
-  %520 = sext i32 %mul94.24 to i64
-  br label %for.body61.24
+  %mul58.24 = shl nsw i32 %517, 7
+  %cmp62.24 = icmp eq i64 %indvars.iv.next20.23, %12
+  %518 = trunc i64 %indvars.iv.next20.23 to i32
+  %sub79.24 = shl i32 %518, 7
+  %mul89.24 = add i32 %sub79.24, -128
+  %sub106.24 = add i32 %mul58.24, -1
+  %add114.24 = or i32 %mul58.24, 1
+  %mul131.24 = add i32 %sub79.24, 128
+  %519 = sext i32 %mul58.24 to i64
+  %520 = sext i32 %mul131.24 to i64
+  %521 = sext i32 %mul89.24 to i64
+  br label %for.body56.24
 
-for.body61.24:                                    ; preds = %for.inc166.24, %for.body61.lr.ph.24
-  %indvars.iv.24 = phi i64 [ 0, %for.body61.lr.ph.24 ], [ %indvars.iv.next.24, %for.inc166.24 ]
-  %521 = add nsw i64 %indvars.iv.24, %518
-  %cmp70.24 = icmp eq i64 %indvars.iv.24, 0
-  %or.cond1.24 = or i1 %cmp67.24, %cmp70.24
-  %cmp73.24 = icmp eq i64 %indvars.iv.24, %10
-  %or.cond2.24 = or i1 %cmp73.24, %or.cond1.24
-  br i1 %or.cond2.24, label %if.then75.24, label %if.else78.24
+for.body56.24:                                    ; preds = %for.inc161.24, %for.body56.lr.ph.24
+  %indvars.iv.24 = phi i64 [ 0, %for.body56.lr.ph.24 ], [ %indvars.iv.next.24, %for.inc161.24 ]
+  %522 = add nsw i64 %indvars.iv.24, %519
+  %cmp65.24 = icmp eq i64 %indvars.iv.24, 0
+  %or.cond1.24 = or i1 %cmp62.24, %cmp65.24
+  %cmp68.24 = icmp eq i64 %indvars.iv.24, %11
+  %or.cond2.24 = or i1 %cmp68.24, %or.cond1.24
+  br i1 %or.cond2.24, label %if.then70.24, label %if.else73.24
 
-if.else78.24:                                     ; preds = %for.body61.24
-  %arrayidx80.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %521
-  %522 = load i32, i32* %arrayidx80.24, align 4
-  %cmp81.24 = icmp eq i32 %522, 75
-  br i1 %cmp81.24, label %if.then83.24, label %if.else158.24
+if.else73.24:                                     ; preds = %for.body56.24
+  %arrayidx75.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %522
+  %523 = load i32, i32* %arrayidx75.24, align 4
+  %cmp76.24 = icmp eq i32 %523, 75
+  br i1 %cmp76.24, label %if.then78.24, label %if.else153.24
 
-if.else158.24:                                    ; preds = %if.else78.24
-  %conv161.24 = trunc i32 %522 to i8
-  %arrayidx163.24 = getelementptr inbounds i8, i8* %., i64 %521
-  store i8 %conv161.24, i8* %arrayidx163.24, align 1
-  br label %for.inc166.24
+if.else153.24:                                    ; preds = %if.else73.24
+  %conv156.24 = trunc i32 %523 to i8
+  %arrayidx158.24 = getelementptr inbounds i8, i8* %0, i64 %522
+  store i8 %conv156.24, i8* %arrayidx158.24, align 1
+  br label %for.inc161.24
 
-if.then83.24:                                     ; preds = %if.else78.24
-  %523 = trunc i64 %indvars.iv.24 to i32
-  %sub86.24 = add i32 %523, %sub84.24
-  %add87.24 = add i32 %sub86.24, -129
-  %idxprom88.24 = sext i32 %add87.24 to i64
-  %arrayidx89.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.24
-  %524 = load i32, i32* %arrayidx89.24, align 4
-  %cmp90.24 = icmp eq i32 %524, 255
-  br i1 %cmp90.24, label %if.then151.24, label %lor.lhs.false92.24
+if.then78.24:                                     ; preds = %if.else73.24
+  %524 = trunc i64 %indvars.iv.24 to i32
+  %sub81.24 = add i32 %524, %sub79.24
+  %add82.24 = add i32 %sub81.24, -129
+  %idxprom83.24 = sext i32 %add82.24 to i64
+  %arrayidx84.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.24
+  %525 = load i32, i32* %arrayidx84.24, align 4
+  %cmp85.24 = icmp eq i32 %525, 255
+  br i1 %cmp85.24, label %if.then146.24, label %lor.lhs.false87.24
 
-lor.lhs.false92.24:                               ; preds = %if.then83.24
-  %525 = add nsw i64 %520, %indvars.iv.24
-  %arrayidx97.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %525
-  %526 = load i32, i32* %arrayidx97.24, align 4
-  %cmp98.24 = icmp eq i32 %526, 255
-  br i1 %cmp98.24, label %if.then151.24, label %lor.lhs.false100.24
+lor.lhs.false87.24:                               ; preds = %if.then78.24
+  %526 = add nsw i64 %521, %indvars.iv.24
+  %arrayidx92.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %526
+  %527 = load i32, i32* %arrayidx92.24, align 4
+  %cmp93.24 = icmp eq i32 %527, 255
+  br i1 %cmp93.24, label %if.then146.24, label %lor.lhs.false95.24
 
-lor.lhs.false100.24:                              ; preds = %lor.lhs.false92.24
-  %add104.24 = add i32 %sub86.24, -127
-  %idxprom105.24 = sext i32 %add104.24 to i64
-  %arrayidx106.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.24
-  %527 = load i32, i32* %arrayidx106.24, align 4
-  %cmp107.24 = icmp eq i32 %527, 255
-  br i1 %cmp107.24, label %if.then151.24, label %lor.lhs.false109.24
+lor.lhs.false95.24:                               ; preds = %lor.lhs.false87.24
+  %add99.24 = add i32 %sub81.24, -127
+  %idxprom100.24 = sext i32 %add99.24 to i64
+  %arrayidx101.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.24
+  %528 = load i32, i32* %arrayidx101.24, align 4
+  %cmp102.24 = icmp eq i32 %528, 255
+  br i1 %cmp102.24, label %if.then146.24, label %lor.lhs.false104.24
 
-lor.lhs.false109.24:                              ; preds = %lor.lhs.false100.24
-  %528 = trunc i64 %indvars.iv.24 to i32
-  %add112.24 = add i32 %sub111.24, %528
-  %idxprom113.24 = sext i32 %add112.24 to i64
-  %arrayidx114.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.24
-  %529 = load i32, i32* %arrayidx114.24, align 4
-  %cmp115.24 = icmp eq i32 %529, 255
-  br i1 %cmp115.24, label %if.then151.24, label %lor.lhs.false117.24
+lor.lhs.false104.24:                              ; preds = %lor.lhs.false95.24
+  %529 = trunc i64 %indvars.iv.24 to i32
+  %add107.24 = add i32 %sub106.24, %529
+  %idxprom108.24 = sext i32 %add107.24 to i64
+  %arrayidx109.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.24
+  %530 = load i32, i32* %arrayidx109.24, align 4
+  %cmp110.24 = icmp eq i32 %530, 255
+  br i1 %cmp110.24, label %if.then146.24, label %lor.lhs.false112.24
 
-lor.lhs.false117.24:                              ; preds = %lor.lhs.false109.24
-  %530 = trunc i64 %indvars.iv.24 to i32
-  %add120.24 = add i32 %add119.24, %530
-  %idxprom121.24 = sext i32 %add120.24 to i64
-  %arrayidx122.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.24
-  %531 = load i32, i32* %arrayidx122.24, align 4
-  %cmp123.24 = icmp eq i32 %531, 255
-  br i1 %cmp123.24, label %if.then151.24, label %lor.lhs.false125.24
+lor.lhs.false112.24:                              ; preds = %lor.lhs.false104.24
+  %531 = trunc i64 %indvars.iv.24 to i32
+  %add115.24 = add i32 %add114.24, %531
+  %idxprom116.24 = sext i32 %add115.24 to i64
+  %arrayidx117.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.24
+  %532 = load i32, i32* %arrayidx117.24, align 4
+  %cmp118.24 = icmp eq i32 %532, 255
+  br i1 %cmp118.24, label %if.then146.24, label %lor.lhs.false120.24
 
-lor.lhs.false125.24:                              ; preds = %lor.lhs.false117.24
-  %add129.24 = add i32 %sub86.24, 127
-  %idxprom130.24 = sext i32 %add129.24 to i64
-  %arrayidx131.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.24
-  %532 = load i32, i32* %arrayidx131.24, align 4
-  %cmp132.24 = icmp eq i32 %532, 255
-  br i1 %cmp132.24, label %if.then151.24, label %lor.lhs.false134.24
+lor.lhs.false120.24:                              ; preds = %lor.lhs.false112.24
+  %add124.24 = add i32 %sub81.24, 127
+  %idxprom125.24 = sext i32 %add124.24 to i64
+  %arrayidx126.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.24
+  %533 = load i32, i32* %arrayidx126.24, align 4
+  %cmp127.24 = icmp eq i32 %533, 255
+  br i1 %cmp127.24, label %if.then146.24, label %lor.lhs.false129.24
 
-lor.lhs.false134.24:                              ; preds = %lor.lhs.false125.24
-  %533 = add nsw i64 %519, %indvars.iv.24
-  %arrayidx139.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %533
-  %534 = load i32, i32* %arrayidx139.24, align 4
-  %cmp140.24 = icmp eq i32 %534, 255
-  br i1 %cmp140.24, label %if.then151.24, label %lor.lhs.false142.24
+lor.lhs.false129.24:                              ; preds = %lor.lhs.false120.24
+  %534 = add nsw i64 %520, %indvars.iv.24
+  %arrayidx134.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %534
+  %535 = load i32, i32* %arrayidx134.24, align 4
+  %cmp135.24 = icmp eq i32 %535, 255
+  br i1 %cmp135.24, label %if.then146.24, label %lor.lhs.false137.24
 
-lor.lhs.false142.24:                              ; preds = %lor.lhs.false134.24
-  %add146.24 = add i32 %sub86.24, 129
-  %idxprom147.24 = sext i32 %add146.24 to i64
-  %arrayidx148.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.24
-  %535 = load i32, i32* %arrayidx148.24, align 4
-  %cmp149.24 = icmp eq i32 %535, 255
-  br i1 %cmp149.24, label %if.then151.24, label %if.else154.24
+lor.lhs.false137.24:                              ; preds = %lor.lhs.false129.24
+  %add141.24 = add i32 %sub81.24, 129
+  %idxprom142.24 = sext i32 %add141.24 to i64
+  %arrayidx143.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.24
+  %536 = load i32, i32* %arrayidx143.24, align 4
+  %cmp144.24 = icmp eq i32 %536, 255
+  br i1 %cmp144.24, label %if.then146.24, label %if.else149.24
 
-if.else154.24:                                    ; preds = %lor.lhs.false142.24
-  %arrayidx156.24 = getelementptr inbounds i8, i8* %., i64 %521
-  store i8 0, i8* %arrayidx156.24, align 1
-  br label %for.inc166.24
+if.else149.24:                                    ; preds = %lor.lhs.false137.24
+  %arrayidx151.24 = getelementptr inbounds i8, i8* %0, i64 %522
+  store i8 0, i8* %arrayidx151.24, align 1
+  br label %for.inc161.24
 
-if.then151.24:                                    ; preds = %lor.lhs.false142.24, %lor.lhs.false134.24, %lor.lhs.false125.24, %lor.lhs.false117.24, %lor.lhs.false109.24, %lor.lhs.false100.24, %lor.lhs.false92.24, %if.then83.24
-  %arrayidx153.24 = getelementptr inbounds i8, i8* %., i64 %521
-  store i8 -1, i8* %arrayidx153.24, align 1
-  br label %for.inc166.24
+if.then146.24:                                    ; preds = %lor.lhs.false137.24, %lor.lhs.false129.24, %lor.lhs.false120.24, %lor.lhs.false112.24, %lor.lhs.false104.24, %lor.lhs.false95.24, %lor.lhs.false87.24, %if.then78.24
+  %arrayidx148.24 = getelementptr inbounds i8, i8* %0, i64 %522
+  store i8 -1, i8* %arrayidx148.24, align 1
+  br label %for.inc161.24
 
-if.then75.24:                                     ; preds = %for.body61.24
-  %arrayidx77.24 = getelementptr inbounds i8, i8* %., i64 %521
-  store i8 0, i8* %arrayidx77.24, align 1
-  br label %for.inc166.24
+if.then70.24:                                     ; preds = %for.body56.24
+  %arrayidx72.24 = getelementptr inbounds i8, i8* %0, i64 %522
+  store i8 0, i8* %arrayidx72.24, align 1
+  br label %for.inc161.24
 
-for.inc166.24:                                    ; preds = %if.then75.24, %if.then151.24, %if.else154.24, %if.else158.24
+for.inc161.24:                                    ; preds = %if.then70.24, %if.then146.24, %if.else149.24, %if.else153.24
   %indvars.iv.next.24 = add nuw nsw i64 %indvars.iv.24, 1
   %lftr.wideiv.24 = trunc i64 %indvars.iv.next.24 to i32
   %exitcond.24 = icmp eq i32 %lftr.wideiv.24, %img_width
-  br i1 %exitcond.24, label %for.inc169.24, label %for.body61.24, !llvm.loop !5
+  br i1 %exitcond.24, label %for.inc164.24, label %for.body56.24, !llvm.loop !5
 
-for.inc169.24:                                    ; preds = %for.inc166.24
+for.inc164.24:                                    ; preds = %for.inc161.24
   %indvars.iv.next20.24 = add nsw i64 %indvars.iv19, 25
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.25
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.25
 
-for.body61.lr.ph.25:                              ; preds = %for.inc169.24
-  %536 = trunc i64 %indvars.iv.next20.24 to i32
-  %mul63.25 = shl nsw i32 %536, 7
-  %cmp67.25 = icmp eq i64 %indvars.iv.next20.24, %11
+for.body56.lr.ph.25:                              ; preds = %for.inc164.24
   %537 = trunc i64 %indvars.iv.next20.24 to i32
-  %sub84.25 = shl i32 %537, 7
-  %mul94.25 = add i32 %sub84.25, -128
-  %sub111.25 = add i32 %mul63.25, -1
-  %add119.25 = or i32 %mul63.25, 1
-  %mul136.25 = add i32 %sub84.25, 128
-  %538 = sext i32 %mul63.25 to i64
-  %539 = sext i32 %mul136.25 to i64
-  %540 = sext i32 %mul94.25 to i64
-  br label %for.body61.25
+  %mul58.25 = shl nsw i32 %537, 7
+  %cmp62.25 = icmp eq i64 %indvars.iv.next20.24, %12
+  %538 = trunc i64 %indvars.iv.next20.24 to i32
+  %sub79.25 = shl i32 %538, 7
+  %mul89.25 = add i32 %sub79.25, -128
+  %sub106.25 = add i32 %mul58.25, -1
+  %add114.25 = or i32 %mul58.25, 1
+  %mul131.25 = add i32 %sub79.25, 128
+  %539 = sext i32 %mul58.25 to i64
+  %540 = sext i32 %mul131.25 to i64
+  %541 = sext i32 %mul89.25 to i64
+  br label %for.body56.25
 
-for.body61.25:                                    ; preds = %for.inc166.25, %for.body61.lr.ph.25
-  %indvars.iv.25 = phi i64 [ 0, %for.body61.lr.ph.25 ], [ %indvars.iv.next.25, %for.inc166.25 ]
-  %541 = add nsw i64 %indvars.iv.25, %538
-  %cmp70.25 = icmp eq i64 %indvars.iv.25, 0
-  %or.cond1.25 = or i1 %cmp67.25, %cmp70.25
-  %cmp73.25 = icmp eq i64 %indvars.iv.25, %10
-  %or.cond2.25 = or i1 %cmp73.25, %or.cond1.25
-  br i1 %or.cond2.25, label %if.then75.25, label %if.else78.25
+for.body56.25:                                    ; preds = %for.inc161.25, %for.body56.lr.ph.25
+  %indvars.iv.25 = phi i64 [ 0, %for.body56.lr.ph.25 ], [ %indvars.iv.next.25, %for.inc161.25 ]
+  %542 = add nsw i64 %indvars.iv.25, %539
+  %cmp65.25 = icmp eq i64 %indvars.iv.25, 0
+  %or.cond1.25 = or i1 %cmp62.25, %cmp65.25
+  %cmp68.25 = icmp eq i64 %indvars.iv.25, %11
+  %or.cond2.25 = or i1 %cmp68.25, %or.cond1.25
+  br i1 %or.cond2.25, label %if.then70.25, label %if.else73.25
 
-if.else78.25:                                     ; preds = %for.body61.25
-  %arrayidx80.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %541
-  %542 = load i32, i32* %arrayidx80.25, align 4
-  %cmp81.25 = icmp eq i32 %542, 75
-  br i1 %cmp81.25, label %if.then83.25, label %if.else158.25
+if.else73.25:                                     ; preds = %for.body56.25
+  %arrayidx75.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %542
+  %543 = load i32, i32* %arrayidx75.25, align 4
+  %cmp76.25 = icmp eq i32 %543, 75
+  br i1 %cmp76.25, label %if.then78.25, label %if.else153.25
 
-if.else158.25:                                    ; preds = %if.else78.25
-  %conv161.25 = trunc i32 %542 to i8
-  %arrayidx163.25 = getelementptr inbounds i8, i8* %., i64 %541
-  store i8 %conv161.25, i8* %arrayidx163.25, align 1
-  br label %for.inc166.25
+if.else153.25:                                    ; preds = %if.else73.25
+  %conv156.25 = trunc i32 %543 to i8
+  %arrayidx158.25 = getelementptr inbounds i8, i8* %0, i64 %542
+  store i8 %conv156.25, i8* %arrayidx158.25, align 1
+  br label %for.inc161.25
 
-if.then83.25:                                     ; preds = %if.else78.25
-  %543 = trunc i64 %indvars.iv.25 to i32
-  %sub86.25 = add i32 %543, %sub84.25
-  %add87.25 = add i32 %sub86.25, -129
-  %idxprom88.25 = sext i32 %add87.25 to i64
-  %arrayidx89.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.25
-  %544 = load i32, i32* %arrayidx89.25, align 4
-  %cmp90.25 = icmp eq i32 %544, 255
-  br i1 %cmp90.25, label %if.then151.25, label %lor.lhs.false92.25
+if.then78.25:                                     ; preds = %if.else73.25
+  %544 = trunc i64 %indvars.iv.25 to i32
+  %sub81.25 = add i32 %544, %sub79.25
+  %add82.25 = add i32 %sub81.25, -129
+  %idxprom83.25 = sext i32 %add82.25 to i64
+  %arrayidx84.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.25
+  %545 = load i32, i32* %arrayidx84.25, align 4
+  %cmp85.25 = icmp eq i32 %545, 255
+  br i1 %cmp85.25, label %if.then146.25, label %lor.lhs.false87.25
 
-lor.lhs.false92.25:                               ; preds = %if.then83.25
-  %545 = add nsw i64 %540, %indvars.iv.25
-  %arrayidx97.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %545
-  %546 = load i32, i32* %arrayidx97.25, align 4
-  %cmp98.25 = icmp eq i32 %546, 255
-  br i1 %cmp98.25, label %if.then151.25, label %lor.lhs.false100.25
+lor.lhs.false87.25:                               ; preds = %if.then78.25
+  %546 = add nsw i64 %541, %indvars.iv.25
+  %arrayidx92.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %546
+  %547 = load i32, i32* %arrayidx92.25, align 4
+  %cmp93.25 = icmp eq i32 %547, 255
+  br i1 %cmp93.25, label %if.then146.25, label %lor.lhs.false95.25
 
-lor.lhs.false100.25:                              ; preds = %lor.lhs.false92.25
-  %add104.25 = add i32 %sub86.25, -127
-  %idxprom105.25 = sext i32 %add104.25 to i64
-  %arrayidx106.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.25
-  %547 = load i32, i32* %arrayidx106.25, align 4
-  %cmp107.25 = icmp eq i32 %547, 255
-  br i1 %cmp107.25, label %if.then151.25, label %lor.lhs.false109.25
+lor.lhs.false95.25:                               ; preds = %lor.lhs.false87.25
+  %add99.25 = add i32 %sub81.25, -127
+  %idxprom100.25 = sext i32 %add99.25 to i64
+  %arrayidx101.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.25
+  %548 = load i32, i32* %arrayidx101.25, align 4
+  %cmp102.25 = icmp eq i32 %548, 255
+  br i1 %cmp102.25, label %if.then146.25, label %lor.lhs.false104.25
 
-lor.lhs.false109.25:                              ; preds = %lor.lhs.false100.25
-  %548 = trunc i64 %indvars.iv.25 to i32
-  %add112.25 = add i32 %sub111.25, %548
-  %idxprom113.25 = sext i32 %add112.25 to i64
-  %arrayidx114.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.25
-  %549 = load i32, i32* %arrayidx114.25, align 4
-  %cmp115.25 = icmp eq i32 %549, 255
-  br i1 %cmp115.25, label %if.then151.25, label %lor.lhs.false117.25
+lor.lhs.false104.25:                              ; preds = %lor.lhs.false95.25
+  %549 = trunc i64 %indvars.iv.25 to i32
+  %add107.25 = add i32 %sub106.25, %549
+  %idxprom108.25 = sext i32 %add107.25 to i64
+  %arrayidx109.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.25
+  %550 = load i32, i32* %arrayidx109.25, align 4
+  %cmp110.25 = icmp eq i32 %550, 255
+  br i1 %cmp110.25, label %if.then146.25, label %lor.lhs.false112.25
 
-lor.lhs.false117.25:                              ; preds = %lor.lhs.false109.25
-  %550 = trunc i64 %indvars.iv.25 to i32
-  %add120.25 = add i32 %add119.25, %550
-  %idxprom121.25 = sext i32 %add120.25 to i64
-  %arrayidx122.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.25
-  %551 = load i32, i32* %arrayidx122.25, align 4
-  %cmp123.25 = icmp eq i32 %551, 255
-  br i1 %cmp123.25, label %if.then151.25, label %lor.lhs.false125.25
+lor.lhs.false112.25:                              ; preds = %lor.lhs.false104.25
+  %551 = trunc i64 %indvars.iv.25 to i32
+  %add115.25 = add i32 %add114.25, %551
+  %idxprom116.25 = sext i32 %add115.25 to i64
+  %arrayidx117.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.25
+  %552 = load i32, i32* %arrayidx117.25, align 4
+  %cmp118.25 = icmp eq i32 %552, 255
+  br i1 %cmp118.25, label %if.then146.25, label %lor.lhs.false120.25
 
-lor.lhs.false125.25:                              ; preds = %lor.lhs.false117.25
-  %add129.25 = add i32 %sub86.25, 127
-  %idxprom130.25 = sext i32 %add129.25 to i64
-  %arrayidx131.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.25
-  %552 = load i32, i32* %arrayidx131.25, align 4
-  %cmp132.25 = icmp eq i32 %552, 255
-  br i1 %cmp132.25, label %if.then151.25, label %lor.lhs.false134.25
+lor.lhs.false120.25:                              ; preds = %lor.lhs.false112.25
+  %add124.25 = add i32 %sub81.25, 127
+  %idxprom125.25 = sext i32 %add124.25 to i64
+  %arrayidx126.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.25
+  %553 = load i32, i32* %arrayidx126.25, align 4
+  %cmp127.25 = icmp eq i32 %553, 255
+  br i1 %cmp127.25, label %if.then146.25, label %lor.lhs.false129.25
 
-lor.lhs.false134.25:                              ; preds = %lor.lhs.false125.25
-  %553 = add nsw i64 %539, %indvars.iv.25
-  %arrayidx139.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %553
-  %554 = load i32, i32* %arrayidx139.25, align 4
-  %cmp140.25 = icmp eq i32 %554, 255
-  br i1 %cmp140.25, label %if.then151.25, label %lor.lhs.false142.25
+lor.lhs.false129.25:                              ; preds = %lor.lhs.false120.25
+  %554 = add nsw i64 %540, %indvars.iv.25
+  %arrayidx134.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %554
+  %555 = load i32, i32* %arrayidx134.25, align 4
+  %cmp135.25 = icmp eq i32 %555, 255
+  br i1 %cmp135.25, label %if.then146.25, label %lor.lhs.false137.25
 
-lor.lhs.false142.25:                              ; preds = %lor.lhs.false134.25
-  %add146.25 = add i32 %sub86.25, 129
-  %idxprom147.25 = sext i32 %add146.25 to i64
-  %arrayidx148.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.25
-  %555 = load i32, i32* %arrayidx148.25, align 4
-  %cmp149.25 = icmp eq i32 %555, 255
-  br i1 %cmp149.25, label %if.then151.25, label %if.else154.25
+lor.lhs.false137.25:                              ; preds = %lor.lhs.false129.25
+  %add141.25 = add i32 %sub81.25, 129
+  %idxprom142.25 = sext i32 %add141.25 to i64
+  %arrayidx143.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.25
+  %556 = load i32, i32* %arrayidx143.25, align 4
+  %cmp144.25 = icmp eq i32 %556, 255
+  br i1 %cmp144.25, label %if.then146.25, label %if.else149.25
 
-if.else154.25:                                    ; preds = %lor.lhs.false142.25
-  %arrayidx156.25 = getelementptr inbounds i8, i8* %., i64 %541
-  store i8 0, i8* %arrayidx156.25, align 1
-  br label %for.inc166.25
+if.else149.25:                                    ; preds = %lor.lhs.false137.25
+  %arrayidx151.25 = getelementptr inbounds i8, i8* %0, i64 %542
+  store i8 0, i8* %arrayidx151.25, align 1
+  br label %for.inc161.25
 
-if.then151.25:                                    ; preds = %lor.lhs.false142.25, %lor.lhs.false134.25, %lor.lhs.false125.25, %lor.lhs.false117.25, %lor.lhs.false109.25, %lor.lhs.false100.25, %lor.lhs.false92.25, %if.then83.25
-  %arrayidx153.25 = getelementptr inbounds i8, i8* %., i64 %541
-  store i8 -1, i8* %arrayidx153.25, align 1
-  br label %for.inc166.25
+if.then146.25:                                    ; preds = %lor.lhs.false137.25, %lor.lhs.false129.25, %lor.lhs.false120.25, %lor.lhs.false112.25, %lor.lhs.false104.25, %lor.lhs.false95.25, %lor.lhs.false87.25, %if.then78.25
+  %arrayidx148.25 = getelementptr inbounds i8, i8* %0, i64 %542
+  store i8 -1, i8* %arrayidx148.25, align 1
+  br label %for.inc161.25
 
-if.then75.25:                                     ; preds = %for.body61.25
-  %arrayidx77.25 = getelementptr inbounds i8, i8* %., i64 %541
-  store i8 0, i8* %arrayidx77.25, align 1
-  br label %for.inc166.25
+if.then70.25:                                     ; preds = %for.body56.25
+  %arrayidx72.25 = getelementptr inbounds i8, i8* %0, i64 %542
+  store i8 0, i8* %arrayidx72.25, align 1
+  br label %for.inc161.25
 
-for.inc166.25:                                    ; preds = %if.then75.25, %if.then151.25, %if.else154.25, %if.else158.25
+for.inc161.25:                                    ; preds = %if.then70.25, %if.then146.25, %if.else149.25, %if.else153.25
   %indvars.iv.next.25 = add nuw nsw i64 %indvars.iv.25, 1
   %lftr.wideiv.25 = trunc i64 %indvars.iv.next.25 to i32
   %exitcond.25 = icmp eq i32 %lftr.wideiv.25, %img_width
-  br i1 %exitcond.25, label %for.inc169.25, label %for.body61.25, !llvm.loop !5
+  br i1 %exitcond.25, label %for.inc164.25, label %for.body56.25, !llvm.loop !5
 
-for.inc169.25:                                    ; preds = %for.inc166.25
+for.inc164.25:                                    ; preds = %for.inc161.25
   %indvars.iv.next20.25 = add nsw i64 %indvars.iv19, 26
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.26
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.26
 
-for.body61.lr.ph.26:                              ; preds = %for.inc169.25
-  %556 = trunc i64 %indvars.iv.next20.25 to i32
-  %mul63.26 = shl nsw i32 %556, 7
-  %cmp67.26 = icmp eq i64 %indvars.iv.next20.25, %11
+for.body56.lr.ph.26:                              ; preds = %for.inc164.25
   %557 = trunc i64 %indvars.iv.next20.25 to i32
-  %sub84.26 = shl i32 %557, 7
-  %mul94.26 = add i32 %sub84.26, -128
-  %sub111.26 = add i32 %mul63.26, -1
-  %add119.26 = or i32 %mul63.26, 1
-  %mul136.26 = add i32 %sub84.26, 128
-  %558 = sext i32 %mul63.26 to i64
-  %559 = sext i32 %mul136.26 to i64
-  %560 = sext i32 %mul94.26 to i64
-  br label %for.body61.26
+  %mul58.26 = shl nsw i32 %557, 7
+  %cmp62.26 = icmp eq i64 %indvars.iv.next20.25, %12
+  %558 = trunc i64 %indvars.iv.next20.25 to i32
+  %sub79.26 = shl i32 %558, 7
+  %mul89.26 = add i32 %sub79.26, -128
+  %sub106.26 = add i32 %mul58.26, -1
+  %add114.26 = or i32 %mul58.26, 1
+  %mul131.26 = add i32 %sub79.26, 128
+  %559 = sext i32 %mul58.26 to i64
+  %560 = sext i32 %mul131.26 to i64
+  %561 = sext i32 %mul89.26 to i64
+  br label %for.body56.26
 
-for.body61.26:                                    ; preds = %for.inc166.26, %for.body61.lr.ph.26
-  %indvars.iv.26 = phi i64 [ 0, %for.body61.lr.ph.26 ], [ %indvars.iv.next.26, %for.inc166.26 ]
-  %561 = add nsw i64 %indvars.iv.26, %558
-  %cmp70.26 = icmp eq i64 %indvars.iv.26, 0
-  %or.cond1.26 = or i1 %cmp67.26, %cmp70.26
-  %cmp73.26 = icmp eq i64 %indvars.iv.26, %10
-  %or.cond2.26 = or i1 %cmp73.26, %or.cond1.26
-  br i1 %or.cond2.26, label %if.then75.26, label %if.else78.26
+for.body56.26:                                    ; preds = %for.inc161.26, %for.body56.lr.ph.26
+  %indvars.iv.26 = phi i64 [ 0, %for.body56.lr.ph.26 ], [ %indvars.iv.next.26, %for.inc161.26 ]
+  %562 = add nsw i64 %indvars.iv.26, %559
+  %cmp65.26 = icmp eq i64 %indvars.iv.26, 0
+  %or.cond1.26 = or i1 %cmp62.26, %cmp65.26
+  %cmp68.26 = icmp eq i64 %indvars.iv.26, %11
+  %or.cond2.26 = or i1 %cmp68.26, %or.cond1.26
+  br i1 %or.cond2.26, label %if.then70.26, label %if.else73.26
 
-if.else78.26:                                     ; preds = %for.body61.26
-  %arrayidx80.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %561
-  %562 = load i32, i32* %arrayidx80.26, align 4
-  %cmp81.26 = icmp eq i32 %562, 75
-  br i1 %cmp81.26, label %if.then83.26, label %if.else158.26
+if.else73.26:                                     ; preds = %for.body56.26
+  %arrayidx75.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %562
+  %563 = load i32, i32* %arrayidx75.26, align 4
+  %cmp76.26 = icmp eq i32 %563, 75
+  br i1 %cmp76.26, label %if.then78.26, label %if.else153.26
 
-if.else158.26:                                    ; preds = %if.else78.26
-  %conv161.26 = trunc i32 %562 to i8
-  %arrayidx163.26 = getelementptr inbounds i8, i8* %., i64 %561
-  store i8 %conv161.26, i8* %arrayidx163.26, align 1
-  br label %for.inc166.26
+if.else153.26:                                    ; preds = %if.else73.26
+  %conv156.26 = trunc i32 %563 to i8
+  %arrayidx158.26 = getelementptr inbounds i8, i8* %0, i64 %562
+  store i8 %conv156.26, i8* %arrayidx158.26, align 1
+  br label %for.inc161.26
 
-if.then83.26:                                     ; preds = %if.else78.26
-  %563 = trunc i64 %indvars.iv.26 to i32
-  %sub86.26 = add i32 %563, %sub84.26
-  %add87.26 = add i32 %sub86.26, -129
-  %idxprom88.26 = sext i32 %add87.26 to i64
-  %arrayidx89.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.26
-  %564 = load i32, i32* %arrayidx89.26, align 4
-  %cmp90.26 = icmp eq i32 %564, 255
-  br i1 %cmp90.26, label %if.then151.26, label %lor.lhs.false92.26
+if.then78.26:                                     ; preds = %if.else73.26
+  %564 = trunc i64 %indvars.iv.26 to i32
+  %sub81.26 = add i32 %564, %sub79.26
+  %add82.26 = add i32 %sub81.26, -129
+  %idxprom83.26 = sext i32 %add82.26 to i64
+  %arrayidx84.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.26
+  %565 = load i32, i32* %arrayidx84.26, align 4
+  %cmp85.26 = icmp eq i32 %565, 255
+  br i1 %cmp85.26, label %if.then146.26, label %lor.lhs.false87.26
 
-lor.lhs.false92.26:                               ; preds = %if.then83.26
-  %565 = add nsw i64 %560, %indvars.iv.26
-  %arrayidx97.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %565
-  %566 = load i32, i32* %arrayidx97.26, align 4
-  %cmp98.26 = icmp eq i32 %566, 255
-  br i1 %cmp98.26, label %if.then151.26, label %lor.lhs.false100.26
+lor.lhs.false87.26:                               ; preds = %if.then78.26
+  %566 = add nsw i64 %561, %indvars.iv.26
+  %arrayidx92.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %566
+  %567 = load i32, i32* %arrayidx92.26, align 4
+  %cmp93.26 = icmp eq i32 %567, 255
+  br i1 %cmp93.26, label %if.then146.26, label %lor.lhs.false95.26
 
-lor.lhs.false100.26:                              ; preds = %lor.lhs.false92.26
-  %add104.26 = add i32 %sub86.26, -127
-  %idxprom105.26 = sext i32 %add104.26 to i64
-  %arrayidx106.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.26
-  %567 = load i32, i32* %arrayidx106.26, align 4
-  %cmp107.26 = icmp eq i32 %567, 255
-  br i1 %cmp107.26, label %if.then151.26, label %lor.lhs.false109.26
+lor.lhs.false95.26:                               ; preds = %lor.lhs.false87.26
+  %add99.26 = add i32 %sub81.26, -127
+  %idxprom100.26 = sext i32 %add99.26 to i64
+  %arrayidx101.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.26
+  %568 = load i32, i32* %arrayidx101.26, align 4
+  %cmp102.26 = icmp eq i32 %568, 255
+  br i1 %cmp102.26, label %if.then146.26, label %lor.lhs.false104.26
 
-lor.lhs.false109.26:                              ; preds = %lor.lhs.false100.26
-  %568 = trunc i64 %indvars.iv.26 to i32
-  %add112.26 = add i32 %sub111.26, %568
-  %idxprom113.26 = sext i32 %add112.26 to i64
-  %arrayidx114.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.26
-  %569 = load i32, i32* %arrayidx114.26, align 4
-  %cmp115.26 = icmp eq i32 %569, 255
-  br i1 %cmp115.26, label %if.then151.26, label %lor.lhs.false117.26
+lor.lhs.false104.26:                              ; preds = %lor.lhs.false95.26
+  %569 = trunc i64 %indvars.iv.26 to i32
+  %add107.26 = add i32 %sub106.26, %569
+  %idxprom108.26 = sext i32 %add107.26 to i64
+  %arrayidx109.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.26
+  %570 = load i32, i32* %arrayidx109.26, align 4
+  %cmp110.26 = icmp eq i32 %570, 255
+  br i1 %cmp110.26, label %if.then146.26, label %lor.lhs.false112.26
 
-lor.lhs.false117.26:                              ; preds = %lor.lhs.false109.26
-  %570 = trunc i64 %indvars.iv.26 to i32
-  %add120.26 = add i32 %add119.26, %570
-  %idxprom121.26 = sext i32 %add120.26 to i64
-  %arrayidx122.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.26
-  %571 = load i32, i32* %arrayidx122.26, align 4
-  %cmp123.26 = icmp eq i32 %571, 255
-  br i1 %cmp123.26, label %if.then151.26, label %lor.lhs.false125.26
+lor.lhs.false112.26:                              ; preds = %lor.lhs.false104.26
+  %571 = trunc i64 %indvars.iv.26 to i32
+  %add115.26 = add i32 %add114.26, %571
+  %idxprom116.26 = sext i32 %add115.26 to i64
+  %arrayidx117.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.26
+  %572 = load i32, i32* %arrayidx117.26, align 4
+  %cmp118.26 = icmp eq i32 %572, 255
+  br i1 %cmp118.26, label %if.then146.26, label %lor.lhs.false120.26
 
-lor.lhs.false125.26:                              ; preds = %lor.lhs.false117.26
-  %add129.26 = add i32 %sub86.26, 127
-  %idxprom130.26 = sext i32 %add129.26 to i64
-  %arrayidx131.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.26
-  %572 = load i32, i32* %arrayidx131.26, align 4
-  %cmp132.26 = icmp eq i32 %572, 255
-  br i1 %cmp132.26, label %if.then151.26, label %lor.lhs.false134.26
+lor.lhs.false120.26:                              ; preds = %lor.lhs.false112.26
+  %add124.26 = add i32 %sub81.26, 127
+  %idxprom125.26 = sext i32 %add124.26 to i64
+  %arrayidx126.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.26
+  %573 = load i32, i32* %arrayidx126.26, align 4
+  %cmp127.26 = icmp eq i32 %573, 255
+  br i1 %cmp127.26, label %if.then146.26, label %lor.lhs.false129.26
 
-lor.lhs.false134.26:                              ; preds = %lor.lhs.false125.26
-  %573 = add nsw i64 %559, %indvars.iv.26
-  %arrayidx139.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %573
-  %574 = load i32, i32* %arrayidx139.26, align 4
-  %cmp140.26 = icmp eq i32 %574, 255
-  br i1 %cmp140.26, label %if.then151.26, label %lor.lhs.false142.26
+lor.lhs.false129.26:                              ; preds = %lor.lhs.false120.26
+  %574 = add nsw i64 %560, %indvars.iv.26
+  %arrayidx134.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %574
+  %575 = load i32, i32* %arrayidx134.26, align 4
+  %cmp135.26 = icmp eq i32 %575, 255
+  br i1 %cmp135.26, label %if.then146.26, label %lor.lhs.false137.26
 
-lor.lhs.false142.26:                              ; preds = %lor.lhs.false134.26
-  %add146.26 = add i32 %sub86.26, 129
-  %idxprom147.26 = sext i32 %add146.26 to i64
-  %arrayidx148.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.26
-  %575 = load i32, i32* %arrayidx148.26, align 4
-  %cmp149.26 = icmp eq i32 %575, 255
-  br i1 %cmp149.26, label %if.then151.26, label %if.else154.26
+lor.lhs.false137.26:                              ; preds = %lor.lhs.false129.26
+  %add141.26 = add i32 %sub81.26, 129
+  %idxprom142.26 = sext i32 %add141.26 to i64
+  %arrayidx143.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.26
+  %576 = load i32, i32* %arrayidx143.26, align 4
+  %cmp144.26 = icmp eq i32 %576, 255
+  br i1 %cmp144.26, label %if.then146.26, label %if.else149.26
 
-if.else154.26:                                    ; preds = %lor.lhs.false142.26
-  %arrayidx156.26 = getelementptr inbounds i8, i8* %., i64 %561
-  store i8 0, i8* %arrayidx156.26, align 1
-  br label %for.inc166.26
+if.else149.26:                                    ; preds = %lor.lhs.false137.26
+  %arrayidx151.26 = getelementptr inbounds i8, i8* %0, i64 %562
+  store i8 0, i8* %arrayidx151.26, align 1
+  br label %for.inc161.26
 
-if.then151.26:                                    ; preds = %lor.lhs.false142.26, %lor.lhs.false134.26, %lor.lhs.false125.26, %lor.lhs.false117.26, %lor.lhs.false109.26, %lor.lhs.false100.26, %lor.lhs.false92.26, %if.then83.26
-  %arrayidx153.26 = getelementptr inbounds i8, i8* %., i64 %561
-  store i8 -1, i8* %arrayidx153.26, align 1
-  br label %for.inc166.26
+if.then146.26:                                    ; preds = %lor.lhs.false137.26, %lor.lhs.false129.26, %lor.lhs.false120.26, %lor.lhs.false112.26, %lor.lhs.false104.26, %lor.lhs.false95.26, %lor.lhs.false87.26, %if.then78.26
+  %arrayidx148.26 = getelementptr inbounds i8, i8* %0, i64 %562
+  store i8 -1, i8* %arrayidx148.26, align 1
+  br label %for.inc161.26
 
-if.then75.26:                                     ; preds = %for.body61.26
-  %arrayidx77.26 = getelementptr inbounds i8, i8* %., i64 %561
-  store i8 0, i8* %arrayidx77.26, align 1
-  br label %for.inc166.26
+if.then70.26:                                     ; preds = %for.body56.26
+  %arrayidx72.26 = getelementptr inbounds i8, i8* %0, i64 %562
+  store i8 0, i8* %arrayidx72.26, align 1
+  br label %for.inc161.26
 
-for.inc166.26:                                    ; preds = %if.then75.26, %if.then151.26, %if.else154.26, %if.else158.26
+for.inc161.26:                                    ; preds = %if.then70.26, %if.then146.26, %if.else149.26, %if.else153.26
   %indvars.iv.next.26 = add nuw nsw i64 %indvars.iv.26, 1
   %lftr.wideiv.26 = trunc i64 %indvars.iv.next.26 to i32
   %exitcond.26 = icmp eq i32 %lftr.wideiv.26, %img_width
-  br i1 %exitcond.26, label %for.inc169.26, label %for.body61.26, !llvm.loop !5
+  br i1 %exitcond.26, label %for.inc164.26, label %for.body56.26, !llvm.loop !5
 
-for.inc169.26:                                    ; preds = %for.inc166.26
+for.inc164.26:                                    ; preds = %for.inc161.26
   %indvars.iv.next20.26 = add nsw i64 %indvars.iv19, 27
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.27
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.27
 
-for.body61.lr.ph.27:                              ; preds = %for.inc169.26
-  %576 = trunc i64 %indvars.iv.next20.26 to i32
-  %mul63.27 = shl nsw i32 %576, 7
-  %cmp67.27 = icmp eq i64 %indvars.iv.next20.26, %11
+for.body56.lr.ph.27:                              ; preds = %for.inc164.26
   %577 = trunc i64 %indvars.iv.next20.26 to i32
-  %sub84.27 = shl i32 %577, 7
-  %mul94.27 = add i32 %sub84.27, -128
-  %sub111.27 = add i32 %mul63.27, -1
-  %add119.27 = or i32 %mul63.27, 1
-  %mul136.27 = add i32 %sub84.27, 128
-  %578 = sext i32 %mul63.27 to i64
-  %579 = sext i32 %mul136.27 to i64
-  %580 = sext i32 %mul94.27 to i64
-  br label %for.body61.27
+  %mul58.27 = shl nsw i32 %577, 7
+  %cmp62.27 = icmp eq i64 %indvars.iv.next20.26, %12
+  %578 = trunc i64 %indvars.iv.next20.26 to i32
+  %sub79.27 = shl i32 %578, 7
+  %mul89.27 = add i32 %sub79.27, -128
+  %sub106.27 = add i32 %mul58.27, -1
+  %add114.27 = or i32 %mul58.27, 1
+  %mul131.27 = add i32 %sub79.27, 128
+  %579 = sext i32 %mul58.27 to i64
+  %580 = sext i32 %mul131.27 to i64
+  %581 = sext i32 %mul89.27 to i64
+  br label %for.body56.27
 
-for.body61.27:                                    ; preds = %for.inc166.27, %for.body61.lr.ph.27
-  %indvars.iv.27 = phi i64 [ 0, %for.body61.lr.ph.27 ], [ %indvars.iv.next.27, %for.inc166.27 ]
-  %581 = add nsw i64 %indvars.iv.27, %578
-  %cmp70.27 = icmp eq i64 %indvars.iv.27, 0
-  %or.cond1.27 = or i1 %cmp67.27, %cmp70.27
-  %cmp73.27 = icmp eq i64 %indvars.iv.27, %10
-  %or.cond2.27 = or i1 %cmp73.27, %or.cond1.27
-  br i1 %or.cond2.27, label %if.then75.27, label %if.else78.27
+for.body56.27:                                    ; preds = %for.inc161.27, %for.body56.lr.ph.27
+  %indvars.iv.27 = phi i64 [ 0, %for.body56.lr.ph.27 ], [ %indvars.iv.next.27, %for.inc161.27 ]
+  %582 = add nsw i64 %indvars.iv.27, %579
+  %cmp65.27 = icmp eq i64 %indvars.iv.27, 0
+  %or.cond1.27 = or i1 %cmp62.27, %cmp65.27
+  %cmp68.27 = icmp eq i64 %indvars.iv.27, %11
+  %or.cond2.27 = or i1 %cmp68.27, %or.cond1.27
+  br i1 %or.cond2.27, label %if.then70.27, label %if.else73.27
 
-if.else78.27:                                     ; preds = %for.body61.27
-  %arrayidx80.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %581
-  %582 = load i32, i32* %arrayidx80.27, align 4
-  %cmp81.27 = icmp eq i32 %582, 75
-  br i1 %cmp81.27, label %if.then83.27, label %if.else158.27
+if.else73.27:                                     ; preds = %for.body56.27
+  %arrayidx75.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %582
+  %583 = load i32, i32* %arrayidx75.27, align 4
+  %cmp76.27 = icmp eq i32 %583, 75
+  br i1 %cmp76.27, label %if.then78.27, label %if.else153.27
 
-if.else158.27:                                    ; preds = %if.else78.27
-  %conv161.27 = trunc i32 %582 to i8
-  %arrayidx163.27 = getelementptr inbounds i8, i8* %., i64 %581
-  store i8 %conv161.27, i8* %arrayidx163.27, align 1
-  br label %for.inc166.27
+if.else153.27:                                    ; preds = %if.else73.27
+  %conv156.27 = trunc i32 %583 to i8
+  %arrayidx158.27 = getelementptr inbounds i8, i8* %0, i64 %582
+  store i8 %conv156.27, i8* %arrayidx158.27, align 1
+  br label %for.inc161.27
 
-if.then83.27:                                     ; preds = %if.else78.27
-  %583 = trunc i64 %indvars.iv.27 to i32
-  %sub86.27 = add i32 %583, %sub84.27
-  %add87.27 = add i32 %sub86.27, -129
-  %idxprom88.27 = sext i32 %add87.27 to i64
-  %arrayidx89.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.27
-  %584 = load i32, i32* %arrayidx89.27, align 4
-  %cmp90.27 = icmp eq i32 %584, 255
-  br i1 %cmp90.27, label %if.then151.27, label %lor.lhs.false92.27
+if.then78.27:                                     ; preds = %if.else73.27
+  %584 = trunc i64 %indvars.iv.27 to i32
+  %sub81.27 = add i32 %584, %sub79.27
+  %add82.27 = add i32 %sub81.27, -129
+  %idxprom83.27 = sext i32 %add82.27 to i64
+  %arrayidx84.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.27
+  %585 = load i32, i32* %arrayidx84.27, align 4
+  %cmp85.27 = icmp eq i32 %585, 255
+  br i1 %cmp85.27, label %if.then146.27, label %lor.lhs.false87.27
 
-lor.lhs.false92.27:                               ; preds = %if.then83.27
-  %585 = add nsw i64 %580, %indvars.iv.27
-  %arrayidx97.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %585
-  %586 = load i32, i32* %arrayidx97.27, align 4
-  %cmp98.27 = icmp eq i32 %586, 255
-  br i1 %cmp98.27, label %if.then151.27, label %lor.lhs.false100.27
+lor.lhs.false87.27:                               ; preds = %if.then78.27
+  %586 = add nsw i64 %581, %indvars.iv.27
+  %arrayidx92.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %586
+  %587 = load i32, i32* %arrayidx92.27, align 4
+  %cmp93.27 = icmp eq i32 %587, 255
+  br i1 %cmp93.27, label %if.then146.27, label %lor.lhs.false95.27
 
-lor.lhs.false100.27:                              ; preds = %lor.lhs.false92.27
-  %add104.27 = add i32 %sub86.27, -127
-  %idxprom105.27 = sext i32 %add104.27 to i64
-  %arrayidx106.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.27
-  %587 = load i32, i32* %arrayidx106.27, align 4
-  %cmp107.27 = icmp eq i32 %587, 255
-  br i1 %cmp107.27, label %if.then151.27, label %lor.lhs.false109.27
+lor.lhs.false95.27:                               ; preds = %lor.lhs.false87.27
+  %add99.27 = add i32 %sub81.27, -127
+  %idxprom100.27 = sext i32 %add99.27 to i64
+  %arrayidx101.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.27
+  %588 = load i32, i32* %arrayidx101.27, align 4
+  %cmp102.27 = icmp eq i32 %588, 255
+  br i1 %cmp102.27, label %if.then146.27, label %lor.lhs.false104.27
 
-lor.lhs.false109.27:                              ; preds = %lor.lhs.false100.27
-  %588 = trunc i64 %indvars.iv.27 to i32
-  %add112.27 = add i32 %sub111.27, %588
-  %idxprom113.27 = sext i32 %add112.27 to i64
-  %arrayidx114.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.27
-  %589 = load i32, i32* %arrayidx114.27, align 4
-  %cmp115.27 = icmp eq i32 %589, 255
-  br i1 %cmp115.27, label %if.then151.27, label %lor.lhs.false117.27
+lor.lhs.false104.27:                              ; preds = %lor.lhs.false95.27
+  %589 = trunc i64 %indvars.iv.27 to i32
+  %add107.27 = add i32 %sub106.27, %589
+  %idxprom108.27 = sext i32 %add107.27 to i64
+  %arrayidx109.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.27
+  %590 = load i32, i32* %arrayidx109.27, align 4
+  %cmp110.27 = icmp eq i32 %590, 255
+  br i1 %cmp110.27, label %if.then146.27, label %lor.lhs.false112.27
 
-lor.lhs.false117.27:                              ; preds = %lor.lhs.false109.27
-  %590 = trunc i64 %indvars.iv.27 to i32
-  %add120.27 = add i32 %add119.27, %590
-  %idxprom121.27 = sext i32 %add120.27 to i64
-  %arrayidx122.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.27
-  %591 = load i32, i32* %arrayidx122.27, align 4
-  %cmp123.27 = icmp eq i32 %591, 255
-  br i1 %cmp123.27, label %if.then151.27, label %lor.lhs.false125.27
+lor.lhs.false112.27:                              ; preds = %lor.lhs.false104.27
+  %591 = trunc i64 %indvars.iv.27 to i32
+  %add115.27 = add i32 %add114.27, %591
+  %idxprom116.27 = sext i32 %add115.27 to i64
+  %arrayidx117.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.27
+  %592 = load i32, i32* %arrayidx117.27, align 4
+  %cmp118.27 = icmp eq i32 %592, 255
+  br i1 %cmp118.27, label %if.then146.27, label %lor.lhs.false120.27
 
-lor.lhs.false125.27:                              ; preds = %lor.lhs.false117.27
-  %add129.27 = add i32 %sub86.27, 127
-  %idxprom130.27 = sext i32 %add129.27 to i64
-  %arrayidx131.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.27
-  %592 = load i32, i32* %arrayidx131.27, align 4
-  %cmp132.27 = icmp eq i32 %592, 255
-  br i1 %cmp132.27, label %if.then151.27, label %lor.lhs.false134.27
+lor.lhs.false120.27:                              ; preds = %lor.lhs.false112.27
+  %add124.27 = add i32 %sub81.27, 127
+  %idxprom125.27 = sext i32 %add124.27 to i64
+  %arrayidx126.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.27
+  %593 = load i32, i32* %arrayidx126.27, align 4
+  %cmp127.27 = icmp eq i32 %593, 255
+  br i1 %cmp127.27, label %if.then146.27, label %lor.lhs.false129.27
 
-lor.lhs.false134.27:                              ; preds = %lor.lhs.false125.27
-  %593 = add nsw i64 %579, %indvars.iv.27
-  %arrayidx139.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %593
-  %594 = load i32, i32* %arrayidx139.27, align 4
-  %cmp140.27 = icmp eq i32 %594, 255
-  br i1 %cmp140.27, label %if.then151.27, label %lor.lhs.false142.27
+lor.lhs.false129.27:                              ; preds = %lor.lhs.false120.27
+  %594 = add nsw i64 %580, %indvars.iv.27
+  %arrayidx134.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %594
+  %595 = load i32, i32* %arrayidx134.27, align 4
+  %cmp135.27 = icmp eq i32 %595, 255
+  br i1 %cmp135.27, label %if.then146.27, label %lor.lhs.false137.27
 
-lor.lhs.false142.27:                              ; preds = %lor.lhs.false134.27
-  %add146.27 = add i32 %sub86.27, 129
-  %idxprom147.27 = sext i32 %add146.27 to i64
-  %arrayidx148.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.27
-  %595 = load i32, i32* %arrayidx148.27, align 4
-  %cmp149.27 = icmp eq i32 %595, 255
-  br i1 %cmp149.27, label %if.then151.27, label %if.else154.27
+lor.lhs.false137.27:                              ; preds = %lor.lhs.false129.27
+  %add141.27 = add i32 %sub81.27, 129
+  %idxprom142.27 = sext i32 %add141.27 to i64
+  %arrayidx143.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.27
+  %596 = load i32, i32* %arrayidx143.27, align 4
+  %cmp144.27 = icmp eq i32 %596, 255
+  br i1 %cmp144.27, label %if.then146.27, label %if.else149.27
 
-if.else154.27:                                    ; preds = %lor.lhs.false142.27
-  %arrayidx156.27 = getelementptr inbounds i8, i8* %., i64 %581
-  store i8 0, i8* %arrayidx156.27, align 1
-  br label %for.inc166.27
+if.else149.27:                                    ; preds = %lor.lhs.false137.27
+  %arrayidx151.27 = getelementptr inbounds i8, i8* %0, i64 %582
+  store i8 0, i8* %arrayidx151.27, align 1
+  br label %for.inc161.27
 
-if.then151.27:                                    ; preds = %lor.lhs.false142.27, %lor.lhs.false134.27, %lor.lhs.false125.27, %lor.lhs.false117.27, %lor.lhs.false109.27, %lor.lhs.false100.27, %lor.lhs.false92.27, %if.then83.27
-  %arrayidx153.27 = getelementptr inbounds i8, i8* %., i64 %581
-  store i8 -1, i8* %arrayidx153.27, align 1
-  br label %for.inc166.27
+if.then146.27:                                    ; preds = %lor.lhs.false137.27, %lor.lhs.false129.27, %lor.lhs.false120.27, %lor.lhs.false112.27, %lor.lhs.false104.27, %lor.lhs.false95.27, %lor.lhs.false87.27, %if.then78.27
+  %arrayidx148.27 = getelementptr inbounds i8, i8* %0, i64 %582
+  store i8 -1, i8* %arrayidx148.27, align 1
+  br label %for.inc161.27
 
-if.then75.27:                                     ; preds = %for.body61.27
-  %arrayidx77.27 = getelementptr inbounds i8, i8* %., i64 %581
-  store i8 0, i8* %arrayidx77.27, align 1
-  br label %for.inc166.27
+if.then70.27:                                     ; preds = %for.body56.27
+  %arrayidx72.27 = getelementptr inbounds i8, i8* %0, i64 %582
+  store i8 0, i8* %arrayidx72.27, align 1
+  br label %for.inc161.27
 
-for.inc166.27:                                    ; preds = %if.then75.27, %if.then151.27, %if.else154.27, %if.else158.27
+for.inc161.27:                                    ; preds = %if.then70.27, %if.then146.27, %if.else149.27, %if.else153.27
   %indvars.iv.next.27 = add nuw nsw i64 %indvars.iv.27, 1
   %lftr.wideiv.27 = trunc i64 %indvars.iv.next.27 to i32
   %exitcond.27 = icmp eq i32 %lftr.wideiv.27, %img_width
-  br i1 %exitcond.27, label %for.inc169.27, label %for.body61.27, !llvm.loop !5
+  br i1 %exitcond.27, label %for.inc164.27, label %for.body56.27, !llvm.loop !5
 
-for.inc169.27:                                    ; preds = %for.inc166.27
+for.inc164.27:                                    ; preds = %for.inc161.27
   %indvars.iv.next20.27 = add nsw i64 %indvars.iv19, 28
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.28
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.28
 
-for.body61.lr.ph.28:                              ; preds = %for.inc169.27
-  %596 = trunc i64 %indvars.iv.next20.27 to i32
-  %mul63.28 = shl nsw i32 %596, 7
-  %cmp67.28 = icmp eq i64 %indvars.iv.next20.27, %11
+for.body56.lr.ph.28:                              ; preds = %for.inc164.27
   %597 = trunc i64 %indvars.iv.next20.27 to i32
-  %sub84.28 = shl i32 %597, 7
-  %mul94.28 = add i32 %sub84.28, -128
-  %sub111.28 = add i32 %mul63.28, -1
-  %add119.28 = or i32 %mul63.28, 1
-  %mul136.28 = add i32 %sub84.28, 128
-  %598 = sext i32 %mul63.28 to i64
-  %599 = sext i32 %mul136.28 to i64
-  %600 = sext i32 %mul94.28 to i64
-  br label %for.body61.28
+  %mul58.28 = shl nsw i32 %597, 7
+  %cmp62.28 = icmp eq i64 %indvars.iv.next20.27, %12
+  %598 = trunc i64 %indvars.iv.next20.27 to i32
+  %sub79.28 = shl i32 %598, 7
+  %mul89.28 = add i32 %sub79.28, -128
+  %sub106.28 = add i32 %mul58.28, -1
+  %add114.28 = or i32 %mul58.28, 1
+  %mul131.28 = add i32 %sub79.28, 128
+  %599 = sext i32 %mul58.28 to i64
+  %600 = sext i32 %mul131.28 to i64
+  %601 = sext i32 %mul89.28 to i64
+  br label %for.body56.28
 
-for.body61.28:                                    ; preds = %for.inc166.28, %for.body61.lr.ph.28
-  %indvars.iv.28 = phi i64 [ 0, %for.body61.lr.ph.28 ], [ %indvars.iv.next.28, %for.inc166.28 ]
-  %601 = add nsw i64 %indvars.iv.28, %598
-  %cmp70.28 = icmp eq i64 %indvars.iv.28, 0
-  %or.cond1.28 = or i1 %cmp67.28, %cmp70.28
-  %cmp73.28 = icmp eq i64 %indvars.iv.28, %10
-  %or.cond2.28 = or i1 %cmp73.28, %or.cond1.28
-  br i1 %or.cond2.28, label %if.then75.28, label %if.else78.28
+for.body56.28:                                    ; preds = %for.inc161.28, %for.body56.lr.ph.28
+  %indvars.iv.28 = phi i64 [ 0, %for.body56.lr.ph.28 ], [ %indvars.iv.next.28, %for.inc161.28 ]
+  %602 = add nsw i64 %indvars.iv.28, %599
+  %cmp65.28 = icmp eq i64 %indvars.iv.28, 0
+  %or.cond1.28 = or i1 %cmp62.28, %cmp65.28
+  %cmp68.28 = icmp eq i64 %indvars.iv.28, %11
+  %or.cond2.28 = or i1 %cmp68.28, %or.cond1.28
+  br i1 %or.cond2.28, label %if.then70.28, label %if.else73.28
 
-if.else78.28:                                     ; preds = %for.body61.28
-  %arrayidx80.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %601
-  %602 = load i32, i32* %arrayidx80.28, align 4
-  %cmp81.28 = icmp eq i32 %602, 75
-  br i1 %cmp81.28, label %if.then83.28, label %if.else158.28
+if.else73.28:                                     ; preds = %for.body56.28
+  %arrayidx75.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %602
+  %603 = load i32, i32* %arrayidx75.28, align 4
+  %cmp76.28 = icmp eq i32 %603, 75
+  br i1 %cmp76.28, label %if.then78.28, label %if.else153.28
 
-if.else158.28:                                    ; preds = %if.else78.28
-  %conv161.28 = trunc i32 %602 to i8
-  %arrayidx163.28 = getelementptr inbounds i8, i8* %., i64 %601
-  store i8 %conv161.28, i8* %arrayidx163.28, align 1
-  br label %for.inc166.28
+if.else153.28:                                    ; preds = %if.else73.28
+  %conv156.28 = trunc i32 %603 to i8
+  %arrayidx158.28 = getelementptr inbounds i8, i8* %0, i64 %602
+  store i8 %conv156.28, i8* %arrayidx158.28, align 1
+  br label %for.inc161.28
 
-if.then83.28:                                     ; preds = %if.else78.28
-  %603 = trunc i64 %indvars.iv.28 to i32
-  %sub86.28 = add i32 %603, %sub84.28
-  %add87.28 = add i32 %sub86.28, -129
-  %idxprom88.28 = sext i32 %add87.28 to i64
-  %arrayidx89.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.28
-  %604 = load i32, i32* %arrayidx89.28, align 4
-  %cmp90.28 = icmp eq i32 %604, 255
-  br i1 %cmp90.28, label %if.then151.28, label %lor.lhs.false92.28
+if.then78.28:                                     ; preds = %if.else73.28
+  %604 = trunc i64 %indvars.iv.28 to i32
+  %sub81.28 = add i32 %604, %sub79.28
+  %add82.28 = add i32 %sub81.28, -129
+  %idxprom83.28 = sext i32 %add82.28 to i64
+  %arrayidx84.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.28
+  %605 = load i32, i32* %arrayidx84.28, align 4
+  %cmp85.28 = icmp eq i32 %605, 255
+  br i1 %cmp85.28, label %if.then146.28, label %lor.lhs.false87.28
 
-lor.lhs.false92.28:                               ; preds = %if.then83.28
-  %605 = add nsw i64 %600, %indvars.iv.28
-  %arrayidx97.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %605
-  %606 = load i32, i32* %arrayidx97.28, align 4
-  %cmp98.28 = icmp eq i32 %606, 255
-  br i1 %cmp98.28, label %if.then151.28, label %lor.lhs.false100.28
+lor.lhs.false87.28:                               ; preds = %if.then78.28
+  %606 = add nsw i64 %601, %indvars.iv.28
+  %arrayidx92.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %606
+  %607 = load i32, i32* %arrayidx92.28, align 4
+  %cmp93.28 = icmp eq i32 %607, 255
+  br i1 %cmp93.28, label %if.then146.28, label %lor.lhs.false95.28
 
-lor.lhs.false100.28:                              ; preds = %lor.lhs.false92.28
-  %add104.28 = add i32 %sub86.28, -127
-  %idxprom105.28 = sext i32 %add104.28 to i64
-  %arrayidx106.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.28
-  %607 = load i32, i32* %arrayidx106.28, align 4
-  %cmp107.28 = icmp eq i32 %607, 255
-  br i1 %cmp107.28, label %if.then151.28, label %lor.lhs.false109.28
+lor.lhs.false95.28:                               ; preds = %lor.lhs.false87.28
+  %add99.28 = add i32 %sub81.28, -127
+  %idxprom100.28 = sext i32 %add99.28 to i64
+  %arrayidx101.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.28
+  %608 = load i32, i32* %arrayidx101.28, align 4
+  %cmp102.28 = icmp eq i32 %608, 255
+  br i1 %cmp102.28, label %if.then146.28, label %lor.lhs.false104.28
 
-lor.lhs.false109.28:                              ; preds = %lor.lhs.false100.28
-  %608 = trunc i64 %indvars.iv.28 to i32
-  %add112.28 = add i32 %sub111.28, %608
-  %idxprom113.28 = sext i32 %add112.28 to i64
-  %arrayidx114.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.28
-  %609 = load i32, i32* %arrayidx114.28, align 4
-  %cmp115.28 = icmp eq i32 %609, 255
-  br i1 %cmp115.28, label %if.then151.28, label %lor.lhs.false117.28
+lor.lhs.false104.28:                              ; preds = %lor.lhs.false95.28
+  %609 = trunc i64 %indvars.iv.28 to i32
+  %add107.28 = add i32 %sub106.28, %609
+  %idxprom108.28 = sext i32 %add107.28 to i64
+  %arrayidx109.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.28
+  %610 = load i32, i32* %arrayidx109.28, align 4
+  %cmp110.28 = icmp eq i32 %610, 255
+  br i1 %cmp110.28, label %if.then146.28, label %lor.lhs.false112.28
 
-lor.lhs.false117.28:                              ; preds = %lor.lhs.false109.28
-  %610 = trunc i64 %indvars.iv.28 to i32
-  %add120.28 = add i32 %add119.28, %610
-  %idxprom121.28 = sext i32 %add120.28 to i64
-  %arrayidx122.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.28
-  %611 = load i32, i32* %arrayidx122.28, align 4
-  %cmp123.28 = icmp eq i32 %611, 255
-  br i1 %cmp123.28, label %if.then151.28, label %lor.lhs.false125.28
+lor.lhs.false112.28:                              ; preds = %lor.lhs.false104.28
+  %611 = trunc i64 %indvars.iv.28 to i32
+  %add115.28 = add i32 %add114.28, %611
+  %idxprom116.28 = sext i32 %add115.28 to i64
+  %arrayidx117.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.28
+  %612 = load i32, i32* %arrayidx117.28, align 4
+  %cmp118.28 = icmp eq i32 %612, 255
+  br i1 %cmp118.28, label %if.then146.28, label %lor.lhs.false120.28
 
-lor.lhs.false125.28:                              ; preds = %lor.lhs.false117.28
-  %add129.28 = add i32 %sub86.28, 127
-  %idxprom130.28 = sext i32 %add129.28 to i64
-  %arrayidx131.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.28
-  %612 = load i32, i32* %arrayidx131.28, align 4
-  %cmp132.28 = icmp eq i32 %612, 255
-  br i1 %cmp132.28, label %if.then151.28, label %lor.lhs.false134.28
+lor.lhs.false120.28:                              ; preds = %lor.lhs.false112.28
+  %add124.28 = add i32 %sub81.28, 127
+  %idxprom125.28 = sext i32 %add124.28 to i64
+  %arrayidx126.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.28
+  %613 = load i32, i32* %arrayidx126.28, align 4
+  %cmp127.28 = icmp eq i32 %613, 255
+  br i1 %cmp127.28, label %if.then146.28, label %lor.lhs.false129.28
 
-lor.lhs.false134.28:                              ; preds = %lor.lhs.false125.28
-  %613 = add nsw i64 %599, %indvars.iv.28
-  %arrayidx139.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %613
-  %614 = load i32, i32* %arrayidx139.28, align 4
-  %cmp140.28 = icmp eq i32 %614, 255
-  br i1 %cmp140.28, label %if.then151.28, label %lor.lhs.false142.28
+lor.lhs.false129.28:                              ; preds = %lor.lhs.false120.28
+  %614 = add nsw i64 %600, %indvars.iv.28
+  %arrayidx134.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %614
+  %615 = load i32, i32* %arrayidx134.28, align 4
+  %cmp135.28 = icmp eq i32 %615, 255
+  br i1 %cmp135.28, label %if.then146.28, label %lor.lhs.false137.28
 
-lor.lhs.false142.28:                              ; preds = %lor.lhs.false134.28
-  %add146.28 = add i32 %sub86.28, 129
-  %idxprom147.28 = sext i32 %add146.28 to i64
-  %arrayidx148.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.28
-  %615 = load i32, i32* %arrayidx148.28, align 4
-  %cmp149.28 = icmp eq i32 %615, 255
-  br i1 %cmp149.28, label %if.then151.28, label %if.else154.28
+lor.lhs.false137.28:                              ; preds = %lor.lhs.false129.28
+  %add141.28 = add i32 %sub81.28, 129
+  %idxprom142.28 = sext i32 %add141.28 to i64
+  %arrayidx143.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.28
+  %616 = load i32, i32* %arrayidx143.28, align 4
+  %cmp144.28 = icmp eq i32 %616, 255
+  br i1 %cmp144.28, label %if.then146.28, label %if.else149.28
 
-if.else154.28:                                    ; preds = %lor.lhs.false142.28
-  %arrayidx156.28 = getelementptr inbounds i8, i8* %., i64 %601
-  store i8 0, i8* %arrayidx156.28, align 1
-  br label %for.inc166.28
+if.else149.28:                                    ; preds = %lor.lhs.false137.28
+  %arrayidx151.28 = getelementptr inbounds i8, i8* %0, i64 %602
+  store i8 0, i8* %arrayidx151.28, align 1
+  br label %for.inc161.28
 
-if.then151.28:                                    ; preds = %lor.lhs.false142.28, %lor.lhs.false134.28, %lor.lhs.false125.28, %lor.lhs.false117.28, %lor.lhs.false109.28, %lor.lhs.false100.28, %lor.lhs.false92.28, %if.then83.28
-  %arrayidx153.28 = getelementptr inbounds i8, i8* %., i64 %601
-  store i8 -1, i8* %arrayidx153.28, align 1
-  br label %for.inc166.28
+if.then146.28:                                    ; preds = %lor.lhs.false137.28, %lor.lhs.false129.28, %lor.lhs.false120.28, %lor.lhs.false112.28, %lor.lhs.false104.28, %lor.lhs.false95.28, %lor.lhs.false87.28, %if.then78.28
+  %arrayidx148.28 = getelementptr inbounds i8, i8* %0, i64 %602
+  store i8 -1, i8* %arrayidx148.28, align 1
+  br label %for.inc161.28
 
-if.then75.28:                                     ; preds = %for.body61.28
-  %arrayidx77.28 = getelementptr inbounds i8, i8* %., i64 %601
-  store i8 0, i8* %arrayidx77.28, align 1
-  br label %for.inc166.28
+if.then70.28:                                     ; preds = %for.body56.28
+  %arrayidx72.28 = getelementptr inbounds i8, i8* %0, i64 %602
+  store i8 0, i8* %arrayidx72.28, align 1
+  br label %for.inc161.28
 
-for.inc166.28:                                    ; preds = %if.then75.28, %if.then151.28, %if.else154.28, %if.else158.28
+for.inc161.28:                                    ; preds = %if.then70.28, %if.then146.28, %if.else149.28, %if.else153.28
   %indvars.iv.next.28 = add nuw nsw i64 %indvars.iv.28, 1
   %lftr.wideiv.28 = trunc i64 %indvars.iv.next.28 to i32
   %exitcond.28 = icmp eq i32 %lftr.wideiv.28, %img_width
-  br i1 %exitcond.28, label %for.inc169.28, label %for.body61.28, !llvm.loop !5
+  br i1 %exitcond.28, label %for.inc164.28, label %for.body56.28, !llvm.loop !5
 
-for.inc169.28:                                    ; preds = %for.inc166.28
+for.inc164.28:                                    ; preds = %for.inc161.28
   %indvars.iv.next20.28 = add nsw i64 %indvars.iv19, 29
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.29
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.29
 
-for.body61.lr.ph.29:                              ; preds = %for.inc169.28
-  %616 = trunc i64 %indvars.iv.next20.28 to i32
-  %mul63.29 = shl nsw i32 %616, 7
-  %cmp67.29 = icmp eq i64 %indvars.iv.next20.28, %11
+for.body56.lr.ph.29:                              ; preds = %for.inc164.28
   %617 = trunc i64 %indvars.iv.next20.28 to i32
-  %sub84.29 = shl i32 %617, 7
-  %mul94.29 = add i32 %sub84.29, -128
-  %sub111.29 = add i32 %mul63.29, -1
-  %add119.29 = or i32 %mul63.29, 1
-  %mul136.29 = add i32 %sub84.29, 128
-  %618 = sext i32 %mul63.29 to i64
-  %619 = sext i32 %mul136.29 to i64
-  %620 = sext i32 %mul94.29 to i64
-  br label %for.body61.29
+  %mul58.29 = shl nsw i32 %617, 7
+  %cmp62.29 = icmp eq i64 %indvars.iv.next20.28, %12
+  %618 = trunc i64 %indvars.iv.next20.28 to i32
+  %sub79.29 = shl i32 %618, 7
+  %mul89.29 = add i32 %sub79.29, -128
+  %sub106.29 = add i32 %mul58.29, -1
+  %add114.29 = or i32 %mul58.29, 1
+  %mul131.29 = add i32 %sub79.29, 128
+  %619 = sext i32 %mul58.29 to i64
+  %620 = sext i32 %mul131.29 to i64
+  %621 = sext i32 %mul89.29 to i64
+  br label %for.body56.29
 
-for.body61.29:                                    ; preds = %for.inc166.29, %for.body61.lr.ph.29
-  %indvars.iv.29 = phi i64 [ 0, %for.body61.lr.ph.29 ], [ %indvars.iv.next.29, %for.inc166.29 ]
-  %621 = add nsw i64 %indvars.iv.29, %618
-  %cmp70.29 = icmp eq i64 %indvars.iv.29, 0
-  %or.cond1.29 = or i1 %cmp67.29, %cmp70.29
-  %cmp73.29 = icmp eq i64 %indvars.iv.29, %10
-  %or.cond2.29 = or i1 %cmp73.29, %or.cond1.29
-  br i1 %or.cond2.29, label %if.then75.29, label %if.else78.29
+for.body56.29:                                    ; preds = %for.inc161.29, %for.body56.lr.ph.29
+  %indvars.iv.29 = phi i64 [ 0, %for.body56.lr.ph.29 ], [ %indvars.iv.next.29, %for.inc161.29 ]
+  %622 = add nsw i64 %indvars.iv.29, %619
+  %cmp65.29 = icmp eq i64 %indvars.iv.29, 0
+  %or.cond1.29 = or i1 %cmp62.29, %cmp65.29
+  %cmp68.29 = icmp eq i64 %indvars.iv.29, %11
+  %or.cond2.29 = or i1 %cmp68.29, %or.cond1.29
+  br i1 %or.cond2.29, label %if.then70.29, label %if.else73.29
 
-if.else78.29:                                     ; preds = %for.body61.29
-  %arrayidx80.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %621
-  %622 = load i32, i32* %arrayidx80.29, align 4
-  %cmp81.29 = icmp eq i32 %622, 75
-  br i1 %cmp81.29, label %if.then83.29, label %if.else158.29
+if.else73.29:                                     ; preds = %for.body56.29
+  %arrayidx75.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %622
+  %623 = load i32, i32* %arrayidx75.29, align 4
+  %cmp76.29 = icmp eq i32 %623, 75
+  br i1 %cmp76.29, label %if.then78.29, label %if.else153.29
 
-if.else158.29:                                    ; preds = %if.else78.29
-  %conv161.29 = trunc i32 %622 to i8
-  %arrayidx163.29 = getelementptr inbounds i8, i8* %., i64 %621
-  store i8 %conv161.29, i8* %arrayidx163.29, align 1
-  br label %for.inc166.29
+if.else153.29:                                    ; preds = %if.else73.29
+  %conv156.29 = trunc i32 %623 to i8
+  %arrayidx158.29 = getelementptr inbounds i8, i8* %0, i64 %622
+  store i8 %conv156.29, i8* %arrayidx158.29, align 1
+  br label %for.inc161.29
 
-if.then83.29:                                     ; preds = %if.else78.29
-  %623 = trunc i64 %indvars.iv.29 to i32
-  %sub86.29 = add i32 %623, %sub84.29
-  %add87.29 = add i32 %sub86.29, -129
-  %idxprom88.29 = sext i32 %add87.29 to i64
-  %arrayidx89.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.29
-  %624 = load i32, i32* %arrayidx89.29, align 4
-  %cmp90.29 = icmp eq i32 %624, 255
-  br i1 %cmp90.29, label %if.then151.29, label %lor.lhs.false92.29
+if.then78.29:                                     ; preds = %if.else73.29
+  %624 = trunc i64 %indvars.iv.29 to i32
+  %sub81.29 = add i32 %624, %sub79.29
+  %add82.29 = add i32 %sub81.29, -129
+  %idxprom83.29 = sext i32 %add82.29 to i64
+  %arrayidx84.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.29
+  %625 = load i32, i32* %arrayidx84.29, align 4
+  %cmp85.29 = icmp eq i32 %625, 255
+  br i1 %cmp85.29, label %if.then146.29, label %lor.lhs.false87.29
 
-lor.lhs.false92.29:                               ; preds = %if.then83.29
-  %625 = add nsw i64 %620, %indvars.iv.29
-  %arrayidx97.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %625
-  %626 = load i32, i32* %arrayidx97.29, align 4
-  %cmp98.29 = icmp eq i32 %626, 255
-  br i1 %cmp98.29, label %if.then151.29, label %lor.lhs.false100.29
+lor.lhs.false87.29:                               ; preds = %if.then78.29
+  %626 = add nsw i64 %621, %indvars.iv.29
+  %arrayidx92.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %626
+  %627 = load i32, i32* %arrayidx92.29, align 4
+  %cmp93.29 = icmp eq i32 %627, 255
+  br i1 %cmp93.29, label %if.then146.29, label %lor.lhs.false95.29
 
-lor.lhs.false100.29:                              ; preds = %lor.lhs.false92.29
-  %add104.29 = add i32 %sub86.29, -127
-  %idxprom105.29 = sext i32 %add104.29 to i64
-  %arrayidx106.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.29
-  %627 = load i32, i32* %arrayidx106.29, align 4
-  %cmp107.29 = icmp eq i32 %627, 255
-  br i1 %cmp107.29, label %if.then151.29, label %lor.lhs.false109.29
+lor.lhs.false95.29:                               ; preds = %lor.lhs.false87.29
+  %add99.29 = add i32 %sub81.29, -127
+  %idxprom100.29 = sext i32 %add99.29 to i64
+  %arrayidx101.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.29
+  %628 = load i32, i32* %arrayidx101.29, align 4
+  %cmp102.29 = icmp eq i32 %628, 255
+  br i1 %cmp102.29, label %if.then146.29, label %lor.lhs.false104.29
 
-lor.lhs.false109.29:                              ; preds = %lor.lhs.false100.29
-  %628 = trunc i64 %indvars.iv.29 to i32
-  %add112.29 = add i32 %sub111.29, %628
-  %idxprom113.29 = sext i32 %add112.29 to i64
-  %arrayidx114.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.29
-  %629 = load i32, i32* %arrayidx114.29, align 4
-  %cmp115.29 = icmp eq i32 %629, 255
-  br i1 %cmp115.29, label %if.then151.29, label %lor.lhs.false117.29
+lor.lhs.false104.29:                              ; preds = %lor.lhs.false95.29
+  %629 = trunc i64 %indvars.iv.29 to i32
+  %add107.29 = add i32 %sub106.29, %629
+  %idxprom108.29 = sext i32 %add107.29 to i64
+  %arrayidx109.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.29
+  %630 = load i32, i32* %arrayidx109.29, align 4
+  %cmp110.29 = icmp eq i32 %630, 255
+  br i1 %cmp110.29, label %if.then146.29, label %lor.lhs.false112.29
 
-lor.lhs.false117.29:                              ; preds = %lor.lhs.false109.29
-  %630 = trunc i64 %indvars.iv.29 to i32
-  %add120.29 = add i32 %add119.29, %630
-  %idxprom121.29 = sext i32 %add120.29 to i64
-  %arrayidx122.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.29
-  %631 = load i32, i32* %arrayidx122.29, align 4
-  %cmp123.29 = icmp eq i32 %631, 255
-  br i1 %cmp123.29, label %if.then151.29, label %lor.lhs.false125.29
+lor.lhs.false112.29:                              ; preds = %lor.lhs.false104.29
+  %631 = trunc i64 %indvars.iv.29 to i32
+  %add115.29 = add i32 %add114.29, %631
+  %idxprom116.29 = sext i32 %add115.29 to i64
+  %arrayidx117.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.29
+  %632 = load i32, i32* %arrayidx117.29, align 4
+  %cmp118.29 = icmp eq i32 %632, 255
+  br i1 %cmp118.29, label %if.then146.29, label %lor.lhs.false120.29
 
-lor.lhs.false125.29:                              ; preds = %lor.lhs.false117.29
-  %add129.29 = add i32 %sub86.29, 127
-  %idxprom130.29 = sext i32 %add129.29 to i64
-  %arrayidx131.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.29
-  %632 = load i32, i32* %arrayidx131.29, align 4
-  %cmp132.29 = icmp eq i32 %632, 255
-  br i1 %cmp132.29, label %if.then151.29, label %lor.lhs.false134.29
+lor.lhs.false120.29:                              ; preds = %lor.lhs.false112.29
+  %add124.29 = add i32 %sub81.29, 127
+  %idxprom125.29 = sext i32 %add124.29 to i64
+  %arrayidx126.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.29
+  %633 = load i32, i32* %arrayidx126.29, align 4
+  %cmp127.29 = icmp eq i32 %633, 255
+  br i1 %cmp127.29, label %if.then146.29, label %lor.lhs.false129.29
 
-lor.lhs.false134.29:                              ; preds = %lor.lhs.false125.29
-  %633 = add nsw i64 %619, %indvars.iv.29
-  %arrayidx139.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %633
-  %634 = load i32, i32* %arrayidx139.29, align 4
-  %cmp140.29 = icmp eq i32 %634, 255
-  br i1 %cmp140.29, label %if.then151.29, label %lor.lhs.false142.29
+lor.lhs.false129.29:                              ; preds = %lor.lhs.false120.29
+  %634 = add nsw i64 %620, %indvars.iv.29
+  %arrayidx134.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %634
+  %635 = load i32, i32* %arrayidx134.29, align 4
+  %cmp135.29 = icmp eq i32 %635, 255
+  br i1 %cmp135.29, label %if.then146.29, label %lor.lhs.false137.29
 
-lor.lhs.false142.29:                              ; preds = %lor.lhs.false134.29
-  %add146.29 = add i32 %sub86.29, 129
-  %idxprom147.29 = sext i32 %add146.29 to i64
-  %arrayidx148.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.29
-  %635 = load i32, i32* %arrayidx148.29, align 4
-  %cmp149.29 = icmp eq i32 %635, 255
-  br i1 %cmp149.29, label %if.then151.29, label %if.else154.29
+lor.lhs.false137.29:                              ; preds = %lor.lhs.false129.29
+  %add141.29 = add i32 %sub81.29, 129
+  %idxprom142.29 = sext i32 %add141.29 to i64
+  %arrayidx143.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.29
+  %636 = load i32, i32* %arrayidx143.29, align 4
+  %cmp144.29 = icmp eq i32 %636, 255
+  br i1 %cmp144.29, label %if.then146.29, label %if.else149.29
 
-if.else154.29:                                    ; preds = %lor.lhs.false142.29
-  %arrayidx156.29 = getelementptr inbounds i8, i8* %., i64 %621
-  store i8 0, i8* %arrayidx156.29, align 1
-  br label %for.inc166.29
+if.else149.29:                                    ; preds = %lor.lhs.false137.29
+  %arrayidx151.29 = getelementptr inbounds i8, i8* %0, i64 %622
+  store i8 0, i8* %arrayidx151.29, align 1
+  br label %for.inc161.29
 
-if.then151.29:                                    ; preds = %lor.lhs.false142.29, %lor.lhs.false134.29, %lor.lhs.false125.29, %lor.lhs.false117.29, %lor.lhs.false109.29, %lor.lhs.false100.29, %lor.lhs.false92.29, %if.then83.29
-  %arrayidx153.29 = getelementptr inbounds i8, i8* %., i64 %621
-  store i8 -1, i8* %arrayidx153.29, align 1
-  br label %for.inc166.29
+if.then146.29:                                    ; preds = %lor.lhs.false137.29, %lor.lhs.false129.29, %lor.lhs.false120.29, %lor.lhs.false112.29, %lor.lhs.false104.29, %lor.lhs.false95.29, %lor.lhs.false87.29, %if.then78.29
+  %arrayidx148.29 = getelementptr inbounds i8, i8* %0, i64 %622
+  store i8 -1, i8* %arrayidx148.29, align 1
+  br label %for.inc161.29
 
-if.then75.29:                                     ; preds = %for.body61.29
-  %arrayidx77.29 = getelementptr inbounds i8, i8* %., i64 %621
-  store i8 0, i8* %arrayidx77.29, align 1
-  br label %for.inc166.29
+if.then70.29:                                     ; preds = %for.body56.29
+  %arrayidx72.29 = getelementptr inbounds i8, i8* %0, i64 %622
+  store i8 0, i8* %arrayidx72.29, align 1
+  br label %for.inc161.29
 
-for.inc166.29:                                    ; preds = %if.then75.29, %if.then151.29, %if.else154.29, %if.else158.29
+for.inc161.29:                                    ; preds = %if.then70.29, %if.then146.29, %if.else149.29, %if.else153.29
   %indvars.iv.next.29 = add nuw nsw i64 %indvars.iv.29, 1
   %lftr.wideiv.29 = trunc i64 %indvars.iv.next.29 to i32
   %exitcond.29 = icmp eq i32 %lftr.wideiv.29, %img_width
-  br i1 %exitcond.29, label %for.inc169.29, label %for.body61.29, !llvm.loop !5
+  br i1 %exitcond.29, label %for.inc164.29, label %for.body56.29, !llvm.loop !5
 
-for.inc169.29:                                    ; preds = %for.inc166.29
+for.inc164.29:                                    ; preds = %for.inc161.29
   %indvars.iv.next20.29 = add nsw i64 %indvars.iv19, 30
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.30
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.30
 
-for.body61.lr.ph.30:                              ; preds = %for.inc169.29
-  %636 = trunc i64 %indvars.iv.next20.29 to i32
-  %mul63.30 = shl nsw i32 %636, 7
-  %cmp67.30 = icmp eq i64 %indvars.iv.next20.29, %11
+for.body56.lr.ph.30:                              ; preds = %for.inc164.29
   %637 = trunc i64 %indvars.iv.next20.29 to i32
-  %sub84.30 = shl i32 %637, 7
-  %mul94.30 = add i32 %sub84.30, -128
-  %sub111.30 = add i32 %mul63.30, -1
-  %add119.30 = or i32 %mul63.30, 1
-  %mul136.30 = add i32 %sub84.30, 128
-  %638 = sext i32 %mul63.30 to i64
-  %639 = sext i32 %mul136.30 to i64
-  %640 = sext i32 %mul94.30 to i64
-  br label %for.body61.30
+  %mul58.30 = shl nsw i32 %637, 7
+  %cmp62.30 = icmp eq i64 %indvars.iv.next20.29, %12
+  %638 = trunc i64 %indvars.iv.next20.29 to i32
+  %sub79.30 = shl i32 %638, 7
+  %mul89.30 = add i32 %sub79.30, -128
+  %sub106.30 = add i32 %mul58.30, -1
+  %add114.30 = or i32 %mul58.30, 1
+  %mul131.30 = add i32 %sub79.30, 128
+  %639 = sext i32 %mul58.30 to i64
+  %640 = sext i32 %mul131.30 to i64
+  %641 = sext i32 %mul89.30 to i64
+  br label %for.body56.30
 
-for.body61.30:                                    ; preds = %for.inc166.30, %for.body61.lr.ph.30
-  %indvars.iv.30 = phi i64 [ 0, %for.body61.lr.ph.30 ], [ %indvars.iv.next.30, %for.inc166.30 ]
-  %641 = add nsw i64 %indvars.iv.30, %638
-  %cmp70.30 = icmp eq i64 %indvars.iv.30, 0
-  %or.cond1.30 = or i1 %cmp67.30, %cmp70.30
-  %cmp73.30 = icmp eq i64 %indvars.iv.30, %10
-  %or.cond2.30 = or i1 %cmp73.30, %or.cond1.30
-  br i1 %or.cond2.30, label %if.then75.30, label %if.else78.30
+for.body56.30:                                    ; preds = %for.inc161.30, %for.body56.lr.ph.30
+  %indvars.iv.30 = phi i64 [ 0, %for.body56.lr.ph.30 ], [ %indvars.iv.next.30, %for.inc161.30 ]
+  %642 = add nsw i64 %indvars.iv.30, %639
+  %cmp65.30 = icmp eq i64 %indvars.iv.30, 0
+  %or.cond1.30 = or i1 %cmp62.30, %cmp65.30
+  %cmp68.30 = icmp eq i64 %indvars.iv.30, %11
+  %or.cond2.30 = or i1 %cmp68.30, %or.cond1.30
+  br i1 %or.cond2.30, label %if.then70.30, label %if.else73.30
 
-if.else78.30:                                     ; preds = %for.body61.30
-  %arrayidx80.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %641
-  %642 = load i32, i32* %arrayidx80.30, align 4
-  %cmp81.30 = icmp eq i32 %642, 75
-  br i1 %cmp81.30, label %if.then83.30, label %if.else158.30
+if.else73.30:                                     ; preds = %for.body56.30
+  %arrayidx75.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %642
+  %643 = load i32, i32* %arrayidx75.30, align 4
+  %cmp76.30 = icmp eq i32 %643, 75
+  br i1 %cmp76.30, label %if.then78.30, label %if.else153.30
 
-if.else158.30:                                    ; preds = %if.else78.30
-  %conv161.30 = trunc i32 %642 to i8
-  %arrayidx163.30 = getelementptr inbounds i8, i8* %., i64 %641
-  store i8 %conv161.30, i8* %arrayidx163.30, align 1
-  br label %for.inc166.30
+if.else153.30:                                    ; preds = %if.else73.30
+  %conv156.30 = trunc i32 %643 to i8
+  %arrayidx158.30 = getelementptr inbounds i8, i8* %0, i64 %642
+  store i8 %conv156.30, i8* %arrayidx158.30, align 1
+  br label %for.inc161.30
 
-if.then83.30:                                     ; preds = %if.else78.30
-  %643 = trunc i64 %indvars.iv.30 to i32
-  %sub86.30 = add i32 %643, %sub84.30
-  %add87.30 = add i32 %sub86.30, -129
-  %idxprom88.30 = sext i32 %add87.30 to i64
-  %arrayidx89.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.30
-  %644 = load i32, i32* %arrayidx89.30, align 4
-  %cmp90.30 = icmp eq i32 %644, 255
-  br i1 %cmp90.30, label %if.then151.30, label %lor.lhs.false92.30
+if.then78.30:                                     ; preds = %if.else73.30
+  %644 = trunc i64 %indvars.iv.30 to i32
+  %sub81.30 = add i32 %644, %sub79.30
+  %add82.30 = add i32 %sub81.30, -129
+  %idxprom83.30 = sext i32 %add82.30 to i64
+  %arrayidx84.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.30
+  %645 = load i32, i32* %arrayidx84.30, align 4
+  %cmp85.30 = icmp eq i32 %645, 255
+  br i1 %cmp85.30, label %if.then146.30, label %lor.lhs.false87.30
 
-lor.lhs.false92.30:                               ; preds = %if.then83.30
-  %645 = add nsw i64 %640, %indvars.iv.30
-  %arrayidx97.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %645
-  %646 = load i32, i32* %arrayidx97.30, align 4
-  %cmp98.30 = icmp eq i32 %646, 255
-  br i1 %cmp98.30, label %if.then151.30, label %lor.lhs.false100.30
+lor.lhs.false87.30:                               ; preds = %if.then78.30
+  %646 = add nsw i64 %641, %indvars.iv.30
+  %arrayidx92.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %646
+  %647 = load i32, i32* %arrayidx92.30, align 4
+  %cmp93.30 = icmp eq i32 %647, 255
+  br i1 %cmp93.30, label %if.then146.30, label %lor.lhs.false95.30
 
-lor.lhs.false100.30:                              ; preds = %lor.lhs.false92.30
-  %add104.30 = add i32 %sub86.30, -127
-  %idxprom105.30 = sext i32 %add104.30 to i64
-  %arrayidx106.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.30
-  %647 = load i32, i32* %arrayidx106.30, align 4
-  %cmp107.30 = icmp eq i32 %647, 255
-  br i1 %cmp107.30, label %if.then151.30, label %lor.lhs.false109.30
+lor.lhs.false95.30:                               ; preds = %lor.lhs.false87.30
+  %add99.30 = add i32 %sub81.30, -127
+  %idxprom100.30 = sext i32 %add99.30 to i64
+  %arrayidx101.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.30
+  %648 = load i32, i32* %arrayidx101.30, align 4
+  %cmp102.30 = icmp eq i32 %648, 255
+  br i1 %cmp102.30, label %if.then146.30, label %lor.lhs.false104.30
 
-lor.lhs.false109.30:                              ; preds = %lor.lhs.false100.30
-  %648 = trunc i64 %indvars.iv.30 to i32
-  %add112.30 = add i32 %sub111.30, %648
-  %idxprom113.30 = sext i32 %add112.30 to i64
-  %arrayidx114.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.30
-  %649 = load i32, i32* %arrayidx114.30, align 4
-  %cmp115.30 = icmp eq i32 %649, 255
-  br i1 %cmp115.30, label %if.then151.30, label %lor.lhs.false117.30
+lor.lhs.false104.30:                              ; preds = %lor.lhs.false95.30
+  %649 = trunc i64 %indvars.iv.30 to i32
+  %add107.30 = add i32 %sub106.30, %649
+  %idxprom108.30 = sext i32 %add107.30 to i64
+  %arrayidx109.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.30
+  %650 = load i32, i32* %arrayidx109.30, align 4
+  %cmp110.30 = icmp eq i32 %650, 255
+  br i1 %cmp110.30, label %if.then146.30, label %lor.lhs.false112.30
 
-lor.lhs.false117.30:                              ; preds = %lor.lhs.false109.30
-  %650 = trunc i64 %indvars.iv.30 to i32
-  %add120.30 = add i32 %add119.30, %650
-  %idxprom121.30 = sext i32 %add120.30 to i64
-  %arrayidx122.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.30
-  %651 = load i32, i32* %arrayidx122.30, align 4
-  %cmp123.30 = icmp eq i32 %651, 255
-  br i1 %cmp123.30, label %if.then151.30, label %lor.lhs.false125.30
+lor.lhs.false112.30:                              ; preds = %lor.lhs.false104.30
+  %651 = trunc i64 %indvars.iv.30 to i32
+  %add115.30 = add i32 %add114.30, %651
+  %idxprom116.30 = sext i32 %add115.30 to i64
+  %arrayidx117.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.30
+  %652 = load i32, i32* %arrayidx117.30, align 4
+  %cmp118.30 = icmp eq i32 %652, 255
+  br i1 %cmp118.30, label %if.then146.30, label %lor.lhs.false120.30
 
-lor.lhs.false125.30:                              ; preds = %lor.lhs.false117.30
-  %add129.30 = add i32 %sub86.30, 127
-  %idxprom130.30 = sext i32 %add129.30 to i64
-  %arrayidx131.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.30
-  %652 = load i32, i32* %arrayidx131.30, align 4
-  %cmp132.30 = icmp eq i32 %652, 255
-  br i1 %cmp132.30, label %if.then151.30, label %lor.lhs.false134.30
+lor.lhs.false120.30:                              ; preds = %lor.lhs.false112.30
+  %add124.30 = add i32 %sub81.30, 127
+  %idxprom125.30 = sext i32 %add124.30 to i64
+  %arrayidx126.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.30
+  %653 = load i32, i32* %arrayidx126.30, align 4
+  %cmp127.30 = icmp eq i32 %653, 255
+  br i1 %cmp127.30, label %if.then146.30, label %lor.lhs.false129.30
 
-lor.lhs.false134.30:                              ; preds = %lor.lhs.false125.30
-  %653 = add nsw i64 %639, %indvars.iv.30
-  %arrayidx139.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %653
-  %654 = load i32, i32* %arrayidx139.30, align 4
-  %cmp140.30 = icmp eq i32 %654, 255
-  br i1 %cmp140.30, label %if.then151.30, label %lor.lhs.false142.30
+lor.lhs.false129.30:                              ; preds = %lor.lhs.false120.30
+  %654 = add nsw i64 %640, %indvars.iv.30
+  %arrayidx134.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %654
+  %655 = load i32, i32* %arrayidx134.30, align 4
+  %cmp135.30 = icmp eq i32 %655, 255
+  br i1 %cmp135.30, label %if.then146.30, label %lor.lhs.false137.30
 
-lor.lhs.false142.30:                              ; preds = %lor.lhs.false134.30
-  %add146.30 = add i32 %sub86.30, 129
-  %idxprom147.30 = sext i32 %add146.30 to i64
-  %arrayidx148.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.30
-  %655 = load i32, i32* %arrayidx148.30, align 4
-  %cmp149.30 = icmp eq i32 %655, 255
-  br i1 %cmp149.30, label %if.then151.30, label %if.else154.30
+lor.lhs.false137.30:                              ; preds = %lor.lhs.false129.30
+  %add141.30 = add i32 %sub81.30, 129
+  %idxprom142.30 = sext i32 %add141.30 to i64
+  %arrayidx143.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.30
+  %656 = load i32, i32* %arrayidx143.30, align 4
+  %cmp144.30 = icmp eq i32 %656, 255
+  br i1 %cmp144.30, label %if.then146.30, label %if.else149.30
 
-if.else154.30:                                    ; preds = %lor.lhs.false142.30
-  %arrayidx156.30 = getelementptr inbounds i8, i8* %., i64 %641
-  store i8 0, i8* %arrayidx156.30, align 1
-  br label %for.inc166.30
+if.else149.30:                                    ; preds = %lor.lhs.false137.30
+  %arrayidx151.30 = getelementptr inbounds i8, i8* %0, i64 %642
+  store i8 0, i8* %arrayidx151.30, align 1
+  br label %for.inc161.30
 
-if.then151.30:                                    ; preds = %lor.lhs.false142.30, %lor.lhs.false134.30, %lor.lhs.false125.30, %lor.lhs.false117.30, %lor.lhs.false109.30, %lor.lhs.false100.30, %lor.lhs.false92.30, %if.then83.30
-  %arrayidx153.30 = getelementptr inbounds i8, i8* %., i64 %641
-  store i8 -1, i8* %arrayidx153.30, align 1
-  br label %for.inc166.30
+if.then146.30:                                    ; preds = %lor.lhs.false137.30, %lor.lhs.false129.30, %lor.lhs.false120.30, %lor.lhs.false112.30, %lor.lhs.false104.30, %lor.lhs.false95.30, %lor.lhs.false87.30, %if.then78.30
+  %arrayidx148.30 = getelementptr inbounds i8, i8* %0, i64 %642
+  store i8 -1, i8* %arrayidx148.30, align 1
+  br label %for.inc161.30
 
-if.then75.30:                                     ; preds = %for.body61.30
-  %arrayidx77.30 = getelementptr inbounds i8, i8* %., i64 %641
-  store i8 0, i8* %arrayidx77.30, align 1
-  br label %for.inc166.30
+if.then70.30:                                     ; preds = %for.body56.30
+  %arrayidx72.30 = getelementptr inbounds i8, i8* %0, i64 %642
+  store i8 0, i8* %arrayidx72.30, align 1
+  br label %for.inc161.30
 
-for.inc166.30:                                    ; preds = %if.then75.30, %if.then151.30, %if.else154.30, %if.else158.30
+for.inc161.30:                                    ; preds = %if.then70.30, %if.then146.30, %if.else149.30, %if.else153.30
   %indvars.iv.next.30 = add nuw nsw i64 %indvars.iv.30, 1
   %lftr.wideiv.30 = trunc i64 %indvars.iv.next.30 to i32
   %exitcond.30 = icmp eq i32 %lftr.wideiv.30, %img_width
-  br i1 %exitcond.30, label %for.inc169.30, label %for.body61.30, !llvm.loop !5
+  br i1 %exitcond.30, label %for.inc164.30, label %for.body56.30, !llvm.loop !5
 
-for.inc169.30:                                    ; preds = %for.inc166.30
+for.inc164.30:                                    ; preds = %for.inc161.30
   %indvars.iv.next20.30 = add nsw i64 %indvars.iv19, 31
-  br i1 %cmp593, label %for.inc169.31, label %for.body61.lr.ph.31
+  br i1 %cmp543, label %for.inc164.31, label %for.body56.lr.ph.31
 
-for.body61.lr.ph.31:                              ; preds = %for.inc169.30
-  %656 = trunc i64 %indvars.iv.next20.30 to i32
-  %mul63.31 = shl nsw i32 %656, 7
-  %cmp67.31 = icmp eq i64 %indvars.iv.next20.30, %11
+for.body56.lr.ph.31:                              ; preds = %for.inc164.30
   %657 = trunc i64 %indvars.iv.next20.30 to i32
-  %sub84.31 = shl i32 %657, 7
-  %mul94.31 = add i32 %sub84.31, -128
-  %sub111.31 = add i32 %mul63.31, -1
-  %add119.31 = or i32 %mul63.31, 1
-  %mul136.31 = add i32 %sub84.31, 128
-  %658 = sext i32 %mul63.31 to i64
-  %659 = sext i32 %mul136.31 to i64
-  %660 = sext i32 %mul94.31 to i64
-  br label %for.body61.31
+  %mul58.31 = shl nsw i32 %657, 7
+  %cmp62.31 = icmp eq i64 %indvars.iv.next20.30, %12
+  %658 = trunc i64 %indvars.iv.next20.30 to i32
+  %sub79.31 = shl i32 %658, 7
+  %mul89.31 = add i32 %sub79.31, -128
+  %sub106.31 = add i32 %mul58.31, -1
+  %add114.31 = or i32 %mul58.31, 1
+  %mul131.31 = add i32 %sub79.31, 128
+  %659 = sext i32 %mul58.31 to i64
+  %660 = sext i32 %mul131.31 to i64
+  %661 = sext i32 %mul89.31 to i64
+  br label %for.body56.31
 
-for.body61.31:                                    ; preds = %for.inc166.31, %for.body61.lr.ph.31
-  %indvars.iv.31 = phi i64 [ 0, %for.body61.lr.ph.31 ], [ %indvars.iv.next.31, %for.inc166.31 ]
-  %661 = add nsw i64 %indvars.iv.31, %658
-  %cmp70.31 = icmp eq i64 %indvars.iv.31, 0
-  %or.cond1.31 = or i1 %cmp67.31, %cmp70.31
-  %cmp73.31 = icmp eq i64 %indvars.iv.31, %10
-  %or.cond2.31 = or i1 %cmp73.31, %or.cond1.31
-  br i1 %or.cond2.31, label %if.then75.31, label %if.else78.31
+for.body56.31:                                    ; preds = %for.inc161.31, %for.body56.lr.ph.31
+  %indvars.iv.31 = phi i64 [ 0, %for.body56.lr.ph.31 ], [ %indvars.iv.next.31, %for.inc161.31 ]
+  %662 = add nsw i64 %indvars.iv.31, %659
+  %cmp65.31 = icmp eq i64 %indvars.iv.31, 0
+  %or.cond1.31 = or i1 %cmp62.31, %cmp65.31
+  %cmp68.31 = icmp eq i64 %indvars.iv.31, %11
+  %or.cond2.31 = or i1 %cmp68.31, %or.cond1.31
+  br i1 %or.cond2.31, label %if.then70.31, label %if.else73.31
 
-if.else78.31:                                     ; preds = %for.body61.31
-  %arrayidx80.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %661
-  %662 = load i32, i32* %arrayidx80.31, align 4
-  %cmp81.31 = icmp eq i32 %662, 75
-  br i1 %cmp81.31, label %if.then83.31, label %if.else158.31
+if.else73.31:                                     ; preds = %for.body56.31
+  %arrayidx75.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %662
+  %663 = load i32, i32* %arrayidx75.31, align 4
+  %cmp76.31 = icmp eq i32 %663, 75
+  br i1 %cmp76.31, label %if.then78.31, label %if.else153.31
 
-if.else158.31:                                    ; preds = %if.else78.31
-  %conv161.31 = trunc i32 %662 to i8
-  %arrayidx163.31 = getelementptr inbounds i8, i8* %., i64 %661
-  store i8 %conv161.31, i8* %arrayidx163.31, align 1
-  br label %for.inc166.31
+if.else153.31:                                    ; preds = %if.else73.31
+  %conv156.31 = trunc i32 %663 to i8
+  %arrayidx158.31 = getelementptr inbounds i8, i8* %0, i64 %662
+  store i8 %conv156.31, i8* %arrayidx158.31, align 1
+  br label %for.inc161.31
 
-if.then83.31:                                     ; preds = %if.else78.31
-  %663 = trunc i64 %indvars.iv.31 to i32
-  %sub86.31 = add i32 %663, %sub84.31
-  %add87.31 = add i32 %sub86.31, -129
-  %idxprom88.31 = sext i32 %add87.31 to i64
-  %arrayidx89.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom88.31
-  %664 = load i32, i32* %arrayidx89.31, align 4
-  %cmp90.31 = icmp eq i32 %664, 255
-  br i1 %cmp90.31, label %if.then151.31, label %lor.lhs.false92.31
+if.then78.31:                                     ; preds = %if.else73.31
+  %664 = trunc i64 %indvars.iv.31 to i32
+  %sub81.31 = add i32 %664, %sub79.31
+  %add82.31 = add i32 %sub81.31, -129
+  %idxprom83.31 = sext i32 %add82.31 to i64
+  %arrayidx84.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom83.31
+  %665 = load i32, i32* %arrayidx84.31, align 4
+  %cmp85.31 = icmp eq i32 %665, 255
+  br i1 %cmp85.31, label %if.then146.31, label %lor.lhs.false87.31
 
-lor.lhs.false92.31:                               ; preds = %if.then83.31
-  %665 = add nsw i64 %660, %indvars.iv.31
-  %arrayidx97.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %665
-  %666 = load i32, i32* %arrayidx97.31, align 4
-  %cmp98.31 = icmp eq i32 %666, 255
-  br i1 %cmp98.31, label %if.then151.31, label %lor.lhs.false100.31
+lor.lhs.false87.31:                               ; preds = %if.then78.31
+  %666 = add nsw i64 %661, %indvars.iv.31
+  %arrayidx92.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %666
+  %667 = load i32, i32* %arrayidx92.31, align 4
+  %cmp93.31 = icmp eq i32 %667, 255
+  br i1 %cmp93.31, label %if.then146.31, label %lor.lhs.false95.31
 
-lor.lhs.false100.31:                              ; preds = %lor.lhs.false92.31
-  %add104.31 = add i32 %sub86.31, -127
-  %idxprom105.31 = sext i32 %add104.31 to i64
-  %arrayidx106.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom105.31
-  %667 = load i32, i32* %arrayidx106.31, align 4
-  %cmp107.31 = icmp eq i32 %667, 255
-  br i1 %cmp107.31, label %if.then151.31, label %lor.lhs.false109.31
+lor.lhs.false95.31:                               ; preds = %lor.lhs.false87.31
+  %add99.31 = add i32 %sub81.31, -127
+  %idxprom100.31 = sext i32 %add99.31 to i64
+  %arrayidx101.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom100.31
+  %668 = load i32, i32* %arrayidx101.31, align 4
+  %cmp102.31 = icmp eq i32 %668, 255
+  br i1 %cmp102.31, label %if.then146.31, label %lor.lhs.false104.31
 
-lor.lhs.false109.31:                              ; preds = %lor.lhs.false100.31
-  %668 = trunc i64 %indvars.iv.31 to i32
-  %add112.31 = add i32 %sub111.31, %668
-  %idxprom113.31 = sext i32 %add112.31 to i64
-  %arrayidx114.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom113.31
-  %669 = load i32, i32* %arrayidx114.31, align 4
-  %cmp115.31 = icmp eq i32 %669, 255
-  br i1 %cmp115.31, label %if.then151.31, label %lor.lhs.false117.31
+lor.lhs.false104.31:                              ; preds = %lor.lhs.false95.31
+  %669 = trunc i64 %indvars.iv.31 to i32
+  %add107.31 = add i32 %sub106.31, %669
+  %idxprom108.31 = sext i32 %add107.31 to i64
+  %arrayidx109.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom108.31
+  %670 = load i32, i32* %arrayidx109.31, align 4
+  %cmp110.31 = icmp eq i32 %670, 255
+  br i1 %cmp110.31, label %if.then146.31, label %lor.lhs.false112.31
 
-lor.lhs.false117.31:                              ; preds = %lor.lhs.false109.31
-  %670 = trunc i64 %indvars.iv.31 to i32
-  %add120.31 = add i32 %add119.31, %670
-  %idxprom121.31 = sext i32 %add120.31 to i64
-  %arrayidx122.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom121.31
-  %671 = load i32, i32* %arrayidx122.31, align 4
-  %cmp123.31 = icmp eq i32 %671, 255
-  br i1 %cmp123.31, label %if.then151.31, label %lor.lhs.false125.31
+lor.lhs.false112.31:                              ; preds = %lor.lhs.false104.31
+  %671 = trunc i64 %indvars.iv.31 to i32
+  %add115.31 = add i32 %add114.31, %671
+  %idxprom116.31 = sext i32 %add115.31 to i64
+  %arrayidx117.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom116.31
+  %672 = load i32, i32* %arrayidx117.31, align 4
+  %cmp118.31 = icmp eq i32 %672, 255
+  br i1 %cmp118.31, label %if.then146.31, label %lor.lhs.false120.31
 
-lor.lhs.false125.31:                              ; preds = %lor.lhs.false117.31
-  %add129.31 = add i32 %sub86.31, 127
-  %idxprom130.31 = sext i32 %add129.31 to i64
-  %arrayidx131.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom130.31
-  %672 = load i32, i32* %arrayidx131.31, align 4
-  %cmp132.31 = icmp eq i32 %672, 255
-  br i1 %cmp132.31, label %if.then151.31, label %lor.lhs.false134.31
+lor.lhs.false120.31:                              ; preds = %lor.lhs.false112.31
+  %add124.31 = add i32 %sub81.31, 127
+  %idxprom125.31 = sext i32 %add124.31 to i64
+  %arrayidx126.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom125.31
+  %673 = load i32, i32* %arrayidx126.31, align 4
+  %cmp127.31 = icmp eq i32 %673, 255
+  br i1 %cmp127.31, label %if.then146.31, label %lor.lhs.false129.31
 
-lor.lhs.false134.31:                              ; preds = %lor.lhs.false125.31
-  %673 = add nsw i64 %659, %indvars.iv.31
-  %arrayidx139.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %673
-  %674 = load i32, i32* %arrayidx139.31, align 4
-  %cmp140.31 = icmp eq i32 %674, 255
-  br i1 %cmp140.31, label %if.then151.31, label %lor.lhs.false142.31
+lor.lhs.false129.31:                              ; preds = %lor.lhs.false120.31
+  %674 = add nsw i64 %660, %indvars.iv.31
+  %arrayidx134.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %674
+  %675 = load i32, i32* %arrayidx134.31, align 4
+  %cmp135.31 = icmp eq i32 %675, 255
+  br i1 %cmp135.31, label %if.then146.31, label %lor.lhs.false137.31
 
-lor.lhs.false142.31:                              ; preds = %lor.lhs.false134.31
-  %add146.31 = add i32 %sub86.31, 129
-  %idxprom147.31 = sext i32 %add146.31 to i64
-  %arrayidx148.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom147.31
-  %675 = load i32, i32* %arrayidx148.31, align 4
-  %cmp149.31 = icmp eq i32 %675, 255
-  br i1 %cmp149.31, label %if.then151.31, label %if.else154.31
+lor.lhs.false137.31:                              ; preds = %lor.lhs.false129.31
+  %add141.31 = add i32 %sub81.31, 129
+  %idxprom142.31 = sext i32 %add141.31 to i64
+  %arrayidx143.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %idxprom142.31
+  %676 = load i32, i32* %arrayidx143.31, align 4
+  %cmp144.31 = icmp eq i32 %676, 255
+  br i1 %cmp144.31, label %if.then146.31, label %if.else149.31
 
-if.else154.31:                                    ; preds = %lor.lhs.false142.31
-  %arrayidx156.31 = getelementptr inbounds i8, i8* %., i64 %661
-  store i8 0, i8* %arrayidx156.31, align 1
-  br label %for.inc166.31
+if.else149.31:                                    ; preds = %lor.lhs.false137.31
+  %arrayidx151.31 = getelementptr inbounds i8, i8* %0, i64 %662
+  store i8 0, i8* %arrayidx151.31, align 1
+  br label %for.inc161.31
 
-if.then151.31:                                    ; preds = %lor.lhs.false142.31, %lor.lhs.false134.31, %lor.lhs.false125.31, %lor.lhs.false117.31, %lor.lhs.false109.31, %lor.lhs.false100.31, %lor.lhs.false92.31, %if.then83.31
-  %arrayidx153.31 = getelementptr inbounds i8, i8* %., i64 %661
-  store i8 -1, i8* %arrayidx153.31, align 1
-  br label %for.inc166.31
+if.then146.31:                                    ; preds = %lor.lhs.false137.31, %lor.lhs.false129.31, %lor.lhs.false120.31, %lor.lhs.false112.31, %lor.lhs.false104.31, %lor.lhs.false95.31, %lor.lhs.false87.31, %if.then78.31
+  %arrayidx148.31 = getelementptr inbounds i8, i8* %0, i64 %662
+  store i8 -1, i8* %arrayidx148.31, align 1
+  br label %for.inc161.31
 
-if.then75.31:                                     ; preds = %for.body61.31
-  %arrayidx77.31 = getelementptr inbounds i8, i8* %., i64 %661
-  store i8 0, i8* %arrayidx77.31, align 1
-  br label %for.inc166.31
+if.then70.31:                                     ; preds = %for.body56.31
+  %arrayidx72.31 = getelementptr inbounds i8, i8* %0, i64 %662
+  store i8 0, i8* %arrayidx72.31, align 1
+  br label %for.inc161.31
 
-for.inc166.31:                                    ; preds = %if.then75.31, %if.then151.31, %if.else154.31, %if.else158.31
+for.inc161.31:                                    ; preds = %if.then70.31, %if.then146.31, %if.else149.31, %if.else153.31
   %indvars.iv.next.31 = add nuw nsw i64 %indvars.iv.31, 1
   %lftr.wideiv.31 = trunc i64 %indvars.iv.next.31 to i32
   %exitcond.31 = icmp eq i32 %lftr.wideiv.31, %img_width
-  br i1 %exitcond.31, label %for.inc169.31.loopexit, label %for.body61.31, !llvm.loop !5
+  br i1 %exitcond.31, label %for.inc164.31.loopexit, label %for.body56.31, !llvm.loop !5
 
-for.inc169.31.loopexit:                           ; preds = %for.inc166.31
-  br label %for.inc169.31
+for.inc164.31.loopexit:                           ; preds = %for.inc161.31
+  br label %for.inc164.31
 
-for.inc169.31:                                    ; preds = %for.inc169.31.loopexit, %for.cond58.preheader, %for.inc169, %for.inc169.1, %for.inc169.2, %for.inc169.3, %for.inc169.4, %for.inc169.5, %for.inc169.6, %for.inc169.7, %for.inc169.8, %for.inc169.9, %for.inc169.10, %for.inc169.11, %for.inc169.12, %for.inc169.13, %for.inc169.14, %for.inc169.15, %for.inc169.16, %for.inc169.17, %for.inc169.18, %for.inc169.19, %for.inc169.20, %for.inc169.21, %for.inc169.22, %for.inc169.23, %for.inc169.24, %for.inc169.25, %for.inc169.26, %for.inc169.27, %for.inc169.28, %for.inc169.29, %for.inc169.30
+for.inc164.31:                                    ; preds = %for.inc164.31.loopexit, %for.cond53.preheader, %for.inc164, %for.inc164.1, %for.inc164.2, %for.inc164.3, %for.inc164.4, %for.inc164.5, %for.inc164.6, %for.inc164.7, %for.inc164.8, %for.inc164.9, %for.inc164.10, %for.inc164.11, %for.inc164.12, %for.inc164.13, %for.inc164.14, %for.inc164.15, %for.inc164.16, %for.inc164.17, %for.inc164.18, %for.inc164.19, %for.inc164.20, %for.inc164.21, %for.inc164.22, %for.inc164.23, %for.inc164.24, %for.inc164.25, %for.inc164.26, %for.inc164.27, %for.inc164.28, %for.inc164.29, %for.inc164.30
   %indvars.iv.next20.31 = add nsw i64 %indvars.iv19, 32
   %lftr.wideiv21.31 = trunc i64 %indvars.iv.next20.31 to i32
   %exitcond22.31 = icmp eq i32 %lftr.wideiv21.31, %img_height
-  br i1 %exitcond22.31, label %for.end171.loopexit, label %for.cond58.preheader, !llvm.loop !7
+  br i1 %exitcond22.31, label %for.end166.loopexit, label %for.cond53.preheader, !llvm.loop !7
 
-for.body22.lr.ph.1:                               ; preds = %for.inc49
+for.body18.lr.ph.1:                               ; preds = %for.inc44
   %indvars.iv.next29 = add nuw nsw i64 %indvars.iv28, 1
-  %676 = trunc i64 %indvars.iv.next29 to i32
-  %mul23.1 = shl i32 %676, 7
-  %677 = sext i32 %mul23.1 to i64
-  br label %for.body22.1
+  %677 = trunc i64 %indvars.iv.next29 to i32
+  %mul19.1 = shl i32 %677, 7
+  %678 = sext i32 %mul19.1 to i64
+  br label %for.body18.1
 
-for.body22.1:                                     ; preds = %for.inc46.1, %for.body22.lr.ph.1
-  %indvars.iv23.1 = phi i64 [ 0, %for.body22.lr.ph.1 ], [ %indvars.iv.next24.1, %for.inc46.1 ]
-  %678 = add nsw i64 %indvars.iv23.1, %677
-  %arrayidx25.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %678
-  %679 = load i32, i32* %arrayidx25.1, align 4
-  %conv26.1 = uitofp i32 %679 to float
-  %cmp27.1 = fcmp olt float %conv26.1, %mul13
-  br i1 %cmp27.1, label %if.then29.1, label %if.else32.1
+for.body18.1:                                     ; preds = %for.inc41.1, %for.body18.lr.ph.1
+  %indvars.iv23.1 = phi i64 [ 0, %for.body18.lr.ph.1 ], [ %indvars.iv.next24.1, %for.inc41.1 ]
+  %679 = add nsw i64 %indvars.iv23.1, %678
+  %arrayidx21.1 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %679
+  %680 = load i32, i32* %arrayidx21.1, align 4
+  %conv22.1 = uitofp i32 %680 to float
+  %cmp23.1 = fcmp olt float %conv22.1, %mul9
+  br i1 %cmp23.1, label %if.then25.1, label %if.else.1
 
-if.else32.1:                                      ; preds = %for.body22.1
-  %cmp36.1 = fcmp ult float %conv26.1, %img_max.0.lcssa
-  br i1 %cmp36.1, label %if.else41.1, label %if.then38.1
+if.else.1:                                        ; preds = %for.body18.1
+  %cmp31.1 = fcmp ult float %conv22.1, %mul8
+  br i1 %cmp31.1, label %if.else36.1, label %if.then33.1
 
-if.then38.1:                                      ; preds = %if.else32.1
-  store i32 255, i32* %arrayidx25.1, align 4
-  br label %for.inc46.1
+if.then33.1:                                      ; preds = %if.else.1
+  store i32 255, i32* %arrayidx21.1, align 4
+  br label %for.inc41.1
 
-if.else41.1:                                      ; preds = %if.else32.1
-  store i32 75, i32* %arrayidx25.1, align 4
-  br label %for.inc46.1
+if.else36.1:                                      ; preds = %if.else.1
+  store i32 75, i32* %arrayidx21.1, align 4
+  br label %for.inc41.1
 
-if.then29.1:                                      ; preds = %for.body22.1
-  store i32 0, i32* %arrayidx25.1, align 4
-  br label %for.inc46.1
+if.then25.1:                                      ; preds = %for.body18.1
+  store i32 0, i32* %arrayidx21.1, align 4
+  br label %for.inc41.1
 
-for.inc46.1:                                      ; preds = %if.then29.1, %if.else41.1, %if.then38.1
+for.inc41.1:                                      ; preds = %if.then25.1, %if.else36.1, %if.then33.1
   %indvars.iv.next24.1 = add nuw nsw i64 %indvars.iv23.1, 1
   %lftr.wideiv26.1 = trunc i64 %indvars.iv.next24.1 to i32
   %exitcond27.1 = icmp eq i32 %lftr.wideiv26.1, %img_width
-  br i1 %exitcond27.1, label %for.inc49.1, label %for.body22.1, !llvm.loop !3
+  br i1 %exitcond27.1, label %for.inc44.1, label %for.body18.1, !llvm.loop !3
 
-for.inc49.1:                                      ; preds = %for.inc46.1
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.2
+for.inc44.1:                                      ; preds = %for.inc41.1
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.2
 
-for.body22.lr.ph.2:                               ; preds = %for.inc49.1
+for.body18.lr.ph.2:                               ; preds = %for.inc44.1
   %indvars.iv.next29.1 = add nsw i64 %indvars.iv28, 2
-  %680 = trunc i64 %indvars.iv.next29.1 to i32
-  %mul23.2 = shl i32 %680, 7
-  %681 = sext i32 %mul23.2 to i64
-  br label %for.body22.2
+  %681 = trunc i64 %indvars.iv.next29.1 to i32
+  %mul19.2 = shl i32 %681, 7
+  %682 = sext i32 %mul19.2 to i64
+  br label %for.body18.2
 
-for.body22.2:                                     ; preds = %for.inc46.2, %for.body22.lr.ph.2
-  %indvars.iv23.2 = phi i64 [ 0, %for.body22.lr.ph.2 ], [ %indvars.iv.next24.2, %for.inc46.2 ]
-  %682 = add nsw i64 %indvars.iv23.2, %681
-  %arrayidx25.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %682
-  %683 = load i32, i32* %arrayidx25.2, align 4
-  %conv26.2 = uitofp i32 %683 to float
-  %cmp27.2 = fcmp olt float %conv26.2, %mul13
-  br i1 %cmp27.2, label %if.then29.2, label %if.else32.2
+for.body18.2:                                     ; preds = %for.inc41.2, %for.body18.lr.ph.2
+  %indvars.iv23.2 = phi i64 [ 0, %for.body18.lr.ph.2 ], [ %indvars.iv.next24.2, %for.inc41.2 ]
+  %683 = add nsw i64 %indvars.iv23.2, %682
+  %arrayidx21.2 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %683
+  %684 = load i32, i32* %arrayidx21.2, align 4
+  %conv22.2 = uitofp i32 %684 to float
+  %cmp23.2 = fcmp olt float %conv22.2, %mul9
+  br i1 %cmp23.2, label %if.then25.2, label %if.else.2
 
-if.else32.2:                                      ; preds = %for.body22.2
-  %cmp36.2 = fcmp ult float %conv26.2, %img_max.0.lcssa
-  br i1 %cmp36.2, label %if.else41.2, label %if.then38.2
+if.else.2:                                        ; preds = %for.body18.2
+  %cmp31.2 = fcmp ult float %conv22.2, %mul8
+  br i1 %cmp31.2, label %if.else36.2, label %if.then33.2
 
-if.then38.2:                                      ; preds = %if.else32.2
-  store i32 255, i32* %arrayidx25.2, align 4
-  br label %for.inc46.2
+if.then33.2:                                      ; preds = %if.else.2
+  store i32 255, i32* %arrayidx21.2, align 4
+  br label %for.inc41.2
 
-if.else41.2:                                      ; preds = %if.else32.2
-  store i32 75, i32* %arrayidx25.2, align 4
-  br label %for.inc46.2
+if.else36.2:                                      ; preds = %if.else.2
+  store i32 75, i32* %arrayidx21.2, align 4
+  br label %for.inc41.2
 
-if.then29.2:                                      ; preds = %for.body22.2
-  store i32 0, i32* %arrayidx25.2, align 4
-  br label %for.inc46.2
+if.then25.2:                                      ; preds = %for.body18.2
+  store i32 0, i32* %arrayidx21.2, align 4
+  br label %for.inc41.2
 
-for.inc46.2:                                      ; preds = %if.then29.2, %if.else41.2, %if.then38.2
+for.inc41.2:                                      ; preds = %if.then25.2, %if.else36.2, %if.then33.2
   %indvars.iv.next24.2 = add nuw nsw i64 %indvars.iv23.2, 1
   %lftr.wideiv26.2 = trunc i64 %indvars.iv.next24.2 to i32
   %exitcond27.2 = icmp eq i32 %lftr.wideiv26.2, %img_width
-  br i1 %exitcond27.2, label %for.inc49.2, label %for.body22.2, !llvm.loop !3
+  br i1 %exitcond27.2, label %for.inc44.2, label %for.body18.2, !llvm.loop !3
 
-for.inc49.2:                                      ; preds = %for.inc46.2
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.3
+for.inc44.2:                                      ; preds = %for.inc41.2
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.3
 
-for.body22.lr.ph.3:                               ; preds = %for.inc49.2
+for.body18.lr.ph.3:                               ; preds = %for.inc44.2
   %indvars.iv.next29.2 = add nsw i64 %indvars.iv28, 3
-  %684 = trunc i64 %indvars.iv.next29.2 to i32
-  %mul23.3 = shl i32 %684, 7
-  %685 = sext i32 %mul23.3 to i64
-  br label %for.body22.3
+  %685 = trunc i64 %indvars.iv.next29.2 to i32
+  %mul19.3 = shl i32 %685, 7
+  %686 = sext i32 %mul19.3 to i64
+  br label %for.body18.3
 
-for.body22.3:                                     ; preds = %for.inc46.3, %for.body22.lr.ph.3
-  %indvars.iv23.3 = phi i64 [ 0, %for.body22.lr.ph.3 ], [ %indvars.iv.next24.3, %for.inc46.3 ]
-  %686 = add nsw i64 %indvars.iv23.3, %685
-  %arrayidx25.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %686
-  %687 = load i32, i32* %arrayidx25.3, align 4
-  %conv26.3 = uitofp i32 %687 to float
-  %cmp27.3 = fcmp olt float %conv26.3, %mul13
-  br i1 %cmp27.3, label %if.then29.3, label %if.else32.3
+for.body18.3:                                     ; preds = %for.inc41.3, %for.body18.lr.ph.3
+  %indvars.iv23.3 = phi i64 [ 0, %for.body18.lr.ph.3 ], [ %indvars.iv.next24.3, %for.inc41.3 ]
+  %687 = add nsw i64 %indvars.iv23.3, %686
+  %arrayidx21.3 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %687
+  %688 = load i32, i32* %arrayidx21.3, align 4
+  %conv22.3 = uitofp i32 %688 to float
+  %cmp23.3 = fcmp olt float %conv22.3, %mul9
+  br i1 %cmp23.3, label %if.then25.3, label %if.else.3
 
-if.else32.3:                                      ; preds = %for.body22.3
-  %cmp36.3 = fcmp ult float %conv26.3, %img_max.0.lcssa
-  br i1 %cmp36.3, label %if.else41.3, label %if.then38.3
+if.else.3:                                        ; preds = %for.body18.3
+  %cmp31.3 = fcmp ult float %conv22.3, %mul8
+  br i1 %cmp31.3, label %if.else36.3, label %if.then33.3
 
-if.then38.3:                                      ; preds = %if.else32.3
-  store i32 255, i32* %arrayidx25.3, align 4
-  br label %for.inc46.3
+if.then33.3:                                      ; preds = %if.else.3
+  store i32 255, i32* %arrayidx21.3, align 4
+  br label %for.inc41.3
 
-if.else41.3:                                      ; preds = %if.else32.3
-  store i32 75, i32* %arrayidx25.3, align 4
-  br label %for.inc46.3
+if.else36.3:                                      ; preds = %if.else.3
+  store i32 75, i32* %arrayidx21.3, align 4
+  br label %for.inc41.3
 
-if.then29.3:                                      ; preds = %for.body22.3
-  store i32 0, i32* %arrayidx25.3, align 4
-  br label %for.inc46.3
+if.then25.3:                                      ; preds = %for.body18.3
+  store i32 0, i32* %arrayidx21.3, align 4
+  br label %for.inc41.3
 
-for.inc46.3:                                      ; preds = %if.then29.3, %if.else41.3, %if.then38.3
+for.inc41.3:                                      ; preds = %if.then25.3, %if.else36.3, %if.then33.3
   %indvars.iv.next24.3 = add nuw nsw i64 %indvars.iv23.3, 1
   %lftr.wideiv26.3 = trunc i64 %indvars.iv.next24.3 to i32
   %exitcond27.3 = icmp eq i32 %lftr.wideiv26.3, %img_width
-  br i1 %exitcond27.3, label %for.inc49.3, label %for.body22.3, !llvm.loop !3
+  br i1 %exitcond27.3, label %for.inc44.3, label %for.body18.3, !llvm.loop !3
 
-for.inc49.3:                                      ; preds = %for.inc46.3
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.4
+for.inc44.3:                                      ; preds = %for.inc41.3
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.4
 
-for.body22.lr.ph.4:                               ; preds = %for.inc49.3
+for.body18.lr.ph.4:                               ; preds = %for.inc44.3
   %indvars.iv.next29.3 = add nsw i64 %indvars.iv28, 4
-  %688 = trunc i64 %indvars.iv.next29.3 to i32
-  %mul23.4 = shl i32 %688, 7
-  %689 = sext i32 %mul23.4 to i64
-  br label %for.body22.4
+  %689 = trunc i64 %indvars.iv.next29.3 to i32
+  %mul19.4 = shl i32 %689, 7
+  %690 = sext i32 %mul19.4 to i64
+  br label %for.body18.4
 
-for.body22.4:                                     ; preds = %for.inc46.4, %for.body22.lr.ph.4
-  %indvars.iv23.4 = phi i64 [ 0, %for.body22.lr.ph.4 ], [ %indvars.iv.next24.4, %for.inc46.4 ]
-  %690 = add nsw i64 %indvars.iv23.4, %689
-  %arrayidx25.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %690
-  %691 = load i32, i32* %arrayidx25.4, align 4
-  %conv26.4 = uitofp i32 %691 to float
-  %cmp27.4 = fcmp olt float %conv26.4, %mul13
-  br i1 %cmp27.4, label %if.then29.4, label %if.else32.4
+for.body18.4:                                     ; preds = %for.inc41.4, %for.body18.lr.ph.4
+  %indvars.iv23.4 = phi i64 [ 0, %for.body18.lr.ph.4 ], [ %indvars.iv.next24.4, %for.inc41.4 ]
+  %691 = add nsw i64 %indvars.iv23.4, %690
+  %arrayidx21.4 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %691
+  %692 = load i32, i32* %arrayidx21.4, align 4
+  %conv22.4 = uitofp i32 %692 to float
+  %cmp23.4 = fcmp olt float %conv22.4, %mul9
+  br i1 %cmp23.4, label %if.then25.4, label %if.else.4
 
-if.else32.4:                                      ; preds = %for.body22.4
-  %cmp36.4 = fcmp ult float %conv26.4, %img_max.0.lcssa
-  br i1 %cmp36.4, label %if.else41.4, label %if.then38.4
+if.else.4:                                        ; preds = %for.body18.4
+  %cmp31.4 = fcmp ult float %conv22.4, %mul8
+  br i1 %cmp31.4, label %if.else36.4, label %if.then33.4
 
-if.then38.4:                                      ; preds = %if.else32.4
-  store i32 255, i32* %arrayidx25.4, align 4
-  br label %for.inc46.4
+if.then33.4:                                      ; preds = %if.else.4
+  store i32 255, i32* %arrayidx21.4, align 4
+  br label %for.inc41.4
 
-if.else41.4:                                      ; preds = %if.else32.4
-  store i32 75, i32* %arrayidx25.4, align 4
-  br label %for.inc46.4
+if.else36.4:                                      ; preds = %if.else.4
+  store i32 75, i32* %arrayidx21.4, align 4
+  br label %for.inc41.4
 
-if.then29.4:                                      ; preds = %for.body22.4
-  store i32 0, i32* %arrayidx25.4, align 4
-  br label %for.inc46.4
+if.then25.4:                                      ; preds = %for.body18.4
+  store i32 0, i32* %arrayidx21.4, align 4
+  br label %for.inc41.4
 
-for.inc46.4:                                      ; preds = %if.then29.4, %if.else41.4, %if.then38.4
+for.inc41.4:                                      ; preds = %if.then25.4, %if.else36.4, %if.then33.4
   %indvars.iv.next24.4 = add nuw nsw i64 %indvars.iv23.4, 1
   %lftr.wideiv26.4 = trunc i64 %indvars.iv.next24.4 to i32
   %exitcond27.4 = icmp eq i32 %lftr.wideiv26.4, %img_width
-  br i1 %exitcond27.4, label %for.inc49.4, label %for.body22.4, !llvm.loop !3
+  br i1 %exitcond27.4, label %for.inc44.4, label %for.body18.4, !llvm.loop !3
 
-for.inc49.4:                                      ; preds = %for.inc46.4
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.5
+for.inc44.4:                                      ; preds = %for.inc41.4
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.5
 
-for.body22.lr.ph.5:                               ; preds = %for.inc49.4
+for.body18.lr.ph.5:                               ; preds = %for.inc44.4
   %indvars.iv.next29.4 = add nsw i64 %indvars.iv28, 5
-  %692 = trunc i64 %indvars.iv.next29.4 to i32
-  %mul23.5 = shl i32 %692, 7
-  %693 = sext i32 %mul23.5 to i64
-  br label %for.body22.5
+  %693 = trunc i64 %indvars.iv.next29.4 to i32
+  %mul19.5 = shl i32 %693, 7
+  %694 = sext i32 %mul19.5 to i64
+  br label %for.body18.5
 
-for.body22.5:                                     ; preds = %for.inc46.5, %for.body22.lr.ph.5
-  %indvars.iv23.5 = phi i64 [ 0, %for.body22.lr.ph.5 ], [ %indvars.iv.next24.5, %for.inc46.5 ]
-  %694 = add nsw i64 %indvars.iv23.5, %693
-  %arrayidx25.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %694
-  %695 = load i32, i32* %arrayidx25.5, align 4
-  %conv26.5 = uitofp i32 %695 to float
-  %cmp27.5 = fcmp olt float %conv26.5, %mul13
-  br i1 %cmp27.5, label %if.then29.5, label %if.else32.5
+for.body18.5:                                     ; preds = %for.inc41.5, %for.body18.lr.ph.5
+  %indvars.iv23.5 = phi i64 [ 0, %for.body18.lr.ph.5 ], [ %indvars.iv.next24.5, %for.inc41.5 ]
+  %695 = add nsw i64 %indvars.iv23.5, %694
+  %arrayidx21.5 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %695
+  %696 = load i32, i32* %arrayidx21.5, align 4
+  %conv22.5 = uitofp i32 %696 to float
+  %cmp23.5 = fcmp olt float %conv22.5, %mul9
+  br i1 %cmp23.5, label %if.then25.5, label %if.else.5
 
-if.else32.5:                                      ; preds = %for.body22.5
-  %cmp36.5 = fcmp ult float %conv26.5, %img_max.0.lcssa
-  br i1 %cmp36.5, label %if.else41.5, label %if.then38.5
+if.else.5:                                        ; preds = %for.body18.5
+  %cmp31.5 = fcmp ult float %conv22.5, %mul8
+  br i1 %cmp31.5, label %if.else36.5, label %if.then33.5
 
-if.then38.5:                                      ; preds = %if.else32.5
-  store i32 255, i32* %arrayidx25.5, align 4
-  br label %for.inc46.5
+if.then33.5:                                      ; preds = %if.else.5
+  store i32 255, i32* %arrayidx21.5, align 4
+  br label %for.inc41.5
 
-if.else41.5:                                      ; preds = %if.else32.5
-  store i32 75, i32* %arrayidx25.5, align 4
-  br label %for.inc46.5
+if.else36.5:                                      ; preds = %if.else.5
+  store i32 75, i32* %arrayidx21.5, align 4
+  br label %for.inc41.5
 
-if.then29.5:                                      ; preds = %for.body22.5
-  store i32 0, i32* %arrayidx25.5, align 4
-  br label %for.inc46.5
+if.then25.5:                                      ; preds = %for.body18.5
+  store i32 0, i32* %arrayidx21.5, align 4
+  br label %for.inc41.5
 
-for.inc46.5:                                      ; preds = %if.then29.5, %if.else41.5, %if.then38.5
+for.inc41.5:                                      ; preds = %if.then25.5, %if.else36.5, %if.then33.5
   %indvars.iv.next24.5 = add nuw nsw i64 %indvars.iv23.5, 1
   %lftr.wideiv26.5 = trunc i64 %indvars.iv.next24.5 to i32
   %exitcond27.5 = icmp eq i32 %lftr.wideiv26.5, %img_width
-  br i1 %exitcond27.5, label %for.inc49.5, label %for.body22.5, !llvm.loop !3
+  br i1 %exitcond27.5, label %for.inc44.5, label %for.body18.5, !llvm.loop !3
 
-for.inc49.5:                                      ; preds = %for.inc46.5
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.6
+for.inc44.5:                                      ; preds = %for.inc41.5
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.6
 
-for.body22.lr.ph.6:                               ; preds = %for.inc49.5
+for.body18.lr.ph.6:                               ; preds = %for.inc44.5
   %indvars.iv.next29.5 = add nsw i64 %indvars.iv28, 6
-  %696 = trunc i64 %indvars.iv.next29.5 to i32
-  %mul23.6 = shl i32 %696, 7
-  %697 = sext i32 %mul23.6 to i64
-  br label %for.body22.6
+  %697 = trunc i64 %indvars.iv.next29.5 to i32
+  %mul19.6 = shl i32 %697, 7
+  %698 = sext i32 %mul19.6 to i64
+  br label %for.body18.6
 
-for.body22.6:                                     ; preds = %for.inc46.6, %for.body22.lr.ph.6
-  %indvars.iv23.6 = phi i64 [ 0, %for.body22.lr.ph.6 ], [ %indvars.iv.next24.6, %for.inc46.6 ]
-  %698 = add nsw i64 %indvars.iv23.6, %697
-  %arrayidx25.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %698
-  %699 = load i32, i32* %arrayidx25.6, align 4
-  %conv26.6 = uitofp i32 %699 to float
-  %cmp27.6 = fcmp olt float %conv26.6, %mul13
-  br i1 %cmp27.6, label %if.then29.6, label %if.else32.6
+for.body18.6:                                     ; preds = %for.inc41.6, %for.body18.lr.ph.6
+  %indvars.iv23.6 = phi i64 [ 0, %for.body18.lr.ph.6 ], [ %indvars.iv.next24.6, %for.inc41.6 ]
+  %699 = add nsw i64 %indvars.iv23.6, %698
+  %arrayidx21.6 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %699
+  %700 = load i32, i32* %arrayidx21.6, align 4
+  %conv22.6 = uitofp i32 %700 to float
+  %cmp23.6 = fcmp olt float %conv22.6, %mul9
+  br i1 %cmp23.6, label %if.then25.6, label %if.else.6
 
-if.else32.6:                                      ; preds = %for.body22.6
-  %cmp36.6 = fcmp ult float %conv26.6, %img_max.0.lcssa
-  br i1 %cmp36.6, label %if.else41.6, label %if.then38.6
+if.else.6:                                        ; preds = %for.body18.6
+  %cmp31.6 = fcmp ult float %conv22.6, %mul8
+  br i1 %cmp31.6, label %if.else36.6, label %if.then33.6
 
-if.then38.6:                                      ; preds = %if.else32.6
-  store i32 255, i32* %arrayidx25.6, align 4
-  br label %for.inc46.6
+if.then33.6:                                      ; preds = %if.else.6
+  store i32 255, i32* %arrayidx21.6, align 4
+  br label %for.inc41.6
 
-if.else41.6:                                      ; preds = %if.else32.6
-  store i32 75, i32* %arrayidx25.6, align 4
-  br label %for.inc46.6
+if.else36.6:                                      ; preds = %if.else.6
+  store i32 75, i32* %arrayidx21.6, align 4
+  br label %for.inc41.6
 
-if.then29.6:                                      ; preds = %for.body22.6
-  store i32 0, i32* %arrayidx25.6, align 4
-  br label %for.inc46.6
+if.then25.6:                                      ; preds = %for.body18.6
+  store i32 0, i32* %arrayidx21.6, align 4
+  br label %for.inc41.6
 
-for.inc46.6:                                      ; preds = %if.then29.6, %if.else41.6, %if.then38.6
+for.inc41.6:                                      ; preds = %if.then25.6, %if.else36.6, %if.then33.6
   %indvars.iv.next24.6 = add nuw nsw i64 %indvars.iv23.6, 1
   %lftr.wideiv26.6 = trunc i64 %indvars.iv.next24.6 to i32
   %exitcond27.6 = icmp eq i32 %lftr.wideiv26.6, %img_width
-  br i1 %exitcond27.6, label %for.inc49.6, label %for.body22.6, !llvm.loop !3
+  br i1 %exitcond27.6, label %for.inc44.6, label %for.body18.6, !llvm.loop !3
 
-for.inc49.6:                                      ; preds = %for.inc46.6
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.7
+for.inc44.6:                                      ; preds = %for.inc41.6
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.7
 
-for.body22.lr.ph.7:                               ; preds = %for.inc49.6
+for.body18.lr.ph.7:                               ; preds = %for.inc44.6
   %indvars.iv.next29.6 = add nsw i64 %indvars.iv28, 7
-  %700 = trunc i64 %indvars.iv.next29.6 to i32
-  %mul23.7 = shl i32 %700, 7
-  %701 = sext i32 %mul23.7 to i64
-  br label %for.body22.7
+  %701 = trunc i64 %indvars.iv.next29.6 to i32
+  %mul19.7 = shl i32 %701, 7
+  %702 = sext i32 %mul19.7 to i64
+  br label %for.body18.7
 
-for.body22.7:                                     ; preds = %for.inc46.7, %for.body22.lr.ph.7
-  %indvars.iv23.7 = phi i64 [ 0, %for.body22.lr.ph.7 ], [ %indvars.iv.next24.7, %for.inc46.7 ]
-  %702 = add nsw i64 %indvars.iv23.7, %701
-  %arrayidx25.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %702
-  %703 = load i32, i32* %arrayidx25.7, align 4
-  %conv26.7 = uitofp i32 %703 to float
-  %cmp27.7 = fcmp olt float %conv26.7, %mul13
-  br i1 %cmp27.7, label %if.then29.7, label %if.else32.7
+for.body18.7:                                     ; preds = %for.inc41.7, %for.body18.lr.ph.7
+  %indvars.iv23.7 = phi i64 [ 0, %for.body18.lr.ph.7 ], [ %indvars.iv.next24.7, %for.inc41.7 ]
+  %703 = add nsw i64 %indvars.iv23.7, %702
+  %arrayidx21.7 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %703
+  %704 = load i32, i32* %arrayidx21.7, align 4
+  %conv22.7 = uitofp i32 %704 to float
+  %cmp23.7 = fcmp olt float %conv22.7, %mul9
+  br i1 %cmp23.7, label %if.then25.7, label %if.else.7
 
-if.else32.7:                                      ; preds = %for.body22.7
-  %cmp36.7 = fcmp ult float %conv26.7, %img_max.0.lcssa
-  br i1 %cmp36.7, label %if.else41.7, label %if.then38.7
+if.else.7:                                        ; preds = %for.body18.7
+  %cmp31.7 = fcmp ult float %conv22.7, %mul8
+  br i1 %cmp31.7, label %if.else36.7, label %if.then33.7
 
-if.then38.7:                                      ; preds = %if.else32.7
-  store i32 255, i32* %arrayidx25.7, align 4
-  br label %for.inc46.7
+if.then33.7:                                      ; preds = %if.else.7
+  store i32 255, i32* %arrayidx21.7, align 4
+  br label %for.inc41.7
 
-if.else41.7:                                      ; preds = %if.else32.7
-  store i32 75, i32* %arrayidx25.7, align 4
-  br label %for.inc46.7
+if.else36.7:                                      ; preds = %if.else.7
+  store i32 75, i32* %arrayidx21.7, align 4
+  br label %for.inc41.7
 
-if.then29.7:                                      ; preds = %for.body22.7
-  store i32 0, i32* %arrayidx25.7, align 4
-  br label %for.inc46.7
+if.then25.7:                                      ; preds = %for.body18.7
+  store i32 0, i32* %arrayidx21.7, align 4
+  br label %for.inc41.7
 
-for.inc46.7:                                      ; preds = %if.then29.7, %if.else41.7, %if.then38.7
+for.inc41.7:                                      ; preds = %if.then25.7, %if.else36.7, %if.then33.7
   %indvars.iv.next24.7 = add nuw nsw i64 %indvars.iv23.7, 1
   %lftr.wideiv26.7 = trunc i64 %indvars.iv.next24.7 to i32
   %exitcond27.7 = icmp eq i32 %lftr.wideiv26.7, %img_width
-  br i1 %exitcond27.7, label %for.inc49.7, label %for.body22.7, !llvm.loop !3
+  br i1 %exitcond27.7, label %for.inc44.7, label %for.body18.7, !llvm.loop !3
 
-for.inc49.7:                                      ; preds = %for.inc46.7
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.8
+for.inc44.7:                                      ; preds = %for.inc41.7
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.8
 
-for.body22.lr.ph.8:                               ; preds = %for.inc49.7
+for.body18.lr.ph.8:                               ; preds = %for.inc44.7
   %indvars.iv.next29.7 = add nsw i64 %indvars.iv28, 8
-  %704 = trunc i64 %indvars.iv.next29.7 to i32
-  %mul23.8 = shl i32 %704, 7
-  %705 = sext i32 %mul23.8 to i64
-  br label %for.body22.8
+  %705 = trunc i64 %indvars.iv.next29.7 to i32
+  %mul19.8 = shl i32 %705, 7
+  %706 = sext i32 %mul19.8 to i64
+  br label %for.body18.8
 
-for.body22.8:                                     ; preds = %for.inc46.8, %for.body22.lr.ph.8
-  %indvars.iv23.8 = phi i64 [ 0, %for.body22.lr.ph.8 ], [ %indvars.iv.next24.8, %for.inc46.8 ]
-  %706 = add nsw i64 %indvars.iv23.8, %705
-  %arrayidx25.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %706
-  %707 = load i32, i32* %arrayidx25.8, align 4
-  %conv26.8 = uitofp i32 %707 to float
-  %cmp27.8 = fcmp olt float %conv26.8, %mul13
-  br i1 %cmp27.8, label %if.then29.8, label %if.else32.8
+for.body18.8:                                     ; preds = %for.inc41.8, %for.body18.lr.ph.8
+  %indvars.iv23.8 = phi i64 [ 0, %for.body18.lr.ph.8 ], [ %indvars.iv.next24.8, %for.inc41.8 ]
+  %707 = add nsw i64 %indvars.iv23.8, %706
+  %arrayidx21.8 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %707
+  %708 = load i32, i32* %arrayidx21.8, align 4
+  %conv22.8 = uitofp i32 %708 to float
+  %cmp23.8 = fcmp olt float %conv22.8, %mul9
+  br i1 %cmp23.8, label %if.then25.8, label %if.else.8
 
-if.else32.8:                                      ; preds = %for.body22.8
-  %cmp36.8 = fcmp ult float %conv26.8, %img_max.0.lcssa
-  br i1 %cmp36.8, label %if.else41.8, label %if.then38.8
+if.else.8:                                        ; preds = %for.body18.8
+  %cmp31.8 = fcmp ult float %conv22.8, %mul8
+  br i1 %cmp31.8, label %if.else36.8, label %if.then33.8
 
-if.then38.8:                                      ; preds = %if.else32.8
-  store i32 255, i32* %arrayidx25.8, align 4
-  br label %for.inc46.8
+if.then33.8:                                      ; preds = %if.else.8
+  store i32 255, i32* %arrayidx21.8, align 4
+  br label %for.inc41.8
 
-if.else41.8:                                      ; preds = %if.else32.8
-  store i32 75, i32* %arrayidx25.8, align 4
-  br label %for.inc46.8
+if.else36.8:                                      ; preds = %if.else.8
+  store i32 75, i32* %arrayidx21.8, align 4
+  br label %for.inc41.8
 
-if.then29.8:                                      ; preds = %for.body22.8
-  store i32 0, i32* %arrayidx25.8, align 4
-  br label %for.inc46.8
+if.then25.8:                                      ; preds = %for.body18.8
+  store i32 0, i32* %arrayidx21.8, align 4
+  br label %for.inc41.8
 
-for.inc46.8:                                      ; preds = %if.then29.8, %if.else41.8, %if.then38.8
+for.inc41.8:                                      ; preds = %if.then25.8, %if.else36.8, %if.then33.8
   %indvars.iv.next24.8 = add nuw nsw i64 %indvars.iv23.8, 1
   %lftr.wideiv26.8 = trunc i64 %indvars.iv.next24.8 to i32
   %exitcond27.8 = icmp eq i32 %lftr.wideiv26.8, %img_width
-  br i1 %exitcond27.8, label %for.inc49.8, label %for.body22.8, !llvm.loop !3
+  br i1 %exitcond27.8, label %for.inc44.8, label %for.body18.8, !llvm.loop !3
 
-for.inc49.8:                                      ; preds = %for.inc46.8
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.9
+for.inc44.8:                                      ; preds = %for.inc41.8
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.9
 
-for.body22.lr.ph.9:                               ; preds = %for.inc49.8
+for.body18.lr.ph.9:                               ; preds = %for.inc44.8
   %indvars.iv.next29.8 = add nsw i64 %indvars.iv28, 9
-  %708 = trunc i64 %indvars.iv.next29.8 to i32
-  %mul23.9 = shl i32 %708, 7
-  %709 = sext i32 %mul23.9 to i64
-  br label %for.body22.9
+  %709 = trunc i64 %indvars.iv.next29.8 to i32
+  %mul19.9 = shl i32 %709, 7
+  %710 = sext i32 %mul19.9 to i64
+  br label %for.body18.9
 
-for.body22.9:                                     ; preds = %for.inc46.9, %for.body22.lr.ph.9
-  %indvars.iv23.9 = phi i64 [ 0, %for.body22.lr.ph.9 ], [ %indvars.iv.next24.9, %for.inc46.9 ]
-  %710 = add nsw i64 %indvars.iv23.9, %709
-  %arrayidx25.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %710
-  %711 = load i32, i32* %arrayidx25.9, align 4
-  %conv26.9 = uitofp i32 %711 to float
-  %cmp27.9 = fcmp olt float %conv26.9, %mul13
-  br i1 %cmp27.9, label %if.then29.9, label %if.else32.9
+for.body18.9:                                     ; preds = %for.inc41.9, %for.body18.lr.ph.9
+  %indvars.iv23.9 = phi i64 [ 0, %for.body18.lr.ph.9 ], [ %indvars.iv.next24.9, %for.inc41.9 ]
+  %711 = add nsw i64 %indvars.iv23.9, %710
+  %arrayidx21.9 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %711
+  %712 = load i32, i32* %arrayidx21.9, align 4
+  %conv22.9 = uitofp i32 %712 to float
+  %cmp23.9 = fcmp olt float %conv22.9, %mul9
+  br i1 %cmp23.9, label %if.then25.9, label %if.else.9
 
-if.else32.9:                                      ; preds = %for.body22.9
-  %cmp36.9 = fcmp ult float %conv26.9, %img_max.0.lcssa
-  br i1 %cmp36.9, label %if.else41.9, label %if.then38.9
+if.else.9:                                        ; preds = %for.body18.9
+  %cmp31.9 = fcmp ult float %conv22.9, %mul8
+  br i1 %cmp31.9, label %if.else36.9, label %if.then33.9
 
-if.then38.9:                                      ; preds = %if.else32.9
-  store i32 255, i32* %arrayidx25.9, align 4
-  br label %for.inc46.9
+if.then33.9:                                      ; preds = %if.else.9
+  store i32 255, i32* %arrayidx21.9, align 4
+  br label %for.inc41.9
 
-if.else41.9:                                      ; preds = %if.else32.9
-  store i32 75, i32* %arrayidx25.9, align 4
-  br label %for.inc46.9
+if.else36.9:                                      ; preds = %if.else.9
+  store i32 75, i32* %arrayidx21.9, align 4
+  br label %for.inc41.9
 
-if.then29.9:                                      ; preds = %for.body22.9
-  store i32 0, i32* %arrayidx25.9, align 4
-  br label %for.inc46.9
+if.then25.9:                                      ; preds = %for.body18.9
+  store i32 0, i32* %arrayidx21.9, align 4
+  br label %for.inc41.9
 
-for.inc46.9:                                      ; preds = %if.then29.9, %if.else41.9, %if.then38.9
+for.inc41.9:                                      ; preds = %if.then25.9, %if.else36.9, %if.then33.9
   %indvars.iv.next24.9 = add nuw nsw i64 %indvars.iv23.9, 1
   %lftr.wideiv26.9 = trunc i64 %indvars.iv.next24.9 to i32
   %exitcond27.9 = icmp eq i32 %lftr.wideiv26.9, %img_width
-  br i1 %exitcond27.9, label %for.inc49.9, label %for.body22.9, !llvm.loop !3
+  br i1 %exitcond27.9, label %for.inc44.9, label %for.body18.9, !llvm.loop !3
 
-for.inc49.9:                                      ; preds = %for.inc46.9
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.10
+for.inc44.9:                                      ; preds = %for.inc41.9
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.10
 
-for.body22.lr.ph.10:                              ; preds = %for.inc49.9
+for.body18.lr.ph.10:                              ; preds = %for.inc44.9
   %indvars.iv.next29.9 = add nsw i64 %indvars.iv28, 10
-  %712 = trunc i64 %indvars.iv.next29.9 to i32
-  %mul23.10 = shl i32 %712, 7
-  %713 = sext i32 %mul23.10 to i64
-  br label %for.body22.10
+  %713 = trunc i64 %indvars.iv.next29.9 to i32
+  %mul19.10 = shl i32 %713, 7
+  %714 = sext i32 %mul19.10 to i64
+  br label %for.body18.10
 
-for.body22.10:                                    ; preds = %for.inc46.10, %for.body22.lr.ph.10
-  %indvars.iv23.10 = phi i64 [ 0, %for.body22.lr.ph.10 ], [ %indvars.iv.next24.10, %for.inc46.10 ]
-  %714 = add nsw i64 %indvars.iv23.10, %713
-  %arrayidx25.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %714
-  %715 = load i32, i32* %arrayidx25.10, align 4
-  %conv26.10 = uitofp i32 %715 to float
-  %cmp27.10 = fcmp olt float %conv26.10, %mul13
-  br i1 %cmp27.10, label %if.then29.10, label %if.else32.10
+for.body18.10:                                    ; preds = %for.inc41.10, %for.body18.lr.ph.10
+  %indvars.iv23.10 = phi i64 [ 0, %for.body18.lr.ph.10 ], [ %indvars.iv.next24.10, %for.inc41.10 ]
+  %715 = add nsw i64 %indvars.iv23.10, %714
+  %arrayidx21.10 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %715
+  %716 = load i32, i32* %arrayidx21.10, align 4
+  %conv22.10 = uitofp i32 %716 to float
+  %cmp23.10 = fcmp olt float %conv22.10, %mul9
+  br i1 %cmp23.10, label %if.then25.10, label %if.else.10
 
-if.else32.10:                                     ; preds = %for.body22.10
-  %cmp36.10 = fcmp ult float %conv26.10, %img_max.0.lcssa
-  br i1 %cmp36.10, label %if.else41.10, label %if.then38.10
+if.else.10:                                       ; preds = %for.body18.10
+  %cmp31.10 = fcmp ult float %conv22.10, %mul8
+  br i1 %cmp31.10, label %if.else36.10, label %if.then33.10
 
-if.then38.10:                                     ; preds = %if.else32.10
-  store i32 255, i32* %arrayidx25.10, align 4
-  br label %for.inc46.10
+if.then33.10:                                     ; preds = %if.else.10
+  store i32 255, i32* %arrayidx21.10, align 4
+  br label %for.inc41.10
 
-if.else41.10:                                     ; preds = %if.else32.10
-  store i32 75, i32* %arrayidx25.10, align 4
-  br label %for.inc46.10
+if.else36.10:                                     ; preds = %if.else.10
+  store i32 75, i32* %arrayidx21.10, align 4
+  br label %for.inc41.10
 
-if.then29.10:                                     ; preds = %for.body22.10
-  store i32 0, i32* %arrayidx25.10, align 4
-  br label %for.inc46.10
+if.then25.10:                                     ; preds = %for.body18.10
+  store i32 0, i32* %arrayidx21.10, align 4
+  br label %for.inc41.10
 
-for.inc46.10:                                     ; preds = %if.then29.10, %if.else41.10, %if.then38.10
+for.inc41.10:                                     ; preds = %if.then25.10, %if.else36.10, %if.then33.10
   %indvars.iv.next24.10 = add nuw nsw i64 %indvars.iv23.10, 1
   %lftr.wideiv26.10 = trunc i64 %indvars.iv.next24.10 to i32
   %exitcond27.10 = icmp eq i32 %lftr.wideiv26.10, %img_width
-  br i1 %exitcond27.10, label %for.inc49.10, label %for.body22.10, !llvm.loop !3
+  br i1 %exitcond27.10, label %for.inc44.10, label %for.body18.10, !llvm.loop !3
 
-for.inc49.10:                                     ; preds = %for.inc46.10
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.11
+for.inc44.10:                                     ; preds = %for.inc41.10
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.11
 
-for.body22.lr.ph.11:                              ; preds = %for.inc49.10
+for.body18.lr.ph.11:                              ; preds = %for.inc44.10
   %indvars.iv.next29.10 = add nsw i64 %indvars.iv28, 11
-  %716 = trunc i64 %indvars.iv.next29.10 to i32
-  %mul23.11 = shl i32 %716, 7
-  %717 = sext i32 %mul23.11 to i64
-  br label %for.body22.11
+  %717 = trunc i64 %indvars.iv.next29.10 to i32
+  %mul19.11 = shl i32 %717, 7
+  %718 = sext i32 %mul19.11 to i64
+  br label %for.body18.11
 
-for.body22.11:                                    ; preds = %for.inc46.11, %for.body22.lr.ph.11
-  %indvars.iv23.11 = phi i64 [ 0, %for.body22.lr.ph.11 ], [ %indvars.iv.next24.11, %for.inc46.11 ]
-  %718 = add nsw i64 %indvars.iv23.11, %717
-  %arrayidx25.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %718
-  %719 = load i32, i32* %arrayidx25.11, align 4
-  %conv26.11 = uitofp i32 %719 to float
-  %cmp27.11 = fcmp olt float %conv26.11, %mul13
-  br i1 %cmp27.11, label %if.then29.11, label %if.else32.11
+for.body18.11:                                    ; preds = %for.inc41.11, %for.body18.lr.ph.11
+  %indvars.iv23.11 = phi i64 [ 0, %for.body18.lr.ph.11 ], [ %indvars.iv.next24.11, %for.inc41.11 ]
+  %719 = add nsw i64 %indvars.iv23.11, %718
+  %arrayidx21.11 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %719
+  %720 = load i32, i32* %arrayidx21.11, align 4
+  %conv22.11 = uitofp i32 %720 to float
+  %cmp23.11 = fcmp olt float %conv22.11, %mul9
+  br i1 %cmp23.11, label %if.then25.11, label %if.else.11
 
-if.else32.11:                                     ; preds = %for.body22.11
-  %cmp36.11 = fcmp ult float %conv26.11, %img_max.0.lcssa
-  br i1 %cmp36.11, label %if.else41.11, label %if.then38.11
+if.else.11:                                       ; preds = %for.body18.11
+  %cmp31.11 = fcmp ult float %conv22.11, %mul8
+  br i1 %cmp31.11, label %if.else36.11, label %if.then33.11
 
-if.then38.11:                                     ; preds = %if.else32.11
-  store i32 255, i32* %arrayidx25.11, align 4
-  br label %for.inc46.11
+if.then33.11:                                     ; preds = %if.else.11
+  store i32 255, i32* %arrayidx21.11, align 4
+  br label %for.inc41.11
 
-if.else41.11:                                     ; preds = %if.else32.11
-  store i32 75, i32* %arrayidx25.11, align 4
-  br label %for.inc46.11
+if.else36.11:                                     ; preds = %if.else.11
+  store i32 75, i32* %arrayidx21.11, align 4
+  br label %for.inc41.11
 
-if.then29.11:                                     ; preds = %for.body22.11
-  store i32 0, i32* %arrayidx25.11, align 4
-  br label %for.inc46.11
+if.then25.11:                                     ; preds = %for.body18.11
+  store i32 0, i32* %arrayidx21.11, align 4
+  br label %for.inc41.11
 
-for.inc46.11:                                     ; preds = %if.then29.11, %if.else41.11, %if.then38.11
+for.inc41.11:                                     ; preds = %if.then25.11, %if.else36.11, %if.then33.11
   %indvars.iv.next24.11 = add nuw nsw i64 %indvars.iv23.11, 1
   %lftr.wideiv26.11 = trunc i64 %indvars.iv.next24.11 to i32
   %exitcond27.11 = icmp eq i32 %lftr.wideiv26.11, %img_width
-  br i1 %exitcond27.11, label %for.inc49.11, label %for.body22.11, !llvm.loop !3
+  br i1 %exitcond27.11, label %for.inc44.11, label %for.body18.11, !llvm.loop !3
 
-for.inc49.11:                                     ; preds = %for.inc46.11
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.12
+for.inc44.11:                                     ; preds = %for.inc41.11
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.12
 
-for.body22.lr.ph.12:                              ; preds = %for.inc49.11
+for.body18.lr.ph.12:                              ; preds = %for.inc44.11
   %indvars.iv.next29.11 = add nsw i64 %indvars.iv28, 12
-  %720 = trunc i64 %indvars.iv.next29.11 to i32
-  %mul23.12 = shl i32 %720, 7
-  %721 = sext i32 %mul23.12 to i64
-  br label %for.body22.12
+  %721 = trunc i64 %indvars.iv.next29.11 to i32
+  %mul19.12 = shl i32 %721, 7
+  %722 = sext i32 %mul19.12 to i64
+  br label %for.body18.12
 
-for.body22.12:                                    ; preds = %for.inc46.12, %for.body22.lr.ph.12
-  %indvars.iv23.12 = phi i64 [ 0, %for.body22.lr.ph.12 ], [ %indvars.iv.next24.12, %for.inc46.12 ]
-  %722 = add nsw i64 %indvars.iv23.12, %721
-  %arrayidx25.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %722
-  %723 = load i32, i32* %arrayidx25.12, align 4
-  %conv26.12 = uitofp i32 %723 to float
-  %cmp27.12 = fcmp olt float %conv26.12, %mul13
-  br i1 %cmp27.12, label %if.then29.12, label %if.else32.12
+for.body18.12:                                    ; preds = %for.inc41.12, %for.body18.lr.ph.12
+  %indvars.iv23.12 = phi i64 [ 0, %for.body18.lr.ph.12 ], [ %indvars.iv.next24.12, %for.inc41.12 ]
+  %723 = add nsw i64 %indvars.iv23.12, %722
+  %arrayidx21.12 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %723
+  %724 = load i32, i32* %arrayidx21.12, align 4
+  %conv22.12 = uitofp i32 %724 to float
+  %cmp23.12 = fcmp olt float %conv22.12, %mul9
+  br i1 %cmp23.12, label %if.then25.12, label %if.else.12
 
-if.else32.12:                                     ; preds = %for.body22.12
-  %cmp36.12 = fcmp ult float %conv26.12, %img_max.0.lcssa
-  br i1 %cmp36.12, label %if.else41.12, label %if.then38.12
+if.else.12:                                       ; preds = %for.body18.12
+  %cmp31.12 = fcmp ult float %conv22.12, %mul8
+  br i1 %cmp31.12, label %if.else36.12, label %if.then33.12
 
-if.then38.12:                                     ; preds = %if.else32.12
-  store i32 255, i32* %arrayidx25.12, align 4
-  br label %for.inc46.12
+if.then33.12:                                     ; preds = %if.else.12
+  store i32 255, i32* %arrayidx21.12, align 4
+  br label %for.inc41.12
 
-if.else41.12:                                     ; preds = %if.else32.12
-  store i32 75, i32* %arrayidx25.12, align 4
-  br label %for.inc46.12
+if.else36.12:                                     ; preds = %if.else.12
+  store i32 75, i32* %arrayidx21.12, align 4
+  br label %for.inc41.12
 
-if.then29.12:                                     ; preds = %for.body22.12
-  store i32 0, i32* %arrayidx25.12, align 4
-  br label %for.inc46.12
+if.then25.12:                                     ; preds = %for.body18.12
+  store i32 0, i32* %arrayidx21.12, align 4
+  br label %for.inc41.12
 
-for.inc46.12:                                     ; preds = %if.then29.12, %if.else41.12, %if.then38.12
+for.inc41.12:                                     ; preds = %if.then25.12, %if.else36.12, %if.then33.12
   %indvars.iv.next24.12 = add nuw nsw i64 %indvars.iv23.12, 1
   %lftr.wideiv26.12 = trunc i64 %indvars.iv.next24.12 to i32
   %exitcond27.12 = icmp eq i32 %lftr.wideiv26.12, %img_width
-  br i1 %exitcond27.12, label %for.inc49.12, label %for.body22.12, !llvm.loop !3
+  br i1 %exitcond27.12, label %for.inc44.12, label %for.body18.12, !llvm.loop !3
 
-for.inc49.12:                                     ; preds = %for.inc46.12
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.13
+for.inc44.12:                                     ; preds = %for.inc41.12
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.13
 
-for.body22.lr.ph.13:                              ; preds = %for.inc49.12
+for.body18.lr.ph.13:                              ; preds = %for.inc44.12
   %indvars.iv.next29.12 = add nsw i64 %indvars.iv28, 13
-  %724 = trunc i64 %indvars.iv.next29.12 to i32
-  %mul23.13 = shl i32 %724, 7
-  %725 = sext i32 %mul23.13 to i64
-  br label %for.body22.13
+  %725 = trunc i64 %indvars.iv.next29.12 to i32
+  %mul19.13 = shl i32 %725, 7
+  %726 = sext i32 %mul19.13 to i64
+  br label %for.body18.13
 
-for.body22.13:                                    ; preds = %for.inc46.13, %for.body22.lr.ph.13
-  %indvars.iv23.13 = phi i64 [ 0, %for.body22.lr.ph.13 ], [ %indvars.iv.next24.13, %for.inc46.13 ]
-  %726 = add nsw i64 %indvars.iv23.13, %725
-  %arrayidx25.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %726
-  %727 = load i32, i32* %arrayidx25.13, align 4
-  %conv26.13 = uitofp i32 %727 to float
-  %cmp27.13 = fcmp olt float %conv26.13, %mul13
-  br i1 %cmp27.13, label %if.then29.13, label %if.else32.13
+for.body18.13:                                    ; preds = %for.inc41.13, %for.body18.lr.ph.13
+  %indvars.iv23.13 = phi i64 [ 0, %for.body18.lr.ph.13 ], [ %indvars.iv.next24.13, %for.inc41.13 ]
+  %727 = add nsw i64 %indvars.iv23.13, %726
+  %arrayidx21.13 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %727
+  %728 = load i32, i32* %arrayidx21.13, align 4
+  %conv22.13 = uitofp i32 %728 to float
+  %cmp23.13 = fcmp olt float %conv22.13, %mul9
+  br i1 %cmp23.13, label %if.then25.13, label %if.else.13
 
-if.else32.13:                                     ; preds = %for.body22.13
-  %cmp36.13 = fcmp ult float %conv26.13, %img_max.0.lcssa
-  br i1 %cmp36.13, label %if.else41.13, label %if.then38.13
+if.else.13:                                       ; preds = %for.body18.13
+  %cmp31.13 = fcmp ult float %conv22.13, %mul8
+  br i1 %cmp31.13, label %if.else36.13, label %if.then33.13
 
-if.then38.13:                                     ; preds = %if.else32.13
-  store i32 255, i32* %arrayidx25.13, align 4
-  br label %for.inc46.13
+if.then33.13:                                     ; preds = %if.else.13
+  store i32 255, i32* %arrayidx21.13, align 4
+  br label %for.inc41.13
 
-if.else41.13:                                     ; preds = %if.else32.13
-  store i32 75, i32* %arrayidx25.13, align 4
-  br label %for.inc46.13
+if.else36.13:                                     ; preds = %if.else.13
+  store i32 75, i32* %arrayidx21.13, align 4
+  br label %for.inc41.13
 
-if.then29.13:                                     ; preds = %for.body22.13
-  store i32 0, i32* %arrayidx25.13, align 4
-  br label %for.inc46.13
+if.then25.13:                                     ; preds = %for.body18.13
+  store i32 0, i32* %arrayidx21.13, align 4
+  br label %for.inc41.13
 
-for.inc46.13:                                     ; preds = %if.then29.13, %if.else41.13, %if.then38.13
+for.inc41.13:                                     ; preds = %if.then25.13, %if.else36.13, %if.then33.13
   %indvars.iv.next24.13 = add nuw nsw i64 %indvars.iv23.13, 1
   %lftr.wideiv26.13 = trunc i64 %indvars.iv.next24.13 to i32
   %exitcond27.13 = icmp eq i32 %lftr.wideiv26.13, %img_width
-  br i1 %exitcond27.13, label %for.inc49.13, label %for.body22.13, !llvm.loop !3
+  br i1 %exitcond27.13, label %for.inc44.13, label %for.body18.13, !llvm.loop !3
 
-for.inc49.13:                                     ; preds = %for.inc46.13
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.14
+for.inc44.13:                                     ; preds = %for.inc41.13
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.14
 
-for.body22.lr.ph.14:                              ; preds = %for.inc49.13
+for.body18.lr.ph.14:                              ; preds = %for.inc44.13
   %indvars.iv.next29.13 = add nsw i64 %indvars.iv28, 14
-  %728 = trunc i64 %indvars.iv.next29.13 to i32
-  %mul23.14 = shl i32 %728, 7
-  %729 = sext i32 %mul23.14 to i64
-  br label %for.body22.14
+  %729 = trunc i64 %indvars.iv.next29.13 to i32
+  %mul19.14 = shl i32 %729, 7
+  %730 = sext i32 %mul19.14 to i64
+  br label %for.body18.14
 
-for.body22.14:                                    ; preds = %for.inc46.14, %for.body22.lr.ph.14
-  %indvars.iv23.14 = phi i64 [ 0, %for.body22.lr.ph.14 ], [ %indvars.iv.next24.14, %for.inc46.14 ]
-  %730 = add nsw i64 %indvars.iv23.14, %729
-  %arrayidx25.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %730
-  %731 = load i32, i32* %arrayidx25.14, align 4
-  %conv26.14 = uitofp i32 %731 to float
-  %cmp27.14 = fcmp olt float %conv26.14, %mul13
-  br i1 %cmp27.14, label %if.then29.14, label %if.else32.14
+for.body18.14:                                    ; preds = %for.inc41.14, %for.body18.lr.ph.14
+  %indvars.iv23.14 = phi i64 [ 0, %for.body18.lr.ph.14 ], [ %indvars.iv.next24.14, %for.inc41.14 ]
+  %731 = add nsw i64 %indvars.iv23.14, %730
+  %arrayidx21.14 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %731
+  %732 = load i32, i32* %arrayidx21.14, align 4
+  %conv22.14 = uitofp i32 %732 to float
+  %cmp23.14 = fcmp olt float %conv22.14, %mul9
+  br i1 %cmp23.14, label %if.then25.14, label %if.else.14
 
-if.else32.14:                                     ; preds = %for.body22.14
-  %cmp36.14 = fcmp ult float %conv26.14, %img_max.0.lcssa
-  br i1 %cmp36.14, label %if.else41.14, label %if.then38.14
+if.else.14:                                       ; preds = %for.body18.14
+  %cmp31.14 = fcmp ult float %conv22.14, %mul8
+  br i1 %cmp31.14, label %if.else36.14, label %if.then33.14
 
-if.then38.14:                                     ; preds = %if.else32.14
-  store i32 255, i32* %arrayidx25.14, align 4
-  br label %for.inc46.14
+if.then33.14:                                     ; preds = %if.else.14
+  store i32 255, i32* %arrayidx21.14, align 4
+  br label %for.inc41.14
 
-if.else41.14:                                     ; preds = %if.else32.14
-  store i32 75, i32* %arrayidx25.14, align 4
-  br label %for.inc46.14
+if.else36.14:                                     ; preds = %if.else.14
+  store i32 75, i32* %arrayidx21.14, align 4
+  br label %for.inc41.14
 
-if.then29.14:                                     ; preds = %for.body22.14
-  store i32 0, i32* %arrayidx25.14, align 4
-  br label %for.inc46.14
+if.then25.14:                                     ; preds = %for.body18.14
+  store i32 0, i32* %arrayidx21.14, align 4
+  br label %for.inc41.14
 
-for.inc46.14:                                     ; preds = %if.then29.14, %if.else41.14, %if.then38.14
+for.inc41.14:                                     ; preds = %if.then25.14, %if.else36.14, %if.then33.14
   %indvars.iv.next24.14 = add nuw nsw i64 %indvars.iv23.14, 1
   %lftr.wideiv26.14 = trunc i64 %indvars.iv.next24.14 to i32
   %exitcond27.14 = icmp eq i32 %lftr.wideiv26.14, %img_width
-  br i1 %exitcond27.14, label %for.inc49.14, label %for.body22.14, !llvm.loop !3
+  br i1 %exitcond27.14, label %for.inc44.14, label %for.body18.14, !llvm.loop !3
 
-for.inc49.14:                                     ; preds = %for.inc46.14
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.15
+for.inc44.14:                                     ; preds = %for.inc41.14
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.15
 
-for.body22.lr.ph.15:                              ; preds = %for.inc49.14
+for.body18.lr.ph.15:                              ; preds = %for.inc44.14
   %indvars.iv.next29.14 = add nsw i64 %indvars.iv28, 15
-  %732 = trunc i64 %indvars.iv.next29.14 to i32
-  %mul23.15 = shl i32 %732, 7
-  %733 = sext i32 %mul23.15 to i64
-  br label %for.body22.15
+  %733 = trunc i64 %indvars.iv.next29.14 to i32
+  %mul19.15 = shl i32 %733, 7
+  %734 = sext i32 %mul19.15 to i64
+  br label %for.body18.15
 
-for.body22.15:                                    ; preds = %for.inc46.15, %for.body22.lr.ph.15
-  %indvars.iv23.15 = phi i64 [ 0, %for.body22.lr.ph.15 ], [ %indvars.iv.next24.15, %for.inc46.15 ]
-  %734 = add nsw i64 %indvars.iv23.15, %733
-  %arrayidx25.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %734
-  %735 = load i32, i32* %arrayidx25.15, align 4
-  %conv26.15 = uitofp i32 %735 to float
-  %cmp27.15 = fcmp olt float %conv26.15, %mul13
-  br i1 %cmp27.15, label %if.then29.15, label %if.else32.15
+for.body18.15:                                    ; preds = %for.inc41.15, %for.body18.lr.ph.15
+  %indvars.iv23.15 = phi i64 [ 0, %for.body18.lr.ph.15 ], [ %indvars.iv.next24.15, %for.inc41.15 ]
+  %735 = add nsw i64 %indvars.iv23.15, %734
+  %arrayidx21.15 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %735
+  %736 = load i32, i32* %arrayidx21.15, align 4
+  %conv22.15 = uitofp i32 %736 to float
+  %cmp23.15 = fcmp olt float %conv22.15, %mul9
+  br i1 %cmp23.15, label %if.then25.15, label %if.else.15
 
-if.else32.15:                                     ; preds = %for.body22.15
-  %cmp36.15 = fcmp ult float %conv26.15, %img_max.0.lcssa
-  br i1 %cmp36.15, label %if.else41.15, label %if.then38.15
+if.else.15:                                       ; preds = %for.body18.15
+  %cmp31.15 = fcmp ult float %conv22.15, %mul8
+  br i1 %cmp31.15, label %if.else36.15, label %if.then33.15
 
-if.then38.15:                                     ; preds = %if.else32.15
-  store i32 255, i32* %arrayidx25.15, align 4
-  br label %for.inc46.15
+if.then33.15:                                     ; preds = %if.else.15
+  store i32 255, i32* %arrayidx21.15, align 4
+  br label %for.inc41.15
 
-if.else41.15:                                     ; preds = %if.else32.15
-  store i32 75, i32* %arrayidx25.15, align 4
-  br label %for.inc46.15
+if.else36.15:                                     ; preds = %if.else.15
+  store i32 75, i32* %arrayidx21.15, align 4
+  br label %for.inc41.15
 
-if.then29.15:                                     ; preds = %for.body22.15
-  store i32 0, i32* %arrayidx25.15, align 4
-  br label %for.inc46.15
+if.then25.15:                                     ; preds = %for.body18.15
+  store i32 0, i32* %arrayidx21.15, align 4
+  br label %for.inc41.15
 
-for.inc46.15:                                     ; preds = %if.then29.15, %if.else41.15, %if.then38.15
+for.inc41.15:                                     ; preds = %if.then25.15, %if.else36.15, %if.then33.15
   %indvars.iv.next24.15 = add nuw nsw i64 %indvars.iv23.15, 1
   %lftr.wideiv26.15 = trunc i64 %indvars.iv.next24.15 to i32
   %exitcond27.15 = icmp eq i32 %lftr.wideiv26.15, %img_width
-  br i1 %exitcond27.15, label %for.inc49.15, label %for.body22.15, !llvm.loop !3
+  br i1 %exitcond27.15, label %for.inc44.15, label %for.body18.15, !llvm.loop !3
 
-for.inc49.15:                                     ; preds = %for.inc46.15
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.16
+for.inc44.15:                                     ; preds = %for.inc41.15
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.16
 
-for.body22.lr.ph.16:                              ; preds = %for.inc49.15
+for.body18.lr.ph.16:                              ; preds = %for.inc44.15
   %indvars.iv.next29.15 = add nsw i64 %indvars.iv28, 16
-  %736 = trunc i64 %indvars.iv.next29.15 to i32
-  %mul23.16 = shl i32 %736, 7
-  %737 = sext i32 %mul23.16 to i64
-  br label %for.body22.16
+  %737 = trunc i64 %indvars.iv.next29.15 to i32
+  %mul19.16 = shl i32 %737, 7
+  %738 = sext i32 %mul19.16 to i64
+  br label %for.body18.16
 
-for.body22.16:                                    ; preds = %for.inc46.16, %for.body22.lr.ph.16
-  %indvars.iv23.16 = phi i64 [ 0, %for.body22.lr.ph.16 ], [ %indvars.iv.next24.16, %for.inc46.16 ]
-  %738 = add nsw i64 %indvars.iv23.16, %737
-  %arrayidx25.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %738
-  %739 = load i32, i32* %arrayidx25.16, align 4
-  %conv26.16 = uitofp i32 %739 to float
-  %cmp27.16 = fcmp olt float %conv26.16, %mul13
-  br i1 %cmp27.16, label %if.then29.16, label %if.else32.16
+for.body18.16:                                    ; preds = %for.inc41.16, %for.body18.lr.ph.16
+  %indvars.iv23.16 = phi i64 [ 0, %for.body18.lr.ph.16 ], [ %indvars.iv.next24.16, %for.inc41.16 ]
+  %739 = add nsw i64 %indvars.iv23.16, %738
+  %arrayidx21.16 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %739
+  %740 = load i32, i32* %arrayidx21.16, align 4
+  %conv22.16 = uitofp i32 %740 to float
+  %cmp23.16 = fcmp olt float %conv22.16, %mul9
+  br i1 %cmp23.16, label %if.then25.16, label %if.else.16
 
-if.else32.16:                                     ; preds = %for.body22.16
-  %cmp36.16 = fcmp ult float %conv26.16, %img_max.0.lcssa
-  br i1 %cmp36.16, label %if.else41.16, label %if.then38.16
+if.else.16:                                       ; preds = %for.body18.16
+  %cmp31.16 = fcmp ult float %conv22.16, %mul8
+  br i1 %cmp31.16, label %if.else36.16, label %if.then33.16
 
-if.then38.16:                                     ; preds = %if.else32.16
-  store i32 255, i32* %arrayidx25.16, align 4
-  br label %for.inc46.16
+if.then33.16:                                     ; preds = %if.else.16
+  store i32 255, i32* %arrayidx21.16, align 4
+  br label %for.inc41.16
 
-if.else41.16:                                     ; preds = %if.else32.16
-  store i32 75, i32* %arrayidx25.16, align 4
-  br label %for.inc46.16
+if.else36.16:                                     ; preds = %if.else.16
+  store i32 75, i32* %arrayidx21.16, align 4
+  br label %for.inc41.16
 
-if.then29.16:                                     ; preds = %for.body22.16
-  store i32 0, i32* %arrayidx25.16, align 4
-  br label %for.inc46.16
+if.then25.16:                                     ; preds = %for.body18.16
+  store i32 0, i32* %arrayidx21.16, align 4
+  br label %for.inc41.16
 
-for.inc46.16:                                     ; preds = %if.then29.16, %if.else41.16, %if.then38.16
+for.inc41.16:                                     ; preds = %if.then25.16, %if.else36.16, %if.then33.16
   %indvars.iv.next24.16 = add nuw nsw i64 %indvars.iv23.16, 1
   %lftr.wideiv26.16 = trunc i64 %indvars.iv.next24.16 to i32
   %exitcond27.16 = icmp eq i32 %lftr.wideiv26.16, %img_width
-  br i1 %exitcond27.16, label %for.inc49.16, label %for.body22.16, !llvm.loop !3
+  br i1 %exitcond27.16, label %for.inc44.16, label %for.body18.16, !llvm.loop !3
 
-for.inc49.16:                                     ; preds = %for.inc46.16
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.17
+for.inc44.16:                                     ; preds = %for.inc41.16
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.17
 
-for.body22.lr.ph.17:                              ; preds = %for.inc49.16
+for.body18.lr.ph.17:                              ; preds = %for.inc44.16
   %indvars.iv.next29.16 = add nsw i64 %indvars.iv28, 17
-  %740 = trunc i64 %indvars.iv.next29.16 to i32
-  %mul23.17 = shl i32 %740, 7
-  %741 = sext i32 %mul23.17 to i64
-  br label %for.body22.17
+  %741 = trunc i64 %indvars.iv.next29.16 to i32
+  %mul19.17 = shl i32 %741, 7
+  %742 = sext i32 %mul19.17 to i64
+  br label %for.body18.17
 
-for.body22.17:                                    ; preds = %for.inc46.17, %for.body22.lr.ph.17
-  %indvars.iv23.17 = phi i64 [ 0, %for.body22.lr.ph.17 ], [ %indvars.iv.next24.17, %for.inc46.17 ]
-  %742 = add nsw i64 %indvars.iv23.17, %741
-  %arrayidx25.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %742
-  %743 = load i32, i32* %arrayidx25.17, align 4
-  %conv26.17 = uitofp i32 %743 to float
-  %cmp27.17 = fcmp olt float %conv26.17, %mul13
-  br i1 %cmp27.17, label %if.then29.17, label %if.else32.17
+for.body18.17:                                    ; preds = %for.inc41.17, %for.body18.lr.ph.17
+  %indvars.iv23.17 = phi i64 [ 0, %for.body18.lr.ph.17 ], [ %indvars.iv.next24.17, %for.inc41.17 ]
+  %743 = add nsw i64 %indvars.iv23.17, %742
+  %arrayidx21.17 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %743
+  %744 = load i32, i32* %arrayidx21.17, align 4
+  %conv22.17 = uitofp i32 %744 to float
+  %cmp23.17 = fcmp olt float %conv22.17, %mul9
+  br i1 %cmp23.17, label %if.then25.17, label %if.else.17
 
-if.else32.17:                                     ; preds = %for.body22.17
-  %cmp36.17 = fcmp ult float %conv26.17, %img_max.0.lcssa
-  br i1 %cmp36.17, label %if.else41.17, label %if.then38.17
+if.else.17:                                       ; preds = %for.body18.17
+  %cmp31.17 = fcmp ult float %conv22.17, %mul8
+  br i1 %cmp31.17, label %if.else36.17, label %if.then33.17
 
-if.then38.17:                                     ; preds = %if.else32.17
-  store i32 255, i32* %arrayidx25.17, align 4
-  br label %for.inc46.17
+if.then33.17:                                     ; preds = %if.else.17
+  store i32 255, i32* %arrayidx21.17, align 4
+  br label %for.inc41.17
 
-if.else41.17:                                     ; preds = %if.else32.17
-  store i32 75, i32* %arrayidx25.17, align 4
-  br label %for.inc46.17
+if.else36.17:                                     ; preds = %if.else.17
+  store i32 75, i32* %arrayidx21.17, align 4
+  br label %for.inc41.17
 
-if.then29.17:                                     ; preds = %for.body22.17
-  store i32 0, i32* %arrayidx25.17, align 4
-  br label %for.inc46.17
+if.then25.17:                                     ; preds = %for.body18.17
+  store i32 0, i32* %arrayidx21.17, align 4
+  br label %for.inc41.17
 
-for.inc46.17:                                     ; preds = %if.then29.17, %if.else41.17, %if.then38.17
+for.inc41.17:                                     ; preds = %if.then25.17, %if.else36.17, %if.then33.17
   %indvars.iv.next24.17 = add nuw nsw i64 %indvars.iv23.17, 1
   %lftr.wideiv26.17 = trunc i64 %indvars.iv.next24.17 to i32
   %exitcond27.17 = icmp eq i32 %lftr.wideiv26.17, %img_width
-  br i1 %exitcond27.17, label %for.inc49.17, label %for.body22.17, !llvm.loop !3
+  br i1 %exitcond27.17, label %for.inc44.17, label %for.body18.17, !llvm.loop !3
 
-for.inc49.17:                                     ; preds = %for.inc46.17
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.18
+for.inc44.17:                                     ; preds = %for.inc41.17
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.18
 
-for.body22.lr.ph.18:                              ; preds = %for.inc49.17
+for.body18.lr.ph.18:                              ; preds = %for.inc44.17
   %indvars.iv.next29.17 = add nsw i64 %indvars.iv28, 18
-  %744 = trunc i64 %indvars.iv.next29.17 to i32
-  %mul23.18 = shl i32 %744, 7
-  %745 = sext i32 %mul23.18 to i64
-  br label %for.body22.18
+  %745 = trunc i64 %indvars.iv.next29.17 to i32
+  %mul19.18 = shl i32 %745, 7
+  %746 = sext i32 %mul19.18 to i64
+  br label %for.body18.18
 
-for.body22.18:                                    ; preds = %for.inc46.18, %for.body22.lr.ph.18
-  %indvars.iv23.18 = phi i64 [ 0, %for.body22.lr.ph.18 ], [ %indvars.iv.next24.18, %for.inc46.18 ]
-  %746 = add nsw i64 %indvars.iv23.18, %745
-  %arrayidx25.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %746
-  %747 = load i32, i32* %arrayidx25.18, align 4
-  %conv26.18 = uitofp i32 %747 to float
-  %cmp27.18 = fcmp olt float %conv26.18, %mul13
-  br i1 %cmp27.18, label %if.then29.18, label %if.else32.18
+for.body18.18:                                    ; preds = %for.inc41.18, %for.body18.lr.ph.18
+  %indvars.iv23.18 = phi i64 [ 0, %for.body18.lr.ph.18 ], [ %indvars.iv.next24.18, %for.inc41.18 ]
+  %747 = add nsw i64 %indvars.iv23.18, %746
+  %arrayidx21.18 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %747
+  %748 = load i32, i32* %arrayidx21.18, align 4
+  %conv22.18 = uitofp i32 %748 to float
+  %cmp23.18 = fcmp olt float %conv22.18, %mul9
+  br i1 %cmp23.18, label %if.then25.18, label %if.else.18
 
-if.else32.18:                                     ; preds = %for.body22.18
-  %cmp36.18 = fcmp ult float %conv26.18, %img_max.0.lcssa
-  br i1 %cmp36.18, label %if.else41.18, label %if.then38.18
+if.else.18:                                       ; preds = %for.body18.18
+  %cmp31.18 = fcmp ult float %conv22.18, %mul8
+  br i1 %cmp31.18, label %if.else36.18, label %if.then33.18
 
-if.then38.18:                                     ; preds = %if.else32.18
-  store i32 255, i32* %arrayidx25.18, align 4
-  br label %for.inc46.18
+if.then33.18:                                     ; preds = %if.else.18
+  store i32 255, i32* %arrayidx21.18, align 4
+  br label %for.inc41.18
 
-if.else41.18:                                     ; preds = %if.else32.18
-  store i32 75, i32* %arrayidx25.18, align 4
-  br label %for.inc46.18
+if.else36.18:                                     ; preds = %if.else.18
+  store i32 75, i32* %arrayidx21.18, align 4
+  br label %for.inc41.18
 
-if.then29.18:                                     ; preds = %for.body22.18
-  store i32 0, i32* %arrayidx25.18, align 4
-  br label %for.inc46.18
+if.then25.18:                                     ; preds = %for.body18.18
+  store i32 0, i32* %arrayidx21.18, align 4
+  br label %for.inc41.18
 
-for.inc46.18:                                     ; preds = %if.then29.18, %if.else41.18, %if.then38.18
+for.inc41.18:                                     ; preds = %if.then25.18, %if.else36.18, %if.then33.18
   %indvars.iv.next24.18 = add nuw nsw i64 %indvars.iv23.18, 1
   %lftr.wideiv26.18 = trunc i64 %indvars.iv.next24.18 to i32
   %exitcond27.18 = icmp eq i32 %lftr.wideiv26.18, %img_width
-  br i1 %exitcond27.18, label %for.inc49.18, label %for.body22.18, !llvm.loop !3
+  br i1 %exitcond27.18, label %for.inc44.18, label %for.body18.18, !llvm.loop !3
 
-for.inc49.18:                                     ; preds = %for.inc46.18
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.19
+for.inc44.18:                                     ; preds = %for.inc41.18
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.19
 
-for.body22.lr.ph.19:                              ; preds = %for.inc49.18
+for.body18.lr.ph.19:                              ; preds = %for.inc44.18
   %indvars.iv.next29.18 = add nsw i64 %indvars.iv28, 19
-  %748 = trunc i64 %indvars.iv.next29.18 to i32
-  %mul23.19 = shl i32 %748, 7
-  %749 = sext i32 %mul23.19 to i64
-  br label %for.body22.19
+  %749 = trunc i64 %indvars.iv.next29.18 to i32
+  %mul19.19 = shl i32 %749, 7
+  %750 = sext i32 %mul19.19 to i64
+  br label %for.body18.19
 
-for.body22.19:                                    ; preds = %for.inc46.19, %for.body22.lr.ph.19
-  %indvars.iv23.19 = phi i64 [ 0, %for.body22.lr.ph.19 ], [ %indvars.iv.next24.19, %for.inc46.19 ]
-  %750 = add nsw i64 %indvars.iv23.19, %749
-  %arrayidx25.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %750
-  %751 = load i32, i32* %arrayidx25.19, align 4
-  %conv26.19 = uitofp i32 %751 to float
-  %cmp27.19 = fcmp olt float %conv26.19, %mul13
-  br i1 %cmp27.19, label %if.then29.19, label %if.else32.19
+for.body18.19:                                    ; preds = %for.inc41.19, %for.body18.lr.ph.19
+  %indvars.iv23.19 = phi i64 [ 0, %for.body18.lr.ph.19 ], [ %indvars.iv.next24.19, %for.inc41.19 ]
+  %751 = add nsw i64 %indvars.iv23.19, %750
+  %arrayidx21.19 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %751
+  %752 = load i32, i32* %arrayidx21.19, align 4
+  %conv22.19 = uitofp i32 %752 to float
+  %cmp23.19 = fcmp olt float %conv22.19, %mul9
+  br i1 %cmp23.19, label %if.then25.19, label %if.else.19
 
-if.else32.19:                                     ; preds = %for.body22.19
-  %cmp36.19 = fcmp ult float %conv26.19, %img_max.0.lcssa
-  br i1 %cmp36.19, label %if.else41.19, label %if.then38.19
+if.else.19:                                       ; preds = %for.body18.19
+  %cmp31.19 = fcmp ult float %conv22.19, %mul8
+  br i1 %cmp31.19, label %if.else36.19, label %if.then33.19
 
-if.then38.19:                                     ; preds = %if.else32.19
-  store i32 255, i32* %arrayidx25.19, align 4
-  br label %for.inc46.19
+if.then33.19:                                     ; preds = %if.else.19
+  store i32 255, i32* %arrayidx21.19, align 4
+  br label %for.inc41.19
 
-if.else41.19:                                     ; preds = %if.else32.19
-  store i32 75, i32* %arrayidx25.19, align 4
-  br label %for.inc46.19
+if.else36.19:                                     ; preds = %if.else.19
+  store i32 75, i32* %arrayidx21.19, align 4
+  br label %for.inc41.19
 
-if.then29.19:                                     ; preds = %for.body22.19
-  store i32 0, i32* %arrayidx25.19, align 4
-  br label %for.inc46.19
+if.then25.19:                                     ; preds = %for.body18.19
+  store i32 0, i32* %arrayidx21.19, align 4
+  br label %for.inc41.19
 
-for.inc46.19:                                     ; preds = %if.then29.19, %if.else41.19, %if.then38.19
+for.inc41.19:                                     ; preds = %if.then25.19, %if.else36.19, %if.then33.19
   %indvars.iv.next24.19 = add nuw nsw i64 %indvars.iv23.19, 1
   %lftr.wideiv26.19 = trunc i64 %indvars.iv.next24.19 to i32
   %exitcond27.19 = icmp eq i32 %lftr.wideiv26.19, %img_width
-  br i1 %exitcond27.19, label %for.inc49.19, label %for.body22.19, !llvm.loop !3
+  br i1 %exitcond27.19, label %for.inc44.19, label %for.body18.19, !llvm.loop !3
 
-for.inc49.19:                                     ; preds = %for.inc46.19
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.20
+for.inc44.19:                                     ; preds = %for.inc41.19
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.20
 
-for.body22.lr.ph.20:                              ; preds = %for.inc49.19
+for.body18.lr.ph.20:                              ; preds = %for.inc44.19
   %indvars.iv.next29.19 = add nsw i64 %indvars.iv28, 20
-  %752 = trunc i64 %indvars.iv.next29.19 to i32
-  %mul23.20 = shl i32 %752, 7
-  %753 = sext i32 %mul23.20 to i64
-  br label %for.body22.20
+  %753 = trunc i64 %indvars.iv.next29.19 to i32
+  %mul19.20 = shl i32 %753, 7
+  %754 = sext i32 %mul19.20 to i64
+  br label %for.body18.20
 
-for.body22.20:                                    ; preds = %for.inc46.20, %for.body22.lr.ph.20
-  %indvars.iv23.20 = phi i64 [ 0, %for.body22.lr.ph.20 ], [ %indvars.iv.next24.20, %for.inc46.20 ]
-  %754 = add nsw i64 %indvars.iv23.20, %753
-  %arrayidx25.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %754
-  %755 = load i32, i32* %arrayidx25.20, align 4
-  %conv26.20 = uitofp i32 %755 to float
-  %cmp27.20 = fcmp olt float %conv26.20, %mul13
-  br i1 %cmp27.20, label %if.then29.20, label %if.else32.20
+for.body18.20:                                    ; preds = %for.inc41.20, %for.body18.lr.ph.20
+  %indvars.iv23.20 = phi i64 [ 0, %for.body18.lr.ph.20 ], [ %indvars.iv.next24.20, %for.inc41.20 ]
+  %755 = add nsw i64 %indvars.iv23.20, %754
+  %arrayidx21.20 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %755
+  %756 = load i32, i32* %arrayidx21.20, align 4
+  %conv22.20 = uitofp i32 %756 to float
+  %cmp23.20 = fcmp olt float %conv22.20, %mul9
+  br i1 %cmp23.20, label %if.then25.20, label %if.else.20
 
-if.else32.20:                                     ; preds = %for.body22.20
-  %cmp36.20 = fcmp ult float %conv26.20, %img_max.0.lcssa
-  br i1 %cmp36.20, label %if.else41.20, label %if.then38.20
+if.else.20:                                       ; preds = %for.body18.20
+  %cmp31.20 = fcmp ult float %conv22.20, %mul8
+  br i1 %cmp31.20, label %if.else36.20, label %if.then33.20
 
-if.then38.20:                                     ; preds = %if.else32.20
-  store i32 255, i32* %arrayidx25.20, align 4
-  br label %for.inc46.20
+if.then33.20:                                     ; preds = %if.else.20
+  store i32 255, i32* %arrayidx21.20, align 4
+  br label %for.inc41.20
 
-if.else41.20:                                     ; preds = %if.else32.20
-  store i32 75, i32* %arrayidx25.20, align 4
-  br label %for.inc46.20
+if.else36.20:                                     ; preds = %if.else.20
+  store i32 75, i32* %arrayidx21.20, align 4
+  br label %for.inc41.20
 
-if.then29.20:                                     ; preds = %for.body22.20
-  store i32 0, i32* %arrayidx25.20, align 4
-  br label %for.inc46.20
+if.then25.20:                                     ; preds = %for.body18.20
+  store i32 0, i32* %arrayidx21.20, align 4
+  br label %for.inc41.20
 
-for.inc46.20:                                     ; preds = %if.then29.20, %if.else41.20, %if.then38.20
+for.inc41.20:                                     ; preds = %if.then25.20, %if.else36.20, %if.then33.20
   %indvars.iv.next24.20 = add nuw nsw i64 %indvars.iv23.20, 1
   %lftr.wideiv26.20 = trunc i64 %indvars.iv.next24.20 to i32
   %exitcond27.20 = icmp eq i32 %lftr.wideiv26.20, %img_width
-  br i1 %exitcond27.20, label %for.inc49.20, label %for.body22.20, !llvm.loop !3
+  br i1 %exitcond27.20, label %for.inc44.20, label %for.body18.20, !llvm.loop !3
 
-for.inc49.20:                                     ; preds = %for.inc46.20
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.21
+for.inc44.20:                                     ; preds = %for.inc41.20
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.21
 
-for.body22.lr.ph.21:                              ; preds = %for.inc49.20
+for.body18.lr.ph.21:                              ; preds = %for.inc44.20
   %indvars.iv.next29.20 = add nsw i64 %indvars.iv28, 21
-  %756 = trunc i64 %indvars.iv.next29.20 to i32
-  %mul23.21 = shl i32 %756, 7
-  %757 = sext i32 %mul23.21 to i64
-  br label %for.body22.21
+  %757 = trunc i64 %indvars.iv.next29.20 to i32
+  %mul19.21 = shl i32 %757, 7
+  %758 = sext i32 %mul19.21 to i64
+  br label %for.body18.21
 
-for.body22.21:                                    ; preds = %for.inc46.21, %for.body22.lr.ph.21
-  %indvars.iv23.21 = phi i64 [ 0, %for.body22.lr.ph.21 ], [ %indvars.iv.next24.21, %for.inc46.21 ]
-  %758 = add nsw i64 %indvars.iv23.21, %757
-  %arrayidx25.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %758
-  %759 = load i32, i32* %arrayidx25.21, align 4
-  %conv26.21 = uitofp i32 %759 to float
-  %cmp27.21 = fcmp olt float %conv26.21, %mul13
-  br i1 %cmp27.21, label %if.then29.21, label %if.else32.21
+for.body18.21:                                    ; preds = %for.inc41.21, %for.body18.lr.ph.21
+  %indvars.iv23.21 = phi i64 [ 0, %for.body18.lr.ph.21 ], [ %indvars.iv.next24.21, %for.inc41.21 ]
+  %759 = add nsw i64 %indvars.iv23.21, %758
+  %arrayidx21.21 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %759
+  %760 = load i32, i32* %arrayidx21.21, align 4
+  %conv22.21 = uitofp i32 %760 to float
+  %cmp23.21 = fcmp olt float %conv22.21, %mul9
+  br i1 %cmp23.21, label %if.then25.21, label %if.else.21
 
-if.else32.21:                                     ; preds = %for.body22.21
-  %cmp36.21 = fcmp ult float %conv26.21, %img_max.0.lcssa
-  br i1 %cmp36.21, label %if.else41.21, label %if.then38.21
+if.else.21:                                       ; preds = %for.body18.21
+  %cmp31.21 = fcmp ult float %conv22.21, %mul8
+  br i1 %cmp31.21, label %if.else36.21, label %if.then33.21
 
-if.then38.21:                                     ; preds = %if.else32.21
-  store i32 255, i32* %arrayidx25.21, align 4
-  br label %for.inc46.21
+if.then33.21:                                     ; preds = %if.else.21
+  store i32 255, i32* %arrayidx21.21, align 4
+  br label %for.inc41.21
 
-if.else41.21:                                     ; preds = %if.else32.21
-  store i32 75, i32* %arrayidx25.21, align 4
-  br label %for.inc46.21
+if.else36.21:                                     ; preds = %if.else.21
+  store i32 75, i32* %arrayidx21.21, align 4
+  br label %for.inc41.21
 
-if.then29.21:                                     ; preds = %for.body22.21
-  store i32 0, i32* %arrayidx25.21, align 4
-  br label %for.inc46.21
+if.then25.21:                                     ; preds = %for.body18.21
+  store i32 0, i32* %arrayidx21.21, align 4
+  br label %for.inc41.21
 
-for.inc46.21:                                     ; preds = %if.then29.21, %if.else41.21, %if.then38.21
+for.inc41.21:                                     ; preds = %if.then25.21, %if.else36.21, %if.then33.21
   %indvars.iv.next24.21 = add nuw nsw i64 %indvars.iv23.21, 1
   %lftr.wideiv26.21 = trunc i64 %indvars.iv.next24.21 to i32
   %exitcond27.21 = icmp eq i32 %lftr.wideiv26.21, %img_width
-  br i1 %exitcond27.21, label %for.inc49.21, label %for.body22.21, !llvm.loop !3
+  br i1 %exitcond27.21, label %for.inc44.21, label %for.body18.21, !llvm.loop !3
 
-for.inc49.21:                                     ; preds = %for.inc46.21
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.22
+for.inc44.21:                                     ; preds = %for.inc41.21
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.22
 
-for.body22.lr.ph.22:                              ; preds = %for.inc49.21
+for.body18.lr.ph.22:                              ; preds = %for.inc44.21
   %indvars.iv.next29.21 = add nsw i64 %indvars.iv28, 22
-  %760 = trunc i64 %indvars.iv.next29.21 to i32
-  %mul23.22 = shl i32 %760, 7
-  %761 = sext i32 %mul23.22 to i64
-  br label %for.body22.22
+  %761 = trunc i64 %indvars.iv.next29.21 to i32
+  %mul19.22 = shl i32 %761, 7
+  %762 = sext i32 %mul19.22 to i64
+  br label %for.body18.22
 
-for.body22.22:                                    ; preds = %for.inc46.22, %for.body22.lr.ph.22
-  %indvars.iv23.22 = phi i64 [ 0, %for.body22.lr.ph.22 ], [ %indvars.iv.next24.22, %for.inc46.22 ]
-  %762 = add nsw i64 %indvars.iv23.22, %761
-  %arrayidx25.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %762
-  %763 = load i32, i32* %arrayidx25.22, align 4
-  %conv26.22 = uitofp i32 %763 to float
-  %cmp27.22 = fcmp olt float %conv26.22, %mul13
-  br i1 %cmp27.22, label %if.then29.22, label %if.else32.22
+for.body18.22:                                    ; preds = %for.inc41.22, %for.body18.lr.ph.22
+  %indvars.iv23.22 = phi i64 [ 0, %for.body18.lr.ph.22 ], [ %indvars.iv.next24.22, %for.inc41.22 ]
+  %763 = add nsw i64 %indvars.iv23.22, %762
+  %arrayidx21.22 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %763
+  %764 = load i32, i32* %arrayidx21.22, align 4
+  %conv22.22 = uitofp i32 %764 to float
+  %cmp23.22 = fcmp olt float %conv22.22, %mul9
+  br i1 %cmp23.22, label %if.then25.22, label %if.else.22
 
-if.else32.22:                                     ; preds = %for.body22.22
-  %cmp36.22 = fcmp ult float %conv26.22, %img_max.0.lcssa
-  br i1 %cmp36.22, label %if.else41.22, label %if.then38.22
+if.else.22:                                       ; preds = %for.body18.22
+  %cmp31.22 = fcmp ult float %conv22.22, %mul8
+  br i1 %cmp31.22, label %if.else36.22, label %if.then33.22
 
-if.then38.22:                                     ; preds = %if.else32.22
-  store i32 255, i32* %arrayidx25.22, align 4
-  br label %for.inc46.22
+if.then33.22:                                     ; preds = %if.else.22
+  store i32 255, i32* %arrayidx21.22, align 4
+  br label %for.inc41.22
 
-if.else41.22:                                     ; preds = %if.else32.22
-  store i32 75, i32* %arrayidx25.22, align 4
-  br label %for.inc46.22
+if.else36.22:                                     ; preds = %if.else.22
+  store i32 75, i32* %arrayidx21.22, align 4
+  br label %for.inc41.22
 
-if.then29.22:                                     ; preds = %for.body22.22
-  store i32 0, i32* %arrayidx25.22, align 4
-  br label %for.inc46.22
+if.then25.22:                                     ; preds = %for.body18.22
+  store i32 0, i32* %arrayidx21.22, align 4
+  br label %for.inc41.22
 
-for.inc46.22:                                     ; preds = %if.then29.22, %if.else41.22, %if.then38.22
+for.inc41.22:                                     ; preds = %if.then25.22, %if.else36.22, %if.then33.22
   %indvars.iv.next24.22 = add nuw nsw i64 %indvars.iv23.22, 1
   %lftr.wideiv26.22 = trunc i64 %indvars.iv.next24.22 to i32
   %exitcond27.22 = icmp eq i32 %lftr.wideiv26.22, %img_width
-  br i1 %exitcond27.22, label %for.inc49.22, label %for.body22.22, !llvm.loop !3
+  br i1 %exitcond27.22, label %for.inc44.22, label %for.body18.22, !llvm.loop !3
 
-for.inc49.22:                                     ; preds = %for.inc46.22
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.23
+for.inc44.22:                                     ; preds = %for.inc41.22
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.23
 
-for.body22.lr.ph.23:                              ; preds = %for.inc49.22
+for.body18.lr.ph.23:                              ; preds = %for.inc44.22
   %indvars.iv.next29.22 = add nsw i64 %indvars.iv28, 23
-  %764 = trunc i64 %indvars.iv.next29.22 to i32
-  %mul23.23 = shl i32 %764, 7
-  %765 = sext i32 %mul23.23 to i64
-  br label %for.body22.23
+  %765 = trunc i64 %indvars.iv.next29.22 to i32
+  %mul19.23 = shl i32 %765, 7
+  %766 = sext i32 %mul19.23 to i64
+  br label %for.body18.23
 
-for.body22.23:                                    ; preds = %for.inc46.23, %for.body22.lr.ph.23
-  %indvars.iv23.23 = phi i64 [ 0, %for.body22.lr.ph.23 ], [ %indvars.iv.next24.23, %for.inc46.23 ]
-  %766 = add nsw i64 %indvars.iv23.23, %765
-  %arrayidx25.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %766
-  %767 = load i32, i32* %arrayidx25.23, align 4
-  %conv26.23 = uitofp i32 %767 to float
-  %cmp27.23 = fcmp olt float %conv26.23, %mul13
-  br i1 %cmp27.23, label %if.then29.23, label %if.else32.23
+for.body18.23:                                    ; preds = %for.inc41.23, %for.body18.lr.ph.23
+  %indvars.iv23.23 = phi i64 [ 0, %for.body18.lr.ph.23 ], [ %indvars.iv.next24.23, %for.inc41.23 ]
+  %767 = add nsw i64 %indvars.iv23.23, %766
+  %arrayidx21.23 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %767
+  %768 = load i32, i32* %arrayidx21.23, align 4
+  %conv22.23 = uitofp i32 %768 to float
+  %cmp23.23 = fcmp olt float %conv22.23, %mul9
+  br i1 %cmp23.23, label %if.then25.23, label %if.else.23
 
-if.else32.23:                                     ; preds = %for.body22.23
-  %cmp36.23 = fcmp ult float %conv26.23, %img_max.0.lcssa
-  br i1 %cmp36.23, label %if.else41.23, label %if.then38.23
+if.else.23:                                       ; preds = %for.body18.23
+  %cmp31.23 = fcmp ult float %conv22.23, %mul8
+  br i1 %cmp31.23, label %if.else36.23, label %if.then33.23
 
-if.then38.23:                                     ; preds = %if.else32.23
-  store i32 255, i32* %arrayidx25.23, align 4
-  br label %for.inc46.23
+if.then33.23:                                     ; preds = %if.else.23
+  store i32 255, i32* %arrayidx21.23, align 4
+  br label %for.inc41.23
 
-if.else41.23:                                     ; preds = %if.else32.23
-  store i32 75, i32* %arrayidx25.23, align 4
-  br label %for.inc46.23
+if.else36.23:                                     ; preds = %if.else.23
+  store i32 75, i32* %arrayidx21.23, align 4
+  br label %for.inc41.23
 
-if.then29.23:                                     ; preds = %for.body22.23
-  store i32 0, i32* %arrayidx25.23, align 4
-  br label %for.inc46.23
+if.then25.23:                                     ; preds = %for.body18.23
+  store i32 0, i32* %arrayidx21.23, align 4
+  br label %for.inc41.23
 
-for.inc46.23:                                     ; preds = %if.then29.23, %if.else41.23, %if.then38.23
+for.inc41.23:                                     ; preds = %if.then25.23, %if.else36.23, %if.then33.23
   %indvars.iv.next24.23 = add nuw nsw i64 %indvars.iv23.23, 1
   %lftr.wideiv26.23 = trunc i64 %indvars.iv.next24.23 to i32
   %exitcond27.23 = icmp eq i32 %lftr.wideiv26.23, %img_width
-  br i1 %exitcond27.23, label %for.inc49.23, label %for.body22.23, !llvm.loop !3
+  br i1 %exitcond27.23, label %for.inc44.23, label %for.body18.23, !llvm.loop !3
 
-for.inc49.23:                                     ; preds = %for.inc46.23
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.24
+for.inc44.23:                                     ; preds = %for.inc41.23
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.24
 
-for.body22.lr.ph.24:                              ; preds = %for.inc49.23
+for.body18.lr.ph.24:                              ; preds = %for.inc44.23
   %indvars.iv.next29.23 = add nsw i64 %indvars.iv28, 24
-  %768 = trunc i64 %indvars.iv.next29.23 to i32
-  %mul23.24 = shl i32 %768, 7
-  %769 = sext i32 %mul23.24 to i64
-  br label %for.body22.24
+  %769 = trunc i64 %indvars.iv.next29.23 to i32
+  %mul19.24 = shl i32 %769, 7
+  %770 = sext i32 %mul19.24 to i64
+  br label %for.body18.24
 
-for.body22.24:                                    ; preds = %for.inc46.24, %for.body22.lr.ph.24
-  %indvars.iv23.24 = phi i64 [ 0, %for.body22.lr.ph.24 ], [ %indvars.iv.next24.24, %for.inc46.24 ]
-  %770 = add nsw i64 %indvars.iv23.24, %769
-  %arrayidx25.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %770
-  %771 = load i32, i32* %arrayidx25.24, align 4
-  %conv26.24 = uitofp i32 %771 to float
-  %cmp27.24 = fcmp olt float %conv26.24, %mul13
-  br i1 %cmp27.24, label %if.then29.24, label %if.else32.24
+for.body18.24:                                    ; preds = %for.inc41.24, %for.body18.lr.ph.24
+  %indvars.iv23.24 = phi i64 [ 0, %for.body18.lr.ph.24 ], [ %indvars.iv.next24.24, %for.inc41.24 ]
+  %771 = add nsw i64 %indvars.iv23.24, %770
+  %arrayidx21.24 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %771
+  %772 = load i32, i32* %arrayidx21.24, align 4
+  %conv22.24 = uitofp i32 %772 to float
+  %cmp23.24 = fcmp olt float %conv22.24, %mul9
+  br i1 %cmp23.24, label %if.then25.24, label %if.else.24
 
-if.else32.24:                                     ; preds = %for.body22.24
-  %cmp36.24 = fcmp ult float %conv26.24, %img_max.0.lcssa
-  br i1 %cmp36.24, label %if.else41.24, label %if.then38.24
+if.else.24:                                       ; preds = %for.body18.24
+  %cmp31.24 = fcmp ult float %conv22.24, %mul8
+  br i1 %cmp31.24, label %if.else36.24, label %if.then33.24
 
-if.then38.24:                                     ; preds = %if.else32.24
-  store i32 255, i32* %arrayidx25.24, align 4
-  br label %for.inc46.24
+if.then33.24:                                     ; preds = %if.else.24
+  store i32 255, i32* %arrayidx21.24, align 4
+  br label %for.inc41.24
 
-if.else41.24:                                     ; preds = %if.else32.24
-  store i32 75, i32* %arrayidx25.24, align 4
-  br label %for.inc46.24
+if.else36.24:                                     ; preds = %if.else.24
+  store i32 75, i32* %arrayidx21.24, align 4
+  br label %for.inc41.24
 
-if.then29.24:                                     ; preds = %for.body22.24
-  store i32 0, i32* %arrayidx25.24, align 4
-  br label %for.inc46.24
+if.then25.24:                                     ; preds = %for.body18.24
+  store i32 0, i32* %arrayidx21.24, align 4
+  br label %for.inc41.24
 
-for.inc46.24:                                     ; preds = %if.then29.24, %if.else41.24, %if.then38.24
+for.inc41.24:                                     ; preds = %if.then25.24, %if.else36.24, %if.then33.24
   %indvars.iv.next24.24 = add nuw nsw i64 %indvars.iv23.24, 1
   %lftr.wideiv26.24 = trunc i64 %indvars.iv.next24.24 to i32
   %exitcond27.24 = icmp eq i32 %lftr.wideiv26.24, %img_width
-  br i1 %exitcond27.24, label %for.inc49.24, label %for.body22.24, !llvm.loop !3
+  br i1 %exitcond27.24, label %for.inc44.24, label %for.body18.24, !llvm.loop !3
 
-for.inc49.24:                                     ; preds = %for.inc46.24
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.25
+for.inc44.24:                                     ; preds = %for.inc41.24
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.25
 
-for.body22.lr.ph.25:                              ; preds = %for.inc49.24
+for.body18.lr.ph.25:                              ; preds = %for.inc44.24
   %indvars.iv.next29.24 = add nsw i64 %indvars.iv28, 25
-  %772 = trunc i64 %indvars.iv.next29.24 to i32
-  %mul23.25 = shl i32 %772, 7
-  %773 = sext i32 %mul23.25 to i64
-  br label %for.body22.25
+  %773 = trunc i64 %indvars.iv.next29.24 to i32
+  %mul19.25 = shl i32 %773, 7
+  %774 = sext i32 %mul19.25 to i64
+  br label %for.body18.25
 
-for.body22.25:                                    ; preds = %for.inc46.25, %for.body22.lr.ph.25
-  %indvars.iv23.25 = phi i64 [ 0, %for.body22.lr.ph.25 ], [ %indvars.iv.next24.25, %for.inc46.25 ]
-  %774 = add nsw i64 %indvars.iv23.25, %773
-  %arrayidx25.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %774
-  %775 = load i32, i32* %arrayidx25.25, align 4
-  %conv26.25 = uitofp i32 %775 to float
-  %cmp27.25 = fcmp olt float %conv26.25, %mul13
-  br i1 %cmp27.25, label %if.then29.25, label %if.else32.25
+for.body18.25:                                    ; preds = %for.inc41.25, %for.body18.lr.ph.25
+  %indvars.iv23.25 = phi i64 [ 0, %for.body18.lr.ph.25 ], [ %indvars.iv.next24.25, %for.inc41.25 ]
+  %775 = add nsw i64 %indvars.iv23.25, %774
+  %arrayidx21.25 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %775
+  %776 = load i32, i32* %arrayidx21.25, align 4
+  %conv22.25 = uitofp i32 %776 to float
+  %cmp23.25 = fcmp olt float %conv22.25, %mul9
+  br i1 %cmp23.25, label %if.then25.25, label %if.else.25
 
-if.else32.25:                                     ; preds = %for.body22.25
-  %cmp36.25 = fcmp ult float %conv26.25, %img_max.0.lcssa
-  br i1 %cmp36.25, label %if.else41.25, label %if.then38.25
+if.else.25:                                       ; preds = %for.body18.25
+  %cmp31.25 = fcmp ult float %conv22.25, %mul8
+  br i1 %cmp31.25, label %if.else36.25, label %if.then33.25
 
-if.then38.25:                                     ; preds = %if.else32.25
-  store i32 255, i32* %arrayidx25.25, align 4
-  br label %for.inc46.25
+if.then33.25:                                     ; preds = %if.else.25
+  store i32 255, i32* %arrayidx21.25, align 4
+  br label %for.inc41.25
 
-if.else41.25:                                     ; preds = %if.else32.25
-  store i32 75, i32* %arrayidx25.25, align 4
-  br label %for.inc46.25
+if.else36.25:                                     ; preds = %if.else.25
+  store i32 75, i32* %arrayidx21.25, align 4
+  br label %for.inc41.25
 
-if.then29.25:                                     ; preds = %for.body22.25
-  store i32 0, i32* %arrayidx25.25, align 4
-  br label %for.inc46.25
+if.then25.25:                                     ; preds = %for.body18.25
+  store i32 0, i32* %arrayidx21.25, align 4
+  br label %for.inc41.25
 
-for.inc46.25:                                     ; preds = %if.then29.25, %if.else41.25, %if.then38.25
+for.inc41.25:                                     ; preds = %if.then25.25, %if.else36.25, %if.then33.25
   %indvars.iv.next24.25 = add nuw nsw i64 %indvars.iv23.25, 1
   %lftr.wideiv26.25 = trunc i64 %indvars.iv.next24.25 to i32
   %exitcond27.25 = icmp eq i32 %lftr.wideiv26.25, %img_width
-  br i1 %exitcond27.25, label %for.inc49.25, label %for.body22.25, !llvm.loop !3
+  br i1 %exitcond27.25, label %for.inc44.25, label %for.body18.25, !llvm.loop !3
 
-for.inc49.25:                                     ; preds = %for.inc46.25
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.26
+for.inc44.25:                                     ; preds = %for.inc41.25
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.26
 
-for.body22.lr.ph.26:                              ; preds = %for.inc49.25
+for.body18.lr.ph.26:                              ; preds = %for.inc44.25
   %indvars.iv.next29.25 = add nsw i64 %indvars.iv28, 26
-  %776 = trunc i64 %indvars.iv.next29.25 to i32
-  %mul23.26 = shl i32 %776, 7
-  %777 = sext i32 %mul23.26 to i64
-  br label %for.body22.26
+  %777 = trunc i64 %indvars.iv.next29.25 to i32
+  %mul19.26 = shl i32 %777, 7
+  %778 = sext i32 %mul19.26 to i64
+  br label %for.body18.26
 
-for.body22.26:                                    ; preds = %for.inc46.26, %for.body22.lr.ph.26
-  %indvars.iv23.26 = phi i64 [ 0, %for.body22.lr.ph.26 ], [ %indvars.iv.next24.26, %for.inc46.26 ]
-  %778 = add nsw i64 %indvars.iv23.26, %777
-  %arrayidx25.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %778
-  %779 = load i32, i32* %arrayidx25.26, align 4
-  %conv26.26 = uitofp i32 %779 to float
-  %cmp27.26 = fcmp olt float %conv26.26, %mul13
-  br i1 %cmp27.26, label %if.then29.26, label %if.else32.26
+for.body18.26:                                    ; preds = %for.inc41.26, %for.body18.lr.ph.26
+  %indvars.iv23.26 = phi i64 [ 0, %for.body18.lr.ph.26 ], [ %indvars.iv.next24.26, %for.inc41.26 ]
+  %779 = add nsw i64 %indvars.iv23.26, %778
+  %arrayidx21.26 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %779
+  %780 = load i32, i32* %arrayidx21.26, align 4
+  %conv22.26 = uitofp i32 %780 to float
+  %cmp23.26 = fcmp olt float %conv22.26, %mul9
+  br i1 %cmp23.26, label %if.then25.26, label %if.else.26
 
-if.else32.26:                                     ; preds = %for.body22.26
-  %cmp36.26 = fcmp ult float %conv26.26, %img_max.0.lcssa
-  br i1 %cmp36.26, label %if.else41.26, label %if.then38.26
+if.else.26:                                       ; preds = %for.body18.26
+  %cmp31.26 = fcmp ult float %conv22.26, %mul8
+  br i1 %cmp31.26, label %if.else36.26, label %if.then33.26
 
-if.then38.26:                                     ; preds = %if.else32.26
-  store i32 255, i32* %arrayidx25.26, align 4
-  br label %for.inc46.26
+if.then33.26:                                     ; preds = %if.else.26
+  store i32 255, i32* %arrayidx21.26, align 4
+  br label %for.inc41.26
 
-if.else41.26:                                     ; preds = %if.else32.26
-  store i32 75, i32* %arrayidx25.26, align 4
-  br label %for.inc46.26
+if.else36.26:                                     ; preds = %if.else.26
+  store i32 75, i32* %arrayidx21.26, align 4
+  br label %for.inc41.26
 
-if.then29.26:                                     ; preds = %for.body22.26
-  store i32 0, i32* %arrayidx25.26, align 4
-  br label %for.inc46.26
+if.then25.26:                                     ; preds = %for.body18.26
+  store i32 0, i32* %arrayidx21.26, align 4
+  br label %for.inc41.26
 
-for.inc46.26:                                     ; preds = %if.then29.26, %if.else41.26, %if.then38.26
+for.inc41.26:                                     ; preds = %if.then25.26, %if.else36.26, %if.then33.26
   %indvars.iv.next24.26 = add nuw nsw i64 %indvars.iv23.26, 1
   %lftr.wideiv26.26 = trunc i64 %indvars.iv.next24.26 to i32
   %exitcond27.26 = icmp eq i32 %lftr.wideiv26.26, %img_width
-  br i1 %exitcond27.26, label %for.inc49.26, label %for.body22.26, !llvm.loop !3
+  br i1 %exitcond27.26, label %for.inc44.26, label %for.body18.26, !llvm.loop !3
 
-for.inc49.26:                                     ; preds = %for.inc46.26
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.27
+for.inc44.26:                                     ; preds = %for.inc41.26
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.27
 
-for.body22.lr.ph.27:                              ; preds = %for.inc49.26
+for.body18.lr.ph.27:                              ; preds = %for.inc44.26
   %indvars.iv.next29.26 = add nsw i64 %indvars.iv28, 27
-  %780 = trunc i64 %indvars.iv.next29.26 to i32
-  %mul23.27 = shl i32 %780, 7
-  %781 = sext i32 %mul23.27 to i64
-  br label %for.body22.27
+  %781 = trunc i64 %indvars.iv.next29.26 to i32
+  %mul19.27 = shl i32 %781, 7
+  %782 = sext i32 %mul19.27 to i64
+  br label %for.body18.27
 
-for.body22.27:                                    ; preds = %for.inc46.27, %for.body22.lr.ph.27
-  %indvars.iv23.27 = phi i64 [ 0, %for.body22.lr.ph.27 ], [ %indvars.iv.next24.27, %for.inc46.27 ]
-  %782 = add nsw i64 %indvars.iv23.27, %781
-  %arrayidx25.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %782
-  %783 = load i32, i32* %arrayidx25.27, align 4
-  %conv26.27 = uitofp i32 %783 to float
-  %cmp27.27 = fcmp olt float %conv26.27, %mul13
-  br i1 %cmp27.27, label %if.then29.27, label %if.else32.27
+for.body18.27:                                    ; preds = %for.inc41.27, %for.body18.lr.ph.27
+  %indvars.iv23.27 = phi i64 [ 0, %for.body18.lr.ph.27 ], [ %indvars.iv.next24.27, %for.inc41.27 ]
+  %783 = add nsw i64 %indvars.iv23.27, %782
+  %arrayidx21.27 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %783
+  %784 = load i32, i32* %arrayidx21.27, align 4
+  %conv22.27 = uitofp i32 %784 to float
+  %cmp23.27 = fcmp olt float %conv22.27, %mul9
+  br i1 %cmp23.27, label %if.then25.27, label %if.else.27
 
-if.else32.27:                                     ; preds = %for.body22.27
-  %cmp36.27 = fcmp ult float %conv26.27, %img_max.0.lcssa
-  br i1 %cmp36.27, label %if.else41.27, label %if.then38.27
+if.else.27:                                       ; preds = %for.body18.27
+  %cmp31.27 = fcmp ult float %conv22.27, %mul8
+  br i1 %cmp31.27, label %if.else36.27, label %if.then33.27
 
-if.then38.27:                                     ; preds = %if.else32.27
-  store i32 255, i32* %arrayidx25.27, align 4
-  br label %for.inc46.27
+if.then33.27:                                     ; preds = %if.else.27
+  store i32 255, i32* %arrayidx21.27, align 4
+  br label %for.inc41.27
 
-if.else41.27:                                     ; preds = %if.else32.27
-  store i32 75, i32* %arrayidx25.27, align 4
-  br label %for.inc46.27
+if.else36.27:                                     ; preds = %if.else.27
+  store i32 75, i32* %arrayidx21.27, align 4
+  br label %for.inc41.27
 
-if.then29.27:                                     ; preds = %for.body22.27
-  store i32 0, i32* %arrayidx25.27, align 4
-  br label %for.inc46.27
+if.then25.27:                                     ; preds = %for.body18.27
+  store i32 0, i32* %arrayidx21.27, align 4
+  br label %for.inc41.27
 
-for.inc46.27:                                     ; preds = %if.then29.27, %if.else41.27, %if.then38.27
+for.inc41.27:                                     ; preds = %if.then25.27, %if.else36.27, %if.then33.27
   %indvars.iv.next24.27 = add nuw nsw i64 %indvars.iv23.27, 1
   %lftr.wideiv26.27 = trunc i64 %indvars.iv.next24.27 to i32
   %exitcond27.27 = icmp eq i32 %lftr.wideiv26.27, %img_width
-  br i1 %exitcond27.27, label %for.inc49.27, label %for.body22.27, !llvm.loop !3
+  br i1 %exitcond27.27, label %for.inc44.27, label %for.body18.27, !llvm.loop !3
 
-for.inc49.27:                                     ; preds = %for.inc46.27
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.28
+for.inc44.27:                                     ; preds = %for.inc41.27
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.28
 
-for.body22.lr.ph.28:                              ; preds = %for.inc49.27
+for.body18.lr.ph.28:                              ; preds = %for.inc44.27
   %indvars.iv.next29.27 = add nsw i64 %indvars.iv28, 28
-  %784 = trunc i64 %indvars.iv.next29.27 to i32
-  %mul23.28 = shl i32 %784, 7
-  %785 = sext i32 %mul23.28 to i64
-  br label %for.body22.28
+  %785 = trunc i64 %indvars.iv.next29.27 to i32
+  %mul19.28 = shl i32 %785, 7
+  %786 = sext i32 %mul19.28 to i64
+  br label %for.body18.28
 
-for.body22.28:                                    ; preds = %for.inc46.28, %for.body22.lr.ph.28
-  %indvars.iv23.28 = phi i64 [ 0, %for.body22.lr.ph.28 ], [ %indvars.iv.next24.28, %for.inc46.28 ]
-  %786 = add nsw i64 %indvars.iv23.28, %785
-  %arrayidx25.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %786
-  %787 = load i32, i32* %arrayidx25.28, align 4
-  %conv26.28 = uitofp i32 %787 to float
-  %cmp27.28 = fcmp olt float %conv26.28, %mul13
-  br i1 %cmp27.28, label %if.then29.28, label %if.else32.28
+for.body18.28:                                    ; preds = %for.inc41.28, %for.body18.lr.ph.28
+  %indvars.iv23.28 = phi i64 [ 0, %for.body18.lr.ph.28 ], [ %indvars.iv.next24.28, %for.inc41.28 ]
+  %787 = add nsw i64 %indvars.iv23.28, %786
+  %arrayidx21.28 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %787
+  %788 = load i32, i32* %arrayidx21.28, align 4
+  %conv22.28 = uitofp i32 %788 to float
+  %cmp23.28 = fcmp olt float %conv22.28, %mul9
+  br i1 %cmp23.28, label %if.then25.28, label %if.else.28
 
-if.else32.28:                                     ; preds = %for.body22.28
-  %cmp36.28 = fcmp ult float %conv26.28, %img_max.0.lcssa
-  br i1 %cmp36.28, label %if.else41.28, label %if.then38.28
+if.else.28:                                       ; preds = %for.body18.28
+  %cmp31.28 = fcmp ult float %conv22.28, %mul8
+  br i1 %cmp31.28, label %if.else36.28, label %if.then33.28
 
-if.then38.28:                                     ; preds = %if.else32.28
-  store i32 255, i32* %arrayidx25.28, align 4
-  br label %for.inc46.28
+if.then33.28:                                     ; preds = %if.else.28
+  store i32 255, i32* %arrayidx21.28, align 4
+  br label %for.inc41.28
 
-if.else41.28:                                     ; preds = %if.else32.28
-  store i32 75, i32* %arrayidx25.28, align 4
-  br label %for.inc46.28
+if.else36.28:                                     ; preds = %if.else.28
+  store i32 75, i32* %arrayidx21.28, align 4
+  br label %for.inc41.28
 
-if.then29.28:                                     ; preds = %for.body22.28
-  store i32 0, i32* %arrayidx25.28, align 4
-  br label %for.inc46.28
+if.then25.28:                                     ; preds = %for.body18.28
+  store i32 0, i32* %arrayidx21.28, align 4
+  br label %for.inc41.28
 
-for.inc46.28:                                     ; preds = %if.then29.28, %if.else41.28, %if.then38.28
+for.inc41.28:                                     ; preds = %if.then25.28, %if.else36.28, %if.then33.28
   %indvars.iv.next24.28 = add nuw nsw i64 %indvars.iv23.28, 1
   %lftr.wideiv26.28 = trunc i64 %indvars.iv.next24.28 to i32
   %exitcond27.28 = icmp eq i32 %lftr.wideiv26.28, %img_width
-  br i1 %exitcond27.28, label %for.inc49.28, label %for.body22.28, !llvm.loop !3
+  br i1 %exitcond27.28, label %for.inc44.28, label %for.body18.28, !llvm.loop !3
 
-for.inc49.28:                                     ; preds = %for.inc46.28
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.29
+for.inc44.28:                                     ; preds = %for.inc41.28
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.29
 
-for.body22.lr.ph.29:                              ; preds = %for.inc49.28
+for.body18.lr.ph.29:                              ; preds = %for.inc44.28
   %indvars.iv.next29.28 = add nsw i64 %indvars.iv28, 29
-  %788 = trunc i64 %indvars.iv.next29.28 to i32
-  %mul23.29 = shl i32 %788, 7
-  %789 = sext i32 %mul23.29 to i64
-  br label %for.body22.29
+  %789 = trunc i64 %indvars.iv.next29.28 to i32
+  %mul19.29 = shl i32 %789, 7
+  %790 = sext i32 %mul19.29 to i64
+  br label %for.body18.29
 
-for.body22.29:                                    ; preds = %for.inc46.29, %for.body22.lr.ph.29
-  %indvars.iv23.29 = phi i64 [ 0, %for.body22.lr.ph.29 ], [ %indvars.iv.next24.29, %for.inc46.29 ]
-  %790 = add nsw i64 %indvars.iv23.29, %789
-  %arrayidx25.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %790
-  %791 = load i32, i32* %arrayidx25.29, align 4
-  %conv26.29 = uitofp i32 %791 to float
-  %cmp27.29 = fcmp olt float %conv26.29, %mul13
-  br i1 %cmp27.29, label %if.then29.29, label %if.else32.29
+for.body18.29:                                    ; preds = %for.inc41.29, %for.body18.lr.ph.29
+  %indvars.iv23.29 = phi i64 [ 0, %for.body18.lr.ph.29 ], [ %indvars.iv.next24.29, %for.inc41.29 ]
+  %791 = add nsw i64 %indvars.iv23.29, %790
+  %arrayidx21.29 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %791
+  %792 = load i32, i32* %arrayidx21.29, align 4
+  %conv22.29 = uitofp i32 %792 to float
+  %cmp23.29 = fcmp olt float %conv22.29, %mul9
+  br i1 %cmp23.29, label %if.then25.29, label %if.else.29
 
-if.else32.29:                                     ; preds = %for.body22.29
-  %cmp36.29 = fcmp ult float %conv26.29, %img_max.0.lcssa
-  br i1 %cmp36.29, label %if.else41.29, label %if.then38.29
+if.else.29:                                       ; preds = %for.body18.29
+  %cmp31.29 = fcmp ult float %conv22.29, %mul8
+  br i1 %cmp31.29, label %if.else36.29, label %if.then33.29
 
-if.then38.29:                                     ; preds = %if.else32.29
-  store i32 255, i32* %arrayidx25.29, align 4
-  br label %for.inc46.29
+if.then33.29:                                     ; preds = %if.else.29
+  store i32 255, i32* %arrayidx21.29, align 4
+  br label %for.inc41.29
 
-if.else41.29:                                     ; preds = %if.else32.29
-  store i32 75, i32* %arrayidx25.29, align 4
-  br label %for.inc46.29
+if.else36.29:                                     ; preds = %if.else.29
+  store i32 75, i32* %arrayidx21.29, align 4
+  br label %for.inc41.29
 
-if.then29.29:                                     ; preds = %for.body22.29
-  store i32 0, i32* %arrayidx25.29, align 4
-  br label %for.inc46.29
+if.then25.29:                                     ; preds = %for.body18.29
+  store i32 0, i32* %arrayidx21.29, align 4
+  br label %for.inc41.29
 
-for.inc46.29:                                     ; preds = %if.then29.29, %if.else41.29, %if.then38.29
+for.inc41.29:                                     ; preds = %if.then25.29, %if.else36.29, %if.then33.29
   %indvars.iv.next24.29 = add nuw nsw i64 %indvars.iv23.29, 1
   %lftr.wideiv26.29 = trunc i64 %indvars.iv.next24.29 to i32
   %exitcond27.29 = icmp eq i32 %lftr.wideiv26.29, %img_width
-  br i1 %exitcond27.29, label %for.inc49.29, label %for.body22.29, !llvm.loop !3
+  br i1 %exitcond27.29, label %for.inc44.29, label %for.body18.29, !llvm.loop !3
 
-for.inc49.29:                                     ; preds = %for.inc46.29
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.30
+for.inc44.29:                                     ; preds = %for.inc41.29
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.30
 
-for.body22.lr.ph.30:                              ; preds = %for.inc49.29
+for.body18.lr.ph.30:                              ; preds = %for.inc44.29
   %indvars.iv.next29.29 = add nsw i64 %indvars.iv28, 30
-  %792 = trunc i64 %indvars.iv.next29.29 to i32
-  %mul23.30 = shl i32 %792, 7
-  %793 = sext i32 %mul23.30 to i64
-  br label %for.body22.30
+  %793 = trunc i64 %indvars.iv.next29.29 to i32
+  %mul19.30 = shl i32 %793, 7
+  %794 = sext i32 %mul19.30 to i64
+  br label %for.body18.30
 
-for.body22.30:                                    ; preds = %for.inc46.30, %for.body22.lr.ph.30
-  %indvars.iv23.30 = phi i64 [ 0, %for.body22.lr.ph.30 ], [ %indvars.iv.next24.30, %for.inc46.30 ]
-  %794 = add nsw i64 %indvars.iv23.30, %793
-  %arrayidx25.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %794
-  %795 = load i32, i32* %arrayidx25.30, align 4
-  %conv26.30 = uitofp i32 %795 to float
-  %cmp27.30 = fcmp olt float %conv26.30, %mul13
-  br i1 %cmp27.30, label %if.then29.30, label %if.else32.30
+for.body18.30:                                    ; preds = %for.inc41.30, %for.body18.lr.ph.30
+  %indvars.iv23.30 = phi i64 [ 0, %for.body18.lr.ph.30 ], [ %indvars.iv.next24.30, %for.inc41.30 ]
+  %795 = add nsw i64 %indvars.iv23.30, %794
+  %arrayidx21.30 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %795
+  %796 = load i32, i32* %arrayidx21.30, align 4
+  %conv22.30 = uitofp i32 %796 to float
+  %cmp23.30 = fcmp olt float %conv22.30, %mul9
+  br i1 %cmp23.30, label %if.then25.30, label %if.else.30
 
-if.else32.30:                                     ; preds = %for.body22.30
-  %cmp36.30 = fcmp ult float %conv26.30, %img_max.0.lcssa
-  br i1 %cmp36.30, label %if.else41.30, label %if.then38.30
+if.else.30:                                       ; preds = %for.body18.30
+  %cmp31.30 = fcmp ult float %conv22.30, %mul8
+  br i1 %cmp31.30, label %if.else36.30, label %if.then33.30
 
-if.then38.30:                                     ; preds = %if.else32.30
-  store i32 255, i32* %arrayidx25.30, align 4
-  br label %for.inc46.30
+if.then33.30:                                     ; preds = %if.else.30
+  store i32 255, i32* %arrayidx21.30, align 4
+  br label %for.inc41.30
 
-if.else41.30:                                     ; preds = %if.else32.30
-  store i32 75, i32* %arrayidx25.30, align 4
-  br label %for.inc46.30
+if.else36.30:                                     ; preds = %if.else.30
+  store i32 75, i32* %arrayidx21.30, align 4
+  br label %for.inc41.30
 
-if.then29.30:                                     ; preds = %for.body22.30
-  store i32 0, i32* %arrayidx25.30, align 4
-  br label %for.inc46.30
+if.then25.30:                                     ; preds = %for.body18.30
+  store i32 0, i32* %arrayidx21.30, align 4
+  br label %for.inc41.30
 
-for.inc46.30:                                     ; preds = %if.then29.30, %if.else41.30, %if.then38.30
+for.inc41.30:                                     ; preds = %if.then25.30, %if.else36.30, %if.then33.30
   %indvars.iv.next24.30 = add nuw nsw i64 %indvars.iv23.30, 1
   %lftr.wideiv26.30 = trunc i64 %indvars.iv.next24.30 to i32
   %exitcond27.30 = icmp eq i32 %lftr.wideiv26.30, %img_width
-  br i1 %exitcond27.30, label %for.inc49.30, label %for.body22.30, !llvm.loop !3
+  br i1 %exitcond27.30, label %for.inc44.30, label %for.body18.30, !llvm.loop !3
 
-for.inc49.30:                                     ; preds = %for.inc46.30
-  br i1 %cmp208, label %for.inc49.31, label %for.body22.lr.ph.31
+for.inc44.30:                                     ; preds = %for.inc41.30
+  br i1 %cmp168, label %for.inc44.31, label %for.body18.lr.ph.31
 
-for.body22.lr.ph.31:                              ; preds = %for.inc49.30
+for.body18.lr.ph.31:                              ; preds = %for.inc44.30
   %indvars.iv.next29.30 = add nsw i64 %indvars.iv28, 31
-  %796 = trunc i64 %indvars.iv.next29.30 to i32
-  %mul23.31 = shl i32 %796, 7
-  %797 = sext i32 %mul23.31 to i64
-  br label %for.body22.31
+  %797 = trunc i64 %indvars.iv.next29.30 to i32
+  %mul19.31 = shl i32 %797, 7
+  %798 = sext i32 %mul19.31 to i64
+  br label %for.body18.31
 
-for.body22.31:                                    ; preds = %for.inc46.31, %for.body22.lr.ph.31
-  %indvars.iv23.31 = phi i64 [ 0, %for.body22.lr.ph.31 ], [ %indvars.iv.next24.31, %for.inc46.31 ]
-  %798 = add nsw i64 %indvars.iv23.31, %797
-  %arrayidx25.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %798
-  %799 = load i32, i32* %arrayidx25.31, align 4
-  %conv26.31 = uitofp i32 %799 to float
-  %cmp27.31 = fcmp olt float %conv26.31, %mul13
-  br i1 %cmp27.31, label %if.then29.31, label %if.else32.31
+for.body18.31:                                    ; preds = %for.inc41.31, %for.body18.lr.ph.31
+  %indvars.iv23.31 = phi i64 [ 0, %for.body18.lr.ph.31 ], [ %indvars.iv.next24.31, %for.inc41.31 ]
+  %799 = add nsw i64 %indvars.iv23.31, %798
+  %arrayidx21.31 = getelementptr inbounds i32, i32* inttoptr (i64 587202592 to i32*), i64 %799
+  %800 = load i32, i32* %arrayidx21.31, align 4
+  %conv22.31 = uitofp i32 %800 to float
+  %cmp23.31 = fcmp olt float %conv22.31, %mul9
+  br i1 %cmp23.31, label %if.then25.31, label %if.else.31
 
-if.else32.31:                                     ; preds = %for.body22.31
-  %cmp36.31 = fcmp ult float %conv26.31, %img_max.0.lcssa
-  br i1 %cmp36.31, label %if.else41.31, label %if.then38.31
+if.else.31:                                       ; preds = %for.body18.31
+  %cmp31.31 = fcmp ult float %conv22.31, %mul8
+  br i1 %cmp31.31, label %if.else36.31, label %if.then33.31
 
-if.then38.31:                                     ; preds = %if.else32.31
-  store i32 255, i32* %arrayidx25.31, align 4
-  br label %for.inc46.31
+if.then33.31:                                     ; preds = %if.else.31
+  store i32 255, i32* %arrayidx21.31, align 4
+  br label %for.inc41.31
 
-if.else41.31:                                     ; preds = %if.else32.31
-  store i32 75, i32* %arrayidx25.31, align 4
-  br label %for.inc46.31
+if.else36.31:                                     ; preds = %if.else.31
+  store i32 75, i32* %arrayidx21.31, align 4
+  br label %for.inc41.31
 
-if.then29.31:                                     ; preds = %for.body22.31
-  store i32 0, i32* %arrayidx25.31, align 4
-  br label %for.inc46.31
+if.then25.31:                                     ; preds = %for.body18.31
+  store i32 0, i32* %arrayidx21.31, align 4
+  br label %for.inc41.31
 
-for.inc46.31:                                     ; preds = %if.then29.31, %if.else41.31, %if.then38.31
+for.inc41.31:                                     ; preds = %if.then25.31, %if.else36.31, %if.then33.31
   %indvars.iv.next24.31 = add nuw nsw i64 %indvars.iv23.31, 1
   %lftr.wideiv26.31 = trunc i64 %indvars.iv.next24.31 to i32
   %exitcond27.31 = icmp eq i32 %lftr.wideiv26.31, %img_width
-  br i1 %exitcond27.31, label %for.inc49.31.loopexit, label %for.body22.31, !llvm.loop !3
+  br i1 %exitcond27.31, label %for.inc44.31.loopexit, label %for.body18.31, !llvm.loop !3
 
-for.inc49.31.loopexit:                            ; preds = %for.inc46.31
-  br label %for.inc49.31
+for.inc44.31.loopexit:                            ; preds = %for.inc41.31
+  br label %for.inc44.31
 
-for.inc49.31:                                     ; preds = %for.inc49.31.loopexit, %for.cond19.preheader, %for.inc49, %for.inc49.1, %for.inc49.2, %for.inc49.3, %for.inc49.4, %for.inc49.5, %for.inc49.6, %for.inc49.7, %for.inc49.8, %for.inc49.9, %for.inc49.10, %for.inc49.11, %for.inc49.12, %for.inc49.13, %for.inc49.14, %for.inc49.15, %for.inc49.16, %for.inc49.17, %for.inc49.18, %for.inc49.19, %for.inc49.20, %for.inc49.21, %for.inc49.22, %for.inc49.23, %for.inc49.24, %for.inc49.25, %for.inc49.26, %for.inc49.27, %for.inc49.28, %for.inc49.29, %for.inc49.30
+for.inc44.31:                                     ; preds = %for.inc44.31.loopexit, %for.cond15.preheader, %for.inc44, %for.inc44.1, %for.inc44.2, %for.inc44.3, %for.inc44.4, %for.inc44.5, %for.inc44.6, %for.inc44.7, %for.inc44.8, %for.inc44.9, %for.inc44.10, %for.inc44.11, %for.inc44.12, %for.inc44.13, %for.inc44.14, %for.inc44.15, %for.inc44.16, %for.inc44.17, %for.inc44.18, %for.inc44.19, %for.inc44.20, %for.inc44.21, %for.inc44.22, %for.inc44.23, %for.inc44.24, %for.inc44.25, %for.inc44.26, %for.inc44.27, %for.inc44.28, %for.inc44.29, %for.inc44.30
   %indvars.iv.next29.31 = add nsw i64 %indvars.iv28, 32
   %lftr.wideiv30.31 = trunc i64 %indvars.iv.next29.31 to i32
   %exitcond31.31 = icmp eq i32 %lftr.wideiv30.31, %img_height
-  br i1 %exitcond31.31, label %for.cond53.preheader, label %for.cond19.preheader, !llvm.loop !8
+  br i1 %exitcond31.31, label %for.cond48.preheader, label %for.cond15.preheader, !llvm.loop !8
 }
 
 attributes #0 = { norecurse nounwind uwtable "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2" "unsafe-fp-math"="false" "use-soft-float"="false" }

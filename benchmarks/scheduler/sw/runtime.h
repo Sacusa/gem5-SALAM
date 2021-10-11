@@ -15,10 +15,11 @@
 
 #define MAX_ACC_INSTANCES   10
 #define MAX_ACC_ARGS        5
+#define MAX_ACC_SPM_PARTS   5
 #define MAX_CHILDREN        5
 #define MAX_DAGS            10
 #define MAX_NODES           100
-//#define VERIFY
+#define VERIFY
 
 /**
  * Bookkeeping for accelerators
@@ -86,15 +87,15 @@ struct acc_state_t {
      * Physical address of accelerator registers/memory
      */
     volatile uint8_t *flags;
-    uint32_t output_spm[2];
+    uint32_t spm_part[MAX_ACC_SPM_PARTS];
 
     /**
      * Bookkeeping structures
      */
     uint8_t status;
     task_struct_t *running_req;
-    uint8_t curr_spm_part;
-    uint8_t spm_pending_reads[2];
+    uint8_t curr_spm_out_part;
+    uint8_t spm_pending_reads[MAX_ACC_SPM_PARTS];
 };
 
 /**
@@ -151,14 +152,14 @@ void init_task_struct(task_struct_t*);
 /**
  * Functions for running each accelerator
  */
-int  run_accelerator(int, int, task_struct_t*, acc_state_t*);
-void run_canny_non_max(int, task_struct_t*, acc_state_t*);
-void run_convolution(int, task_struct_t*, acc_state_t*);
-void run_edge_tracking(int, task_struct_t*, acc_state_t*);
-void run_elem_matrix(int, task_struct_t*, acc_state_t*);
-void run_grayscale(int, task_struct_t*, acc_state_t*);
-void run_harris_non_max(int, task_struct_t*, acc_state_t*);
-void run_isp(int, task_struct_t*, acc_state_t*);
+int run_accelerator(int, int, task_struct_t*, acc_state_t*);
+int run_canny_non_max(int, task_struct_t*, acc_state_t*);
+int run_convolution(int, task_struct_t*, acc_state_t*);
+int run_edge_tracking(int, task_struct_t*, acc_state_t*);
+int run_elem_matrix(int, task_struct_t*, acc_state_t*);
+int run_grayscale(int, task_struct_t*, acc_state_t*);
+int run_harris_non_max(int, task_struct_t*, acc_state_t*);
+int run_isp(int, task_struct_t*, acc_state_t*);
 
 /**
  * Functions for copying accelerator outputs

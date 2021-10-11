@@ -64,7 +64,7 @@ int main(void)
     //uint8_t *expected = add_harris_non_max();
     add_isp();
 
-    schedule(run_queue, run_queue_size);
+    runtime(run_queue, run_queue_size);
 
     canny_non_max_check_output((canny_non_max_args*)
             run_queue[ACC_CANNY_NON_MAX][0][0]->acc_args);

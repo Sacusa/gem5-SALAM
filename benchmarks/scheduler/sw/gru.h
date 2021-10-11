@@ -410,13 +410,20 @@ void add_gru_dag(task_struct_t ***nodes, int num_frames, int seq_length)
                     j == (seq_length - 1));
         }
     }
+}
 
-#ifdef VERIFY
+void print_gru_output(task_struct_t ***nodes, int num_frames, int seq_length)
+{
+    printf("Printing gru results\n");
+    printf("====================\n");
+    int node_index = (15 * seq_length) - 1;
+
     for (int i = 0; i < num_frames; i++) {
+        float *final_state =
+            ((elem_matrix_args*)(nodes[i][node_index]->acc_args))->output;
         for (int j = 0; j < NUM_PIXELS; j++) {
             printf("Frame %2d, pixel %2d, value = %f\n", i, j,
-                    cells[i].cell_output[j]);
+                    final_state[j]);
         }
     }
-#endif
 }

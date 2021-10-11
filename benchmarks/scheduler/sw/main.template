@@ -39,10 +39,6 @@ int main(int argc, char *argv[])
     add_canny_dag(&nodes[nodes_offset], num_canny);
     nodes_offset += num_canny;
 
-    if (num_harris > 0) { init_harris(); }
-    add_harris_dag(&nodes[nodes_offset], num_harris);
-    nodes_offset += num_harris;
-
     if (num_deblur > 0) { init_deblur(); }
     add_deblur_dag(&nodes[nodes_offset], num_deblur, 5);
     nodes_offset += num_deblur;
@@ -50,6 +46,10 @@ int main(int argc, char *argv[])
     if (num_gru > 0) { init_gru(); }
     add_gru_dag(&nodes[nodes_offset], num_gru, 8);
     nodes_offset += num_gru;
+
+    if (num_harris > 0) { init_harris(); }
+    add_harris_dag(&nodes[nodes_offset], num_harris);
+    nodes_offset += num_harris;
 
     if (num_lstm > 0) { init_lstm(); }
     add_lstm_dag(&nodes[nodes_offset], num_lstm, 8);
@@ -60,5 +60,23 @@ int main(int argc, char *argv[])
     schedule(nodes);
 
     m5_dump_stats();
+
+#ifdef VERIFY
+    nodes_offset -= num_lstm;
+    print_lstm_output(&nodes[nodes_offset], num_lstm, 8);
+
+    nodes_offset -= num_harris;
+    print_harris_output(&nodes[nodes_offset], num_harris);
+
+    nodes_offset -= num_gru;
+    print_gru_output(&nodes[nodes_offset], num_gru, 8);
+
+    nodes_offset -= num_deblur;
+    print_deblur_output(&nodes[nodes_offset], num_deblur, 5);
+
+    nodes_offset -= num_canny;
+    print_canny_output(&nodes[nodes_offset], num_canny);
+#endif
+
     m5_exit();
 }

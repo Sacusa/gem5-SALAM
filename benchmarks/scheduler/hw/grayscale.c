@@ -1,17 +1,10 @@
 #include "hw_defines.h"
 
-void grayscale(uint64_t num_elems, uint8_t spm_part) {
+void grayscale(uint64_t num_elems, uint32_t output_spm_addr) {
 #if ACC_NUM == 0
     uint8_t *input_image  = (uint8_t*) GRAYSCALE0_INPUT_SPM;
-    float   *output_image;
-
-    if (spm_part == 1) {
-        output_image = (float*) GRAYSCALE0_OUTPUT1_SPM;
-    }
-    else {
-        output_image = (float*) GRAYSCALE0_OUTPUT0_SPM;
-    }
 #endif
+    float *output_image = (float*) output_spm_addr;
 
     #pragma clang loop unroll_count(8)
     for (int i = 0; i < num_elems; i++) {

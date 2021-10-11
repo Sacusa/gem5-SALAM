@@ -20,13 +20,16 @@ int acc_mmr_offset[NUM_ACCS] = {
     ISP0_MMR - ISP0_BASE
 };
 
-int acc_output_spm_offset[NUM_ACCS][2] = {
+int acc_spm_part_offset[NUM_ACCS][MAX_ACC_SPM_PARTS] = {
     {CNM0_OUTPUT0_SPM - CNM0_BASE, CNM0_OUTPUT1_SPM - CNM0_BASE},
-    {CONVOLUTION0_OUTPUT0_SPM - CONVOLUTION0_BASE,
+    {CONVOLUTION0_INPUT_SPM - CONVOLUTION0_BASE,
+        CONVOLUTION0_OUTPUT0_SPM - CONVOLUTION0_BASE,
         CONVOLUTION0_OUTPUT1_SPM - CONVOLUTION0_BASE},
     {EDGE_TRACKING0_OUTPUT0_SPM - EDGE_TRACKING0_BASE,
         EDGE_TRACKING0_OUTPUT1_SPM - EDGE_TRACKING0_BASE},
-    {ELEM_MATRIX0_OUTPUT0_SPM - ELEM_MATRIX0_BASE,
+    {ELEM_MATRIX0_ARG1_SPM - ELEM_MATRIX0_BASE,
+        ELEM_MATRIX0_ARG2_SPM - ELEM_MATRIX0_BASE,
+        ELEM_MATRIX0_OUTPUT0_SPM - ELEM_MATRIX0_BASE,
         ELEM_MATRIX0_OUTPUT1_SPM - ELEM_MATRIX0_BASE},
     {GRAYSCALE0_OUTPUT0_SPM - GRAYSCALE0_BASE,
         GRAYSCALE0_OUTPUT1_SPM - GRAYSCALE0_BASE},
@@ -51,10 +54,34 @@ void init_task_struct(task_struct_t *task_struct)
 int run_accelerator(int acc_id, int device_id, task_struct_t *req,
         acc_state_t *acc)
 {
-    // return if there are pending reads from the output partition
-    if (acc->spm_pending_reads[acc->curr_spm_part]) {
-        return -1;
+    int retval;
+
+    // accelerator specific parsing and driver code
+    switch (acc_id) {
+        case ACC_CANNY_NON_MAX:
+            retval = run_canny_non_max(device_id, req, acc);
+            break;
+        case ACC_CONVOLUTION:
+            retval = run_convolution(device_id, req, acc);
+            break;
+        case ACC_EDGE_TRACKING:
+            retval = run_edge_tracking(device_id, req, acc);
+            break;
+        case ACC_ELEM_MATRIX:
+            retval = run_elem_matrix(device_id, req, acc);
+            break;
+        case ACC_GRAYSCALE:
+            retval = run_grayscale(device_id, req, acc);
+            break;
+        case ACC_HARRIS_NON_MAX:
+            retval = run_harris_non_max(device_id, req, acc);
+            break;
+        case ACC_ISP:
+            retval = run_isp(device_id, req, acc);
+            break;
     }
+
+    if (retval) { return -1; }
 
     acc->status = ACC_STATUS_RUNNING;
     acc->running_req = req;
@@ -64,48 +91,35 @@ int run_accelerator(int acc_id, int device_id, task_struct_t *req,
         task_struct_t *child = req->children[c];
         for (int a = 0; a < MAX_ACC_ARGS; a++) {
             if ((child->producer[a] == req) && child->producer_forward[a]) {
-                acc->spm_pending_reads[acc->curr_spm_part]++;
+                acc->spm_pending_reads[acc->curr_spm_out_part]++;
             }
         }
-    }
-
-    // accelerator specific parsing and driver code
-    switch (acc_id) {
-        case ACC_CANNY_NON_MAX:
-            run_canny_non_max(device_id, req, acc);
-            break;
-        case ACC_CONVOLUTION:
-            run_convolution(device_id, req, acc);
-            break;
-        case ACC_EDGE_TRACKING:
-            run_edge_tracking(device_id, req, acc);
-            break;
-        case ACC_ELEM_MATRIX:
-            run_elem_matrix(device_id, req, acc);
-            break;
-        case ACC_GRAYSCALE:
-            run_grayscale(device_id, req, acc);
-            break;
-        case ACC_HARRIS_NON_MAX:
-            run_harris_non_max(device_id, req, acc);
-            break;
-        case ACC_ISP:
-            run_isp(device_id, req, acc);
-            break;
     }
 
     return 0;
 }
 
-void run_canny_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
+int run_canny_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     canny_non_max_args *args = (canny_non_max_args*) req->acc_args;
     uint32_t hypo_addr, theta_addr;
+    bool has_available_part = false;
+
+    // return if there are no available output partitions
+    for (int i = 0; i < 2; i++) {
+        if (acc->spm_pending_reads[i] == 0) {
+            acc->curr_spm_out_part = i;
+            has_available_part = true;
+            break;
+        }
+    }
+
+    if (!has_available_part) { return -1; }
 
     // check if we need to forward hypotenuse
     if (req->producer_forward[0]) {
         hypo_addr =
-            req->producer_acc[0]->output_spm[req->producer_spm_part[0]];
+            req->producer_acc[0]->spm_part[req->producer_spm_part[0]];
     } else {
         hypo_addr = (uint32_t) args->hypotenuse;
     }
@@ -113,13 +127,13 @@ void run_canny_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
     // check if we need to forward theta
     if (req->producer_forward[1]) {
         theta_addr =
-            req->producer_acc[1]->output_spm[req->producer_spm_part[1]];
+            req->producer_acc[1]->spm_part[req->producer_spm_part[1]];
     } else {
         theta_addr = (uint32_t) args->theta;
     }
 
     canny_non_max_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, hypo_addr,
-            theta_addr, 0, acc->curr_spm_part);
+            theta_addr, 0, acc->spm_part[acc->curr_spm_out_part]);
 
     // reduce pending reads for the hypotenuse producer
     if (req->producer_forward[0]) {
@@ -130,78 +144,155 @@ void run_canny_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
     if (req->producer_forward[1]) {
         req->producer_acc[1]->spm_pending_reads[req->producer_spm_part[1]]--;
     }
+
+    return 0;
 }
 
-void run_convolution(int device_id, task_struct_t *req, acc_state_t *acc)
+int run_convolution(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     convolution_args *args = (convolution_args*) req->acc_args;
-    uint32_t input_addr, kernel_addr = (uint32_t) args->kernel;
+    uint32_t input_addr = 0, kernel_addr = (uint32_t) args->kernel;
+    uint32_t input_spm_addr = 0;
+    bool has_available_part = false;
 
     // check if we need to forward the input
     if (req->producer_forward[0]) {
-        input_addr =
-            req->producer_acc[0]->output_spm[req->producer_spm_part[0]];
-    } else {
+        if (req->producer_acc[0] == acc) {
+            input_spm_addr = acc->spm_part[req->producer_spm_part[0]];
+        }
+        else {
+            input_addr =
+                req->producer_acc[0]->spm_part[req->producer_spm_part[0]];
+        }
+    }
+    else {
         input_addr = (uint32_t) args->input;
     }
 
+    // allocate input/output partitions
+    for (int i = 0; i < 3; i++) {
+        if (acc->spm_pending_reads[i] == 0) {
+            if (input_spm_addr == 0) {
+                input_spm_addr = acc->spm_part[i];
+            }
+            else {
+                acc->curr_spm_out_part = i;
+                has_available_part = true;
+                break;
+            }
+        }
+    }
+
+    if (!has_available_part) { return -1; }
+
     convolution_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr,
             kernel_addr, args->kern_height, args->kern_width,
-            args->mod_and_floor, 0, acc->curr_spm_part);
+            args->mod_and_floor, 0, input_spm_addr,
+            acc->spm_part[acc->curr_spm_out_part]);
 
     // reduce pending reads for the input producer
     if (req->producer_forward[0]) {
         req->producer_acc[0]->spm_pending_reads[req->producer_spm_part[0]]--;
     }
+
+    return 0;
 }
 
-void run_edge_tracking(int device_id, task_struct_t *req, acc_state_t *acc)
+int run_edge_tracking(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     edge_tracking_args *args = (edge_tracking_args*) req->acc_args;
     uint32_t input_addr;
+    bool has_available_part = false;
+
+    // return if there are no available output partitions
+    for (int i = 0; i < 2; i++) {
+        if (acc->spm_pending_reads[i] == 0) {
+            acc->curr_spm_out_part = i;
+            has_available_part = true;
+            break;
+        }
+    }
+
+    if (!has_available_part) { return -1; }
 
     // check if we need to forward the input
     if (req->producer_forward[0]) {
         input_addr =
-            req->producer_acc[0]->output_spm[req->producer_spm_part[0]];
+            req->producer_acc[0]->spm_part[req->producer_spm_part[0]];
     } else {
         input_addr = (uint32_t) args->input;
     }
 
     edge_tracking_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr,
             args->thr_weak_ratio, args->thr_strong_ratio, 0,
-            acc->curr_spm_part);
+            acc->spm_part[acc->curr_spm_out_part]);
 
     // reduce pending reads for the input producer
     if (req->producer_forward[0]) {
         req->producer_acc[0]->spm_pending_reads[req->producer_spm_part[0]]--;
     }
+
+    return 0;
 }
 
-void run_elem_matrix(int device_id, task_struct_t *req, acc_state_t *acc)
+int run_elem_matrix(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     elem_matrix_args *args = (elem_matrix_args*) req->acc_args;
-    uint32_t arg1_addr, arg2_addr;
+    uint32_t arg1_addr = 0, arg2_addr = 0;
+    uint32_t arg1_spm_addr = 0, arg2_spm_addr = 0, output_spm_addr = 0;
 
     // check if we need to forward arg1
     if (req->producer_forward[0]) {
-        arg1_addr =
-            req->producer_acc[0]->output_spm[req->producer_spm_part[0]];
-    } else {
+        if (req->producer_acc[0] == acc) {
+            arg1_spm_addr = acc->spm_part[req->producer_spm_part[0]];
+        }
+        else {
+            arg1_addr =
+                req->producer_acc[0]->spm_part[req->producer_spm_part[0]];
+        }
+    }
+    else {
         arg1_addr = (uint32_t) args->arg1;
     }
 
     // check if we need to forward arg2
-    if (req->producer_forward[1]) {
-        arg2_addr =
-            req->producer_acc[1]->output_spm[req->producer_spm_part[1]];
-    } else {
+    if (req->producer_forward[0]) {
+        if (req->producer_acc[0] == acc) {
+            arg2_spm_addr = acc->spm_part[req->producer_spm_part[0]];
+        }
+        else {
+            arg2_addr =
+                req->producer_acc[0]->spm_part[req->producer_spm_part[0]];
+        }
+    }
+    else {
         arg2_addr = (uint32_t) args->arg2;
     }
 
+    // allocate input/output partitions
+    for (int i = 0; i < 4; i++) {
+        if (acc->spm_pending_reads[i] == 0) {
+            if (arg1_spm_addr == 0) {
+                arg1_spm_addr = acc->spm_part[i];
+            }
+            else if (arg2_spm_addr == 0) {
+                arg2_spm_addr = acc->spm_part[i];
+            }
+            else if (output_spm_addr == 0) {
+                output_spm_addr = acc->spm_part[i];
+                acc->curr_spm_out_part = i;
+                break;
+            }
+        }
+    }
+
+    if ((arg1_spm_addr == 0) || (arg2_spm_addr == 0) ||
+            (output_spm_addr == 0)) { return -1; }
+
     elem_matrix_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, arg1_addr,
             arg2_addr, args->is_arg2_scalar, args->op, args->do_one_minus, 0,
-            acc->curr_spm_part);
+            arg1_spm_addr, arg2_spm_addr,
+            acc->spm_part[acc->curr_spm_out_part]);
 
     // reduce pending reads for the arg1 producer
     if (req->producer_forward[0]) {
@@ -212,72 +303,116 @@ void run_elem_matrix(int device_id, task_struct_t *req, acc_state_t *acc)
     if (req->producer_forward[1]) {
         req->producer_acc[1]->spm_pending_reads[req->producer_spm_part[1]]--;
     }
+
+    return 0;
 }
 
-void run_grayscale(int device_id, task_struct_t *req, acc_state_t *acc)
+int run_grayscale(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     grayscale_args *args = (grayscale_args*) req->acc_args;
     uint32_t input_addr;
+    bool has_available_part = false;
+
+    // return if there are no available output partitions
+    for (int i = 0; i < 2; i++) {
+        if (acc->spm_pending_reads[i] == 0) {
+            acc->curr_spm_out_part = i;
+            has_available_part = true;
+            break;
+        }
+    }
+
+    if (!has_available_part) { return -1; }
 
     // check if we need to forward input
     if (req->producer_forward[0]) {
         input_addr =
-            req->producer_acc[0]->output_spm[req->producer_spm_part[0]];
+            req->producer_acc[0]->spm_part[req->producer_spm_part[0]];
     } else {
         input_addr = (uint32_t) args->input;
     }
 
     grayscale_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr, 0,
-            acc->curr_spm_part);
+            acc->spm_part[acc->curr_spm_out_part]);
 
     // reduce pending reads for the input producer
     if (req->producer_forward[0]) {
         req->producer_acc[0]->spm_pending_reads[req->producer_spm_part[0]]--;
     }
+
+    return 0;
 }
 
-void run_harris_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
+int run_harris_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     harris_non_max_args *args = (harris_non_max_args*) req->acc_args;
     uint32_t input_addr;
+    bool has_available_part = false;
+
+    // return if there are no available output partitions
+    for (int i = 0; i < 2; i++) {
+        if (acc->spm_pending_reads[i] == 0) {
+            acc->curr_spm_out_part = i;
+            has_available_part = true;
+            break;
+        }
+    }
+
+    if (!has_available_part) { return -1; }
 
     // check if we need to forward input
     if (req->producer_forward[0]) {
         input_addr =
-            req->producer_acc[0]->output_spm[req->producer_spm_part[0]];
+            req->producer_acc[0]->spm_part[req->producer_spm_part[0]];
     } else {
         input_addr = (uint32_t) args->input;
     }
 
     harris_non_max_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr, 0,
-            acc->curr_spm_part);
+            acc->spm_part[acc->curr_spm_out_part]);
 
     // reduce pending reads for the input producer
     if (req->producer_forward[0]) {
         req->producer_acc[0]->spm_pending_reads[req->producer_spm_part[0]]--;
     }
+
+    return 0;
 }
 
-void run_isp(int device_id, task_struct_t *req, acc_state_t *acc)
+int run_isp(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     isp_args *args = (isp_args*) req->acc_args;
     uint32_t input_addr;
+    bool has_available_part = false;
+
+    // return if there are no available output partitions
+    for (int i = 0; i < 2; i++) {
+        if (acc->spm_pending_reads[i] == 0) {
+            acc->curr_spm_out_part = i;
+            has_available_part = true;
+            break;
+        }
+    }
+
+    if (!has_available_part) { return -1; }
 
     // check if we need to forward input
     if (req->producer_forward[0]) {
         input_addr =
-            req->producer_acc[0]->output_spm[req->producer_spm_part[0]];
+            req->producer_acc[0]->spm_part[req->producer_spm_part[0]];
     } else {
         input_addr = (uint32_t) args->input;
     }
 
     isp_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr, 0,
-            acc->curr_spm_part);
+            acc->spm_part[acc->curr_spm_out_part]);
 
     // reduce pending reads for the input producer
     if (req->producer_forward[0]) {
         req->producer_acc[0]->spm_pending_reads[req->producer_spm_part[0]]--;
     }
+
+    return 0;
 }
 
 /**
@@ -334,56 +469,56 @@ void finish_accelerator(int acc_id, int device_id, task_struct_t *req,
     *(acc->flags) = 0;
     acc->status = ACC_STATUS_IDLE;
     acc->running_req = NULL;
-    acc->curr_spm_part ^= 1;
 }
 
 void finish_canny_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     canny_non_max_args *args = (canny_non_max_args*) req->acc_args;
     canny_non_max_driver(device_id, 0, IMG_HEIGHT, IMG_WIDTH, 0, 0,
-            (uint32_t) args->output, acc->curr_spm_part);
+            (uint32_t) args->output, acc->spm_part[acc->curr_spm_out_part]);
 }
 
 void finish_convolution(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     convolution_args *args = (convolution_args*) req->acc_args;
     convolution_driver(device_id, 0, IMG_HEIGHT, IMG_WIDTH, 0, 0, 0, 0, 0,
-            (uint32_t) args->output, acc->curr_spm_part);
+            (uint32_t) args->output, 0, acc->spm_part[acc->curr_spm_out_part]);
 }
 
 void finish_edge_tracking(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     edge_tracking_args *args = (edge_tracking_args*) req->acc_args;
     edge_tracking_driver(device_id, 0, IMG_HEIGHT, IMG_WIDTH, 0, 0, 0,
-            (uint32_t) args->output, acc->curr_spm_part);
+            (uint32_t) args->output, acc->spm_part[acc->curr_spm_out_part]);
 }
 
 void finish_elem_matrix(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     elem_matrix_args *args = (elem_matrix_args*) req->acc_args;
     elem_matrix_driver(device_id, 0, IMG_HEIGHT, IMG_WIDTH, 0, 0, 0, 0, 0,
-            (uint32_t) args->output, acc->curr_spm_part);
+            (uint32_t) args->output, 0, 0,
+            acc->spm_part[acc->curr_spm_out_part]);
 }
 
 void finish_grayscale(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     grayscale_args *args = (grayscale_args*) req->acc_args;
     grayscale_driver(device_id, 0, IMG_HEIGHT, IMG_WIDTH, 0,
-            (uint32_t) args->output, acc->curr_spm_part);
+            (uint32_t) args->output, acc->spm_part[acc->curr_spm_out_part]);
 }
 
 void finish_harris_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     harris_non_max_args *args = (harris_non_max_args*) req->acc_args;
     harris_non_max_driver(device_id, 0, IMG_HEIGHT, IMG_WIDTH, 0,
-            (uint32_t) args->output, acc->curr_spm_part);
+            (uint32_t) args->output, acc->spm_part[acc->curr_spm_out_part]);
 }
 
 void finish_isp(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     isp_args *args = (isp_args*) req->acc_args;
     isp_driver(device_id, 0, IMG_HEIGHT, IMG_WIDTH, 0,
-            (uint32_t) args->output, acc->curr_spm_part);
+            (uint32_t) args->output, acc->spm_part[acc->curr_spm_out_part]);
 }
 
 /**
@@ -401,14 +536,15 @@ void runtime(task_struct_t ****run_queue, int **run_queue_size)
             uint32_t acc_base = 0x20000000 + ((i+1) << 24) + (j << 20);
 
             acc_state[i][j].flags = (uint8_t*) (acc_base + acc_mmr_offset[i]);
-            acc_state[i][j].output_spm[0] = acc_base +
-                acc_output_spm_offset[i][0];
-            acc_state[i][j].output_spm[1] = acc_base +
-                acc_output_spm_offset[i][1];
+
+            for (int k = 0; k < MAX_ACC_SPM_PARTS; k++) {
+                acc_state[i][j].spm_part[k] = acc_base +
+                    acc_spm_part_offset[i][k];
+            }
 
             acc_state[i][j].status = ACC_STATUS_IDLE;
             acc_state[i][j].running_req = NULL;
-            acc_state[i][j].curr_spm_part = 1;
+            acc_state[i][j].curr_spm_out_part = 0;
 
             run_queue_index[i][j] = 0;
         }
@@ -474,7 +610,7 @@ void runtime(task_struct_t ****run_queue, int **run_queue_size)
                                 if ((child->producer[a] == node) &&
                                     child->producer_forward[a]) {
                                     child->producer_spm_part[a] =
-                                        acc_state[i][j].curr_spm_part;
+                                        acc_state[i][j].curr_spm_out_part;
                                     child->producer_acc[a] =
                                         &acc_state[i][j];
                                 }

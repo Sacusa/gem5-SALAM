@@ -1,30 +1,15 @@
 #include "hw_defines.h"
 
 void convolution0(uint32_t img_height, uint32_t img_width, uint32_t kern_height,
-        uint32_t kern_width, uint8_t mod_and_floor, uint8_t spm_part) {
+        uint32_t kern_width, uint8_t mod_and_floor, uint32_t input_spm_addr,
+        uint32_t output_spm_addr) {
 #if ACC_NUM == 0
-    float *input_image = (float*) CONVOLUTION0_INPUT_SPM;
-    float *kernel      = (float*) CONVOLUTION0_KERNEL_SPM;
-    float *output_image;
-
-    if (spm_part == 1) {
-        output_image = (float*) CONVOLUTION0_OUTPUT1_SPM;
-    }
-    else {
-        output_image = (float*) CONVOLUTION0_OUTPUT0_SPM;
-    }
+    float *kernel = (float*) CONVOLUTION0_KERNEL_SPM;
 #elif ACC_NUM == 1
-    float *input_image = (float*) CONVOLUTION1_INPUT_SPM;
-    float *kernel      = (float*) CONVOLUTION1_KERNEL_SPM;
-    float *output_image;
-
-    if (spm_part == 1) {
-        output_image = (float*) CONVOLUTION1_OUTPUT1_SPM;
-    }
-    else {
-        output_image = (float*) CONVOLUTION1_OUTPUT0_SPM;
-    }
+    float *kernel = (float*) CONVOLUTION1_KERNEL_SPM;
 #endif
+    float *input_image  = (float*) input_spm_addr;
+    float *output_image = (float*) output_spm_addr;
 
     const int start_in_i = -((kern_height - 1) / 2);
     const int start_in_j = -((kern_width  - 1) / 2);

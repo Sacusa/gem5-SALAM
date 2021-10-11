@@ -424,32 +424,43 @@ void init_lstm()
 
 void add_lstm_dag(task_struct_t ***nodes, int num_frames, int seq_length)
 {
+    const int nodes_per_cell = 18;
+
     lstm_cell_data_t *cells = (lstm_cell_data_t*)
         get_memory(num_frames * seq_length * sizeof(lstm_cell_data_t));
 
     for (int i = 0; i < num_frames; i++) {
         for (int j = 0; j < seq_length; j++) {
             int cell_index = (i * seq_length) + j;
+            int node_index = j * nodes_per_cell;
 
-            lstm_init_cell_data(&(cells[cell_index]), nodes[i], 0, cell_index,
+            lstm_init_cell_data(&(cells[cell_index]), nodes[i], node_index,
+                    cell_index, j == 0);
+
+            lstm_forget_gate(&(cells[cell_index]), nodes[i], node_index + 1,
                     j == 0);
 
-            lstm_forget_gate(&(cells[cell_index]), nodes[i], 1, j == 0);
-
-            lstm_input_gate(&(cells[cell_index]), nodes[i], 5,
+            lstm_input_gate(&(cells[cell_index]), nodes[i], node_index + 5,
                     j == (seq_length - 1));
 
-            lstm_output_gate(&(cells[cell_index]), nodes[i], 13,
+            lstm_output_gate(&(cells[cell_index]), nodes[i], node_index + 13,
                     j == (seq_length - 1));
         }
     }
+}
 
-#ifdef VERIFY
+void print_lstm_output(task_struct_t ***nodes, int num_frames, int seq_length)
+{
+    printf("Printing lstm results\n");
+    printf("=====================\n");
+    int node_index = (18 * seq_length) - 1;
+
     for (int i = 0; i < num_frames; i++) {
+        float *final_state =
+            ((elem_matrix_args*)(nodes[i][node_index]->acc_args))->output;
         for (int j = 0; j < NUM_PIXELS; j++) {
             printf("Frame %2d, pixel %2d, value = %f\n", i, j,
-                    cells[i].og_output[j]);
+                    final_state[j]);
         }
     }
-#endif
 }

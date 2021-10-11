@@ -1,18 +1,11 @@
 #include "hw_defines.h"
 
 void harris_non_max(uint32_t img_height, uint32_t img_width,
-        uint8_t spm_part) {
+        uint32_t output_spm_addr) {
 #if ACC_NUM == 0
     float *harris_response = (float*) HNM0_INPUT_SPM;
-    uint8_t *max_values;
-
-    if (spm_part == 1) {
-        max_values = (uint8_t*) HNM0_OUTPUT1_SPM;
-    }
-    else {
-        max_values = (uint8_t*) HNM0_OUTPUT0_SPM;
-    }
 #endif
+    uint8_t *max_values = (uint8_t*) output_spm_addr;
 
     #pragma clang loop unroll_count(1)
     for (int i = 0; i < img_height; i += 3) {

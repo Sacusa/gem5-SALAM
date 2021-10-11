@@ -6,52 +6,11 @@ static inline float em_atan2(float y, float x);
 static inline float em_exp(float x);
 
 void elem_matrix(uint32_t num_elems, uint8_t op, uint8_t is_arg2_scalar,
-        uint8_t do_one_minus, uint8_t spm_part) {
-#if ACC_NUM == 0
-    float *arg1 = (float*) ELEM_MATRIX0_ARG1_SPM;
-    float *arg2 = (float*) ELEM_MATRIX0_ARG2_SPM;
-    float *result;
-
-    if (spm_part == 1) {
-        result = (float*) ELEM_MATRIX0_OUTPUT1_SPM;
-    }
-    else {
-        result = (float*) ELEM_MATRIX0_OUTPUT0_SPM;
-    }
-#elif ACC_NUM == 1
-    float *arg1 = (float*) ELEM_MATRIX1_ARG1_SPM;
-    float *arg2 = (float*) ELEM_MATRIX1_ARG2_SPM;
-    float *result;
-
-    if (spm_part == 1) {
-        result = (float*) ELEM_MATRIX1_OUTPUT1_SPM;
-    }
-    else {
-        result = (float*) ELEM_MATRIX1_OUTPUT0_SPM;
-    }
-#elif ACC_NUM == 2
-    float *arg1 = (float*) ELEM_MATRIX2_ARG1_SPM;
-    float *arg2 = (float*) ELEM_MATRIX2_ARG2_SPM;
-    float *result;
-
-    if (spm_part == 1) {
-        result = (float*) ELEM_MATRIX2_OUTPUT1_SPM;
-    }
-    else {
-        result = (float*) ELEM_MATRIX2_OUTPUT0_SPM;
-    }
-#elif ACC_NUM == 3
-    float *arg1 = (float*) ELEM_MATRIX3_ARG1_SPM;
-    float *arg2 = (float*) ELEM_MATRIX3_ARG2_SPM;
-    float *result;
-
-    if (spm_part == 1) {
-        result = (float*) ELEM_MATRIX3_OUTPUT1_SPM;
-    }
-    else {
-        result = (float*) ELEM_MATRIX3_OUTPUT0_SPM;
-    }
-#endif
+        uint8_t do_one_minus, uint32_t arg1_spm_addr, uint32_t arg2_spm_addr,
+        uint32_t output_spm_addr) {
+    float *arg1   = (float*) arg1_spm_addr;
+    float *arg2   = (float*) arg2_spm_addr;
+    float *result = (float*) output_spm_addr;
 
     float arg2_val;
 

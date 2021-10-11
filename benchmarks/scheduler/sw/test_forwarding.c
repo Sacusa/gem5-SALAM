@@ -91,7 +91,7 @@ void run_pipeline()
     run_queue[4][0][0] = task[0];
 
     printf("Launching accelerators\n");
-    schedule(run_queue, run_queue_size);
+    runtime(run_queue, run_queue_size);
 
 #ifdef VERIFY
     printf("Verifying output\n");

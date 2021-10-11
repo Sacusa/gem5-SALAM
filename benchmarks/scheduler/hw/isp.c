@@ -2,18 +2,11 @@
 
 static inline float isp_sqrt(float x);
 
-void isp(uint32_t img_height, uint32_t img_width, uint8_t spm_part) {
+void isp(uint32_t img_height, uint32_t img_width, uint32_t output_spm_addr) {
 #if ACC_NUM == 0
     uint8_t *input_image = (uint8_t*) ISP0_INPUT_SPM;
-    uint8_t *output_image;
-
-    if (spm_part == 1) {
-        output_image = (uint8_t*) ISP0_OUTPUT1_SPM;
-    }
-    else {
-        output_image = (uint8_t*) ISP0_OUTPUT0_SPM;
-    }
 #endif
+    uint8_t *output_image = (uint8_t*) output_spm_addr;
 
     enum channels { R=0, G, B };
     float ccm[3] = {255/142, 196/255, 1};

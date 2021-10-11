@@ -23,22 +23,27 @@ enum operation {
 };
 
 void canny_non_max_driver(int, uint8_t, uint32_t, uint32_t, uint32_t, uint32_t,
-        uint32_t, uint8_t);
+        uint32_t, uint32_t);
 void convolution_driver(int, uint8_t, uint32_t, uint32_t, uint32_t, uint32_t,
-        uint32_t, uint32_t, uint8_t, uint32_t, uint8_t);
+        uint32_t, uint32_t, uint8_t, uint32_t, uint32_t, uint32_t);
 void edge_tracking_driver(int, uint8_t, uint32_t, uint32_t,uint32_t, float,
-        float, uint32_t, uint8_t);
+        float, uint32_t, uint32_t);
 void elem_matrix_driver(int, uint8_t, uint32_t, uint32_t, uint32_t, uint32_t,
-        uint8_t, uint8_t, uint8_t, uint32_t, uint8_t);
+        uint8_t, uint8_t, uint8_t, uint32_t, uint32_t, uint32_t, uint32_t);
 void grayscale_driver(int, uint8_t, uint32_t, uint32_t, uint32_t, uint32_t,
-        uint8_t);
+        uint32_t);
 void harris_non_max_driver(int, uint8_t, uint32_t, uint32_t, uint32_t,
-        uint32_t, uint8_t);
-void isp_driver(int, uint8_t, uint32_t, uint32_t, uint32_t, uint32_t, uint8_t);
+        uint32_t, uint32_t);
+void isp_driver(int, uint8_t, uint32_t, uint32_t, uint32_t, uint32_t,
+        uint32_t);
 
 // Device flags
 #define DEV_INIT    0x01
 #define DEV_INTR    0x04
+
+/* The following addresses represent the initial SPM partitioning for each
+ * accelerator instance. For some of them, it may change over time.
+ */
 
 // Canny non-max (1/1)
 #define CNM0_BASE           0x21000000

@@ -479,13 +479,19 @@ void add_harris_dag(task_struct_t ***nodes, int num_images)
         // Step 5: Non-max suppression
         harris_non_max_suppression(&imgs[i], nodes[i]);
     }
+}
 
-#ifdef VERIFY
+void print_harris_output(task_struct_t ***nodes, int num_images)
+{
+    printf("Printing harris results\n");
+    printf("=======================\n");
+
     for (int i = 0; i < num_images; i++) {
+        uint8_t *final_img =
+            ((harris_non_max_args*)(nodes[i][17]->acc_args))->output;
         for (int j = 0; j < NUM_PIXELS; j++) {
             printf("Image %2d, pixel %2d, value = %d\n", i, j,
-                    imgs[i].final_img[j]);
+                    final_img[j]);
         }
     }
-#endif
 }

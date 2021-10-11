@@ -317,13 +317,20 @@ void add_deblur_dag(task_struct_t ***nodes, int num_images,
                     nodes[i], node_index+3);
         }
     }
+}
 
-#ifdef VERIFY
+void print_deblur_output(task_struct_t ***nodes, int num_images, int num_iters)
+{
+    printf("Printing deblur results\n");
+    printf("=======================\n");
+    int node_index = 1 + (4 * num_iters);
+
     for (int i = 0; i < num_images; i++) {
+        float *final_img =
+            ((elem_matrix_args*)(nodes[i][node_index]->acc_args))->output;
         for (int j = 0; j < NUM_PIXELS; j++) {
             printf("Image %2d, pixel %2d, value = %f\n", i, j,
-                    imgs[i].estimate[j]);
+                    final_img[j]);
         }
     }
-#endif
 }

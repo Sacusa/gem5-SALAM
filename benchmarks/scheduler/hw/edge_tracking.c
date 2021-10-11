@@ -1,22 +1,13 @@
 #include "hw_defines.h"
 
 void edge_tracking(uint32_t img_height, uint32_t img_width,
-        float thr_weak_ratio, float thr_strong_ratio, uint8_t spm_part) {
-    thr_weak_ratio = 0.5;
-    thr_strong_ratio = 0.503;
-
+        float thr_weak_ratio, float thr_strong_ratio,
+        uint32_t output_spm_addr) {
 #if ACC_NUM == 0
     uint32_t *input_image = (uint32_t*) EDGE_TRACKING0_INPUT_SPM;
     uint32_t *local_maxima = (uint32_t*) EDGE_TRACKING0_LOCAL_MAXIMA_SPM;
-    uint8_t *output_image;
-
-    if (spm_part == 1) {
-        output_image = (uint8_t*) EDGE_TRACKING0_OUTPUT1_SPM;
-    }
-    else {
-        output_image = (uint8_t*) EDGE_TRACKING0_OUTPUT0_SPM;
-    }
 #endif
+    uint8_t *output_image = (uint8_t*) output_spm_addr;
 
     int max_height = img_height - 1, max_width = img_width - 1;
 
