@@ -21,7 +21,7 @@ void edge_tracking(uint32_t img_height, uint32_t img_width,
     float thr_strong = img_max * thr_strong_ratio;
     float thr_weak   = thr_strong * thr_weak_ratio;
 
-    #pragma clang loop unroll_count(32)
+    #pragma clang loop unroll_count(4)
     for (int i = 0; i < img_height; i++) {
         #pragma clang loop unroll(disable)
         for (int j = 0; j < img_width; j++) {
@@ -39,7 +39,7 @@ void edge_tracking(uint32_t img_height, uint32_t img_width,
         }
     }
 
-    #pragma clang loop unroll_count(32)
+    #pragma clang loop unroll_count(4)
     for (int i = 0; i < img_height; i++) {
         #pragma clang loop unroll(disable)
         for (int j = 0; j < img_width; j++) {

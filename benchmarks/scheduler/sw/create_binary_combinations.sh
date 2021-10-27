@@ -1,17 +1,17 @@
-declare -a policies=("APRX" "FCFS" "GEDF" "GLAX" "LEDF" "LLAX")
+declare -a policies=("APRX2" "FCFS" "GEDF" "GLAX" "LEDF" "LLAX")
 
 for policy in "${policies[@]}"
 do
-    ./create_binary.sh ${policy} canny  5 deblur 5 gru    5
-    ./create_binary.sh ${policy} canny  5 deblur 5 harris 5
-    ./create_binary.sh ${policy} canny  5 deblur 5 lstm   5
-    ./create_binary.sh ${policy} canny  5 gru    5 harris 5
-    ./create_binary.sh ${policy} canny  5 gru    5 lstm   5
-    ./create_binary.sh ${policy} canny  5 harris 5 lstm   5
-    ./create_binary.sh ${policy} deblur 5 gru    5 harris 5
-    ./create_binary.sh ${policy} deblur 5 gru    5 lstm   5
-    ./create_binary.sh ${policy} deblur 5 harris 5 lstm   5
-    ./create_binary.sh ${policy} gru    5 harris 5 lstm   5
+    ./create_binary.sh ${policy} canny  4 deblur 4 gru    4
+    ./create_binary.sh ${policy} canny  4 deblur 4 harris 4
+    ./create_binary.sh ${policy} canny  4 deblur 4 lstm   4
+    ./create_binary.sh ${policy} canny  4 gru    4 harris 4
+    ./create_binary.sh ${policy} canny  4 gru    4 lstm   4
+    ./create_binary.sh ${policy} canny  4 harris 4 lstm   4
+    ./create_binary.sh ${policy} deblur 4 gru    4 harris 4
+    ./create_binary.sh ${policy} deblur 4 gru    4 lstm   4
+    ./create_binary.sh ${policy} deblur 4 harris 4 lstm   4
+    ./create_binary.sh ${policy} gru    4 harris 4 lstm   4
 done
 
 mkdir -p bin

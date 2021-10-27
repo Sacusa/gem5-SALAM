@@ -7,7 +7,7 @@ void canny_non_max(uint32_t img_height, uint32_t img_width) {
 
     int max_height = img_height - 1, max_width = img_width - 1;
 
-    #pragma clang loop unroll_count(32)
+    #pragma clang loop unroll_count(8)
     for (int i = 0; i < img_height; i++) {
         #pragma clang loop unroll(disable)
         for (int j = 0; j < img_width; j++) {

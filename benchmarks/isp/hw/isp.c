@@ -9,7 +9,7 @@ void isp(uint32_t img_height, uint32_t img_width) {
     enum channels { R=0, G, B };
     float ccm[3] = {255/142, 196/255, 1};
 
-    #pragma clang loop unroll_count(16)
+    #pragma clang loop unroll_count(2)
     for (int i = 0; i < img_height; i += 2) {
         #pragma clang loop unroll(disable)
         for (int j = 0; j < img_width; j += 2) {

@@ -41,7 +41,7 @@ fi
 
 KERNEL=$M5_PATH/benchmarks/$BENCH/sw/main.elf
 SYS_OPTS="--mem-size=4GB \
-		  --mem-type=DDR4_2400_8x8 \
+		  --mem-type=LPDDR3_1600_1x32 \
           --kernel=$KERNEL \
           --disk-image=$M5_PATH/baremetal/common/fake.iso \
           --machine-type=VExpress_GEM5_V1 \
