@@ -1,0 +1,141 @@
+gem5 Simulator System.  http://gem5.org
+gem5 is copyrighted software; use the --copyright option for details.
+
+gem5 compiled Oct 10 2021 17:27:31
+gem5 started Oct 20 2021 13:04:18
+gem5 executing on node2x10a.cs.rochester.edu, pid 40885
+command line: /localdisk/sgupta45/gem5-SALAM/build/ARM/gem5.opt --debug-flags=HWACC,CommInterface,LLVMInterface,StreamDma,NoncoherentDma --outdir=BM_ARM_OUT/canny_non_max configs/SALAM/canny_non_max.py --mem-size=4GB --mem-type=LPDDR3_1600_1x32 --kernel=/localdisk/sgupta45/gem5-SALAM/benchmarks/canny_non_max/sw/main.elf --disk-image=/localdisk/sgupta45/gem5-SALAM/baremetal/common/fake.iso --machine-type=VExpress_GEM5_V1 --dtb-file=none --bare-metal --cpu-type=DerivO3CPU --accpath=/localdisk/sgupta45/gem5-SALAM/benchmarks --accbench=canny_non_max --caches --l2cache
+
+info: Standard input is not a terminal, disabling listeners.
+Global frequency set at 1000000000000 ticks per second
+Cycle Counts Loaded!
+**** REAL SIMULATION ****
+12861696500: system.acctest.dma: SRC:0x0000000081000000, DST:0x0000000021000040, LEN:65536
+12876936500: system.acctest.dma: Transfer completed in 15.24 us
+12882770500: system.acctest.dma: SRC:0x0000000081010000, DST:0x0000000021010040, LEN:65536
+12898130500: system.acctest.dma: Transfer completed in 15.36 us
+********************************************************************************
+system.acctest.convolution.compute
+   ========= Performance Analysis =============
+   Setup Time:                      0.0197079seconds
+   Simulation Time:                 11.0643seconds
+   System Clock:                    1GHz
+   Transistor Latency:              1ns
+   Runtime:                         443040 cycles
+   Runtime:                         443.04 us
+   Stalls:                          133358 cycles
+   Executed Nodes:                  309681 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      1.97079e+07ns
+   Simulation Time:                 1.10643e+10ns
+   System Clock:                    1GHz
+   Transistor Latency:              0ns
+   Runtime:                         443040 cycles
+   Runtime:                         4.4304e-05 seconds
+   Stalls:                          133358 cycles
+       Load Only:                   22226 cycles
+       Store Only:                  0 cycles
+       Compute Only:                111132 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  309681 cycles
+       Load Only:                   0 cycles
+       Store Only:                  0 cycles
+       Compute Only:                245669 cycles
+       Compute & Store:             16384 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              47628 cycles
+       Load & Compute & Store:      0 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                       3 | 0.027047
+   Integer Add/Sub FU's:               2 | 0.047158
+   Integer Mul/Div FU's:               0 | 0.000000
+   Integer Shifter FU's:               4 | 0.000289
+   Integer Bitwise FU's:               7 | 0.082739
+   Floating Point Float Add/Sub:       1 | 0.035834
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:       0 | 0.000000
+   Floating Point Double Mul/Div:      2 | 0.035834
+   0 Cycle Compare FU's:              12 | 0.105241
+   GEP Instruction FU's:               4 | 0.048664
+   Type Conversion FU's:              10 | 0.045075
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       572
+   Max Register Usage Per Cycle:    14
+   Avg Register Usage Per Cycle:    1.538118
+   Avg Register Size (Bytes):       5.875652
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                192kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                0.154296 mW 
+   FU Dynamic Power:                36.034672 mW 
+   FU Total Power:                  36.188969 mW 
+
+   Registers Leakage Power:          0.000432 mW 
+   Registers Dynamic Power:          0.263553 mW 
+       Register Reads (Bits):        681451
+       Register Writes (Bits):       698640
+   Registers Total Power:            0.263986 mW
+
+   SPM Leakage Power:               0.087988 mW
+   SPM Read Dynamic Power:          4.371569 mW
+   SPM Write Dynamic Power:         1.453411 mW
+   SPM Total Power:                 5.912968 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               36.452953 mW
+   Accelerator Power (SPM):         42.365922 mW
+   Accelerator Power (Cache):       36.452953 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         17359.687500 um^2 (0.017360 mm^2)
+   Register Area:                   35.144817 um^2 (0.000035 mm^2)
+   SPM Area:                        2680.036981 um^2 (0.002680 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                17394.832031 um^2 (0.017395 mm^2)
+   Accelerator Area (SPM):          20074.869012 um^2 (0.020075 mm^2)
+   Accelerator Area (Cache):        17394.832031 um^2 (0.017395 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.002348 mW
+   SPM Opt Area:                    234.590311 um^2
+
+13407754500: system.acctest.dma: SRC:0x0000000021020040, DST:0x0000000081020000, LEN:65536
+13419584500: system.acctest.dma: Transfer completed in 11.83 us
+Exiting @ tick 13420539000 because m5_exit instruction encountered
