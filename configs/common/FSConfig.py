@@ -395,7 +395,7 @@ def makeArmSystem(mem_mode, machine_type, num_cpus=1, mdesc=None,
 
     self.intrctrl = IntrControl()
     self.terminal = Terminal()
-    self.vncserver = VncServer()
+    self.vncserver = VncServer(port=0)
 
     if vio_9p:
         attach_9p(self.realview, self.iobus)
