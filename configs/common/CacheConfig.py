@@ -77,6 +77,15 @@ def config_cache(options, system):
 
         dcache_class, icache_class, l2_cache_class, walk_cache_class = \
             core.HPI_DCache, core.HPI_ICache, core.HPI_L2, core.HPI_WalkCache
+    elif options.cpu_type == "ex5_LITTLE":
+        try:
+            import cores.arm.ex5_LITTLE as core
+        except:
+            print("ex5_LITTLE is unavailable.")
+            sys.exit(1)
+
+        dcache_class, icache_class, l2_cache_class, walk_cache_class = \
+                core.L1D, core.L1I, None, None
     else:
         dcache_class, icache_class, l2_cache_class, walk_cache_class = \
             L1_DCache, L1_ICache, L2Cache, None

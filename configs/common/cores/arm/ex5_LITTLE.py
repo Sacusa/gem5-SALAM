@@ -49,29 +49,9 @@ class ex5_LITTLE_Complex_IntMul(MinorDefaultIntMulFU):
 class ex5_LITTLE_Complex_IntDiv(MinorDefaultIntDivFU):
     opList = [ OpDesc(opClass='IntDiv', opLat=9) ]
 
-# Floating point and SIMD instructions
+# Floating point instructions
 class ex5_LITTLE_FP(MinorDefaultFloatSimdFU):
-    opList = [ OpDesc(opClass='SimdAdd', opLat=6),
-               OpDesc(opClass='SimdAddAcc', opLat=4),
-               OpDesc(opClass='SimdAlu', opLat=4),
-               OpDesc(opClass='SimdCmp', opLat=1),
-               OpDesc(opClass='SimdCvt', opLat=3),
-               OpDesc(opClass='SimdMisc', opLat=3),
-               OpDesc(opClass='SimdMult',opLat=4),
-               OpDesc(opClass='SimdMultAcc',opLat=5),
-               OpDesc(opClass='SimdShift',opLat=3),
-               OpDesc(opClass='SimdShiftAcc', opLat=3),
-               OpDesc(opClass='SimdSqrt', opLat=9),
-               OpDesc(opClass='SimdFloatAdd',opLat=8),
-               OpDesc(opClass='SimdFloatAlu',opLat=6),
-               OpDesc(opClass='SimdFloatCmp', opLat=6),
-               OpDesc(opClass='SimdFloatCvt', opLat=6),
-               OpDesc(opClass='SimdFloatDiv', opLat=20, pipelined=False),
-               OpDesc(opClass='SimdFloatMisc', opLat=6),
-               OpDesc(opClass='SimdFloatMult', opLat=15),
-               OpDesc(opClass='SimdFloatMultAcc',opLat=6),
-               OpDesc(opClass='SimdFloatSqrt', opLat=17),
-               OpDesc(opClass='FloatAdd', opLat=8),
+    opList = [ OpDesc(opClass='FloatAdd', opLat=8),
                OpDesc(opClass='FloatCmp', opLat=6),
                OpDesc(opClass='FloatCvt', opLat=6),
                OpDesc(opClass='FloatDiv', opLat=15, pipelined=False),
@@ -103,8 +83,7 @@ class L1Cache(Cache):
     data_latency = 2
     response_latency = 2
     tgts_per_mshr = 8
-    # Consider the L2 a victim cache also for clean lines
-    writeback_clean = True
+    writeback_clean = False
 
 class L1I(L1Cache):
     mshrs = 2
