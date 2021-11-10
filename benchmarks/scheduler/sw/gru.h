@@ -374,6 +374,8 @@ void init_gru()
     gru_rg_weight2 = (float*) get_memory(size);
     gru_rg_bias2   = (float*) get_memory(size);
 
+#ifdef VERIFY
+    // the weight matter only if we are verifying the output
     for (int i = 0; i < NUM_PIXELS; i++) {
         gru_ug_weight[i] = (i % IMG_WIDTH) / 700000.0;
         gru_ug_bias[i]   = (i % IMG_WIDTH) / 100.0;
@@ -383,6 +385,7 @@ void init_gru()
         gru_rg_weight2[i] = ((i % IMG_WIDTH) + 2) / 700000.0;
         gru_rg_bias2[i]   = ((i % IMG_WIDTH) + 2) / 100.0;
     }
+#endif
 }
 
 void add_gru_dag(task_struct_t ***nodes, int num_frames, int seq_length)

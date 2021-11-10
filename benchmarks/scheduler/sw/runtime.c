@@ -1,3 +1,4 @@
+#include "../../common/m5ops.h"
 #include "runtime.h"
 
 int acc_instances[NUM_ACCS] = {
@@ -564,6 +565,8 @@ void runtime(task_struct_t ****run_queue, int **run_queue_size)
     bool is_exec_complete = false;
     int num_running = 0;
 
+    m5_reset_stats();
+
     while (1) {
         is_exec_complete = true;
 
@@ -646,4 +649,6 @@ void runtime(task_struct_t ****run_queue, int **run_queue_size)
             }
         }
     }
+
+    m5_dump_stats();
 }

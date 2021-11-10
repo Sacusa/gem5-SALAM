@@ -37,11 +37,7 @@ int main(int argc, char *argv[])
     add_lstm_dag(&nodes[nodes_offset], num_lstm, 8);
     nodes_offset += num_lstm;
 
-    m5_reset_stats();
-
     schedule(nodes);
-
-    m5_dump_stats();
 
 #ifdef VERIFY
     nodes_offset -= num_lstm;

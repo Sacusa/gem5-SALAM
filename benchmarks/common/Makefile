@@ -31,8 +31,6 @@
 # Authors: 	Matthias Jung
 #			Frederik Lauer
 
-CROSS_COMPILE_DIR = /usr/bin
-
 ARCH          ?= arm
 CROSS_COMPILE ?= arm-none-eabi-
 #CROSS_COMPILE_DIR = /home/samerogers/aarch64-toolchain/bin
@@ -40,16 +38,16 @@ CROSS_COMPILE ?= arm-none-eabi-
 #ARCH          ?= aarch64
 #CROSS_COMPILE ?= aarch64-elf-
 
-AS           = $(CROSS_COMPILE_DIR)/$(CROSS_COMPILE)as
-LD           = $(CROSS_COMPILE_DIR)/$(CROSS_COMPILE)ld
-CC           = $(CROSS_COMPILE_DIR)/$(CROSS_COMPILE)gcc
-CXX          = $(CROSS_COMPILE_DIR)/$(CROSS_COMPILE)g++
-CPP          = $(CROSS_COMPILE_DIR)/$(CROSS_COMPILE)cpp
-AR           = $(CROSS_COMPILE_DIR)/$(CROSS_COMPILE)ar
-NM           = $(CROSS_COMPILE_DIR)/$(CROSS_COMPILE)nm
-STRIP        = $(CROSS_COMPILE_DIR)/$(CROSS_COMPILE)strip
-OBJCOPY      = $(CROSS_COMPILE_DIR)/$(CROSS_COMPILE)objcopy
-OBJDUMP      = $(CROSS_COMPILE_DIR)/$(CROSS_COMPILE)objdump
+AS           = $(CROSS_COMPILE)as
+LD           = $(CROSS_COMPILE)ld
+CC           = $(CROSS_COMPILE)gcc
+CXX          = $(CROSS_COMPILE)g++
+CPP          = $(CROSS_COMPILE)cpp
+AR           = $(CROSS_COMPILE)ar
+NM           = $(CROSS_COMPILE)nm
+STRIP        = $(CROSS_COMPILE)strip
+OBJCOPY      = $(CROSS_COMPILE)objcopy
+OBJDUMP      = $(CROSS_COMPILE)objdump
 
 CFLAGS       = -g -O3 -lunistd -I .
 CXXFLAGS     = -g -O3 -lunistd -I . -fno-exceptions

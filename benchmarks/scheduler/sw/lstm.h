@@ -408,6 +408,8 @@ void init_lstm()
     lstm_og_weight  = (float*) get_memory(size);
     lstm_og_bias    = (float*) get_memory(size);
 
+#ifdef VERIFY
+    // the weight matter only if we are verifying the output
     for (int i = 0; i < NUM_PIXELS; i++) {
         lstm_fg_weight[i] = (i % IMG_WIDTH) / 700000.0;
         lstm_fg_bias[i]   = (i % IMG_WIDTH) / 100.0;
@@ -420,6 +422,7 @@ void init_lstm()
         lstm_og_weight[i] = ((i % IMG_WIDTH) + 3) / 700000.0;
         lstm_og_bias[i]   = ((i % IMG_WIDTH) + 3) / 100.0;
     }
+#endif
 }
 
 void add_lstm_dag(task_struct_t ***nodes, int num_frames, int seq_length)
