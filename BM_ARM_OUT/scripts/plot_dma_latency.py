@@ -7,7 +7,6 @@ import numpy as np
 import sys
 
 hatch = {'FCFS': '*', 'LEDF': '.', 'GEDF': 'xx', 'GLAX': '/'}
-NUM_DAG_INSTANCES = 4
 
 def geo_mean(iterable):
     a = np.array(iterable)
@@ -15,10 +14,10 @@ def geo_mean(iterable):
 
 def add_plot(offset, policy, label):
     if policy in hatch:
-        plt.bar([i+offset for i in x], num_transfers[policy], edgecolor='k',
+        plt.bar([i+offset for i in x], stat_value[policy], edgecolor='k',
                 width=width, label=label, fc='w', hatch=hatch[policy])
     else:
-        plt.bar([i+offset for i in x], num_transfers[policy], edgecolor='k',
+        plt.bar([i+offset for i in x], stat_value[policy], edgecolor='k',
                 width=width, label=label, fc='k')
 
 applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
@@ -26,39 +25,17 @@ policies = ['FCFS', 'LEDF', 'GEDF', 'GLAX', 'APRX3']
 
 app_mixes = sorted([c for c in itertools.combinations(applications, 3)])
 
-max_transfers = []
-num_transfers = {p:[] for p in policies}
+stat_value = {p:[] for p in policies}
 
 for app_mix in app_mixes:
-    # record maximum number of transfers
-    base_dir_name = '/u/sgupta45/scheduler/dags/'
-    max_transfers.append(0)
-
-    for app in app_mix:
-        contains_transfers = False
-
-        for line in open(base_dir_name + app + '.cfg'):
-            if '=' in line: line = line.split('=')[1]
-            tokens = line.split()
-
-            if len(tokens) == 2:
-                contains_transfers = True
-            elif contains_transfers:
-                max_transfers[-1] += int(tokens[0])
-                contains_transfers = False
-
-        max_transfers[-1] *= NUM_DAG_INSTANCES
-
-    # record number of transfers
-    base_dir_name = '../image_' + str(NUM_DAG_INSTANCES) + '/'
+    base_dir_name = '../image_4/'
     for app in applications:
         base_dir_name += app + '_'
-        if app in app_mix: base_dir_name += str(NUM_DAG_INSTANCES) + '_'
+        if app in app_mix: base_dir_name += '4_'
         else:              base_dir_name += '0_'
 
     for policy in policies:
         latencies = []
-        num_transfers[policy].append(0)
         valid_dma = False
 
         for line in open(base_dir_name + policy + '_pipeline/debug-trace.txt'):
@@ -67,20 +44,12 @@ for app_mix in app_mixes:
                 valid_dma = True
             elif 'Transfer completed' in line and valid_dma:
                 latencies.append(float(line.split()[5]))
-                num_transfers[policy][-1] += 1
                 valid_dma = False
 
-for policy in policies:
-    # normalize the values
-    for i in range(len(max_transfers)):
-        num_transfers[policy][i] = (num_transfers[policy][i] / \
-                max_transfers[i]) * 100
+        stat_value[policy].append(sum(latencies) / 1000)
 
-    # calculate geomean
-    num_transfers[policy].append(geo_mean(num_transfers[policy]))
-
-x = [i for i in range(len(app_mixes) + 1)]
-x_labels = [','.join(app_mix) for app_mix in app_mixes] + ['Geomean']
+x = [i for i in range(len(app_mixes))]
+x_labels = [','.join(app_mix) for app_mix in app_mixes]# + ['Geomean']
 
 plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
@@ -95,11 +64,11 @@ add_plot((width*2),  'APRX3', 'ELF')
 plt.xlabel('Application mix', fontsize=35)
 plt.xticks(x, x_labels, fontsize=35, rotation='vertical')
 
-plt.ylabel('% DMA transfers performed', fontsize=35)
+plt.ylabel('Total DMA latency (ms)', fontsize=35)
 plt.yticks(fontsize=35)
-plt.ylim([0, 60])
+plt.ylim([0, 55])
 #plt.gca().yaxis.set_major_locator(plt.MultipleLocator(5))
 
 plt.legend(loc="upper left", ncol=5, fontsize=35)
 plt.grid(color='silver', linestyle='-', linewidth=1)
-plt.savefig('plots/num_dma_transfers.pdf', bbox_inches='tight')
+plt.savefig('plots/dma_latency.pdf', bbox_inches='tight')

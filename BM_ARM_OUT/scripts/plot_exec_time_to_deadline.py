@@ -14,44 +14,49 @@ def geo_mean(iterable):
 
 def add_plot(offset, policy, label):
     if policy in hatch:
-        plt.bar([i+offset for i in x], tail_latency[policy], edgecolor='k',
+        plt.bar([i+offset for i in x], ratio[policy], edgecolor='k',
                 width=width, label=label, fc='w', hatch=hatch[policy])
     else:
-        plt.bar([i+offset for i in x], tail_latency[policy], edgecolor='k',
+        plt.bar([i+offset for i in x], ratio[policy], edgecolor='k',
                 width=width, label=label, fc='k')
 
-applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
+applications = ['canny', 'deblur_5', 'gru_8', 'harris', 'lstm_8']
 policies = ['FCFS', 'LEDF', 'GEDF', 'GLAX', 'APRX3']
 
 app_mixes = sorted([c for c in itertools.combinations(applications, 3)])
 
-tail_latency = {p:[] for p in policies}
+ratio = {p:[] for p in policies}
 
 for app_mix in app_mixes:
+    # read the minimum feasible deadline
+    base_dir_name = '/u/sgupta45/scheduler/results/EXP_FR/'
+    for policy in policies:
+        ratio[policy].append(0)
+        for line in open(base_dir_name + '_'.join(app_mix)):
+            if 'Forwarding' in line: break
+            if policy in line:
+                ratio[policy][-1] = float(line.split()[0][1:-1])
+
+    # read the real execution time
     base_dir_name = '../image_4/'
     for app in applications:
-        base_dir_name += app + '_'
+        base_dir_name += app.split('_')[0] + '_'
         if app in app_mix: base_dir_name += '4_'
         else:              base_dir_name += '0_'
 
     for policy in policies:
-        latencies = []
-        valid_dma = False
+        exec_time = 0
 
-        for line in open(base_dir_name + policy + '_pipeline/debug-trace.txt'):
-            if 'SRC:' in line and 'DST:0x000000008' not in line:
-                # only record loads
-                valid_dma = True
-            elif 'Transfer completed' in line and valid_dma:
-                latencies.append(float(line.split()[5]))
-                valid_dma = False
+        for line in open(base_dir_name + policy + '_pipeline/stats.txt'):
+            if 'sim_ticks' in line:
+                exec_time = float(line.split()[1]) / 1000000
+                break
 
-        #tail_latency[policy].append(np.percentile(latencies, 99,
-        #    interpolation='nearest'))
-        tail_latency[policy].append(sum(latencies) / len(latencies))
+        ratio[policy][-1] = exec_time / ratio[policy][-1]
 
 x = [i for i in range(len(app_mixes))]
-x_labels = [','.join(app_mix) for app_mix in app_mixes]# + ['Geomean']
+x_labels = [','.join([a.split('_')[0] for a in app_mix])
+        for app_mix in app_mixes]# + ['Geomean']
 
 plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
@@ -66,11 +71,11 @@ add_plot((width*2),  'APRX3', 'ELF')
 plt.xlabel('Application mix', fontsize=35)
 plt.xticks(x, x_labels, fontsize=35, rotation='vertical')
 
-plt.ylabel('Avg. DMA latency (us)', fontsize=35)
+plt.ylabel('Exec. time / Min. deadline', fontsize=35)
 plt.yticks(fontsize=35)
-plt.ylim([0, 27])
+plt.ylim([0, 8])
 #plt.gca().yaxis.set_major_locator(plt.MultipleLocator(5))
 
 plt.legend(loc="upper left", ncol=5, fontsize=35)
 plt.grid(color='silver', linestyle='-', linewidth=1)
-plt.savefig('plots/avg_dma_latency.pdf', bbox_inches='tight')
+plt.savefig('plots/exec_time_to_deadline.pdf', bbox_inches='tight')
