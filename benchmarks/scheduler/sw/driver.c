@@ -1,9 +1,9 @@
 #include "../../common/m5ops.h"
 #include "runtime.h"
 
-void canny_non_max_driver(int device_id, uint8_t do_init, uint32_t img_height,
+void canny_non_max_driver(int device_id, uint32_t img_height,
         uint32_t img_width, uint32_t hypo_addr, uint32_t theta_addr,
-        uint32_t output_addr, uint32_t output_spm_addr) {
+        uint32_t output_addr, uint32_t output_spm_addr, acc_state_t *acc) {
     // accelerator offsets
     const uint32_t offset_dma = CNM0_DMA - CNM0_BASE;
     const uint32_t offset_hypo_spm = CNM0_HYPO_SPM - CNM0_BASE;
@@ -31,46 +31,48 @@ void canny_non_max_driver(int device_id, uint8_t do_init, uint32_t img_height,
     volatile uint32_t *CNMImgWidth      = (uint32_t*) (mmr_addr + 9);
     volatile uint32_t *CNMOutputSpmAddr = (uint32_t*) (mmr_addr + 17);
 
-    if (do_init) {
+    if (acc->status == ACC_STATUS_IDLE) {
         // DMA transfer for hypotenuse
         *DmaRdAddr  = hypo_addr;
         *DmaWrAddr  = hypo_spm_addr;
         *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
-        while ((*DmaFlags & DEV_INTR) != DEV_INTR);
-        *DmaFlags = 0;
 
+        acc->status = ACC_STATUS_DMA_ARG1;
+    }
+    else if (acc->status == ACC_STATUS_DMA_ARG1) {
         // DMA transfer for theta
         *DmaRdAddr  = theta_addr;
         *DmaWrAddr  = theta_spm_addr;
         *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
-        while ((*DmaFlags & DEV_INTR) != DEV_INTR);
-        *DmaFlags = 0;
 
+        acc->status = ACC_STATUS_DMA_ARG2;
+    }
+    else if (acc->status == ACC_STATUS_DMA_ARG2) {
+        *DmaFlags = 0;
         *CNMImgHeight = img_height;
         *CNMImgWidth = img_width;
         *CNMOutputSpmAddr = output_spm_addr;
-
-        // Start the accelerator
         *CNMFlags = DEV_INIT;
+
+        acc->status = ACC_STATUS_RUNNING;
     }
-    else {
+    else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
         *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
-        while ((*DmaFlags & DEV_INTR) != DEV_INTR);
-        *DmaFlags = 0;
+
+        acc->status = ACC_STATUS_DMA_OUT;
     }
 }
 
-void convolution_driver(int device_id, uint8_t do_init, uint32_t img_height,
-        uint32_t img_width, uint32_t input_addr, uint32_t kernel_addr,
-        uint32_t kern_height, uint32_t kern_width, uint8_t mod_and_floor,
-        uint32_t output_addr, uint32_t input_spm_addr,
-        uint32_t output_spm_addr) {
+void convolution_driver(int device_id, uint32_t img_height, uint32_t img_width,
+        uint32_t input_addr, uint32_t kernel_addr, uint32_t kern_height,
+        uint32_t kern_width, uint8_t mod_and_floor, uint32_t output_addr,
+        uint32_t input_spm_addr, uint32_t output_spm_addr, acc_state_t *acc) {
     // accelerator offsets
     const uint32_t offset_dma = CONVOLUTION0_DMA - CONVOLUTION0_BASE;
     const uint32_t offset_kernel_spm =
@@ -101,25 +103,31 @@ void convolution_driver(int device_id, uint8_t do_init, uint32_t img_height,
     volatile uint32_t *ConvolutionInputSpmAddr  = (uint32_t*) (mmr_addr + 41);
     volatile uint32_t *ConvolutionOutputSpmAddr = (uint32_t*) (mmr_addr + 49);
 
-    if (do_init) {
+    if (acc->status == ACC_STATUS_IDLE) {
+        acc->status = ACC_STATUS_DMA_ARG1;
+
         // DMA transfer for input data
         if (input_addr != 0) {
             *DmaRdAddr  = input_addr;
             *DmaWrAddr  = input_spm_addr;
             *DmaCopyLen = data_size;
             *DmaFlags   = DEV_INIT;
-            while ((*DmaFlags & DEV_INTR) != DEV_INTR);
-            *DmaFlags = 0;
-        }
 
+            // Remain in this state only if we actually perform a DMA transfer
+            return;
+        }
+    }
+
+    if (acc->status == ACC_STATUS_DMA_ARG1) {
         // DMA transfer for kernel
         *DmaRdAddr  = kernel_addr;
         *DmaWrAddr  = kernel_spm_addr;
         *DmaCopyLen = kern_height * kern_width * 4;
         *DmaFlags   = DEV_INIT;
-        while ((*DmaFlags & DEV_INTR) != DEV_INTR);
-        *DmaFlags = 0;
 
+        acc->status = ACC_STATUS_DMA_ARG2;
+    }
+    else if (acc->status == ACC_STATUS_DMA_ARG2) {
         // Configure the accelerator
         *ConvolutionImgHeight = img_height;
         *ConvolutionImgWidth = img_width;
@@ -128,25 +136,25 @@ void convolution_driver(int device_id, uint8_t do_init, uint32_t img_height,
         *ConvolutionModFloor = mod_and_floor;
         *ConvolutionInputSpmAddr = input_spm_addr;
         *ConvolutionOutputSpmAddr = output_spm_addr;
-
-        // Start the accelerator
         *ConvolutionFlags = DEV_INIT;
+
+        acc->status = ACC_STATUS_RUNNING;
     }
-    else {
+    else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output data
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
         *DmaCopyLen = img_height * img_width * 4;
         *DmaFlags   = DEV_INIT;
-        while ((*DmaFlags & DEV_INTR) != DEV_INTR);
-        *DmaFlags = 0;
+
+        acc->status = ACC_STATUS_DMA_OUT;
     }
 }
 
-void edge_tracking_driver(int device_id, uint8_t do_init, uint32_t img_height,
-        uint32_t img_width,uint32_t input_addr, float thr_weak_ratio,
+void edge_tracking_driver(int device_id, uint32_t img_height,
+        uint32_t img_width, uint32_t input_addr, float thr_weak_ratio,
         float thr_strong_ratio, uint32_t output_addr,
-        uint32_t output_spm_addr) {
+        uint32_t output_spm_addr, acc_state_t *acc) {
     // accelerator offsets
     const uint32_t offset_dma = EDGE_TRACKING0_DMA - EDGE_TRACKING0_BASE;
     const uint32_t offset_input_spm =
@@ -175,41 +183,42 @@ void edge_tracking_driver(int device_id, uint8_t do_init, uint32_t img_height,
     volatile float    *EdgeTrackingStrong        = (float*)    (mmr_addr + 25);
     volatile uint32_t *EdgeTrackingOutputSpmAddr = (uint32_t*) (mmr_addr + 33);
 
-    if (do_init) {
+    if (acc->status == ACC_STATUS_IDLE) {
         // DMA transfer for input data
         *DmaRdAddr  = input_addr;
         *DmaWrAddr  = input_spm_addr;
         *DmaCopyLen = num_elems * 4;
         *DmaFlags   = DEV_INIT;
-        while ((*DmaFlags & DEV_INTR) != DEV_INTR);
-        *DmaFlags = 0;
 
+        acc->status = ACC_STATUS_DMA_ARG1;
+    }
+    else if (acc->status == ACC_STATUS_DMA_ARG1) {
         // Configure the accelerator
         *EdgeTrackingImgHeight = img_height;
         *EdgeTrackingImgWidth = img_width;
         *EdgeTrackingWeak = thr_weak_ratio;
         *EdgeTrackingStrong = thr_strong_ratio;
         *EdgeTrackingOutputSpmAddr = output_spm_addr;
-
-        // Start the accelerator
         *EdgeTrackingFlags = DEV_INIT;
+
+        acc->status = ACC_STATUS_RUNNING;
     }
-    else {
+    else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output data
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
         *DmaCopyLen = num_elems;
         *DmaFlags   = DEV_INIT;
-        while ((*DmaFlags & DEV_INTR) != DEV_INTR);
-        *DmaFlags = 0;
+
+        acc->status = ACC_STATUS_DMA_OUT;
     }
 }
 
-void elem_matrix_driver(int device_id, uint8_t do_init, uint32_t img_height,
-        uint32_t img_width, uint32_t arg1_addr, uint32_t arg2_addr,
-        uint8_t is_arg2_scalar, uint8_t op, uint8_t do_one_minus,
-        uint32_t output_addr, uint32_t arg1_spm_addr, uint32_t arg2_spm_addr,
-        uint32_t output_spm_addr) {
+void elem_matrix_driver(int device_id, uint32_t img_height, uint32_t img_width,
+        uint32_t arg1_addr, uint32_t arg2_addr, uint8_t is_arg2_scalar,
+        uint8_t op, uint8_t do_one_minus, uint32_t output_addr,
+        uint32_t arg1_spm_addr, uint32_t arg2_spm_addr,
+        uint32_t output_spm_addr, acc_state_t *acc) {
     // accelerator offsets
     const uint32_t offset_dma = ELEM_MATRIX0_DMA - ELEM_MATRIX0_BASE;
     const uint32_t offset_mmr = ELEM_MATRIX0_MMR - ELEM_MATRIX0_BASE;
@@ -237,16 +246,23 @@ void elem_matrix_driver(int device_id, uint8_t do_init, uint32_t img_height,
     volatile uint32_t *EMArg2SpmAddr   = (uint32_t*) (mmr_addr + 41);
     volatile uint32_t *EMOutputSpmAddr = (uint32_t*) (mmr_addr + 49);
 
-    if (do_init) {
+    if (acc->status == ACC_STATUS_IDLE) {
+        acc->status = ACC_STATUS_DMA_ARG1;
+
         // DMA transfer for arg1
         if (arg1_addr != 0) {
             *DmaRdAddr  = arg1_addr;
             *DmaWrAddr  = arg1_spm_addr;
             *DmaCopyLen = data_size;
             *DmaFlags   = DEV_INIT;
-            while ((*DmaFlags & DEV_INTR) != DEV_INTR);
-            *DmaFlags = 0;
+
+            // Remain in this state only if we actually perform a DMA transfer
+            return;
         }
+    }
+
+    if (acc->status == ACC_STATUS_DMA_ARG1) {
+        acc->status = ACC_STATUS_DMA_ARG2;
 
         // DMA transfer for arg2
         if (arg2_addr != 0) {
@@ -260,10 +276,13 @@ void elem_matrix_driver(int device_id, uint8_t do_init, uint32_t img_height,
             }
 
             *DmaFlags = DEV_INIT;
-            while ((*DmaFlags & DEV_INTR) != DEV_INTR);
-            *DmaFlags = 0;
-        }
 
+            // Remain in this state only if we actually perform a DMA transfer
+            return;
+        }
+    }
+
+    if (acc->status == ACC_STATUS_DMA_ARG2) {
         // Configure the accelerator
         *EMNumElems = img_height * img_width;
         *EMOp = op;
@@ -272,24 +291,24 @@ void elem_matrix_driver(int device_id, uint8_t do_init, uint32_t img_height,
         *EMArg1SpmAddr = arg1_spm_addr;
         *EMArg2SpmAddr = arg2_spm_addr;
         *EMOutputSpmAddr = output_spm_addr;
-
-        // Start the accelerator
         *EMFlags = DEV_INIT;
+
+        acc->status = ACC_STATUS_RUNNING;
     }
-    else {
+    else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
         *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
-        while ((*DmaFlags & DEV_INTR) != DEV_INTR);
-        *DmaFlags = 0;
+
+        acc->status = ACC_STATUS_DMA_OUT;
     }
 }
 
-void grayscale_driver(int device_id, uint8_t do_init, uint32_t img_height,
-        uint32_t img_width, uint32_t input_addr, uint32_t output_addr,
-        uint32_t output_spm_addr) {
+void grayscale_driver(int device_id, uint32_t img_height, uint32_t img_width,
+        uint32_t input_addr, uint32_t output_addr, uint32_t output_spm_addr,
+        acc_state_t *acc) {
     // accelerator offsets
     const uint32_t offset_dma = GRAYSCALE0_DMA - GRAYSCALE0_BASE;
     const uint32_t offset_input_spm = GRAYSCALE0_INPUT_SPM - GRAYSCALE0_BASE;
@@ -314,36 +333,37 @@ void grayscale_driver(int device_id, uint8_t do_init, uint32_t img_height,
     volatile uint32_t *GrayscaleNumElems      = (uint32_t*) (mmr_addr + 1);
     volatile uint32_t *GrayscaleOutputSpmAddr = (uint32_t*) (mmr_addr + 9);
 
-    if (do_init) {
+    if (acc->status == ACC_STATUS_IDLE) {
         // DMA transfer for input data
         *DmaRdAddr  = input_addr;
         *DmaWrAddr  = input_spm_addr;
         *DmaCopyLen = num_elems * 3;
         *DmaFlags   = DEV_INIT;
-        while ((*DmaFlags & DEV_INTR) != DEV_INTR);
-        *DmaFlags = 0;
 
+        acc->status = ACC_STATUS_DMA_ARG1;
+    }
+    else if (acc->status == ACC_STATUS_DMA_ARG1) {
         // Configure the accelerator
         *GrayscaleNumElems = num_elems;
         *GrayscaleOutputSpmAddr = output_spm_addr;
-
-        // Start the accelerator
         *GrayscaleFlags = DEV_INIT;
+
+        acc->status = ACC_STATUS_RUNNING;
     }
-    else {
+    else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output data
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
         *DmaCopyLen = num_elems * 4;
         *DmaFlags   = DEV_INIT;
-        while ((*DmaFlags & DEV_INTR) != DEV_INTR);
-        *DmaFlags = 0;
+
+        acc->status = ACC_STATUS_DMA_OUT;
     }
 }
 
-void harris_non_max_driver(int device_id, uint8_t do_init, uint32_t img_height,
+void harris_non_max_driver(int device_id, uint32_t img_height,
         uint32_t img_width, uint32_t input_addr, uint32_t output_addr,
-        uint32_t output_spm_addr) {
+        uint32_t output_spm_addr, acc_state_t *acc) {
     // accelerator offsets
     const uint32_t offset_dma = HNM0_DMA - HNM0_BASE;
     const uint32_t offset_input_spm = HNM0_INPUT_SPM - HNM0_BASE;
@@ -367,37 +387,38 @@ void harris_non_max_driver(int device_id, uint8_t do_init, uint32_t img_height,
     volatile uint32_t *HNMImgWidth      = (uint32_t*) (mmr_addr + 9);
     volatile uint32_t *HNMOutputSpmAddr = (uint32_t*) (mmr_addr + 17);
 
-    if (do_init) {
+    if (acc->status == ACC_STATUS_IDLE) {
         // DMA transfer for input data
         *DmaRdAddr  = input_addr;
         *DmaWrAddr  = input_spm_addr;
         *DmaCopyLen = img_height * img_width * 4;
         *DmaFlags   = DEV_INIT;
-        while ((*DmaFlags & DEV_INTR) != DEV_INTR);
-        *DmaFlags = 0;
 
+        acc->status = ACC_STATUS_DMA_ARG1;
+    }
+    else if (acc->status == ACC_STATUS_DMA_ARG1) {
         // Configure the accelerator
         *HNMImgHeight = img_height;
         *HNMImgWidth = img_width;
         *HNMOutputSpmAddr = output_spm_addr;
-
-        // Start the accelerator
         *HNMFlags = DEV_INIT;
+
+        acc->status = ACC_STATUS_RUNNING;
     }
-    else {
+    else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output data
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
         *DmaCopyLen = img_height * img_width;
         *DmaFlags   = DEV_INIT;
-        while ((*DmaFlags & DEV_INTR) != DEV_INTR);
-        *DmaFlags = 0;
+
+        acc->status = ACC_STATUS_DMA_OUT;
     }
 }
 
-void isp_driver(int device_id, uint8_t do_init, uint32_t img_height,
-        uint32_t img_width, uint32_t input_addr, uint32_t output_addr,
-        uint32_t output_spm_addr) {
+void isp_driver(int device_id, uint32_t img_height, uint32_t img_width,
+        uint32_t input_addr, uint32_t output_addr, uint32_t output_spm_addr,
+        acc_state_t *acc) {
     // accelerator offsets
     const uint32_t offset_dma = ISP0_DMA - ISP0_BASE;
     const uint32_t offset_input_spm = ISP0_INPUT_SPM - ISP0_BASE;
@@ -421,30 +442,31 @@ void isp_driver(int device_id, uint8_t do_init, uint32_t img_height,
     volatile uint32_t *IspImgWidth      = (uint32_t*) (mmr_addr + 9);
     volatile uint32_t *IspOutputSpmAddr = (uint32_t*) (mmr_addr + 17);
 
-    if (do_init) {
+    if (acc->status == ACC_STATUS_IDLE) {
         // DMA transfer for input data
         *DmaRdAddr  = input_addr;
         *DmaWrAddr  = input_spm_addr;
         *DmaCopyLen = (img_height + 2) * (img_width + 2);
         *DmaFlags   = DEV_INIT;
-        while ((*DmaFlags & DEV_INTR) != DEV_INTR);
-        *DmaFlags = 0;
 
+        acc->status = ACC_STATUS_DMA_ARG1;
+    }
+    else if (acc->status == ACC_STATUS_DMA_ARG1) {
         // Configure the accelerator
         *IspImgHeight = img_height;
         *IspImgWidth = img_width;
         *IspOutputSpmAddr = output_spm_addr;
-
-        // Start the accelerator
         *IspFlags = DEV_INIT;
+
+        acc->status = ACC_STATUS_RUNNING;
     }
-    else {
+    else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output data
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
         *DmaCopyLen = img_height * img_width * 3;
         *DmaFlags   = DEV_INIT;
-        while ((*DmaFlags & DEV_INTR) != DEV_INTR);
-        *DmaFlags = 0;
+
+        acc->status = ACC_STATUS_DMA_OUT;
     }
 }

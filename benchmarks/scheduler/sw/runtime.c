@@ -21,6 +21,16 @@ int acc_mmr_offset[NUM_ACCS] = {
     ISP0_MMR - ISP0_BASE
 };
 
+int acc_dma_offset[NUM_ACCS] = {
+    CNM0_DMA - CNM0_BASE,
+    CONVOLUTION0_DMA - CONVOLUTION0_BASE,
+    EDGE_TRACKING0_DMA - EDGE_TRACKING0_BASE,
+    ELEM_MATRIX0_DMA - ELEM_MATRIX0_BASE,
+    GRAYSCALE0_DMA - GRAYSCALE0_BASE,
+    HNM0_DMA - HNM0_BASE,
+    ISP0_DMA - ISP0_BASE
+};
+
 int acc_spm_part_offset[NUM_ACCS][MAX_ACC_SPM_PARTS] = {
     {CNM0_OUTPUT0_SPM - CNM0_BASE, CNM0_OUTPUT1_SPM - CNM0_BASE},
     {CONVOLUTION0_INPUT_SPM - CONVOLUTION0_BASE,
@@ -52,55 +62,51 @@ void init_task_struct(task_struct_t *task_struct)
  * Functions for running each accelerator
  */
 
-int run_accelerator(int acc_id, int device_id, task_struct_t *req,
+void run_accelerator(int acc_id, int device_id, task_struct_t *req,
         acc_state_t *acc)
 {
-    int retval;
-
     // accelerator specific parsing and driver code
     switch (acc_id) {
         case ACC_CANNY_NON_MAX:
-            retval = run_canny_non_max(device_id, req, acc);
+            run_canny_non_max(device_id, req, acc);
             break;
         case ACC_CONVOLUTION:
-            retval = run_convolution(device_id, req, acc);
+            run_convolution(device_id, req, acc);
             break;
         case ACC_EDGE_TRACKING:
-            retval = run_edge_tracking(device_id, req, acc);
+            run_edge_tracking(device_id, req, acc);
             break;
         case ACC_ELEM_MATRIX:
-            retval = run_elem_matrix(device_id, req, acc);
+            run_elem_matrix(device_id, req, acc);
             break;
         case ACC_GRAYSCALE:
-            retval = run_grayscale(device_id, req, acc);
+            run_grayscale(device_id, req, acc);
             break;
         case ACC_HARRIS_NON_MAX:
-            retval = run_harris_non_max(device_id, req, acc);
+            run_harris_non_max(device_id, req, acc);
             break;
         case ACC_ISP:
-            retval = run_isp(device_id, req, acc);
+            run_isp(device_id, req, acc);
             break;
     }
 
-    if (retval) { return -1; }
-
-    acc->status = ACC_STATUS_RUNNING;
-    acc->running_req = req;
-
-    // set the number of pending reads
-    for (int c = 0; c < req->num_children; c++) {
-        task_struct_t *child = req->children[c];
-        for (int a = 0; a < MAX_ACC_ARGS; a++) {
-            if ((child->producer[a] == req) && child->producer_forward[a]) {
-                acc->spm_pending_reads[acc->curr_spm_out_part]++;
+    if (acc->status == ACC_STATUS_RUNNING) {
+        // set the number of pending reads only after the accelerator
+        // starts running
+        for (int c = 0; c < req->num_children; c++) {
+            task_struct_t *child = req->children[c];
+            for (int a = 0; a < MAX_ACC_ARGS; a++) {
+                if ((child->producer[a] == req) && child->producer_forward[a]) {
+                    acc->spm_pending_reads[acc->curr_spm_out_part]++;
+                }
             }
         }
     }
 
-    return 0;
+    acc->running_req = req;
 }
 
-int run_canny_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
+void run_canny_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     canny_non_max_args *args = (canny_non_max_args*) req->acc_args;
     uint32_t hypo_addr, theta_addr;
@@ -115,7 +121,7 @@ int run_canny_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
         }
     }
 
-    if (!has_available_part) { return -1; }
+    if (!has_available_part) { return; }
 
     // check if we need to forward hypotenuse
     if (req->producer_forward[0]) {
@@ -133,23 +139,25 @@ int run_canny_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
         theta_addr = (uint32_t) args->theta;
     }
 
-    canny_non_max_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, hypo_addr,
-            theta_addr, 0, acc->spm_part[acc->curr_spm_out_part]);
+    canny_non_max_driver(device_id, IMG_HEIGHT, IMG_WIDTH, hypo_addr,
+            theta_addr, 0, acc->spm_part[acc->curr_spm_out_part], acc);
 
-    // reduce pending reads for the hypotenuse producer
-    if (req->producer_forward[0]) {
-        req->producer_acc[0]->spm_pending_reads[req->producer_spm_part[0]]--;
+    if (acc->status == ACC_STATUS_RUNNING) {
+        // reduce pending reads for the hypotenuse producer
+        if (req->producer_forward[0]) {
+            req->producer_acc[0]->spm_pending_reads[
+                req->producer_spm_part[0]]--;
+        }
+
+        // reduce pending reads for the theta producer
+        if (req->producer_forward[1]) {
+            req->producer_acc[1]->spm_pending_reads[
+                req->producer_spm_part[1]]--;
+        }
     }
-
-    // reduce pending reads for the theta producer
-    if (req->producer_forward[1]) {
-        req->producer_acc[1]->spm_pending_reads[req->producer_spm_part[1]]--;
-    }
-
-    return 0;
 }
 
-int run_convolution(int device_id, task_struct_t *req, acc_state_t *acc)
+void run_convolution(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     convolution_args *args = (convolution_args*) req->acc_args;
     uint32_t input_addr = 0, kernel_addr = (uint32_t) args->kernel;
@@ -184,22 +192,23 @@ int run_convolution(int device_id, task_struct_t *req, acc_state_t *acc)
         }
     }
 
-    if (!has_available_part) { return -1; }
+    if (!has_available_part) { return; }
 
-    convolution_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr,
+    convolution_driver(device_id, IMG_HEIGHT, IMG_WIDTH, input_addr,
             kernel_addr, args->kern_height, args->kern_width,
             args->mod_and_floor, 0, input_spm_addr,
-            acc->spm_part[acc->curr_spm_out_part]);
+            acc->spm_part[acc->curr_spm_out_part], acc);
 
     // reduce pending reads for the input producer
-    if (req->producer_forward[0]) {
-        req->producer_acc[0]->spm_pending_reads[req->producer_spm_part[0]]--;
+    if (acc->status == ACC_STATUS_RUNNING) {
+        if (req->producer_forward[0]) {
+            req->producer_acc[0]->spm_pending_reads[
+                req->producer_spm_part[0]]--;
+        }
     }
-
-    return 0;
 }
 
-int run_edge_tracking(int device_id, task_struct_t *req, acc_state_t *acc)
+void run_edge_tracking(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     edge_tracking_args *args = (edge_tracking_args*) req->acc_args;
     uint32_t input_addr;
@@ -214,7 +223,7 @@ int run_edge_tracking(int device_id, task_struct_t *req, acc_state_t *acc)
         }
     }
 
-    if (!has_available_part) { return -1; }
+    if (!has_available_part) { return; }
 
     // check if we need to forward the input
     if (req->producer_forward[0]) {
@@ -224,19 +233,20 @@ int run_edge_tracking(int device_id, task_struct_t *req, acc_state_t *acc)
         input_addr = (uint32_t) args->input;
     }
 
-    edge_tracking_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr,
+    edge_tracking_driver(device_id, IMG_HEIGHT, IMG_WIDTH, input_addr,
             args->thr_weak_ratio, args->thr_strong_ratio, 0,
-            acc->spm_part[acc->curr_spm_out_part]);
+            acc->spm_part[acc->curr_spm_out_part], acc);
 
     // reduce pending reads for the input producer
-    if (req->producer_forward[0]) {
-        req->producer_acc[0]->spm_pending_reads[req->producer_spm_part[0]]--;
+    if (acc->status == ACC_STATUS_RUNNING) {
+        if (req->producer_forward[0]) {
+            req->producer_acc[0]->spm_pending_reads[
+                req->producer_spm_part[0]]--;
+        }
     }
-
-    return 0;
 }
 
-int run_elem_matrix(int device_id, task_struct_t *req, acc_state_t *acc)
+void run_elem_matrix(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     elem_matrix_args *args = (elem_matrix_args*) req->acc_args;
     uint32_t arg1_addr = 0, arg2_addr = 0;
@@ -299,27 +309,29 @@ int run_elem_matrix(int device_id, task_struct_t *req, acc_state_t *acc)
         }
     }
 
-    if (!has_available_part) { return -1; }
+    if (!has_available_part) { return; }
 
-    elem_matrix_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, arg1_addr,
-            arg2_addr, args->is_arg2_scalar, args->op, args->do_one_minus, 0,
+    elem_matrix_driver(device_id, IMG_HEIGHT, IMG_WIDTH, arg1_addr, arg2_addr,
+            args->is_arg2_scalar, args->op, args->do_one_minus, 0,
             arg1_spm_addr, arg2_spm_addr,
-            acc->spm_part[acc->curr_spm_out_part]);
+            acc->spm_part[acc->curr_spm_out_part], acc);
 
-    // reduce pending reads for the arg1 producer
-    if (req->producer_forward[0]) {
-        req->producer_acc[0]->spm_pending_reads[req->producer_spm_part[0]]--;
+    if (acc->status == ACC_STATUS_RUNNING) {
+        // reduce pending reads for the arg1 producer
+        if (req->producer_forward[0]) {
+            req->producer_acc[0]->spm_pending_reads[
+                req->producer_spm_part[0]]--;
+        }
+
+        // reduce pending reads for the arg2 producer
+        if (req->producer_forward[1]) {
+            req->producer_acc[1]->spm_pending_reads[
+                req->producer_spm_part[1]]--;
+        }
     }
-
-    // reduce pending reads for the arg2 producer
-    if (req->producer_forward[1]) {
-        req->producer_acc[1]->spm_pending_reads[req->producer_spm_part[1]]--;
-    }
-
-    return 0;
 }
 
-int run_grayscale(int device_id, task_struct_t *req, acc_state_t *acc)
+void run_grayscale(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     grayscale_args *args = (grayscale_args*) req->acc_args;
     uint32_t input_addr;
@@ -334,7 +346,7 @@ int run_grayscale(int device_id, task_struct_t *req, acc_state_t *acc)
         }
     }
 
-    if (!has_available_part) { return -1; }
+    if (!has_available_part) { return; }
 
     // check if we need to forward input
     if (req->producer_forward[0]) {
@@ -344,18 +356,19 @@ int run_grayscale(int device_id, task_struct_t *req, acc_state_t *acc)
         input_addr = (uint32_t) args->input;
     }
 
-    grayscale_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr, 0,
-            acc->spm_part[acc->curr_spm_out_part]);
+    grayscale_driver(device_id, IMG_HEIGHT, IMG_WIDTH, input_addr, 0,
+            acc->spm_part[acc->curr_spm_out_part], acc);
 
     // reduce pending reads for the input producer
-    if (req->producer_forward[0]) {
-        req->producer_acc[0]->spm_pending_reads[req->producer_spm_part[0]]--;
+    if (acc->status == ACC_STATUS_RUNNING) {
+        if (req->producer_forward[0]) {
+            req->producer_acc[0]->spm_pending_reads[
+                req->producer_spm_part[0]]--;
+        }
     }
-
-    return 0;
 }
 
-int run_harris_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
+void run_harris_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     harris_non_max_args *args = (harris_non_max_args*) req->acc_args;
     uint32_t input_addr;
@@ -370,7 +383,7 @@ int run_harris_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
         }
     }
 
-    if (!has_available_part) { return -1; }
+    if (!has_available_part) { return; }
 
     // check if we need to forward input
     if (req->producer_forward[0]) {
@@ -380,18 +393,19 @@ int run_harris_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
         input_addr = (uint32_t) args->input;
     }
 
-    harris_non_max_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr, 0,
-            acc->spm_part[acc->curr_spm_out_part]);
+    harris_non_max_driver(device_id, IMG_HEIGHT, IMG_WIDTH, input_addr, 0,
+            acc->spm_part[acc->curr_spm_out_part], acc);
 
     // reduce pending reads for the input producer
-    if (req->producer_forward[0]) {
-        req->producer_acc[0]->spm_pending_reads[req->producer_spm_part[0]]--;
+    if (acc->status == ACC_STATUS_RUNNING) {
+        if (req->producer_forward[0]) {
+            req->producer_acc[0]->spm_pending_reads[
+                req->producer_spm_part[0]]--;
+        }
     }
-
-    return 0;
 }
 
-int run_isp(int device_id, task_struct_t *req, acc_state_t *acc)
+void run_isp(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     isp_args *args = (isp_args*) req->acc_args;
     uint32_t input_addr;
@@ -406,7 +420,7 @@ int run_isp(int device_id, task_struct_t *req, acc_state_t *acc)
         }
     }
 
-    if (!has_available_part) { return -1; }
+    if (!has_available_part) { return; }
 
     // check if we need to forward input
     if (req->producer_forward[0]) {
@@ -416,15 +430,16 @@ int run_isp(int device_id, task_struct_t *req, acc_state_t *acc)
         input_addr = (uint32_t) args->input;
     }
 
-    isp_driver(device_id, 1, IMG_HEIGHT, IMG_WIDTH, input_addr, 0,
-            acc->spm_part[acc->curr_spm_out_part]);
+    isp_driver(device_id, IMG_HEIGHT, IMG_WIDTH, input_addr, 0,
+            acc->spm_part[acc->curr_spm_out_part], acc);
 
     // reduce pending reads for the input producer
-    if (req->producer_forward[0]) {
-        req->producer_acc[0]->spm_pending_reads[req->producer_spm_part[0]]--;
+    if (acc->status == ACC_STATUS_RUNNING) {
+        if (req->producer_forward[0]) {
+            req->producer_acc[0]->spm_pending_reads[
+                req->producer_spm_part[0]]--;
+        }
     }
-
-    return 0;
 }
 
 /**
@@ -477,60 +492,72 @@ void finish_accelerator(int acc_id, int device_id, task_struct_t *req,
                 break;
         }
     }
+    else {
+        acc->status = ACC_STATUS_IDLE;
+    }
 
     *(acc->flags) = 0;
-    acc->status = ACC_STATUS_IDLE;
     acc->running_req = NULL;
 }
 
 void finish_canny_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     canny_non_max_args *args = (canny_non_max_args*) req->acc_args;
-    canny_non_max_driver(device_id, 0, IMG_HEIGHT, IMG_WIDTH, 0, 0,
-            (uint32_t) args->output, acc->spm_part[acc->curr_spm_out_part]);
+    canny_non_max_driver(device_id, IMG_HEIGHT, IMG_WIDTH, 0, 0,
+            (uint32_t) args->output, acc->spm_part[acc->curr_spm_out_part],
+            acc);
 }
 
 void finish_convolution(int device_id, task_struct_t *req, acc_state_t *acc)
 {
     convolution_args *args = (convolution_args*) req->acc_args;
-    convolution_driver(device_id, 0, IMG_HEIGHT, IMG_WIDTH, 0, 0, 0, 0, 0,
-            (uint32_t) args->output, 0, acc->spm_part[acc->curr_spm_out_part]);
+    convolution_driver(device_id, IMG_HEIGHT, IMG_WIDTH, 0, 0, 0, 0, 0,
+            (uint32_t) args->output, 0, acc->spm_part[acc->curr_spm_out_part],
+            acc);
 }
 
-void finish_edge_tracking(int device_id, task_struct_t *req, acc_state_t *acc)
+void finish_edge_tracking(int device_id, task_struct_t *req,
+        acc_state_t *acc)
 {
     edge_tracking_args *args = (edge_tracking_args*) req->acc_args;
-    edge_tracking_driver(device_id, 0, IMG_HEIGHT, IMG_WIDTH, 0, 0, 0,
-            (uint32_t) args->output, acc->spm_part[acc->curr_spm_out_part]);
+    edge_tracking_driver(device_id, IMG_HEIGHT, IMG_WIDTH, 0, 0, 0,
+            (uint32_t) args->output, acc->spm_part[acc->curr_spm_out_part],
+            acc);
 }
 
-void finish_elem_matrix(int device_id, task_struct_t *req, acc_state_t *acc)
+void finish_elem_matrix(int device_id, task_struct_t *req,
+        acc_state_t *acc)
 {
     elem_matrix_args *args = (elem_matrix_args*) req->acc_args;
-    elem_matrix_driver(device_id, 0, IMG_HEIGHT, IMG_WIDTH, 0, 0, 0, 0, 0,
+    elem_matrix_driver(device_id, IMG_HEIGHT, IMG_WIDTH, 0, 0, 0, 0, 0,
             (uint32_t) args->output, 0, 0,
-            acc->spm_part[acc->curr_spm_out_part]);
+            acc->spm_part[acc->curr_spm_out_part], acc);
 }
 
-void finish_grayscale(int device_id, task_struct_t *req, acc_state_t *acc)
+void finish_grayscale(int device_id, task_struct_t *req,
+        acc_state_t *acc)
 {
     grayscale_args *args = (grayscale_args*) req->acc_args;
-    grayscale_driver(device_id, 0, IMG_HEIGHT, IMG_WIDTH, 0,
-            (uint32_t) args->output, acc->spm_part[acc->curr_spm_out_part]);
+    grayscale_driver(device_id, IMG_HEIGHT, IMG_WIDTH, 0,
+            (uint32_t) args->output, acc->spm_part[acc->curr_spm_out_part],
+            acc);
 }
 
-void finish_harris_non_max(int device_id, task_struct_t *req, acc_state_t *acc)
+void finish_harris_non_max(int device_id, task_struct_t *req,
+        acc_state_t *acc)
 {
     harris_non_max_args *args = (harris_non_max_args*) req->acc_args;
-    harris_non_max_driver(device_id, 0, IMG_HEIGHT, IMG_WIDTH, 0,
-            (uint32_t) args->output, acc->spm_part[acc->curr_spm_out_part]);
+    harris_non_max_driver(device_id, IMG_HEIGHT, IMG_WIDTH, 0,
+            (uint32_t) args->output, acc->spm_part[acc->curr_spm_out_part],
+            acc);
 }
 
-void finish_isp(int device_id, task_struct_t *req, acc_state_t *acc)
+void finish_isp(int device_id, task_struct_t *req,
+        acc_state_t *acc)
 {
     isp_args *args = (isp_args*) req->acc_args;
-    isp_driver(device_id, 0, IMG_HEIGHT, IMG_WIDTH, 0,
-            (uint32_t) args->output, acc->spm_part[acc->curr_spm_out_part]);
+    isp_driver(device_id, IMG_HEIGHT, IMG_WIDTH, 0, (uint32_t) args->output,
+            acc->spm_part[acc->curr_spm_out_part], acc);
 }
 
 /**
@@ -548,6 +575,7 @@ void runtime(task_struct_t ****run_queue, int **run_queue_size)
             uint32_t acc_base = 0x20000000 + ((i+1) << 24) + (j << 20);
 
             acc_state[i][j].flags = (uint8_t*) (acc_base + acc_mmr_offset[i]);
+            acc_state[i][j].dma = (uint8_t*) (acc_base + acc_dma_offset[i]);
 
             for (int k = 0; k < MAX_ACC_SPM_PARTS; k++) {
                 acc_state[i][j].spm_part[k] = acc_base +
@@ -573,7 +601,7 @@ void runtime(task_struct_t ****run_queue, int **run_queue_size)
         // launch more ready requests
         for (int i = 0; i < NUM_ACCS; i++) {
             for (int j = 0; j < acc_instances[i]; j++) {
-                if (acc_state[i][j].status == ACC_STATUS_RUNNING) {
+                if (acc_state[i][j].status != ACC_STATUS_IDLE) {
                     is_exec_complete = false;
                 }
 
@@ -588,9 +616,13 @@ void runtime(task_struct_t ****run_queue, int **run_queue_size)
                 // Launch the ready request for this accelerator
                 if ((acc_state[i][j].status == ACC_STATUS_IDLE) && \
                     (curr_req->status == REQ_STATUS_READY)) {
-                    if (run_accelerator(i, j, curr_req, &acc_state[i][j])) {
+                    run_accelerator(i, j, curr_req, &acc_state[i][j]);
+
+                    if (acc_state[i][j].status == ACC_STATUS_IDLE) {
+                        printf("Unable to launch a request on %d_%d\n", i, j);
                         continue;
                     }
+
                     curr_req->status = REQ_STATUS_COMPLETED;
                     run_queue_index[i][j]++;
                     num_running++;
@@ -613,38 +645,60 @@ void runtime(task_struct_t ****run_queue, int **run_queue_size)
             for (int i = 0; (i < NUM_ACCS) && (!exit_loop); i++) {
                 for (int j = 0; j < acc_instances[i]; j++) {
 
-                    if ((*acc_state[i][j].flags & DEV_INTR) == DEV_INTR) {
-                        task_struct_t *node = acc_state[i][j].running_req;
-
-                        for (int c = 0; c < node->num_children; c++) {
-                            task_struct_t *child = node->children[c];
-
-                            child->completed_parents++;
-
-                            if (child->completed_parents == \
-                                child->num_parents) {
-                                child->status = REQ_STATUS_READY;
-                            }
-
-                            // set parent SPM partitions if forwarding data
-                            for (int a = 0; a < MAX_ACC_ARGS; a++) {
-                                if ((child->producer[a] == node) &&
-                                    child->producer_forward[a]) {
-                                    child->producer_spm_part[a] =
-                                        acc_state[i][j].curr_spm_out_part;
-                                    child->producer_acc[a] =
-                                        &acc_state[i][j];
-                                }
-                            }
+                    if ((acc_state[i][j].status == ACC_STATUS_DMA_ARG1) ||
+                        (acc_state[i][j].status == ACC_STATUS_DMA_ARG2)) {
+                        if ((*acc_state[i][j].dma & DEV_INTR) == DEV_INTR) {
+                            run_accelerator(i, j, acc_state[i][j].running_req,
+                                    &acc_state[i][j]);
                         }
-
-                        finish_accelerator(i, j, node, &acc_state[i][j]);
-                        num_running--;
-
-                        exit_loop = true;
-                        break;
                     }
 
+                    else if (acc_state[i][j].status == ACC_STATUS_RUNNING) {
+                        if ((*acc_state[i][j].flags & DEV_INTR) == DEV_INTR) {
+                            task_struct_t *node = acc_state[i][j].running_req;
+
+                            for (int c = 0; c < node->num_children; c++) {
+                                task_struct_t *child = node->children[c];
+
+                                child->completed_parents++;
+
+                                if (child->completed_parents == \
+                                    child->num_parents) {
+                                    child->status = REQ_STATUS_READY;
+                                }
+
+                                // set parent SPM partitions if forwarding data
+                                for (int a = 0; a < MAX_ACC_ARGS; a++) {
+                                    if ((child->producer[a] == node) &&
+                                        child->producer_forward[a]) {
+                                        child->producer_spm_part[a] =
+                                            acc_state[i][j].curr_spm_out_part;
+                                        child->producer_acc[a] =
+                                            &acc_state[i][j];
+                                    }
+                                }
+                            }
+
+                            finish_accelerator(i, j, node, &acc_state[i][j]);
+
+                            if (acc_state[i][j].status == ACC_STATUS_IDLE) {
+                                num_running--;
+                            }
+
+                            exit_loop = true;
+                            break;
+                        }
+                    }
+
+                    else if (acc_state[i][j].status == ACC_STATUS_DMA_OUT) {
+                        if ((*acc_state[i][j].dma & DEV_INTR) == DEV_INTR) {
+                            acc_state[i][j].status = ACC_STATUS_IDLE;
+
+                            num_running--;
+                            exit_loop = true;
+                            break;
+                        }
+                    }
                 }
             }
         }
