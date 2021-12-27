@@ -24,6 +24,18 @@ static void m5_reset_stats(void)
 {
 	__asm__ __volatile__ ("mov r0, #0; mov r1, #0; mov r2, #0; mov r3, #0; .inst 0xEE000110 | (0x40 << 16);");
 };
+static void m5_timer_start(uint32_t timer_id)
+{
+    __asm__ __volatile__ ("push {r0}; mov r0, %0;"
+                          ".inst 0xEE000110 | (0x56 << 16); pop {r0};"
+                          :: "r" (timer_id));
+}
+static void m5_timer_stop(uint32_t timer_id)
+{
+    __asm__ __volatile__ ("push {r0}; mov r0, %0;"
+                          ".inst 0xEE000110 | (0x57 << 16); pop {r0};"
+                          :: "r" (timer_id));
+}
 #elif defined(__aarch64__)
 static void m5_checkpoint(void)
 {

@@ -198,8 +198,6 @@ pseudoInst(ThreadContext *tc, uint8_t func, uint8_t subfunc)
         break;
 
       case M5OP_ANNOTATE:
-      case M5OP_RESERVED2:
-      case M5OP_RESERVED3:
       case M5OP_RESERVED4:
       case M5OP_RESERVED5:
         warn("Unimplemented m5 op (0x%x)\n", func);
@@ -723,6 +721,20 @@ workend(ThreadContext *tc, uint64_t workid, uint64_t threadid)
             exitSimLoop("work items exit count reached");
         }
     }
+}
+
+void
+m5timerstart(ThreadContext *tc, uint32_t timer_id)
+{
+    DPRINTF(PseudoInst, "Start timer called for timer #%d\n", timer_id);
+    tc->startTimer(timer_id);
+}
+
+void
+m5timerstop(ThreadContext *tc, uint32_t timer_id)
+{
+    DPRINTF(PseudoInst, "Stop timer called for timer #%d\n", timer_id);
+    tc->stopTimer(timer_id);
 }
 
 } // namespace PseudoInst

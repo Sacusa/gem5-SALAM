@@ -45,7 +45,9 @@
 #define __CPU_THREAD_CONTEXT_HH__
 
 #include <iostream>
+#include <map>
 #include <string>
+#include <vector>
 
 #include "arch/registers.hh"
 #include "arch/types.hh"
@@ -96,6 +98,9 @@ class ThreadContext : public PCEventScope
     using VecRegContainer = TheISA::VecRegContainer;
     using VecElem = TheISA::VecElem;
     using VecPredRegContainer = TheISA::VecPredRegContainer;
+
+    std::map<uint32_t, uint64_t> timerStartTick;
+    std::map<uint32_t, std::vector<uint64_t>> timerPeriod;
 
   public:
 
@@ -354,6 +359,8 @@ class ThreadContext : public PCEventScope
     virtual void setCCRegFlat(RegIndex idx, RegVal val) = 0;
     /** @} */
 
+    void startTimer(uint32_t);
+    void stopTimer(uint32_t);
 };
 
 /** @{ */

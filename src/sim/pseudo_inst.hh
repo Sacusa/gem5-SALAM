@@ -90,6 +90,8 @@ void workbegin(ThreadContext *tc, uint64_t workid, uint64_t threadid);
 void workend(ThreadContext *tc, uint64_t workid, uint64_t threadid);
 void m5Syscall(ThreadContext *tc);
 void togglesync(ThreadContext *tc);
+void m5timerstart(ThreadContext *tc, uint32_t timer_id);
+void m5timerstop(ThreadContext *tc, uint32_t timer_id);
 
 } // namespace PseudoInst
 

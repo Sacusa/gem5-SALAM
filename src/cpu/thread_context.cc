@@ -51,6 +51,7 @@
 #include "cpu/quiesce_event.hh"
 #include "debug/Context.hh"
 #include "debug/Quiesce.hh"
+#include "debug/TickTimer.hh"
 #include "kern/kernel_stats.hh"
 #include "params/BaseCPU.hh"
 #include "sim/full_system.hh"
@@ -278,4 +279,27 @@ takeOverFrom(ThreadContext &ntc, ThreadContext &otc)
     }
 
     otc.setStatus(ThreadContext::Halted);
+}
+
+void
+ThreadContext::startTimer(uint32_t timer_id)
+{
+    assert((timerStartTick.find(timer_id) == timerStartTick.end()) || \
+           (timerStartTick[timer_id] == 0));
+
+    timerStartTick[timer_id] = curTick();
+    DPRINTF(TickTimer, "Timer #%d started at tick %lld\n", timer_id, curTick());
+}
+
+void
+ThreadContext::stopTimer(uint32_t timer_id)
+{
+    assert((timerStartTick.find(timer_id) != timerStartTick.end()) && \
+           (timerStartTick[timer_id] != 0));
+
+    timerPeriod[timer_id].push_back(curTick() - timerStartTick[timer_id]);
+    timerStartTick[timer_id] = 0;
+
+    DPRINTF(TickTimer, "Timer #%d stopped at tick %lld. Duration: %lld\n",
+            timer_id, curTick(), timerPeriod[timer_id].back());
 }

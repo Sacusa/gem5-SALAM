@@ -66,6 +66,8 @@ void m5_load_symbol();
 void m5_panic(void);
 void m5_work_begin(uint64_t workid, uint64_t threadid);
 void m5_work_end(uint64_t workid, uint64_t threadid);
+void m5_timer_start(uint32_t timer_id);
+void m5_timer_stop(uint32_t timer_id);
 
 // These operations are for critical path annotation
 void m5a_bsm(char *sm, const void *id, int flags);
