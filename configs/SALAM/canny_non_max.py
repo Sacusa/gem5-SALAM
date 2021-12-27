@@ -101,13 +101,13 @@ def makeHWAcc(options, system):
     acc = options.accbench
     config = hw_path + acc + ".ini"
     ir = hw_path + acc + ".ll"
-    system.acctest.convolution = CommInterface(devicename=acc, gic=gic)
-    AccConfig(system.acctest.convolution, config, ir)
-    system.acctest._connect_hwacc(system.acctest.convolution)
-    system.acctest.convolution.local = system.acctest.local_bus.slave
+    system.acctest.canny_non_max = CommInterface(devicename=acc, gic=gic)
+    AccConfig(system.acctest.canny_non_max, config, ir)
+    system.acctest._connect_hwacc(system.acctest.canny_non_max)
+    system.acctest.canny_non_max.local = system.acctest.local_bus.slave
 
     system.acctest.spm = ScratchpadMemory()
-    AccSPMConfig(system.acctest.convolution, system.acctest.spm, config)
+    AccSPMConfig(system.acctest.canny_non_max, system.acctest.spm, config)
     system.acctest._connect_spm(system.acctest.spm)
 
     # Add the cluster DMA
