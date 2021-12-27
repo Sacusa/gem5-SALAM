@@ -24,17 +24,47 @@ static void m5_reset_stats(void)
 {
 	__asm__ __volatile__ ("mov r0, #0; mov r1, #0; mov r2, #0; mov r3, #0; .inst 0xEE000110 | (0x40 << 16);");
 };
-static void m5_timer_start(uint32_t timer_id)
+static void m5_timer_start(uint8_t timer_id)
 {
-    __asm__ __volatile__ ("push {r0}; mov r0, %0;"
-                          ".inst 0xEE000110 | (0x56 << 16); pop {r0};"
-                          :: "r" (timer_id));
+    switch (timer_id) {
+        case 0:  __asm__ __volatile__ (".inst 0xEE000110 | (0x56 << 16)"); break;
+        case 1:  __asm__ __volatile__ (".inst 0xEE001110 | (0x56 << 16)"); break;
+        case 2:  __asm__ __volatile__ (".inst 0xEE002110 | (0x56 << 16)"); break;
+        case 3:  __asm__ __volatile__ (".inst 0xEE003110 | (0x56 << 16)"); break;
+        case 4:  __asm__ __volatile__ (".inst 0xEE004110 | (0x56 << 16)"); break;
+        case 5:  __asm__ __volatile__ (".inst 0xEE005110 | (0x56 << 16)"); break;
+        case 6:  __asm__ __volatile__ (".inst 0xEE006110 | (0x56 << 16)"); break;
+        case 7:  __asm__ __volatile__ (".inst 0xEE007110 | (0x56 << 16)"); break;
+        case 8:  __asm__ __volatile__ (".inst 0xEE008110 | (0x56 << 16)"); break;
+        case 9:  __asm__ __volatile__ (".inst 0xEE009110 | (0x56 << 16)"); break;
+        case 10: __asm__ __volatile__ (".inst 0xEE00A110 | (0x56 << 16)"); break;
+        case 11: __asm__ __volatile__ (".inst 0xEE00B110 | (0x56 << 16)"); break;
+        case 12: __asm__ __volatile__ (".inst 0xEE00C110 | (0x56 << 16)"); break;
+        case 13: __asm__ __volatile__ (".inst 0xEE00D110 | (0x56 << 16)"); break;
+        case 14: __asm__ __volatile__ (".inst 0xEE00E110 | (0x56 << 16)"); break;
+        case 15: __asm__ __volatile__ (".inst 0xEE00F110 | (0x56 << 16)"); break;
+    }
 }
-static void m5_timer_stop(uint32_t timer_id)
+static void m5_timer_stop(uint8_t timer_id)
 {
-    __asm__ __volatile__ ("push {r0}; mov r0, %0;"
-                          ".inst 0xEE000110 | (0x57 << 16); pop {r0};"
-                          :: "r" (timer_id));
+    switch (timer_id) {
+        case 0:  __asm__ __volatile__ (".inst 0xEE000110 | (0x57 << 16)"); break;
+        case 1:  __asm__ __volatile__ (".inst 0xEE001110 | (0x57 << 16)"); break;
+        case 2:  __asm__ __volatile__ (".inst 0xEE002110 | (0x57 << 16)"); break;
+        case 3:  __asm__ __volatile__ (".inst 0xEE003110 | (0x57 << 16)"); break;
+        case 4:  __asm__ __volatile__ (".inst 0xEE004110 | (0x57 << 16)"); break;
+        case 5:  __asm__ __volatile__ (".inst 0xEE005110 | (0x57 << 16)"); break;
+        case 6:  __asm__ __volatile__ (".inst 0xEE006110 | (0x57 << 16)"); break;
+        case 7:  __asm__ __volatile__ (".inst 0xEE007110 | (0x57 << 16)"); break;
+        case 8:  __asm__ __volatile__ (".inst 0xEE008110 | (0x57 << 16)"); break;
+        case 9:  __asm__ __volatile__ (".inst 0xEE009110 | (0x57 << 16)"); break;
+        case 10: __asm__ __volatile__ (".inst 0xEE00A110 | (0x57 << 16)"); break;
+        case 11: __asm__ __volatile__ (".inst 0xEE00B110 | (0x57 << 16)"); break;
+        case 12: __asm__ __volatile__ (".inst 0xEE00C110 | (0x57 << 16)"); break;
+        case 13: __asm__ __volatile__ (".inst 0xEE00D110 | (0x57 << 16)"); break;
+        case 14: __asm__ __volatile__ (".inst 0xEE00E110 | (0x57 << 16)"); break;
+        case 15: __asm__ __volatile__ (".inst 0xEE00F110 | (0x57 << 16)"); break;
+    }
 }
 #elif defined(__aarch64__)
 static void m5_checkpoint(void)

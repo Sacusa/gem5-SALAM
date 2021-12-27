@@ -580,7 +580,7 @@ let {{
     exec_output += PredOpExecute.subst(m5workendIop)
 
     m5timerstart_code = '''
-    PseudoInst::m5timerstart(xc->tcBase(), R0);
+    PseudoInst::m5timerstart(xc->tcBase(), machInst);
     '''
 
     m5timerstartIop = InstObjParams("m5timerstart", "M5timerstart", "PredOp",
@@ -592,7 +592,7 @@ let {{
     exec_output += PredOpExecute.subst(m5timerstartIop)
 
     m5timerstop_code = '''
-    PseudoInst::m5timerstop(xc->tcBase(), R0);
+    PseudoInst::m5timerstop(xc->tcBase(), machInst);
     '''
 
     m5timerstopIop = InstObjParams("m5timerstop", "M5timerstop", "PredOp",

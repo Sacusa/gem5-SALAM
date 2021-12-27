@@ -724,15 +724,17 @@ workend(ThreadContext *tc, uint64_t workid, uint64_t threadid)
 }
 
 void
-m5timerstart(ThreadContext *tc, uint32_t timer_id)
+m5timerstart(ThreadContext *tc, uint32_t inst)
 {
+    uint32_t timer_id = (inst >> 12) & 0x0F;
     DPRINTF(PseudoInst, "Start timer called for timer #%d\n", timer_id);
     tc->startTimer(timer_id);
 }
 
 void
-m5timerstop(ThreadContext *tc, uint32_t timer_id)
+m5timerstop(ThreadContext *tc, uint32_t inst)
 {
+    uint32_t timer_id = (inst >> 12) & 0x0F;
     DPRINTF(PseudoInst, "Stop timer called for timer #%d\n", timer_id);
     tc->stopTimer(timer_id);
 }
