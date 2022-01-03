@@ -135,7 +135,7 @@ def makeHWAcc(options, system):
             # Add the DMA engine
             offset = 0x20000000 + ((i+1) << 24) + (j << 20)
             dma_obj = NoncoherentDma(
-                    pio_addr=0x20000000 + ((i+1) << 24) + (j << 20),
+                    pio_addr=0x20000000 + ((i+1) << 24) + (j << 20) + 7,
                     pio_size=21, gic=gic, int_num=98)
             dma_obj.cluster_dma = system.acctest.local_bus.slave
             system.acctest._connect_dma(system, dma_obj);

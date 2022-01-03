@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifndef __M5_OPS__
+#define __M5_OPS__
+
 #define ENABLED 1
 #if defined(__arm__)
 static void m5_checkpoint(void)
@@ -90,4 +93,6 @@ static void m5_reset_stats(void)
 #else
 #undef ENABLED
 #define ENABLED 0
+#endif
+
 #endif
