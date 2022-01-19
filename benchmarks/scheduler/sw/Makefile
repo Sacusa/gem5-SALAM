@@ -34,7 +34,7 @@ include ../../common/Makefile
 
 TARGET = test_all_acc.elf test_forwarding.elf main.elf
 
-OBJS = ../../common/syscalls.o boot.o driver.o mem_manage.o runtime.o
+OBJS = ../../common/syscalls.o boot.o mem_manage.o runtime.o
 
 build : $(TARGET)
 

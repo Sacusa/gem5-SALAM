@@ -20,6 +20,7 @@
 #define MAX_DAGS            50
 #define MAX_NODES           500
 //#define VERIFY
+//#define TIME
 
 /**
  * Bookkeeping for accelerators
@@ -82,7 +83,7 @@ struct task_struct_t {
     int completed_parents;
     uint8_t producer_spm_part[MAX_ACC_ARGS];    // partition of the producer's
                                                 // output SPM to read from
-    acc_state_t *producer_acc[MAX_ACC_ARGS];    // producer accelerator
+    volatile acc_state_t *producer_acc[MAX_ACC_ARGS];   // producer accelerator
 };
 
 struct acc_state_t {
@@ -150,51 +151,6 @@ typedef struct {
     uint8_t *input;
     uint8_t *output;
 } isp_args;
-
-void init_task_struct(task_struct_t*);
-
-/**
- * Functions for running each accelerator
- */
-void run_accelerator(int, int, task_struct_t*, acc_state_t*);
-void run_canny_non_max(int, task_struct_t*, acc_state_t*);
-void run_convolution(int, task_struct_t*, acc_state_t*);
-void run_edge_tracking(int, task_struct_t*, acc_state_t*);
-void run_elem_matrix(int, task_struct_t*, acc_state_t*);
-void run_grayscale(int, task_struct_t*, acc_state_t*);
-void run_harris_non_max(int, task_struct_t*, acc_state_t*);
-void run_isp(int, task_struct_t*, acc_state_t*);
-
-/**
- * Functions for copying accelerator outputs
- */
-void finish_accelerator(int, int, task_struct_t*, acc_state_t*);
-void finish_canny_non_max(int, task_struct_t*, acc_state_t*);
-void finish_convolution(int, task_struct_t*, acc_state_t*);
-void finish_edge_tracking(int, task_struct_t*, acc_state_t*);
-void finish_elem_matrix(int, task_struct_t*, acc_state_t*);
-void finish_grayscale(int, task_struct_t*, acc_state_t*);
-void finish_harris_non_max(int, task_struct_t*, acc_state_t*);
-void finish_isp(int, task_struct_t*, acc_state_t*);
-
-/**
- * Drivers
- */
-void canny_non_max_driver(int, uint32_t, uint32_t, uint32_t, uint32_t,
-        uint32_t, uint32_t, acc_state_t*);
-void convolution_driver(int, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t,
-        uint32_t, uint8_t, uint32_t, uint32_t, uint32_t, acc_state_t*);
-void edge_tracking_driver(int, uint32_t, uint32_t, uint32_t, float, float,
-        uint32_t, uint32_t, acc_state_t*);
-void elem_matrix_driver(int, uint32_t, uint32_t, uint32_t, uint32_t, uint8_t,
-        uint8_t, uint8_t, uint32_t, uint32_t, uint32_t, uint32_t,
-        acc_state_t*);
-void grayscale_driver(int, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t,
-        acc_state_t*);
-void harris_non_max_driver(int, uint32_t, uint32_t, uint32_t, uint32_t,
-        uint32_t, acc_state_t*);
-void isp_driver(int, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t,
-        acc_state_t*);
 
 /**
  * The actual runtime

@@ -1,5 +1,5 @@
 #!/bin/bash
-FLAGS="HWACC,CommInterface,LLVMInterface,StreamDma,NoncoherentDma"
+FLAGS="HWACC,CommInterface,LLVMInterface,StreamDma,NoncoherentDma,TickTimer"
 BENCH=""
 DEBUG="false"
 PRINT_TO_FILE="false"
@@ -46,8 +46,9 @@ SYS_OPTS="--mem-size=4GB \
           --disk-image=$M5_PATH/baremetal/common/fake.iso \
           --machine-type=VExpress_GEM5_V1 \
           --dtb-file=none --bare-metal \
-          --cpu-type=DerivO3CPU"
-CACHE_OPTS="--caches --l2cache"
+          --cpu-type=ex5_LITTLE \
+          --cpu-clock=1.6GHz"
+CACHE_OPTS="--caches"
 
 OUTDIR=BM_ARM_OUT/${BENCH}_pipeline
 

@@ -4,7 +4,7 @@
 #include "../../common/m5ops.h"
 #include "runtime.h"
 
-#define VERBOSE
+//#define VERBOSE
 
 void add_canny_non_max();
 void canny_non_max_check_output(canny_non_max_args*);
@@ -32,8 +32,6 @@ int **run_queue_size;
 
 int main(void)
 {
-    m5_reset_stats();
-
     run_queue = (task_struct_t****)
         get_memory(NUM_ACCS * sizeof(task_struct_t***));
     run_queue_size = (int**) get_memory(NUM_ACCS * sizeof(int*));
@@ -61,11 +59,12 @@ int main(void)
     add_edge_tracking();
     add_elem_matrix();
     add_grayscale();
-    //uint8_t *expected = add_harris_non_max();
+    uint8_t *expected = add_harris_non_max();
     add_isp();
 
     runtime(run_queue, run_queue_size);
 
+#ifdef VERIFY
     canny_non_max_check_output((canny_non_max_args*)
             run_queue[ACC_CANNY_NON_MAX][0][0]->acc_args);
     convolution_check_output((convolution_args*)
@@ -76,14 +75,12 @@ int main(void)
             run_queue[ACC_ELEM_MATRIX][0][0]->acc_args);
     grayscale_check_output((grayscale_args*)
             run_queue[ACC_GRAYSCALE][0][0]->acc_args);
-    /*
     harris_non_max_check_output((harris_non_max_args*)
             run_queue[ACC_HARRIS_NON_MAX][0][0]->acc_args, expected);
-    */
     isp_check_output((isp_args*)
             run_queue[ACC_ISP][0][0]->acc_args);
+#endif
 
-    m5_dump_stats();
     m5_exit();
 }
 
@@ -91,7 +88,8 @@ void add_canny_non_max()
 {
     canny_non_max_args *args = (canny_non_max_args*)
         get_memory(sizeof(canny_non_max_args));
-    task_struct_t *req = (task_struct_t*) get_memory(sizeof(task_struct_t));
+    task_struct_t * volatile req = (task_struct_t*)
+        get_memory(sizeof(task_struct_t));
 
     args->hypotenuse = (float*)    get_memory(NUM_PIXELS * 4);
     args->theta      = (float*)    get_memory(NUM_PIXELS * 4);
@@ -208,7 +206,8 @@ void add_convolution()
 
     convolution_args *args = (convolution_args*)
         get_memory(sizeof(convolution_args));
-    task_struct_t *req = (task_struct_t*) get_memory(sizeof(task_struct_t));
+    task_struct_t * volatile req = (task_struct_t*)
+        get_memory(sizeof(task_struct_t));
 
     args->input  = (float*) get_memory(4 * NUM_PIXELS);
     args->output = (float*) get_memory(4 * NUM_PIXELS);
@@ -299,7 +298,8 @@ void add_edge_tracking()
 {
     edge_tracking_args *args = (edge_tracking_args*)
         get_memory(sizeof(edge_tracking_args));
-    task_struct_t *req = (task_struct_t*) get_memory(sizeof(task_struct_t));
+    task_struct_t * volatile req = (task_struct_t*)
+        get_memory(sizeof(task_struct_t));
 
     args->input  = (uint32_t*) get_memory(4 * NUM_PIXELS);
     args->output = (uint8_t*)  get_memory(NUM_PIXELS);
@@ -369,7 +369,8 @@ void add_elem_matrix()
 {
     elem_matrix_args *args = (elem_matrix_args*)
         get_memory(sizeof(elem_matrix_args));
-    task_struct_t *req = (task_struct_t*) get_memory(sizeof(task_struct_t));
+    task_struct_t * volatile req = (task_struct_t*)
+        get_memory(sizeof(task_struct_t));
 
     args->arg1   = (float*) get_memory(4 * NUM_PIXELS);
     args->arg2   = (float*) get_memory(4 * NUM_PIXELS);
@@ -424,7 +425,8 @@ void add_grayscale()
 {
     grayscale_args *args = (grayscale_args*)
         get_memory(sizeof(grayscale_args));
-    task_struct_t *req = (task_struct_t*) get_memory(sizeof(task_struct_t));
+    task_struct_t * volatile req = (task_struct_t*)
+        get_memory(sizeof(task_struct_t));
 
     args->input  = (uint8_t*) get_memory(3 * NUM_PIXELS);
     args->output = (float*)   get_memory(4 * NUM_PIXELS);
@@ -484,13 +486,12 @@ uint8_t *add_harris_non_max()
 {
     harris_non_max_args *args = (harris_non_max_args*)
         get_memory(sizeof(harris_non_max_args));
-    task_struct_t *req = (task_struct_t*) get_memory(sizeof(task_struct_t));
+    task_struct_t * volatile req = (task_struct_t*)
+        get_memory(sizeof(task_struct_t));
 
     args->input       = (float*)   get_memory(4 * NUM_PIXELS);
     args->output      = (uint8_t*) get_memory(NUM_PIXELS);
     uint8_t *expected = (uint8_t*) get_memory(NUM_PIXELS);
-
-    printf("HNM output address: %x\n", args->output);
 
     req->acc_id = ACC_HARRIS_NON_MAX;
     req->acc_args = (void*) args;
@@ -575,12 +576,11 @@ void harris_non_max_check_output(harris_non_max_args *args, uint8_t *expected)
 void add_isp()
 {
     isp_args *args = (isp_args*) get_memory(sizeof(isp_args));
-    task_struct_t *req = (task_struct_t*) get_memory(sizeof(task_struct_t));
+    task_struct_t * volatile req = (task_struct_t*)
+        get_memory(sizeof(task_struct_t));
 
     args->input  = (uint8_t*) get_memory((IMG_HEIGHT+2) * (IMG_WIDTH+2));
     args->output = (uint8_t*) get_memory(3 * NUM_PIXELS);
-
-    printf("ISP output address: %x\n", args->output);
 
     req->acc_id = ACC_ISP;
     req->acc_args = (void*) args;

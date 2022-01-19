@@ -64,7 +64,19 @@ _Reset:
 .equ kmio_irq_id,     44
 .equ uart0_irq_id,    37
 .equ rtc_irq_id,      36
-.equ top_dev_id,      68
+
+// interrupt number for accelerators and DMA engines
+.equ cnm0_irq_id,           64
+.equ convolution0_irq_id,   65
+.equ convolution1_irq_id,   66
+.equ edge_tracking0_irq_id, 67
+.equ elem_matrix0_irq_id,   68
+.equ elem_matrix1_irq_id,   69
+.equ elem_matrix2_irq_id,   70
+.equ elem_matrix3_irq_id,   71
+.equ grayscale0_irq_id,     72
+.equ hnm0_irq_id,           73
+.equ isp0_irq_id,           74
 
 //GIC_CPU_INTERFACE
 //.equ GIC_CPU_BASE,                  0x1f000100
@@ -119,13 +131,8 @@ config_gic_dist:
      */
 
     ldr r1, =GIC_Dist_Base + set_enable2    // r1 = Set-enable1 Reg Address
-    mov r2, #1
-    //IRQ ID - 32 => 5th bit = 1
-    lsl r2, r2, #4
-
-    ldr r3, [r1]    // read current register value
-    orr r3, r3, r2  // set the enable bit
-    str r3, [r1]    // store the new register value
+    ldr r2, =0xFFFFFFFF
+    str r2, [r1]
 
     /* Configure Interrupt Processor Taget
      * Reg offset  0x820     for ID32 − ID35
@@ -159,20 +166,99 @@ irq_handler:
 
     // Read the interrupt acknowledge register of the GIC_CPU_INTERFACE
     ldr r1, =GIC_CPU_BASE + GIC_CPU_Int_Ack_reg_offset
-    ldr r2, [r1]
+    ldr r4, [r1]
 
-irq_top:
-    cmp r2, #top_dev_id
-    bne irq_end  // if irq is not from top_dev
+cnm0_irq:
+    cmp r4, #cnm0_irq_id
+    bne convolution0_irq
+    mov r0, #0
+    mov r1, #0
+    bl isr
+    b irq_end
 
-    // Jump to C - must clear the timer interrupt!
-    //BL isr
-    ldr r2, = top_dev_id
+convolution0_irq:
+    cmp r4, #convolution0_irq_id
+    bne convolution1_irq
+    mov r0, #1
+    mov r1, #0
+    bl isr
+    b irq_end
+
+convolution1_irq:
+    cmp r4, #convolution1_irq_id
+    bne edge_tracking0_irq
+    mov r0, #1
+    mov r1, #1
+    bl isr
+    b irq_end
+
+edge_tracking0_irq:
+    cmp r4, #edge_tracking0_irq_id
+    bne elem_matrix0_irq
+    mov r0, #2
+    mov r1, #0
+    bl isr
+    b irq_end
+
+elem_matrix0_irq:
+    cmp r4, #elem_matrix0_irq_id
+    bne elem_matrix1_irq
+    mov r0, #3
+    mov r1, #0
+    bl isr
+    b irq_end
+
+elem_matrix1_irq:
+    cmp r4, #elem_matrix1_irq_id
+    bne elem_matrix2_irq
+    mov r0, #3
+    mov r1, #1
+    bl isr
+    b irq_end
+
+elem_matrix2_irq:
+    cmp r4, #elem_matrix2_irq_id
+    bne elem_matrix3_irq
+    mov r0, #3
+    mov r1, #2
+    bl isr
+    b irq_end
+
+elem_matrix3_irq:
+    cmp r4, #elem_matrix3_irq_id
+    bne grayscale0_irq
+    mov r0, #3
+    mov r1, #3
+    bl isr
+    b irq_end
+
+grayscale0_irq:
+    cmp r4, #grayscale0_irq_id
+    bne hnm0_irq
+    mov r0, #4
+    mov r1, #0
+    bl isr
+    b irq_end
+
+hnm0_irq:
+    cmp r4, #hnm0_irq_id
+    bne isp0_irq
+    mov r0, #5
+    mov r1, #0
+    bl isr
+    b irq_end
+
+isp0_irq:
+    cmp r4, #isp0_irq_id
+    bne irq_end
+    mov r0, #6
+    mov r1, #0
+    bl isr
 
 irq_end:
     // write the IRQ ID to the END_OF_INTERRUPT Register of GIC_CPU_INTERFACE
     ldr r1, =GIC_CPU_BASE + GIC_CPU_End_of_int_offset
-    str r2, [r1]
+    str r4, [r1]
 
     pop {r0-r7,lr}
     subs pc, lr, #4

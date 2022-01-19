@@ -112,6 +112,7 @@ def makeHWAcc(options, system):
     gic = system.realview.gic
 
     ################ Adding Devices to Cluster ################
+    dma_int_num = 64
     for i, accelerator in enumerate(accelerators):
         for j in range(acc_count[accelerator]):
             # Add the accelerator
@@ -136,10 +137,11 @@ def makeHWAcc(options, system):
             offset = 0x20000000 + ((i+1) << 24) + (j << 20)
             dma_obj = NoncoherentDma(
                     pio_addr=0x20000000 + ((i+1) << 24) + (j << 20) + 7,
-                    pio_size=21, gic=gic, int_num=98)
+                    pio_size=21, gic=gic, int_num=dma_int_num)
             dma_obj.cluster_dma = system.acctest.local_bus.slave
             system.acctest._connect_dma(system, dma_obj);
             setattr(system.acctest, acc + '_dma', dma_obj)
+            dma_int_num += 1
 
 def build_test_system(np):
     cmdline = cmd_line_template()
