@@ -88,6 +88,27 @@ _Reset:
 
 .global Reset_Handler
 Reset_Handler:
+    // Enable instruction and data caches in SCTLR
+    mrc p15, 0, r1, c1, c0, 0
+    mov r2, #1
+    orr r1, r1, r2, LSL #2      // Enable D-Cache
+    orr r1, r1, r2, LSL #12     // Enable I-Cache
+    orr r1, r1, r2, LSL #28     // Enable TEX remap
+    mcr p15, 0, r1, c1, c0, 0
+
+    // Mark memory as cacheable in NMRR
+    mrc p15, 0, r1, c10, c2, 1
+    mov r2, #1
+    orr r1, r1, r2              // IR0 = 1
+    orr r1, r1, r2, LSL #16     // OR0 = 1
+    mcr p15, 0, r1, c10, c2, 1
+
+    // Mark memory as normal (i.e. not device) in PRRR
+    mrc p15, 0, r1, c10, c2, 0
+    mov r2, #2
+    orr r1, r1, r2              // TR0 = 2
+    mcr p15, 0, r1, c10, c2, 0
+
     // Set up stack pointers for IRQ processor mode
     mov R1, #0b11010010 // interrupts masked, MODE = IRQ   IRQ | FIQ | 0 | Mode[4:0]
     msr CPSR, R1    // change to IRQ mode

@@ -91,9 +91,12 @@ void add_canny_non_max()
     task_struct_t * volatile req = (task_struct_t*)
         get_memory(sizeof(task_struct_t));
 
-    args->hypotenuse = (float*)    get_memory(NUM_PIXELS * 4);
-    args->theta      = (float*)    get_memory(NUM_PIXELS * 4);
-    args->output     = (uint32_t*) get_memory(NUM_PIXELS * 4);
+    args->hypotenuse = (float*)    get_memory_aligned(NUM_PIXELS * 4,
+            CACHELINE_SIZE);
+    args->theta      = (float*)    get_memory_aligned(NUM_PIXELS * 4,
+            CACHELINE_SIZE);
+    args->output     = (uint32_t*) get_memory_aligned(NUM_PIXELS * 4,
+            CACHELINE_SIZE);
 
     req->acc_id = ACC_CANNY_NON_MAX;
     req->acc_args = (void*) args;
@@ -209,9 +212,10 @@ void add_convolution()
     task_struct_t * volatile req = (task_struct_t*)
         get_memory(sizeof(task_struct_t));
 
-    args->input  = (float*) get_memory(4 * NUM_PIXELS);
-    args->output = (float*) get_memory(4 * NUM_PIXELS);
-    args->kernel = (float*) get_memory(4 * kern_height * kern_width);
+    args->input  = (float*) get_memory_aligned(4 * NUM_PIXELS, CACHELINE_SIZE);
+    args->output = (float*) get_memory_aligned(4 * NUM_PIXELS, CACHELINE_SIZE);
+    args->kernel = (float*) get_memory_aligned(4 * kern_height * kern_width,
+            CACHELINE_SIZE);
     args->kern_height = kern_height;
     args->kern_width = kern_width;
     args->mod_and_floor = 0;
@@ -301,8 +305,9 @@ void add_edge_tracking()
     task_struct_t * volatile req = (task_struct_t*)
         get_memory(sizeof(task_struct_t));
 
-    args->input  = (uint32_t*) get_memory(4 * NUM_PIXELS);
-    args->output = (uint8_t*)  get_memory(NUM_PIXELS);
+    args->input  = (uint32_t*) get_memory_aligned(4 * NUM_PIXELS,
+            CACHELINE_SIZE);
+    args->output = (uint8_t*)  get_memory_aligned(NUM_PIXELS, CACHELINE_SIZE);
     args->thr_weak_ratio = 0.5;
     args->thr_strong_ratio = 0.503;
 
@@ -372,9 +377,9 @@ void add_elem_matrix()
     task_struct_t * volatile req = (task_struct_t*)
         get_memory(sizeof(task_struct_t));
 
-    args->arg1   = (float*) get_memory(4 * NUM_PIXELS);
-    args->arg2   = (float*) get_memory(4 * NUM_PIXELS);
-    args->output = (float*) get_memory(4 * NUM_PIXELS);
+    args->arg1   = (float*) get_memory_aligned(4 * NUM_PIXELS, CACHELINE_SIZE);
+    args->arg2   = (float*) get_memory_aligned(4 * NUM_PIXELS, CACHELINE_SIZE);
+    args->output = (float*) get_memory_aligned(4 * NUM_PIXELS, CACHELINE_SIZE);
     args->is_arg2_scalar = 0;
     args->op = ADD;
     args->do_one_minus = 1;
@@ -428,8 +433,10 @@ void add_grayscale()
     task_struct_t * volatile req = (task_struct_t*)
         get_memory(sizeof(task_struct_t));
 
-    args->input  = (uint8_t*) get_memory(3 * NUM_PIXELS);
-    args->output = (float*)   get_memory(4 * NUM_PIXELS);
+    args->input  = (uint8_t*) get_memory_aligned(3 * NUM_PIXELS,
+            CACHELINE_SIZE);
+    args->output = (float*)   get_memory_aligned(4 * NUM_PIXELS,
+            CACHELINE_SIZE);
 
     req->acc_id = ACC_GRAYSCALE;
     req->acc_args = (void*) args;
@@ -489,9 +496,12 @@ uint8_t *add_harris_non_max()
     task_struct_t * volatile req = (task_struct_t*)
         get_memory(sizeof(task_struct_t));
 
-    args->input       = (float*)   get_memory(4 * NUM_PIXELS);
-    args->output      = (uint8_t*) get_memory(NUM_PIXELS);
-    uint8_t *expected = (uint8_t*) get_memory(NUM_PIXELS);
+    args->input       = (float*)   get_memory_aligned(4 * NUM_PIXELS,
+            CACHELINE_SIZE);
+    args->output      = (uint8_t*) get_memory_aligned(NUM_PIXELS,
+            CACHELINE_SIZE);
+    uint8_t *expected = (uint8_t*) get_memory_aligned(NUM_PIXELS,
+            CACHELINE_SIZE);
 
     req->acc_id = ACC_HARRIS_NON_MAX;
     req->acc_args = (void*) args;
@@ -579,8 +589,10 @@ void add_isp()
     task_struct_t * volatile req = (task_struct_t*)
         get_memory(sizeof(task_struct_t));
 
-    args->input  = (uint8_t*) get_memory((IMG_HEIGHT+2) * (IMG_WIDTH+2));
-    args->output = (uint8_t*) get_memory(3 * NUM_PIXELS);
+    args->input  = (uint8_t*) get_memory_aligned(
+            (IMG_HEIGHT+2) * (IMG_WIDTH+2), CACHELINE_SIZE);
+    args->output = (uint8_t*) get_memory_aligned(3 * NUM_PIXELS,
+            CACHELINE_SIZE);
 
     req->acc_id = ACC_ISP;
     req->acc_args = (void*) args;

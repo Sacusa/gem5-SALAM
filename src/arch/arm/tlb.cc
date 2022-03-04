@@ -1104,6 +1104,13 @@ TLB::translateFs(const RequestPtr &req, ThreadContext *tc, Mode mode,
             req->setFlags(Request::STRICT_ORDER);
         }
 
+        // data accesses to device MMRs should be uncacheable
+        if ((!req->isInstFetch()) && (vaddr >= 0x20000000) &&
+                (vaddr < 0x80000000)) {
+            req->setFlags(Request::UNCACHEABLE);
+            req->setFlags(Request::STRICT_ORDER);
+        }
+
         // Set memory attributes
         TlbEntry temp_te;
         temp_te.ns = !isSecure;

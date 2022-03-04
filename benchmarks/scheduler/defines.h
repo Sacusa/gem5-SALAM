@@ -127,6 +127,12 @@ enum operation {
 #define ISP0_MMR            0x2701c237
 
 // Memory management
+void *get_memory_aligned(uint32_t, uint32_t);
 void *get_memory(uint32_t);
+
+// all sizes are in bytes
+#define CACHELINE_SIZE 64
+#define L1D_CACHE_SIZE 32768
+#define L1D_CACHE_SETS (L1D_CACHE_SIZE / CACHELINE_SIZE)
 
 #endif

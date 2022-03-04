@@ -1,6 +1,20 @@
 #include "../../common/m5ops.h"
 #include "runtime.h"
 
+uint8_t *flush_data = NULL;
+
+void __attribute__ ((optimize(0))) dcache_flush_all()
+{
+    if (flush_data == NULL) {
+        // get cacheline size aligned memory for flush data
+        flush_data = get_memory_aligned(L1D_CACHE_SIZE, CACHELINE_SIZE);
+    }
+
+    for (int i = 0; i < L1D_CACHE_SETS; i++) {
+        uint8_t dummy_read = flush_data[i * CACHELINE_SIZE];
+    }
+}
+
 inline void canny_non_max_driver(
         int device_id, uint32_t img_height, uint32_t img_width,
         uint32_t hypo_addr, uint32_t theta_addr, uint32_t output_addr,
@@ -41,6 +55,9 @@ inline void canny_non_max_driver(
 #endif
 
     if (acc->status == ACC_STATUS_IDLE) {
+        // need to flush cache for the first transfer
+        dcache_flush_all();
+
         // DMA transfer for hypotenuse
         *DmaRdAddr  = hypo_addr;
         *DmaWrAddr  = hypo_spm_addr;
@@ -142,6 +159,7 @@ inline void convolution_driver(
 
         // DMA transfer for input data
         if (input_addr != 0) {
+            dcache_flush_all();
             *DmaRdAddr  = input_addr;
             *DmaWrAddr  = input_spm_addr;
             *DmaCopyLen = data_size;
@@ -158,6 +176,11 @@ inline void convolution_driver(
     }
 
     if (acc->status == ACC_STATUS_DMA_ARG1) {
+        // need to flush cache if not done before
+        if (input_addr == 0) {
+            dcache_flush_all();
+        }
+
         // DMA transfer for kernel
         *DmaRdAddr  = kernel_addr;
         *DmaWrAddr  = kernel_spm_addr;
@@ -240,6 +263,7 @@ inline void edge_tracking_driver(
 
     if (acc->status == ACC_STATUS_IDLE) {
         // DMA transfer for input data
+        dcache_flush_all();
         *DmaRdAddr  = input_addr;
         *DmaWrAddr  = input_spm_addr;
         *DmaCopyLen = num_elems * 4;
@@ -322,6 +346,7 @@ inline void elem_matrix_driver(
 
         // DMA transfer for arg1
         if (arg1_addr != 0) {
+            dcache_flush_all();
             *DmaRdAddr  = arg1_addr;
             *DmaWrAddr  = arg1_spm_addr;
             *DmaCopyLen = data_size;
@@ -342,6 +367,10 @@ inline void elem_matrix_driver(
 
         // DMA transfer for arg2
         if (arg2_addr != 0) {
+            // need to flush cache if not done before
+            if (arg1_addr == 0) {
+                dcache_flush_all();
+            }
             *DmaRdAddr = arg2_addr;
             *DmaWrAddr = arg2_spm_addr;
 
@@ -427,6 +456,7 @@ inline void grayscale_driver(
 
     if (acc->status == ACC_STATUS_IDLE) {
         // DMA transfer for input data
+        dcache_flush_all();
         *DmaRdAddr  = input_addr;
         *DmaWrAddr  = input_spm_addr;
         *DmaCopyLen = num_elems * 3;
@@ -497,6 +527,7 @@ inline void harris_non_max_driver(
 
     if (acc->status == ACC_STATUS_IDLE) {
         // DMA transfer for input data
+        dcache_flush_all();
         *DmaRdAddr  = input_addr;
         *DmaWrAddr  = input_spm_addr;
         *DmaCopyLen = img_height * img_width * 4;
@@ -568,6 +599,7 @@ inline void isp_driver(int device_id,
 
     if (acc->status == ACC_STATUS_IDLE) {
         // DMA transfer for input data
+        dcache_flush_all();
         *DmaRdAddr  = input_addr;
         *DmaWrAddr  = input_spm_addr;
         *DmaCopyLen = (img_height + 2) * (img_width + 2);

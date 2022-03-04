@@ -5,19 +5,20 @@
 
 static uint32_t curr_address = 0x85000000;
 
-void *get_memory(uint32_t num_bytes)
+void *get_memory_aligned(uint32_t num_bytes, uint32_t align)
 {
-    void *retval = (void*)curr_address;
-    const uint32_t align = 8;
-    uint32_t req_num_bytes = num_bytes;
+    // align the address
+    if ((curr_address % align) != 0) {
+        curr_address += align - (curr_address % align);
+    }
 
-    // allocations are made in multiples of 8-bytes for maximum compatibility
-    num_bytes += ((num_bytes % align) == 0) ? 0 :
-        (align - (num_bytes % align));
+    void *retval = (void*)curr_address;
     curr_address += num_bytes;
 
-    //printf("mem_manage: size=[%d], allocated=[%d], new_address=[%x]\n",
-    //        req_num_bytes, num_bytes, curr_address);
-
     return retval;
+}
+
+void *get_memory(uint32_t num_bytes)
+{
+    return get_memory_aligned(num_bytes, 8);
 }
