@@ -159,6 +159,10 @@ def addNoISAOptions(parser):
              "Direct parameters of the root object are not accessible, "
              "only parameters of its children.")
 
+    # VANS options
+    parser.add_option("--vans-config-path", type="string",
+                      dest="vans_config_path", help="VANS config dir path")
+
 # Add hardware accelerator options for gem5-SALAM
 def addHWAccOptions(parser):
     parser.add_option("--acc_cache", action="store_true")

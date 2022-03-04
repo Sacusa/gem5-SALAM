@@ -166,6 +166,14 @@ def config_mem(options, system):
         for i in range(nbr_mem_ctrls):
             mem_ctrl = create_mem_ctrl(cls, r, i, nbr_mem_ctrls, intlv_bits,
                                        intlv_size)
+            # Add VANS
+            if issubclass(cls, m5.objects.VANS):
+                opt_vans_config_path = getattr(options, "vans_config_path",
+                                               None)
+                if opt_vans_config_path is None:
+                    fatal("--mem-type=vans require --vans-config-path option")
+                mem_ctrl.config_path = opt_vans_config_path
+
             # Set the number of ranks based on the command-line
             # options if it was explicitly set
             if issubclass(cls, m5.objects.DRAMCtrl) and opt_mem_ranks:
