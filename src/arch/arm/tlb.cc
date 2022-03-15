@@ -1105,7 +1105,7 @@ TLB::translateFs(const RequestPtr &req, ThreadContext *tc, Mode mode,
         }
 
         // data accesses to device MMRs should be uncacheable
-        if ((!req->isInstFetch()) && (vaddr >= 0x20000000) &&
+        if ((!req->isInstFetch()) && (vaddr >= 0x10000000) &&
                 (vaddr < 0x80000000)) {
             req->setFlags(Request::UNCACHEABLE);
             req->setFlags(Request::STRICT_ORDER);
