@@ -36,22 +36,20 @@
 .section INTERRUPT_VECTOR, "x"
 .global _Reset
 _Reset:
-    B Reset_Handler    /* Reset */
-    B .                /* Undefined */
-    B .                /* SWI */
-    B .                /* Prefetch Abort */
-    B .                /* Data Abort */
-    B .                /* reserved */
-    B irq_handler      /* IRQ */
-    B .                /* FIQ */
+    B Reset_Handler         /* Reset */
+    B .                     /* Undefined */
+    B .                     /* SWI */
+    B .                     /* Prefetch Abort */
+    B Data_Abort_Handler    /* Data Abort */
+    B .                     /* reserved */
+    B irq_handler           /* IRQ */
+    B .                     /* FIQ */
 
 
-.equ Len_Stack,        0x1000;  // 4kB of stack memory
-.equ Len_IRQ_Stack,    0x1000;  // 4kB of stack memory for IRQ Mode
-//.equ stack_base,      0x18000   // stack_base defined in Linker Script
+.equ Len_Stack,        0x100000;  // 1MB of stack memory
+.equ Len_IRQ_Stack,    0x100000;  // 1MB of stack memory for IRQ Mode
 
 //GIC_Distributor
-//.equ GIC_Dist_Base,     0x1f001000
 .equ GIC_Dist_Base,		0x2c001000
 
 //Register offsets
@@ -59,7 +57,6 @@ _Reset:
 .equ set_enable2,       0x108
 
 //Example definitions
-//.equ timer_irq_id,      36   // 36 <64 => set_enable1 Reg
 .equ timer_irq_id,    131   // 36 <64 => set_enable1 Reg
 .equ kmio_irq_id,     44
 .equ uart0_irq_id,    37
@@ -79,7 +76,6 @@ _Reset:
 .equ isp0_irq_id,           74
 
 //GIC_CPU_INTERFACE
-//.equ GIC_CPU_BASE,                  0x1f000100
 .equ GIC_CPU_BASE,                  0x2c002000
 .equ GIC_CPU_mask_reg_offset,       0x04
 .equ GIC_CPU_Int_Ack_reg_offset,    0x0C
@@ -137,6 +133,10 @@ Reset_Handler:
     bl main
     B .
 
+.global Data_Abort_Handler
+Data_Abort_Handler:
+    sub r0, r14, #8
+    bl data_abort_handler
 
 .global config_gic_dist
 config_gic_dist:
@@ -183,7 +183,13 @@ config_gic_cpu_interface:
 // IRQ Handler that calls the ISR function in C
 .global irq_handler
 irq_handler:
-    push {r0-r7,lr}
+    push {r0-r4,lr}
+
+    // Disable interrupts
+    // Need to do this because the interrupt handler is not reentrant
+    mrs r1, CPSR
+    orr r1, r1, #0x80
+    msr CPSR, r1
 
     // Read the interrupt acknowledge register of the GIC_CPU_INTERFACE
     ldr r1, =GIC_CPU_BASE + GIC_CPU_Int_Ack_reg_offset
@@ -281,5 +287,8 @@ irq_end:
     ldr r1, =GIC_CPU_BASE + GIC_CPU_End_of_int_offset
     str r4, [r1]
 
-    pop {r0-r7,lr}
+    // Don't need to enable interrupts again since restoring CPSR after the
+    // interrupt ends will enable them automatically
+
+    pop {r0-r4,lr}
     subs pc, lr, #4

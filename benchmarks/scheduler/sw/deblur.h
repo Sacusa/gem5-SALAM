@@ -39,10 +39,10 @@ void deblur_init_img(deblur_data_t *img)
 {
     int size = NUM_PIXELS * 4;
 
-    img->conv_psf      = (float*) get_memory(size);
-    img->div_ut_psf    = (float*) get_memory(size);
-    img->conv_psf_flip = (float*) get_memory(size);
-    img->estimate      = (float*) get_memory(size);
+    img->conv_psf      = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->div_ut_psf    = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->conv_psf_flip = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->estimate      = (float*) get_memory_aligned(size, CACHELINE_SIZE);
 
     for (int i = 0; i < NUM_PIXELS; i++) {
         img->estimate[i] = 0.5;
@@ -54,8 +54,10 @@ void deblur_process_raw(deblur_data_t *img, task_struct_t **nodes)
     task_struct_t *task = (task_struct_t*) get_memory(sizeof(task_struct_t));
     isp_args *args = (isp_args*) get_memory(sizeof(isp_args));
 
-    img->raw_img = (uint8_t*) get_memory((IMG_HEIGHT+2) * (IMG_WIDTH+2));
-    img->isp_img = (uint8_t*) get_memory(NUM_PIXELS * 3);
+    img->raw_img = (uint8_t*) get_memory_aligned(
+            (IMG_HEIGHT+2) * (IMG_WIDTH+2), CACHELINE_SIZE);
+    img->isp_img = (uint8_t*) get_memory_aligned(NUM_PIXELS * 3,
+            CACHELINE_SIZE);
 
     args->input = img->raw_img;
     args->output = img->isp_img;
@@ -80,7 +82,8 @@ void deblur_convert_to_grayscale(deblur_data_t *img, task_struct_t **nodes,
     grayscale_args *args = (grayscale_args*)
         get_memory(sizeof(grayscale_args));
 
-    img->input_img = (float*) get_memory(NUM_PIXELS * 4);
+    img->input_img = (float*) get_memory_aligned(NUM_PIXELS * 4,
+            CACHELINE_SIZE);
 
     args->input = img->isp_img;
     args->output = img->input_img;
@@ -249,7 +252,7 @@ void deblur_run_mult_psf_flip(deblur_data_t *img, bool is_first, bool has_child,
 
 void init_deblur()
 {
-    deblur_psf = (float*) get_memory(100);
+    deblur_psf = (float*) get_memory_aligned(100, CACHELINE_SIZE);
     deblur_psf[0]  = 0.00291502; deblur_psf[1]  = 0.01306423;
     deblur_psf[2]  = 0.02153928; deblur_psf[3]  = 0.01306423;
     deblur_psf[4]  = 0.00291502;
@@ -266,7 +269,7 @@ void init_deblur()
     deblur_psf[22] = 0.02153928; deblur_psf[23] = 0.01306423;
     deblur_psf[24] = 0.00291502;
 
-    deblur_psf_flip = (float*) get_memory(100);
+    deblur_psf_flip = (float*) get_memory_aligned(100, CACHELINE_SIZE);
     deblur_psf_flip[0]  = 0.00291502; deblur_psf_flip[1]  = 0.01306423;
     deblur_psf_flip[2]  = 0.02153928; deblur_psf_flip[3]  = 0.01306423;
     deblur_psf_flip[4]  = 0.00291502;
@@ -284,7 +287,8 @@ void init_deblur()
     deblur_psf_flip[24] = 0.00291502;
 
 #ifdef VERIFY
-    deblur_isp_output = (uint8_t*) get_memory(NUM_PIXELS * 3);
+    deblur_isp_output = (uint8_t*) get_memory_aligned(NUM_PIXELS * 3,
+            CACHELINE_SIZE);
 
     for (int i = 0; i < (NUM_PIXELS * 3); i++) {
         deblur_isp_output[i] = i % 256;

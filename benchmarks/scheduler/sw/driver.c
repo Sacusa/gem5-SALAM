@@ -1,17 +1,25 @@
 #include "../../common/m5ops.h"
 #include "runtime.h"
 
-uint8_t *flush_data = NULL;
-
-void __attribute__ ((optimize(0))) dcache_flush_all()
+inline void dcache_flush(uint32_t addr, uint32_t num_bytes)
 {
-    if (flush_data == NULL) {
-        // get cacheline size aligned memory for flush data
-        flush_data = get_memory_aligned(L1D_CACHE_SIZE, CACHELINE_SIZE);
+    // only flush lines in the cacheable region
+    // we assume here that the data would NOT be spread across cacheable and
+    // uncacheable regions, so it is okay to just check the start address
+    if (addr < UNCACHEABLE_END) {
+        return;
     }
 
-    for (int i = 0; i < L1D_CACHE_SETS; i++) {
-        uint8_t dummy_read = flush_data[i * CACHELINE_SIZE];
+    uint32_t num_lines = num_bytes / CACHELINE_SIZE;
+    if (num_lines % CACHELINE_SIZE) {
+        num_lines += 1;
+    }
+
+    for (int i = 0; i < num_lines; i++) {
+        __asm__ ("mcr  p15, 0, %[addr], c7, c14, 1"
+                : /* no outputs */
+                : [addr] "r" (addr + (i * CACHELINE_SIZE))
+                : /* no clobbers */);
     }
 }
 
@@ -55,10 +63,9 @@ inline void canny_non_max_driver(
 #endif
 
     if (acc->status == ACC_STATUS_IDLE) {
-        // need to flush cache for the first transfer
-        dcache_flush_all();
-
         // DMA transfer for hypotenuse
+        dcache_flush(hypo_addr, data_size);
+
         *DmaRdAddr  = hypo_addr;
         *DmaWrAddr  = hypo_spm_addr;
         *DmaCopyLen = data_size;
@@ -73,6 +80,8 @@ inline void canny_non_max_driver(
     }
     else if (acc->status == ACC_STATUS_DMA_ARG1) {
         // DMA transfer for theta
+        dcache_flush(theta_addr, data_size);
+
         *DmaRdAddr  = theta_addr;
         *DmaWrAddr  = theta_spm_addr;
         *DmaCopyLen = data_size;
@@ -100,6 +109,8 @@ inline void canny_non_max_driver(
     }
     else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output
+        dcache_flush(output_addr, data_size);
+
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
         *DmaCopyLen = data_size;
@@ -159,7 +170,8 @@ inline void convolution_driver(
 
         // DMA transfer for input data
         if (input_addr != 0) {
-            dcache_flush_all();
+            dcache_flush(input_addr, data_size);
+
             *DmaRdAddr  = input_addr;
             *DmaWrAddr  = input_spm_addr;
             *DmaCopyLen = data_size;
@@ -176,15 +188,13 @@ inline void convolution_driver(
     }
 
     if (acc->status == ACC_STATUS_DMA_ARG1) {
-        // need to flush cache if not done before
-        if (input_addr == 0) {
-            dcache_flush_all();
-        }
-
         // DMA transfer for kernel
+        uint32_t data_size = kern_height * kern_width * 4;
+        dcache_flush(kernel_addr, data_size);
+
         *DmaRdAddr  = kernel_addr;
         *DmaWrAddr  = kernel_spm_addr;
-        *DmaCopyLen = kern_height * kern_width * 4;
+        *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
 #ifdef TIME
@@ -214,9 +224,12 @@ inline void convolution_driver(
     }
     else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output data
+        uint32_t data_size = img_height * img_width * 4;
+        dcache_flush(output_addr, data_size);
+
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
-        *DmaCopyLen = img_height * img_width * 4;
+        *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
 #ifdef TIME
@@ -263,10 +276,12 @@ inline void edge_tracking_driver(
 
     if (acc->status == ACC_STATUS_IDLE) {
         // DMA transfer for input data
-        dcache_flush_all();
+        uint32_t data_size = num_elems * 4;
+        dcache_flush(input_addr, data_size);
+
         *DmaRdAddr  = input_addr;
         *DmaWrAddr  = input_spm_addr;
-        *DmaCopyLen = num_elems * 4;
+        *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
 #ifdef TIME
@@ -294,6 +309,8 @@ inline void edge_tracking_driver(
     }
     else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output data
+        dcache_flush(output_addr, num_elems);
+
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
         *DmaCopyLen = num_elems;
@@ -346,7 +363,8 @@ inline void elem_matrix_driver(
 
         // DMA transfer for arg1
         if (arg1_addr != 0) {
-            dcache_flush_all();
+            dcache_flush(arg1_addr, data_size);
+
             *DmaRdAddr  = arg1_addr;
             *DmaWrAddr  = arg1_spm_addr;
             *DmaCopyLen = data_size;
@@ -367,19 +385,15 @@ inline void elem_matrix_driver(
 
         // DMA transfer for arg2
         if (arg2_addr != 0) {
-            // need to flush cache if not done before
-            if (arg1_addr == 0) {
-                dcache_flush_all();
+            if (is_arg2_scalar) {
+                data_size = 4;
             }
+
+            dcache_flush(arg2_addr, data_size);
+
             *DmaRdAddr = arg2_addr;
             *DmaWrAddr = arg2_spm_addr;
-
-            if (is_arg2_scalar) {
-                *DmaCopyLen = 4;
-            } else {
-                *DmaCopyLen = data_size;
-            }
-
+            *DmaCopyLen = data_size;
             *DmaFlags = DEV_INIT;
 
 #ifdef TIME
@@ -412,6 +426,8 @@ inline void elem_matrix_driver(
     }
     else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output
+        dcache_flush(output_addr, data_size);
+
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
         *DmaCopyLen = data_size;
@@ -456,10 +472,12 @@ inline void grayscale_driver(
 
     if (acc->status == ACC_STATUS_IDLE) {
         // DMA transfer for input data
-        dcache_flush_all();
+        uint32_t data_size = num_elems * 3;
+        dcache_flush(input_addr, data_size);
+
         *DmaRdAddr  = input_addr;
         *DmaWrAddr  = input_spm_addr;
-        *DmaCopyLen = num_elems * 3;
+        *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
 #ifdef TIME
@@ -484,9 +502,12 @@ inline void grayscale_driver(
     }
     else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output data
+        uint32_t data_size = num_elems * 4;
+        dcache_flush(output_addr, data_size);
+
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
-        *DmaCopyLen = num_elems * 4;
+        *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
 #ifdef TIME
@@ -527,10 +548,12 @@ inline void harris_non_max_driver(
 
     if (acc->status == ACC_STATUS_IDLE) {
         // DMA transfer for input data
-        dcache_flush_all();
+        uint32_t data_size = img_height * img_width * 4;
+        dcache_flush(input_addr, data_size);
+
         *DmaRdAddr  = input_addr;
         *DmaWrAddr  = input_spm_addr;
-        *DmaCopyLen = img_height * img_width * 4;
+        *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
 #ifdef TIME
@@ -556,9 +579,12 @@ inline void harris_non_max_driver(
     }
     else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output data
+        uint32_t data_size = img_height * img_width;
+        dcache_flush(output_addr, data_size);
+
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
-        *DmaCopyLen = img_height * img_width;
+        *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
 #ifdef TIME
@@ -599,10 +625,12 @@ inline void isp_driver(int device_id,
 
     if (acc->status == ACC_STATUS_IDLE) {
         // DMA transfer for input data
-        dcache_flush_all();
+        uint32_t data_size = (img_height + 2) * (img_width + 2);
+        dcache_flush(input_addr, data_size);
+
         *DmaRdAddr  = input_addr;
         *DmaWrAddr  = input_spm_addr;
-        *DmaCopyLen = (img_height + 2) * (img_width + 2);
+        *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
 #ifdef TIME
@@ -628,9 +656,12 @@ inline void isp_driver(int device_id,
     }
     else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output data
+        uint32_t data_size = img_height * img_width * 3;
+        dcache_flush(output_addr, data_size);
+
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
-        *DmaCopyLen = img_height * img_width * 3;
+        *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
 #ifdef TIME

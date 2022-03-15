@@ -3,7 +3,7 @@
 
 #include "../defines.h"
 
-static uint32_t curr_address = 0x85000000;
+static uint32_t curr_address = 0x82000000;
 
 void *get_memory_aligned(uint32_t num_bytes, uint32_t align)
 {
@@ -12,7 +12,14 @@ void *get_memory_aligned(uint32_t num_bytes, uint32_t align)
         curr_address += align - (curr_address % align);
     }
 
-    void *retval = (void*)curr_address;
+    // align the number of bytes
+    // this is necessary to ensure that, for instance, future allocations
+    // don't share the cacheline with CACHELINE_SIZE aligned allocations prior
+    if ((num_bytes % align) != 0) {
+        num_bytes += align - (num_bytes % align);
+    }
+
+    void *retval = (void*) curr_address;
     curr_address += num_bytes;
 
     return retval;

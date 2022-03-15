@@ -131,8 +131,9 @@ void *get_memory_aligned(uint32_t, uint32_t);
 void *get_memory(uint32_t);
 
 // all sizes are in bytes
-#define CACHELINE_SIZE 64
-#define L1D_CACHE_SIZE 32768
-#define L1D_CACHE_SETS (L1D_CACHE_SIZE / CACHELINE_SIZE)
+#define CACHELINE_SIZE      64
+#define L1D_CACHE_SIZE      32768
+#define L1D_CACHE_SETS      (L1D_CACHE_SIZE / CACHELINE_SIZE)
+#define UNCACHEABLE_END     0x80000000    // exclusive
 
 #endif

@@ -1,9 +1,9 @@
 #ifndef _SCHEDULER_H_
 #define _SCHEDULER_H_
 
-#include <assert.h>
 #include <limits.h>
 #include <math.h>
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -156,5 +156,10 @@ typedef struct {
  * The actual runtime
  */
 void runtime(task_struct_t****, int**);
+
+// helper methods
+void assertf(bool, const char*, ...);
+void enable_interrupts();
+void disable_interrupts();
 
 #endif /* _SCHEDULER_H_ */

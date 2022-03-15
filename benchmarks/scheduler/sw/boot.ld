@@ -49,7 +49,7 @@ SECTIONS
 	.bss : { *(.bss COMMON) }
 	. = ALIGN(8);
 	stack_base = .;
-	. = . + 0x1000; /* 4kB of stack memory*/
-	. = . + 0x1000; /* 4kB of stack memory for IRQ*/
+	. = . + 0x100000;   /* 1MB of stack memory*/
+	. = . + 0x100000;   /* 1MB of stack memory for IRQ*/
 	PROVIDE (end = .)   ;
 }

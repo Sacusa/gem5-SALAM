@@ -41,8 +41,10 @@ void canny_process_raw(canny_data_t *img, task_struct_t **nodes)
     task_struct_t *task = (task_struct_t*) get_memory(sizeof(task_struct_t));
     isp_args *args = (isp_args*) get_memory(sizeof(isp_args));
 
-    img->raw_img = (uint8_t*) get_memory((IMG_HEIGHT+2) * (IMG_WIDTH+2));
-    img->isp_img = (uint8_t*) get_memory(NUM_PIXELS * 3);
+    img->raw_img = (uint8_t*) get_memory_aligned(
+            (IMG_HEIGHT+2) * (IMG_WIDTH+2), CACHELINE_SIZE);
+    img->isp_img = (uint8_t*) get_memory_aligned(NUM_PIXELS * 3,
+            CACHELINE_SIZE);
 
     args->input = img->raw_img;
     args->output = img->isp_img;
@@ -66,7 +68,8 @@ void canny_convert_to_grayscale(canny_data_t *img, task_struct_t **nodes)
     grayscale_args *args = (grayscale_args*)
         get_memory(sizeof(grayscale_args));
 
-    img->grayscale_img = (float*) get_memory(NUM_PIXELS*4);
+    img->grayscale_img = (float*) get_memory_aligned(NUM_PIXELS * 4,
+            CACHELINE_SIZE);
 
     args->input = img->isp_img;
     args->output = img->grayscale_img;
@@ -99,8 +102,9 @@ void canny_noise_reduction(canny_data_t *img, task_struct_t **nodes)
     convolution_args *args = (convolution_args*)
         get_memory(sizeof(convolution_args));
 
-    img->gauss_kernel = (float*) get_memory(100);
-    img->denoise_img = (float*) get_memory(NUM_PIXELS * 4);
+    img->gauss_kernel = (float*) get_memory_aligned(100, CACHELINE_SIZE);
+    img->denoise_img = (float*) get_memory_aligned(NUM_PIXELS * 4,
+            CACHELINE_SIZE);
 
     img->gauss_kernel[0]  = 0.00291502; img->gauss_kernel[1]  = 0.01306423;
     img->gauss_kernel[2]  = 0.02153928; img->gauss_kernel[3]  = 0.01306423;
@@ -156,15 +160,15 @@ void canny_gradient_calculation(canny_data_t *img, task_struct_t **nodes)
         em_args[i] = (elem_matrix_args*) get_memory(sizeof(elem_matrix_args));
     }
 
-    img->K_x      = (float*) get_memory(36);
-    img->K_y      = (float*) get_memory(36);
-    img->I_x      = (float*) get_memory(size);
-    img->I_y      = (float*) get_memory(size);
-    img->I_xx     = (float*) get_memory(size);
-    img->I_yy     = (float*) get_memory(size);
-    img->I_xx_yy  = (float*) get_memory(size);
-    img->gradient = (float*) get_memory(size);
-    img->theta    = (float*) get_memory(size);
+    img->K_x      = (float*) get_memory_aligned(36, CACHELINE_SIZE);
+    img->K_y      = (float*) get_memory_aligned(36, CACHELINE_SIZE);
+    img->I_x      = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->I_y      = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->I_xx     = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->I_yy     = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->I_xx_yy  = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->gradient = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->theta    = (float*) get_memory_aligned(size, CACHELINE_SIZE);
 
     img->K_x[0] = -1; img->K_x[1] = 0; img->K_x[2] = 1;
     img->K_x[3] = -2; img->K_x[4] = 0; img->K_x[5] = 2;
@@ -282,7 +286,8 @@ void canny_non_max_suppression(canny_data_t *img, task_struct_t **nodes)
     canny_non_max_args *args = (canny_non_max_args*)
         get_memory(sizeof(canny_non_max_args));
 
-    img->max_values = (uint32_t*) get_memory(NUM_PIXELS * 4);
+    img->max_values = (uint32_t*) get_memory_aligned(NUM_PIXELS * 4,
+            CACHELINE_SIZE);
 
     args->hypotenuse = img->gradient;
     args->theta = img->theta;
@@ -311,7 +316,7 @@ void canny_thr_and_edge_tracking(canny_data_t *img, task_struct_t **nodes)
     edge_tracking_args *args = (edge_tracking_args*)
         get_memory(sizeof(edge_tracking_args));
 
-    img->final_img = (uint8_t*) get_memory(NUM_PIXELS);
+    img->final_img = (uint8_t*) get_memory_aligned(NUM_PIXELS, CACHELINE_SIZE);
 
     args->input = img->max_values;
     args->thr_strong_ratio = 0.5;
@@ -334,7 +339,8 @@ void canny_thr_and_edge_tracking(canny_data_t *img, task_struct_t **nodes)
 void init_canny()
 {
 #ifdef VERIFY
-    canny_isp_output = (uint8_t*) get_memory(NUM_PIXELS * 3);
+    canny_isp_output = (uint8_t*) get_memory_aligned(NUM_PIXELS * 3,
+            CACHELINE_SIZE);
 
     for (int i = 0; i < (NUM_PIXELS * 3); i++) {
         canny_isp_output[i] = i % 256;

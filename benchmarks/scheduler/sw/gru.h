@@ -9,7 +9,6 @@
 
 typedef struct {
     float data_input[NUM_PIXELS];
-    float *hidden_state_input;
     float cell_state[NUM_PIXELS];
 
     // Update gate
@@ -32,6 +31,10 @@ typedef struct {
     // Final cell output
     float ug_rg_mult[NUM_PIXELS];
     float cell_output[NUM_PIXELS];
+
+    // Need to put this here to make sure rest of the struct members are
+    // cache-aligned
+    float *hidden_state_input;
 } gru_cell_data_t;
 
 float *gru_ug_weight;
@@ -42,15 +45,16 @@ float *gru_rg_weight2;
 float *gru_rg_bias2;
 task_struct_t *gru_retval[5];
 
-void gru_cell_init(gru_cell_data_t *cell, task_struct_t **nodes, int node_index,
-        int input_seed, bool is_first)
+void gru_cell_init(gru_cell_data_t *cell, task_struct_t **nodes,
+        int node_index, int input_seed, bool is_first)
 {
     task_struct_t *task = (task_struct_t*) get_memory(sizeof(task_struct_t));
     elem_matrix_args *args = (elem_matrix_args*)
         get_memory(sizeof(elem_matrix_args));
 
     if (is_first) {
-        cell->hidden_state_input = (float*) get_memory(NUM_PIXELS * 4);
+        cell->hidden_state_input = (float*) get_memory_aligned(NUM_PIXELS * 4,
+                CACHELINE_SIZE);
     }
     else {
         cell->hidden_state_input = (float*)
@@ -367,12 +371,12 @@ void init_gru()
 {
     int size = NUM_PIXELS * 4;
 
-    gru_ug_weight  = (float*) get_memory(size);
-    gru_ug_bias    = (float*) get_memory(size);
-    gru_rg_weight1 = (float*) get_memory(size);
-    gru_rg_bias1   = (float*) get_memory(size);
-    gru_rg_weight2 = (float*) get_memory(size);
-    gru_rg_bias2   = (float*) get_memory(size);
+    gru_ug_weight  = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    gru_ug_bias    = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    gru_rg_weight1 = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    gru_rg_bias1   = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    gru_rg_weight2 = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    gru_rg_bias2   = (float*) get_memory_aligned(size, CACHELINE_SIZE);
 
 #ifdef VERIFY
     // the weight matter only if we are verifying the output
@@ -392,24 +396,20 @@ void add_gru_dag(task_struct_t ***nodes, int num_frames, int seq_length)
 {
     const int nodes_per_cell = 15;
 
-    gru_cell_data_t *cells = (gru_cell_data_t*)
-        get_memory(num_frames * seq_length * sizeof(gru_cell_data_t));
-
     for (int i = 0; i < num_frames; i++) {
         for (int j = 0; j < seq_length; j++) {
             int cell_index = (i * seq_length) + j;
             int node_index = j * nodes_per_cell;
+            gru_cell_data_t *cell = (gru_cell_data_t*) get_memory_aligned(
+                    sizeof(gru_cell_data_t), CACHELINE_SIZE);
 
-            gru_cell_init(&(cells[cell_index]), nodes[i], node_index,
-                    cell_index, j == 0);
+            gru_cell_init(cell, nodes[i], node_index, cell_index, j == 0);
 
-            gru_update_gate(&(cells[cell_index]), nodes[i], node_index + 1,
-                    j == 0);
+            gru_update_gate(cell, nodes[i], node_index + 1, j == 0);
 
-            gru_reset_gate(&(cells[cell_index]), nodes[i], node_index + 5,
-                    j == 0);
+            gru_reset_gate(cell, nodes[i], node_index + 5, j == 0);
 
-            gru_cell_output(&(cells[cell_index]), nodes[i], node_index + 13,
+            gru_cell_output(cell, nodes[i], node_index + 13,
                     j == (seq_length - 1));
         }
     }

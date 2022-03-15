@@ -44,8 +44,10 @@ void harris_process_raw(harris_data_t *img, task_struct_t **nodes)
     task_struct_t *task = (task_struct_t*) get_memory(sizeof(task_struct_t));
     isp_args *args = (isp_args*) get_memory(sizeof(isp_args));
 
-    img->raw_img = (uint8_t*) get_memory((IMG_HEIGHT+2) * (IMG_WIDTH+2));
-    img->isp_img = (uint8_t*) get_memory(NUM_PIXELS * 3);
+    img->raw_img = (uint8_t*) get_memory_aligned(
+            (IMG_HEIGHT+2) * (IMG_WIDTH+2), CACHELINE_SIZE);
+    img->isp_img = (uint8_t*) get_memory_aligned(NUM_PIXELS * 3,
+            CACHELINE_SIZE);
 
     args->input = img->raw_img;
     args->output = img->isp_img;
@@ -70,7 +72,8 @@ void harris_convert_to_grayscale(harris_data_t *img, task_struct_t **nodes)
     grayscale_args *args = (grayscale_args*)
         get_memory(sizeof(grayscale_args));
 
-    img->grayscale_img = (float*) get_memory(NUM_PIXELS * 4);
+    img->grayscale_img = (float*) get_memory_aligned(NUM_PIXELS * 4,
+            CACHELINE_SIZE);
 
     args->input = img->isp_img;
     args->output = img->grayscale_img;
@@ -108,10 +111,10 @@ void harris_spatial_derivative_calc(harris_data_t *img, task_struct_t **nodes)
         args[i] = (convolution_args*) get_memory(sizeof(convolution_args));
     }
 
-    img->K_x = (float*) get_memory(36);
-    img->K_y = (float*) get_memory(36);
-    img->I_x = (float*) get_memory(size);
-    img->I_y = (float*) get_memory(size);
+    img->K_x = (float*) get_memory_aligned(36, CACHELINE_SIZE);
+    img->K_y = (float*) get_memory_aligned(36, CACHELINE_SIZE);
+    img->I_x = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->I_y = (float*) get_memory_aligned(size, CACHELINE_SIZE);
 
     img->K_x[0] = -1; img->K_x[1] = 0; img->K_x[2] = 1;
     img->K_x[3] = -2; img->K_x[4] = 0; img->K_x[5] = 2;
@@ -165,13 +168,13 @@ void harris_structure_tensor_setup(harris_data_t *img, task_struct_t **nodes)
         em_args[i] = (elem_matrix_args*) get_memory(sizeof(elem_matrix_args));
         c_args[i] = (convolution_args*) get_memory(sizeof(convolution_args));
     }
-    img->I_xx = (float*) get_memory(size);
-    img->I_xy = (float*) get_memory(size);
-    img->I_yy = (float*) get_memory(size);
-    img->I_xx_g = (float*) get_memory(size);
-    img->I_xy_g = (float*) get_memory(size);
-    img->I_yy_g = (float*) get_memory(size);
-    img->gauss_kernel = (float*) get_memory(100);
+    img->I_xx = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->I_xy = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->I_yy = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->I_xx_g = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->I_xy_g = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->I_yy_g = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->gauss_kernel = (float*) get_memory_aligned(100, CACHELINE_SIZE);
 
     img->gauss_kernel[0]  = 0.00291502; img->gauss_kernel[1]  = 0.01306423;
     img->gauss_kernel[2]  = 0.02153928; img->gauss_kernel[3]  = 0.01306423;
@@ -297,14 +300,14 @@ void harris_response_calc(harris_data_t *img, task_struct_t **nodes)
         task[i] = (task_struct_t*) get_memory(sizeof(task_struct_t));
         args[i] = (elem_matrix_args*) get_memory(sizeof(elem_matrix_args));
     }
-    img->detA1  = (float*) get_memory(size);
-    img->detA2  = (float*) get_memory(size);
-    img->detA   = (float*) get_memory(size);
-    img->traceA = (float*) get_memory(size);
-    img->k      = (float*) get_memory(4);
-    img->hr1    = (float*) get_memory(size);
-    img->hr2    = (float*) get_memory(size);
-    img->harris_response = (float*) get_memory(size);
+    img->detA1  = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->detA2  = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->detA   = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->traceA = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->k      = (float*) get_memory_aligned(4, CACHELINE_SIZE);
+    img->hr1    = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->hr2    = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    img->harris_response = (float*) get_memory_aligned(size, CACHELINE_SIZE);
 
     *img->k = 0.05;
 
@@ -421,7 +424,7 @@ void harris_non_max_suppression(harris_data_t *img, task_struct_t **nodes)
     harris_non_max_args *args =
         (harris_non_max_args*) get_memory(sizeof(harris_non_max_args));
 
-    img->final_img = (uint8_t*) get_memory(NUM_PIXELS);
+    img->final_img = (uint8_t*) get_memory_aligned(NUM_PIXELS, CACHELINE_SIZE);
 
     args->input = img->harris_response;
     args->output = img->final_img;
@@ -442,7 +445,8 @@ void harris_non_max_suppression(harris_data_t *img, task_struct_t **nodes)
 void init_harris()
 {
 #ifdef VERIFY
-    harris_isp_output = (uint8_t*) get_memory(NUM_PIXELS * 3);
+    harris_isp_output = (uint8_t*) get_memory_aligned(NUM_PIXELS * 3,
+            CACHELINE_SIZE);
 
     for (int i = 0; i < (NUM_PIXELS * 3); i++) {
         harris_isp_output[i] = i % 256;

@@ -9,8 +9,6 @@
 
 typedef struct {
     float data_input[NUM_PIXELS];
-    float *cell_state_input;
-    float *hidden_state_input;
     float cell_input[NUM_PIXELS];
 
     // Forget gate
@@ -35,6 +33,9 @@ typedef struct {
 
     float og_tanh_out[NUM_PIXELS];
     float og_output[NUM_PIXELS];
+
+    float *cell_state_input;
+    float *hidden_state_input;
 } lstm_cell_data_t;
 
 float *lstm_fg_weight;
@@ -57,8 +58,10 @@ void lstm_init_cell_data(lstm_cell_data_t *cell, task_struct_t **nodes,
     int size = NUM_PIXELS * 4;
 
     if (is_first) {
-        cell->cell_state_input = (float*) get_memory(size);
-        cell->hidden_state_input = (float*) get_memory(size);
+        cell->cell_state_input = (float*) get_memory_aligned(size,
+                CACHELINE_SIZE);
+        cell->hidden_state_input = (float*) get_memory_aligned(size,
+                CACHELINE_SIZE);
     }
     else {
         cell->cell_state_input = (float*)
@@ -399,14 +402,14 @@ void init_lstm()
 {
     int size = NUM_PIXELS * 4;
 
-    lstm_fg_weight  = (float*) get_memory(size);
-    lstm_fg_bias    = (float*) get_memory(size);
-    lstm_ig_weight1 = (float*) get_memory(size);
-    lstm_ig_bias1   = (float*) get_memory(size);
-    lstm_ig_weight2 = (float*) get_memory(size);
-    lstm_ig_bias2   = (float*) get_memory(size);
-    lstm_og_weight  = (float*) get_memory(size);
-    lstm_og_bias    = (float*) get_memory(size);
+    lstm_fg_weight  = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    lstm_fg_bias    = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    lstm_ig_weight1 = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    lstm_ig_bias1   = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    lstm_ig_weight2 = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    lstm_ig_bias2   = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    lstm_og_weight  = (float*) get_memory_aligned(size, CACHELINE_SIZE);
+    lstm_og_bias    = (float*) get_memory_aligned(size, CACHELINE_SIZE);
 
 #ifdef VERIFY
     // the weight matter only if we are verifying the output
@@ -429,24 +432,22 @@ void add_lstm_dag(task_struct_t ***nodes, int num_frames, int seq_length)
 {
     const int nodes_per_cell = 18;
 
-    lstm_cell_data_t *cells = (lstm_cell_data_t*)
-        get_memory(num_frames * seq_length * sizeof(lstm_cell_data_t));
-
     for (int i = 0; i < num_frames; i++) {
         for (int j = 0; j < seq_length; j++) {
             int cell_index = (i * seq_length) + j;
             int node_index = j * nodes_per_cell;
+            lstm_cell_data_t *cell = (lstm_cell_data_t *) get_memory_aligned(
+                    sizeof(lstm_cell_data_t), CACHELINE_SIZE);
 
-            lstm_init_cell_data(&(cells[cell_index]), nodes[i], node_index,
+            lstm_init_cell_data(cell, nodes[i], node_index,
                     cell_index, j == 0);
 
-            lstm_forget_gate(&(cells[cell_index]), nodes[i], node_index + 1,
-                    j == 0);
+            lstm_forget_gate(cell, nodes[i], node_index + 1, j == 0);
 
-            lstm_input_gate(&(cells[cell_index]), nodes[i], node_index + 5,
+            lstm_input_gate(cell, nodes[i], node_index + 5,
                     j == (seq_length - 1));
 
-            lstm_output_gate(&(cells[cell_index]), nodes[i], node_index + 13,
+            lstm_output_gate(cell, nodes[i], node_index + 13,
                     j == (seq_length - 1));
         }
     }
