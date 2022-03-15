@@ -154,8 +154,16 @@ DRAMPower::getDataRate(const DRAMCtrlParams* p)
 {
     uint32_t burst_cycles = divCeil(p->tBURST, p->tCK);
     uint8_t data_rate = p->burst_length / burst_cycles;
-    // 4 for GDDR5
-    if (data_rate != 1 && data_rate != 2 && data_rate != 4)
-        fatal("Got unexpected data rate %d, should be 1 or 2 or 4\n");
+
+    // Ensure it is a power of 2
+    uint8_t num_set_bits = 0;
+    for (int i = 0; i < (sizeof(data_rate) * 8); i++) {
+        num_set_bits += (data_rate >> i) & 1;
+    }
+    if (num_set_bits != 1) {
+        fatal("Got unexpected data rate %d, should be a power of 2\n",
+                data_rate);
+    }
+
     return data_rate;
 }
