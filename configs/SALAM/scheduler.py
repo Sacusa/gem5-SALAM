@@ -131,6 +131,7 @@ def makeHWAcc(options, system):
             spm_obj = ScratchpadMemory()
             AccSPMConfig(acc_object, spm_obj, config)
             system.acctest._connect_spm(spm_obj)
+            acc_object.spm = spm_obj.spm_ports
             setattr(system.acctest, acc + '_spm', spm_obj)
 
             # Add the DMA engine

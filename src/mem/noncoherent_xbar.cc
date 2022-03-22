@@ -64,7 +64,10 @@ NoncoherentXBar::NoncoherentXBar(const NoncoherentXBarParams *p)
         std::string portName = csprintf("%s.master[%d]", name(), i);
         MasterPort* bp = new NoncoherentXBarMasterPort(portName, *this, i);
         masterPorts.push_back(bp);
-        reqLayers.push_back(new ReqLayer(*bp, *this,
+    }
+
+    for (int i = 0; i < numReqLayers; ++i) {
+        reqLayers.push_back(new ReqLayer(*masterPorts[i], *this,
                                          csprintf("reqLayer%d", i)));
     }
 
@@ -85,7 +88,10 @@ NoncoherentXBar::NoncoherentXBar(const NoncoherentXBarParams *p)
         std::string portName = csprintf("%s.slave[%d]", name(), i);
         QueuedSlavePort* bp = new NoncoherentXBarSlavePort(portName, *this, i);
         slavePorts.push_back(bp);
-        respLayers.push_back(new RespLayer(*bp, *this,
+    }
+
+    for (int i = 0; i < numRespLayers; ++i) {
+        respLayers.push_back(new RespLayer(*slavePorts[i], *this,
                                            csprintf("respLayer%d", i)));
     }
 }
@@ -108,11 +114,12 @@ NoncoherentXBar::recvTimingReq(PacketPtr pkt, PortID slave_port_id)
     assert(!pkt->isExpressSnoop());
 
     // determine the destination based on the address
-    PortID master_port_id = findPort(pkt->getAddrRange());
+    const PortID master_port_id = findPort(pkt->getAddrRange());
+    const PortID req_layer_id = master_port_id % numReqLayers;
 
     // test if the layer should be considered occupied for the current
     // port
-    if (!reqLayers[master_port_id]->tryTiming(src_port)) {
+    if (!reqLayers[req_layer_id]->tryTiming(src_port)) {
         DPRINTF(NoncoherentXBar, "recvTimingReq: src %s %s 0x%x BUSY\n",
                 src_port->name(), pkt->cmdString(), pkt->getAddr());
         return false;
@@ -154,7 +161,7 @@ NoncoherentXBar::recvTimingReq(PacketPtr pkt, PortID slave_port_id)
         pkt->headerDelay = old_header_delay;
 
         // occupy until the header is sent
-        reqLayers[master_port_id]->failedTiming(src_port,
+        reqLayers[req_layer_id]->failedTiming(src_port,
                                                 clockEdge(Cycles(1)));
 
         return false;
@@ -166,7 +173,7 @@ NoncoherentXBar::recvTimingReq(PacketPtr pkt, PortID slave_port_id)
         routeTo[pkt->req] = slave_port_id;
     }
 
-    reqLayers[master_port_id]->succeededTiming(packetFinishTime);
+    reqLayers[req_layer_id]->succeededTiming(packetFinishTime);
 
     // stats updates
     pktCount[slave_port_id][master_port_id]++;
@@ -187,11 +194,11 @@ NoncoherentXBar::recvTimingResp(PacketPtr pkt, PortID master_port_id)
     assert(route_lookup != routeTo.end());
     const PortID slave_port_id = route_lookup->second;
     assert(slave_port_id != InvalidPortID);
-    assert(slave_port_id < respLayers.size());
+    const PortID resp_layer_id = slave_port_id % numRespLayers;
 
     // test if the layer should be considered occupied for the current
     // port
-    if (!respLayers[slave_port_id]->tryTiming(src_port)) {
+    if (!respLayers[resp_layer_id]->tryTiming(src_port)) {
         DPRINTF(NoncoherentXBar, "recvTimingResp: src %s %s 0x%x BUSY\n",
                 src_port->name(), pkt->cmdString(), pkt->getAddr());
         return false;
@@ -223,7 +230,7 @@ NoncoherentXBar::recvTimingResp(PacketPtr pkt, PortID master_port_id)
     // remove the request from the routing table
     routeTo.erase(route_lookup);
 
-    respLayers[slave_port_id]->succeededTiming(packetFinishTime);
+    respLayers[resp_layer_id]->succeededTiming(packetFinishTime);
 
     // stats updates
     pktCount[slave_port_id][master_port_id]++;
@@ -239,7 +246,8 @@ NoncoherentXBar::recvReqRetry(PortID master_port_id)
     // responses never block on forwarding them, so the retry will
     // always be coming from a port to which we tried to forward a
     // request
-    reqLayers[master_port_id]->recvRetry();
+    const PortID req_layer_id = master_port_id % numReqLayers;
+    reqLayers[req_layer_id]->recvRetry();
 }
 
 Tick

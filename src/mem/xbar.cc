@@ -72,6 +72,10 @@ BaseXBar::BaseXBar(const BaseXBarParams *p)
       pktSize(this, "pkt_size",
               "Cumulative packet size per connected master and slave (bytes)")
 {
+    numReqLayers = p->num_req_layers ? p->num_req_layers :
+                                       p->port_master_connection_count;
+    numRespLayers = p->num_resp_layers ? p->num_resp_layers :
+                                         p->port_slave_connection_count;
 }
 
 BaseXBar::~BaseXBar()

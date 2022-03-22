@@ -86,6 +86,9 @@ class BaseXBar(ClockedObject):
     use_default_range = Param.Bool(False, "Perform address mapping for " \
                                        "the default port")
 
+    num_req_layers = Param.Unsigned(0, "Number of request layers")
+    num_resp_layers = Param.Unsigned(0, "Number of response layers")
+
 class NoncoherentXBar(BaseXBar):
     type = 'NoncoherentXBar'
     cxx_header = "mem/noncoherent_xbar.hh"

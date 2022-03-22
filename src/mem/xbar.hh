@@ -315,6 +315,9 @@ class BaseXBar : public ClockedObject
     /** the width of the xbar in bytes */
     const uint32_t width;
 
+    uint32_t numReqLayers;
+    uint32_t numRespLayers;
+
     AddrRangeMap<PortID, 3> portMap;
 
     /**

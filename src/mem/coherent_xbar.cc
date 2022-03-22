@@ -75,10 +75,13 @@ CoherentXBar::CoherentXBar(const CoherentXBarParams *p)
         std::string portName = csprintf("%s.master[%d]", name(), i);
         MasterPort* bp = new CoherentXBarMasterPort(portName, *this, i);
         masterPorts.push_back(bp);
-        reqLayers.push_back(new ReqLayer(*bp, *this,
-                                         csprintf("reqLayer%d", i)));
-        snoopLayers.push_back(
-                new SnoopRespLayer(*bp, *this, csprintf("snoopLayer%d", i)));
+    }
+
+    for (int i = 0; i < numReqLayers; ++i) {
+        reqLayers.push_back(new ReqLayer(*masterPorts[i], *this,
+                    csprintf("reqLayer%d", i)));
+        snoopLayers.push_back(new SnoopRespLayer(*masterPorts[i], *this,
+                    csprintf("snoopLayer%d", i)));
     }
 
     // see if we have a default slave device connected and if so add
@@ -101,9 +104,12 @@ CoherentXBar::CoherentXBar(const CoherentXBarParams *p)
         std::string portName = csprintf("%s.slave[%d]", name(), i);
         QueuedSlavePort* bp = new CoherentXBarSlavePort(portName, *this, i);
         slavePorts.push_back(bp);
-        respLayers.push_back(new RespLayer(*bp, *this,
-                                           csprintf("respLayer%d", i)));
         snoopRespPorts.push_back(new SnoopRespPort(*bp, *this));
+    }
+
+    for (int i = 0; i < numRespLayers; ++i) {
+        respLayers.push_back(new RespLayer(*slavePorts[i], *this,
+                    csprintf("respLayer%d", i)));
     }
 }
 
@@ -157,11 +163,12 @@ CoherentXBar::recvTimingReq(PacketPtr pkt, PortID slave_port_id)
     assert(is_express_snoop == cache_responding);
 
     // determine the destination based on the destination address range
-    PortID master_port_id = findPort(pkt->getAddrRange());
+    const PortID master_port_id = findPort(pkt->getAddrRange());
+    const PortID req_layer_id = master_port_id % numReqLayers;
 
     // test if the crossbar should be considered occupied for the current
     // port, and exclude express snoops from the check
-    if (!is_express_snoop && !reqLayers[master_port_id]->tryTiming(src_port)) {
+    if (!is_express_snoop && !reqLayers[req_layer_id]->tryTiming(src_port)) {
         DPRINTF(CoherentXBar, "%s: src %s packet %s BUSY\n", __func__,
                 src_port->name(), pkt->print());
         return false;
@@ -207,7 +214,7 @@ CoherentXBar::recvTimingReq(PacketPtr pkt, PortID slave_port_id)
                         src_port->name(), pkt->print());
 
                 // update the layer state and schedule an idle event
-                reqLayers[master_port_id]->failedTiming(src_port,
+                reqLayers[req_layer_id]->failedTiming(src_port,
                                                         clockEdge(Cycles(1)));
                 return false;
             }
@@ -316,7 +323,7 @@ CoherentXBar::recvTimingReq(PacketPtr pkt, PortID slave_port_id)
                 src_port->name(), pkt->print());
 
         // update the layer state and schedule an idle event
-        reqLayers[master_port_id]->failedTiming(src_port,
+        reqLayers[req_layer_id]->failedTiming(src_port,
                                                 clockEdge(Cycles(1)));
     } else {
         // express snoops currently bypass the crossbar state entirely
@@ -346,7 +353,7 @@ CoherentXBar::recvTimingReq(PacketPtr pkt, PortID slave_port_id)
             }
 
             // update the layer state and schedule an idle event
-            reqLayers[master_port_id]->succeededTiming(packetFinishTime);
+            reqLayers[req_layer_id]->succeededTiming(packetFinishTime);
         }
 
         // stats updates only consider packets that were successfully sent
@@ -396,7 +403,6 @@ CoherentXBar::recvTimingReq(PacketPtr pkt, PortID slave_port_id)
                 assert(route_lookup != routeTo.end());
                 rsp_port_id = route_lookup->second;
                 assert(rsp_port_id != InvalidPortID);
-                assert(rsp_port_id < respLayers.size());
                 // remove the request from the routing table
                 routeTo.erase(route_lookup);
             }
@@ -451,11 +457,11 @@ CoherentXBar::recvTimingResp(PacketPtr pkt, PortID master_port_id)
     assert(route_lookup != routeTo.end());
     const PortID slave_port_id = route_lookup->second;
     assert(slave_port_id != InvalidPortID);
-    assert(slave_port_id < respLayers.size());
+    const PortID resp_layer_id = slave_port_id % numRespLayers;
 
     // test if the crossbar should be considered occupied for the
     // current port
-    if (!respLayers[slave_port_id]->tryTiming(src_port)) {
+    if (!respLayers[resp_layer_id]->tryTiming(src_port)) {
         DPRINTF(CoherentXBar, "%s: src %s packet %s BUSY\n", __func__,
                 src_port->name(), pkt->print());
         return false;
@@ -492,7 +498,7 @@ CoherentXBar::recvTimingResp(PacketPtr pkt, PortID master_port_id)
     // remove the request from the routing table
     routeTo.erase(route_lookup);
 
-    respLayers[slave_port_id]->succeededTiming(packetFinishTime);
+    respLayers[resp_layer_id]->succeededTiming(packetFinishTime);
 
     // stats updates
     pktCount[slave_port_id][master_port_id]++;
@@ -573,6 +579,8 @@ CoherentXBar::recvTimingSnoopResp(PacketPtr pkt, PortID slave_port_id)
     assert(route_lookup != routeTo.end());
     const PortID dest_port_id = route_lookup->second;
     assert(dest_port_id != InvalidPortID);
+    const PortID req_layer_id = dest_port_id % numReqLayers;
+    const PortID resp_layer_id = dest_port_id % numRespLayers;
 
     // determine if the response is from a snoop request we
     // created as the result of a normal request (in which case it
@@ -586,8 +594,7 @@ CoherentXBar::recvTimingSnoopResp(PacketPtr pkt, PortID slave_port_id)
     // is being passed on as a normal response since this is occupying
     // the response layer rather than the snoop response layer
     if (forwardAsSnoop) {
-        assert(dest_port_id < snoopLayers.size());
-        if (!snoopLayers[dest_port_id]->tryTiming(src_port)) {
+        if (!snoopLayers[req_layer_id]->tryTiming(src_port)) {
             DPRINTF(CoherentXBar, "%s: src %s packet %s BUSY\n", __func__,
                     src_port->name(), pkt->print());
             return false;
@@ -595,8 +602,7 @@ CoherentXBar::recvTimingSnoopResp(PacketPtr pkt, PortID slave_port_id)
     } else {
         // get the master port that mirrors this slave port internally
         MasterPort* snoop_port = snoopRespPorts[slave_port_id];
-        assert(dest_port_id < respLayers.size());
-        if (!respLayers[dest_port_id]->tryTiming(snoop_port)) {
+        if (!respLayers[resp_layer_id]->tryTiming(snoop_port)) {
             DPRINTF(CoherentXBar, "%s: src %s packet %s BUSY\n", __func__,
                     snoop_port->name(), pkt->print());
             return false;
@@ -644,7 +650,7 @@ CoherentXBar::recvTimingSnoopResp(PacketPtr pkt, PortID slave_port_id)
         pktSize[slave_port_id][dest_port_id] += pkt_size;
         assert(success);
 
-        snoopLayers[dest_port_id]->succeededTiming(packetFinishTime);
+        snoopLayers[req_layer_id]->succeededTiming(packetFinishTime);
     } else {
         // we got a snoop response on one of our slave ports,
         // i.e. from a coherent master connected to the crossbar, and
@@ -673,7 +679,7 @@ CoherentXBar::recvTimingSnoopResp(PacketPtr pkt, PortID slave_port_id)
         pkt->headerDelay = 0;
         slavePorts[dest_port_id]->schedTimingResp(pkt, curTick() + latency);
 
-        respLayers[dest_port_id]->succeededTiming(packetFinishTime);
+        respLayers[resp_layer_id]->succeededTiming(packetFinishTime);
     }
 
     // remove the request from the routing table
@@ -722,7 +728,8 @@ CoherentXBar::recvReqRetry(PortID master_port_id)
     // responses and snoop responses never block on forwarding them,
     // so the retry will always be coming from a port to which we
     // tried to forward a request
-    reqLayers[master_port_id]->recvRetry();
+    const PortID req_layer_id = master_port_id % numReqLayers;
+    reqLayers[req_layer_id]->recvRetry();
 }
 
 Tick
