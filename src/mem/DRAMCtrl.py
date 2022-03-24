@@ -1281,11 +1281,8 @@ class LPDDR5_5500_1x16_BG_BL32(DRAMCtrl):
     # Greater of 4 CK or 6.25 ns
     tWTR = '6.25ns'
 
-    # Required RD-to-WR timing is RL+ BL/n + tWCKDQ0/tCK - WL
-    # tWCKDQ0/tCK will be 1 CK for most cases
-    # For gem5 RL = WL and BL/n is already accounted for with tBURST
-    # Result is and additional 1 CK is required
-    tRTW = '1.455ns'
+    # Similar to other classes, set this to 2 * tCK
+    tRTW = '2.91ns'
 
     # Default different rank bus delay to 2 CK, @687.5 MHz = 2.91 ns
     tCS = '2.91ns'
@@ -1372,11 +1369,8 @@ class LPDDR5_6400_1x16_BG_BL32(LPDDR5_5500_1x16_BG_BL32):
     # 8 CK @ 800 MHz
     tCCD_L = "10ns"
 
-    # Required RD-to-WR timing is RL+ BL/n + tWCKDQ0/tCK - WL
-    # tWCKDQ0/tCK will be 1 CK for most cases
-    # For gem5 RL = WL and BL/n is already accounted for with tBURST
-    # Result is and additional 1 CK is required
-    tRTW = '1.25ns'
+    # Similar to other classes, set this to 2 * tCK
+    tRTW = '2.5ns'
 
     # Default different rank bus delay to 2 CK, @687.5 MHz = 2.5 ns
     tCS = '2.5ns'
