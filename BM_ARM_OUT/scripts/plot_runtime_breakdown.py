@@ -12,7 +12,6 @@ class ReadState(Enum):
 def acc_runtime(ax):
     accelerators = ['canny_non_max', 'convolution', 'edge_tracking',
             'elem_matrix', 'grayscale', 'harris_non_max', 'isp']
-    acc_config = ['8_2', '32_2', '4_1', '32_2', '8_4', '1_1', '2_4']
     runtime = {'compute': [], 'memory': []}
 
     for i, acc in enumerate(accelerators):
@@ -20,8 +19,7 @@ def acc_runtime(ax):
         runtime['memory'].append([])
         read_state = ReadState.FIRST_ARGUMENT
 
-        for line in open('../ref_and_sweep/' + acc + '_sweep/' + acc + '_' + \
-                acc_config[i] + '/debug-trace.txt'):
+        for line in open('../solo_acc/' + acc + '/debug-trace.txt'):
             if 'Transfer completed' in line:
                 time = float(line.split()[5])
 
@@ -79,8 +77,7 @@ def pipeline_runtime(ax):
         runtime['memory'].append(0)
         read_state = ReadState.FIRST_ARGUMENT
 
-        for line in open('../ref_and_sweep/' + pipeline + \
-                '_wo_fwd_pipeline/debug-trace.txt'):
+        for line in open('../no_fwd/' + pipeline + '_no_fwd/debug-trace.txt'):
             if 'Transfer completed' in line:
                 runtime['memory'][i] += float(line.split()[5])
 

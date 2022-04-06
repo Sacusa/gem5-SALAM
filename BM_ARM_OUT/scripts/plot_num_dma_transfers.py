@@ -50,25 +50,18 @@ for app_mix in app_mixes:
         max_transfers[-1] *= NUM_DAG_INSTANCES
 
     # record number of transfers
-    base_dir_name = '../image_' + str(NUM_DAG_INSTANCES) + '/'
+    base_dir_name = '../image_' + str(NUM_DAG_INSTANCES) + '_parallel_dma_bus/'
     for app in applications:
         base_dir_name += app + '_'
         if app in app_mix: base_dir_name += str(NUM_DAG_INSTANCES) + '_'
         else:              base_dir_name += '0_'
 
     for policy in policies:
-        latencies = []
         num_transfers[policy].append(0)
-        valid_dma = False
 
         for line in open(base_dir_name + policy + '_pipeline/debug-trace.txt'):
-            if 'SRC:' in line and 'DST:0x000000008' not in line:
-                # only record loads
-                valid_dma = True
-            elif 'Transfer completed' in line and valid_dma:
-                latencies.append(float(line.split()[5]))
+            if 'SRC:' in line:
                 num_transfers[policy][-1] += 1
-                valid_dma = False
 
 for policy in policies:
     # normalize the values
@@ -80,7 +73,7 @@ for policy in policies:
     num_transfers[policy].append(geo_mean(num_transfers[policy]))
 
 x = [i for i in range(len(app_mixes) + 1)]
-x_labels = [','.join(app_mix) for app_mix in app_mixes] + ['Geomean']
+x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))] + ['Geomean']
 
 plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
@@ -97,7 +90,7 @@ plt.xticks(x, x_labels, fontsize=35, rotation='vertical')
 
 plt.ylabel('% DMA transfers performed', fontsize=35)
 plt.yticks(fontsize=35)
-plt.ylim([0, 60])
+plt.ylim([0, 90])
 #plt.gca().yaxis.set_major_locator(plt.MultipleLocator(5))
 
 plt.legend(loc="upper left", ncol=5, fontsize=35)

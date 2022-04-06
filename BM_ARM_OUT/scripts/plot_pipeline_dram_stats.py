@@ -28,7 +28,7 @@ ylim = {'totalEnergy': [0.5, 1.5], 'averagePower': [0.7, 1.15]}
 def get_stat(app_mix, stat):
     values = []
 
-    base_dir_name = '../image_4/'
+    base_dir_name = '../image_4_parallel_dma_bus/'
     for app in applications:
         base_dir_name += app + '_'
         if app in app_mix: base_dir_name += '4_'

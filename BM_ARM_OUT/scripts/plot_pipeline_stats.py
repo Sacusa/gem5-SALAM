@@ -23,12 +23,11 @@ def add_plot(offset, policy, label):
 
 policies = ['FCFS', 'LEDF', 'GEDF', 'GLAX', 'APRX3']
 applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
-ylim = {'sim_ticks': [0.5, 1.15], 'mem_ctrls.bw_total::total': [0.5, 1.25]}
 
 def get_stat(app_mix, stat):
     values = []
 
-    base_dir_name = '../image_4/'
+    base_dir_name = '../image_4_parallel_dma_bus/'
     for app in applications:
         base_dir_name += app + '_'
         if app in app_mix: base_dir_name += '4_'
@@ -69,7 +68,6 @@ y_label = sys.argv[2]
 
 app_mixes = sorted(list(itertools.combinations(applications, 3)))
 stat_values = {p:[] for p in policies}
-x_labels = []
 
 # read the statistics
 for app_mix in app_mixes:
@@ -83,16 +81,9 @@ for app_mix in app_mixes:
     for policy in policies:
         stat_values[policy][-1] /= norm_value
 
-    # create x-axis labels
-    x_labels.append('')
-    for app in app_mix:
-        x_labels[-1] += app + ','
-    x_labels[-1] = x_labels[-1][:-1]
-
 # calculate geo-mean for each policy
 for policy in policies:
     stat_values[policy].append(geo_mean(stat_values[policy]))
-x_labels.append('Geomean')
 
 # plot parameters
 x = np.arange(len(app_mixes) + 1)
@@ -107,13 +98,14 @@ add_plot(-(width/2),     'LEDF',  'GEDF-D')
 add_plot((width/2),      'GLAX',  'LAX')
 add_plot(((3*width)/2),  'APRX3', 'ELF')
 
+x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))] + ['Gmean']
 plt.xlabel('Application mix', fontsize=35)
 plt.xticks(x, x_labels, fontsize=35, rotation='vertical')
 
-plt.ylabel(y_label + ' (norm. to GEDF-N)', fontsize=35)
+plt.ylabel(y_label + '\n(norm. to GEDF-N)', fontsize=35)
 plt.yticks(fontsize=35)
-plt.ylim(ylim[stat])
-plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.1))
+plt.ylim([0, 1.7])
+plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.2))
 
 plt.legend(loc="upper left", ncol=4, fontsize=35)
 plt.grid(color='silver', linestyle='-', linewidth=1)
