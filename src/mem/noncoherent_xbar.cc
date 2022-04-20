@@ -54,8 +54,11 @@
 #include "debug/NoncoherentXBar.hh"
 #include "debug/XBar.hh"
 
-NoncoherentXBar::NoncoherentXBar(const NoncoherentXBarParams *p)
-    : BaseXBar(p)
+NoncoherentXBar::NoncoherentXBar(const NoncoherentXBarParams *p) :
+    BaseXBar(p),
+    lastPacketFinishTime(0),
+    ADD_STAT(occupancy, "Network occupancy (ticks)"),
+    ADD_STAT(utilization, "Network utilization (%)")
 {
     // create the ports based on the size of the master and slave
     // vector ports, and the presence of the default port, the ports
@@ -94,6 +97,16 @@ NoncoherentXBar::NoncoherentXBar(const NoncoherentXBarParams *p)
         respLayers.push_back(new RespLayer(*slavePorts[i], *this,
                                            csprintf("respLayer%d", i)));
     }
+
+    // initialize statistics
+    occupancy
+        .flags(Stats::nozero);
+
+    utilization
+        .precision(1)
+        .flags(Stats::nozero);
+
+    utilization = 100 * occupancy / simTicks;
 }
 
 NoncoherentXBar::~NoncoherentXBar()
@@ -180,6 +193,17 @@ NoncoherentXBar::recvTimingReq(PacketPtr pkt, PortID slave_port_id)
     pktSize[slave_port_id][master_port_id] += pkt_size;
     transDist[pkt_cmd]++;
 
+    if (packetFinishTime > lastPacketFinishTime) {
+        if (curTick() > lastPacketFinishTime) {
+            occupancy += packetFinishTime - curTick();
+        }
+        else {
+            occupancy += packetFinishTime - lastPacketFinishTime;
+        }
+    }
+    lastPacketFinishTime = std::max(lastPacketFinishTime,
+            packetFinishTime);
+
     return true;
 }
 
@@ -236,6 +260,17 @@ NoncoherentXBar::recvTimingResp(PacketPtr pkt, PortID master_port_id)
     pktCount[slave_port_id][master_port_id]++;
     pktSize[slave_port_id][master_port_id] += pkt_size;
     transDist[pkt_cmd]++;
+
+    if (packetFinishTime > lastPacketFinishTime) {
+        if (curTick() > lastPacketFinishTime) {
+            occupancy += packetFinishTime - curTick();
+        }
+        else {
+            occupancy += packetFinishTime - lastPacketFinishTime;
+        }
+    }
+    lastPacketFinishTime = std::max(lastPacketFinishTime,
+            packetFinishTime);
 
     return true;
 }

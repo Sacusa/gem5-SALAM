@@ -70,6 +70,16 @@
 class NoncoherentXBar : public BaseXBar
 {
 
+  private:
+
+    /**
+     * Stats for occupancy and utilization. These stats capture
+     * the time the xbar has at least one transaction going through.
+     */
+    Tick lastPacketFinishTime;
+    Stats::Scalar occupancy;
+    Stats::Formula utilization;
+
   protected:
 
     /**
