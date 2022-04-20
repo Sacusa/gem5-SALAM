@@ -52,6 +52,9 @@ run_gem5() {
               --dtb-file=none --bare-metal \
               --cpu-type=ex5_LITTLE \
               --cpu-clock=1.6GHz"
+#              --mem-type=LPDDR5_6400_1x16_BG_BL32 \
+#              --mem-type=HBM_1000_4H_1x128 \
+#              --mem-channels=8 \
     CACHE_OPTS="--caches \
                 --cacheline_size=64 \
                 --l1d_size=32kB \
@@ -64,8 +67,8 @@ run_gem5() {
                 --accpath=$M5_PATH/benchmarks \
                 $CACHE_OPTS"
 
+    mkdir -p $OUTDIR
     if [ "${PRINT_TO_FILE}" == "true" ]; then
-        mkdir -p $OUTDIR
         $RUN_SCRIPT > ${OUTDIR}/debug-trace.txt
     else
         $RUN_SCRIPT
