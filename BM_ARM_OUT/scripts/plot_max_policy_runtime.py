@@ -75,7 +75,7 @@ for i in range(len(min_time)):
 x = [i for i in range(len(app_mixes))]
 x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))]
 
-plt.figure(figsize=(12, 8), dpi=100)
+plt.figure(figsize=(24, 8), dpi=100)
 plt.rc('axes', axisbelow=True)
 
 width = 0.20
@@ -88,15 +88,15 @@ add_plot(((3*width)/2),  3, 'O3')
 #        marker='o', markersize=4, markerfacecolor='white',
 #        linewidth=2, color='k')
 
-plt.xlabel('Application mix', fontsize=25)
-plt.xticks(x, x_labels, fontsize=25, rotation='vertical')
+plt.xlabel('Application mix', fontsize=35)
+plt.xticks(x, x_labels, fontsize=35, rotation='vertical')
 
-plt.ylabel('Time (us)', fontsize=25)
-plt.yticks(fontsize=25)
+plt.ylabel('Time (us)', fontsize=35)
+plt.yticks(fontsize=35)
 plt.ylim([0, 40])
 #plt.gca().yaxis.set_major_locator(plt.MultipleLocator(5))
 
-plt.legend(loc="upper left", ncol=4, fontsize=20)
+plt.legend(loc="upper left", ncol=4, fontsize=35)
 plt.grid(color='silver', linestyle='-', linewidth=1)
 #plt.axhline(y=min(min_time), linewidth=2, color='red')
 #plt.axhline(y=min_avg_time, linewidth=2, color='red')

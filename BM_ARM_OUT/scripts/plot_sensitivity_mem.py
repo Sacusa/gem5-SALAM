@@ -60,7 +60,7 @@ for policy in policies:
     stat_value[policy].append(geo_mean(stat_value[policy]))
 
 x = [i for i in range(len(app_mixes) + 1)]
-x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))] + ['Geomean']
+x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))] + ['Gmean']
 
 plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
@@ -75,10 +75,10 @@ add_plot((width*2),  'APRX3', 'ELF')
 plt.xlabel('Application mix', fontsize=35)
 plt.xticks(x, x_labels, fontsize=35, rotation='vertical')
 
-plt.ylabel('Speedup (HBM/LPDDR5)', fontsize=35)
+plt.ylabel('Execution time\n(HBM / LPDDR5)', fontsize=35)
 plt.yticks(fontsize=35)
-plt.ylim([0.9, 1.05])
-#plt.gca().yaxis.set_major_locator(plt.MultipleLocator(5))
+plt.ylim([0, 1.3])
+plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.2))
 
 plt.legend(loc="upper left", ncol=5, fontsize=35)
 plt.grid(color='silver', linestyle='-', linewidth=1)

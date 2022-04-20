@@ -34,26 +34,20 @@ for app_mix in app_mixes:
         if app in app_mix: app_mix_str += '4_'
         else:              app_mix_str += '0_'
 
-    bus_dir_name = '../image_4_parallel_dma_bus/' + app_mix_str
-    xbar_dir_name = '../image_4_parallel_dma_xbar/' + app_mix_str
+    base_dir_name = '../image_4_parallel_dma_bus/' + app_mix_str
 
     for policy in policies:
-        bus_latency = 0
-        xbar_latency = 0
+        bw = 0
+        peak_bw = 0
 
-        # Read the execution time using bus interconnect
-        for line in open(bus_dir_name + policy + '_pipeline/stats.txt'):
-            if 'sim_ticks' in line:
-                bus_latency = float(line.split()[1])
+        for line in open(base_dir_name + policy + '_pipeline/stats.txt'):
+            if 'mem_ctrls.bw_total::total' in line:
+                bw = float(line.split()[1]) / (1024 * 1024)
+            if 'system.mem_ctrls.peakBW' in line:
+                peak_bw = float(line.split()[1])
                 break
 
-        # Read the execution time using xbar interconnect
-        for line in open(xbar_dir_name + policy + '_pipeline/stats.txt'):
-            if 'sim_ticks' in line:
-                xbar_latency = float(line.split()[1])
-                break
-
-        stat_value[policy].append(xbar_latency / bus_latency)
+        stat_value[policy].append(bw / peak_bw)
 
 # calculate geo-mean for each policy
 for policy in policies:
@@ -75,11 +69,11 @@ add_plot((width*2),  'APRX3', 'ELF')
 plt.xlabel('Application mix', fontsize=35)
 plt.xticks(x, x_labels, fontsize=35, rotation='vertical')
 
-plt.ylabel('Execution time\n(xbar / bus)', fontsize=35)
+plt.ylabel('Average DRAM B/W\nutilization', fontsize=35)
 plt.yticks(fontsize=35)
 plt.ylim([0, 1.3])
 plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.2))
 
 plt.legend(loc="upper left", ncol=5, fontsize=35)
 plt.grid(color='silver', linestyle='-', linewidth=1)
-plt.savefig('plots/sensitivity_interconnect.pdf', bbox_inches='tight')
+plt.savefig('plots/mem_bw_utilization.pdf', bbox_inches='tight')

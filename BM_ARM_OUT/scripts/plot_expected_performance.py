@@ -37,32 +37,33 @@ for line in open(input_file):
     stat_value[policy].append(float(tokens[21][:-1]))
 
 # Normalize the results and calculate geomean
-for policy in policies:
-    if policy == 'GEDF': continue
-    for i in range(len(stat_value[policy])):
-        stat_value[policy][i] /= stat_value['GEDF'][i]
-    stat_value[policy].append(geo_mean(stat_value[policy]))
+#for policy in policies:
+#    if policy == 'GEDF': continue
+#    for i in range(len(stat_value[policy])):
+#        stat_value[policy][i] /= stat_value['GEDF'][i]
+#    stat_value[policy].append(geo_mean(stat_value[policy]))
 
-x = [i for i in range(len(app_mixes) + 1)]
-x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))] + ['Geomean']
+x = [i for i in range(len(app_mixes))]
+x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))]
 
-plt.figure(figsize=(12, 8), dpi=600)
+plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
 
-width = 0.20
-add_plot(-((3*width)/2), 'FCFS',  'FCFS')
-add_plot(-(width/2),     'LEDF',  'GEDF-D')
-add_plot((width/2),      'GLAX',  'LAX')
-add_plot(((3*width)/2),  'APRX3', 'ELF')
+width = 0.16
+add_plot(-(width*2), 'FCFS',  'FCFS')
+add_plot(-width,     'LEDF',  'GEDF-D')
+add_plot(0,          'GEDF',  'GEDF-N')
+add_plot(width,      'GLAX',  'LAX')
+add_plot((width*2),  'APRX3', 'ELF')
 
-plt.xlabel('Application mix', fontsize=25)
-plt.xticks(x, x_labels, fontsize=25, rotation='vertical')
+plt.xlabel('Application mix', fontsize=35)
+plt.xticks(x, x_labels, fontsize=35, rotation='vertical')
 
-plt.ylabel('Avg. degree of parallelism\n(norm. to GEDF-N)', fontsize=25)
-plt.yticks(fontsize=25)
-plt.ylim([0.9, 1.7])
+plt.ylabel('Avg. degree of parallelism', fontsize=35)
+plt.yticks(fontsize=35)
+plt.ylim([0, 7.5])
 #plt.gca().yaxis.set_major_locator(plt.MultipleLocator(5))
 
-plt.legend(loc="upper left", ncol=4, fontsize=20)
+plt.legend(loc="upper left", ncol=5, fontsize=35)
 plt.grid(color='silver', linestyle='-', linewidth=1)
 plt.savefig('plots/expected_performance.pdf', bbox_inches='tight')

@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-hatch = {'FCFS': '*', 'LEDF': '.', 'GEDF': 'xx', 'GLAX': '/'}
+hatch = {'FCFS': '*', 'LEDF': '.', 'GLAX': 'xx', 'APRX3': '/'}
 
 def geo_mean(iterable):
     a = np.array(iterable)
@@ -21,79 +21,88 @@ def add_plot(offset, policy, label):
                 width=width, label=label, fc='k')
 
 policies = ['FCFS', 'LEDF', 'GEDF', 'GLAX', 'APRX3']
+policies_ext = ['FCFS', 'LEDF', 'GEDF', 'GLAX', 'APRX3', 'xbar']
 applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
 
 def get_stat(app_mix, stat):
     values = []
 
-    base_dir_name = '../image_4_parallel_dma_bus/'
+    app_mix_str = ''
     for app in applications:
-        base_dir_name += app + '_'
-        if app in app_mix: base_dir_name += '4_'
-        else:              base_dir_name += '0_'
+        app_mix_str += app + '_'
+        if app in app_mix: app_mix_str += '4_'
+        else:              app_mix_str += '0_'
+
+    # Get the stat for all policies
+    dir_name = '../image_4_parallel_dma_bus/' + app_mix_str
 
     for policy in policies:
         value = 0
-        stat_found = False
 
-        for line in open(base_dir_name + policy + '_pipeline/stats.txt'):
+        for line in open(dir_name + policy + '_pipeline/stats.txt'):
             if ('system.mem_ctrls' in line) and (stat in line):
                 value = float(line.split()[1]) / 1000
-                stat_found = True
                 break
 
-        if not stat_found:
-            print('Cannot parse the statistic for ' + str(app_mix) + \
-                    '_' + policy)
-            exit(-2)
-
         values.append(value)
+
+    # Get the stat for APRX3 w/ xbar
+    dir_name = '../image_4_parallel_dma_xbar/' + app_mix_str
+
+    for line in open(dir_name + 'APRX3_pipeline/stats.txt'):
+        if ('system.mem_ctrls' in line) and (stat in line):
+            value = float(line.split()[1]) / 1000
+            break
+
+    values.append(value)
 
     return values
 
 app_mixes = sorted(list(itertools.combinations(applications, 3)))
-stat_values = {p:[] for p in policies}
+stat_values = {p:[] for p in policies_ext}
 
 # read the statistics
 for app_mix in app_mixes:
-    #output = get_stat(app_mix, 'avgQLat')
     output = get_stat(app_mix, 'totQLat')
 
-    for i, policy in enumerate(policies):
+    for i, policy in enumerate(policies_ext):
         stat_values[policy].append(output[i])
 
     # normalize the values
     norm_value = stat_values['GEDF'][-1]
-    for policy in policies:
+    for policy in policies_ext:
         stat_values[policy][-1] /= norm_value
 
 # calculate geo-mean for each policy
-for policy in policies:
+for policy in policies_ext:
     stat_values[policy].append(geo_mean(stat_values[policy]))
+
+print(stat_values['APRX3'][-1] - stat_values['xbar'][-1])
 
 # plot parameters
 x = np.arange(len(app_mixes) + 1)
 
 # add the bars
-plt.figure(figsize=(12, 8), dpi=600)
+plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
 
-width = 0.20
-add_plot(-((3*width)/2), 'FCFS',  'FCFS')
-add_plot(-(width/2),     'LEDF',  'GEDF-D')
-add_plot((width/2),      'GLAX',  'LAX')
-add_plot(((3*width)/2),  'APRX3', 'ELF')
+width = 0.16
+add_plot(-(width*2), 'FCFS',  'FCFS')
+add_plot(-width,     'LEDF',  'GEDF-D')
+add_plot(0,          'GLAX',  'LAX')
+add_plot(width,      'APRX3', 'ELF')
+add_plot((width*2),  'xbar',  'ELF-xbar')
 
-x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))] + ['Geomean']
-plt.xlabel('Application mix', fontsize=25)
-plt.xticks(x, x_labels, fontsize=25, rotation='vertical')
+x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))] + ['Gmean']
+plt.xlabel('Application mix', fontsize=35)
+plt.xticks(x, x_labels, fontsize=35, rotation='vertical')
 
-plt.ylabel('Queuing latency (norm. to GEDF-N)', fontsize=25)
-plt.yticks(fontsize=25)
-plt.ylim([0.4, 1.2])
-#plt.gca().yaxis.set_major_locator(plt.MultipleLocator(tick_granularity[stat]))
+plt.ylabel('Queuing latency\n(norm. to GEDF-N)', fontsize=35)
+plt.yticks(fontsize=35)
+plt.ylim([0, 1.7])
+plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.2))
 
-plt.legend(loc="upper left", ncol=4, fontsize=20)
+plt.legend(loc="upper left", ncol=5, fontsize=35)
 plt.grid(color='silver', linestyle='-', linewidth=1)
 
 # save the image

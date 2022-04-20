@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-hatch = {'FCFS': '*', 'LEDF': '.', 'GEDF': 'xx', 'GLAX': '/'}
-NUM_DAG_INSTANCES = 4
+hatch = {'FCFS': '*', 'LEDF': '.', 'GLAX': 'xx', 'APRX3': '/'}
 
 def geo_mean(iterable):
     a = np.array(iterable)
@@ -22,58 +21,44 @@ def add_plot(offset, policy, label):
                 width=width, label=label, fc='k')
 
 applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
-policies = ['FCFS', 'LEDF', 'GEDF', 'GLAX', 'APRX3']
+policies = ['FCFS', 'LEDF', 'GEDF', 'GLAX', 'APRX3', 'xbar']
 
 app_mixes = sorted([c for c in itertools.combinations(applications, 3)])
 
-max_transfers = []
 num_transfers = {p:[] for p in policies}
 
 for app_mix in app_mixes:
-    # record maximum number of transfers
-    base_dir_name = '/u/sgupta45/scheduler/dags/'
-    max_transfers.append(0)
-
-    for app in app_mix:
-        contains_transfers = False
-
-        for line in open(base_dir_name + app + '.cfg'):
-            if '=' in line: line = line.split('=')[1]
-            tokens = line.split()
-
-            if len(tokens) == 2:
-                contains_transfers = True
-            elif contains_transfers:
-                max_transfers[-1] += int(tokens[0])
-                contains_transfers = False
-
-        max_transfers[-1] *= NUM_DAG_INSTANCES
-
-    # record number of transfers
-    base_dir_name = '../image_' + str(NUM_DAG_INSTANCES) + '_parallel_dma_bus/'
+    app_mix_str = ''
     for app in applications:
-        base_dir_name += app + '_'
-        if app in app_mix: base_dir_name += str(NUM_DAG_INSTANCES) + '_'
-        else:              base_dir_name += '0_'
+        app_mix_str += app + '_'
+        if app in app_mix: app_mix_str += '4_'
+        else:              app_mix_str += '0_'
 
     for policy in policies:
         num_transfers[policy].append(0)
 
-        for line in open(base_dir_name + policy + '_pipeline/debug-trace.txt'):
+        if policy == 'xbar':
+            dir_name = '../image_4_parallel_dma_xbar/' + app_mix_str + 'APRX3'
+        else:
+            dir_name = '../image_4_parallel_dma_bus/' + app_mix_str + policy
+        dir_name += '_pipeline/debug-trace.txt'
+
+        for line in open(dir_name):
             if 'SRC:' in line:
                 num_transfers[policy][-1] += 1
 
 for policy in policies:
+    if policy == 'GEDF': continue
+
     # normalize the values
-    for i in range(len(max_transfers)):
-        num_transfers[policy][i] = (num_transfers[policy][i] / \
-                max_transfers[i]) * 100
+    for i in range(len(num_transfers[policy])):
+        num_transfers[policy][i] /= num_transfers['GEDF'][i]
 
     # calculate geomean
     num_transfers[policy].append(geo_mean(num_transfers[policy]))
 
 x = [i for i in range(len(app_mixes) + 1)]
-x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))] + ['Geomean']
+x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))] + ['Gmean']
 
 plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
@@ -81,17 +66,17 @@ plt.rc('axes', axisbelow=True)
 width = 0.16
 add_plot(-(width*2), 'FCFS',  'FCFS')
 add_plot(-width,     'LEDF',  'GEDF-D')
-add_plot(0,          'GEDF',  'GEDF-N')
-add_plot(width,      'GLAX',  'LAX')
-add_plot((width*2),  'APRX3', 'ELF')
+add_plot(0,          'GLAX',  'LAX')
+add_plot(width,      'APRX3', 'ELF')
+add_plot((width*2),  'xbar',  'ELF-xbar')
 
 plt.xlabel('Application mix', fontsize=35)
 plt.xticks(x, x_labels, fontsize=35, rotation='vertical')
 
-plt.ylabel('% DMA transfers performed', fontsize=35)
+plt.ylabel('Number of DMA transfers\n(norm. to GEDF-N)', fontsize=35)
 plt.yticks(fontsize=35)
-plt.ylim([0, 90])
-#plt.gca().yaxis.set_major_locator(plt.MultipleLocator(5))
+plt.ylim([0, 1.7])
+plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.2))
 
 plt.legend(loc="upper left", ncol=5, fontsize=35)
 plt.grid(color='silver', linestyle='-', linewidth=1)

@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-hatch = {'FCFS': '*', 'LEDF': '.', 'GEDF': 'xx', 'GLAX': '/'}
+hatch = {'FCFS': '*', 'LEDF': '.', 'GLAX': 'xx', 'APRX3': '/'}
 
 def geo_mean(iterable):
     a = np.array(iterable)
@@ -20,8 +20,8 @@ def add_plot(offset, policy, label):
         plt.bar([i+offset for i in x], total_mem_time[policy], edgecolor='k',
                 width=width, label=label, fc='k')
 
+policies = ['FCFS', 'LEDF', 'GEDF', 'GLAX', 'APRX3', 'xbar']
 applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
-policies = ['FCFS', 'LEDF', 'GEDF', 'GLAX', 'APRX3']
 
 num_acc_types = 7
 num_instances = [1, 2, 1, 4, 1, 1, 1]
@@ -39,8 +39,10 @@ for policy in policies:
                 for i in range(num_acc_types)]
 
         # load the critical path
-        out_file = '/u/sgupta45/scheduler/critical_paths/' + policy + '/' + \
-                '_'.join(app_mix)
+        out_file = '/u/sgupta45/scheduler/critical_paths/'
+        if policy == 'xbar': out_file += 'APRX3/' + '_'.join(app_mix)
+        else:                out_file += policy + '/' + '_'.join(app_mix)
+
         for line in open(out_file):
             tokens = line.split()
             if len(tokens) == 0: continue
@@ -51,13 +53,19 @@ for policy in policies:
 
             critical_path[acc_type][acc_inst].append(node_id)
 
-        # load all compute and memory access times
-        out_file = '/u/sgupta45/gem5-SALAM/BM_ARM_OUT/' + \
-                'image_4_parallel_dma_bus/'
+        # load all memory access times
+        app_mix_str = ''
         for app in applications:
-            out_file += app + '_'
-            out_file += '4_' if app in app_mix else '0_'
-        out_file += policy + '_pipeline/debug-trace.txt'
+            app_mix_str += app + '_'
+            app_mix_str += '4_' if app in app_mix else '0_'
+
+        out_file = '/u/sgupta45/gem5-SALAM/BM_ARM_OUT/'
+        if policy == 'xbar':
+            out_file += 'image_4_parallel_dma_xbar/' + app_mix_str + \
+                    'APRX3_pipeline/debug-trace.txt'
+        else:
+            out_file += 'image_4_parallel_dma_bus/' + app_mix_str + policy + \
+                    '_pipeline/debug-trace.txt'
 
         for acc_type in range(num_acc_types):
             for acc_inst in range(num_instances[acc_type]):
@@ -88,7 +96,6 @@ for policy in policies:
                             is_compute_valid = True
 
         # accumulate compute and mem time on the critical path
-        compute_critical = 0
         mem_critical = 0
 
         for acc_type in range(num_acc_types):
@@ -114,11 +121,12 @@ x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))] + ['Gmean']
 plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
 
-width = 0.20
-add_plot(-((3*width)/2), 'FCFS',  'FCFS')
-add_plot(-(width/2),     'LEDF',  'GEDF-D')
-add_plot((width/2),      'GLAX',  'LAX')
-add_plot(((3*width)/2),  'APRX3', 'ELF')
+width = 0.16
+add_plot(-(width*2), 'FCFS',  'FCFS')
+add_plot(-width,     'LEDF',  'GEDF-D')
+add_plot(0,          'GLAX',  'LAX')
+add_plot(width,      'APRX3', 'ELF')
+add_plot((width*2),  'xbar',  'ELF-xbar')
 
 plt.xlabel('Application mix', fontsize=35)
 plt.xticks(x, x_labels, fontsize=35, rotation='vertical')
