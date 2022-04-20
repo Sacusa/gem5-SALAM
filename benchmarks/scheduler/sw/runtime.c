@@ -107,10 +107,6 @@ inline void run_canny_non_max(int device_id, volatile task_struct_t *req,
 
     // return if there are no available output partitions
     if (acc->status == ACC_STATUS_IDLE) {
-#ifdef TIME
-        m5_timer_start(2);
-#endif
-
         for (int i = 0; i < 2; i++) {
             if (acc->spm_pending_reads[i] == 0) {
                 acc->curr_spm_out_part = i;
@@ -128,15 +124,9 @@ inline void run_canny_non_max(int device_id, volatile task_struct_t *req,
         } else {
             hypo_addr = (uint32_t) args->hypotenuse;
         }
-#ifdef TIME
-        m5_timer_stop(2);
-#endif
     }
 
     if (acc->status == ACC_STATUS_DMA_ARG1) {
-#ifdef TIME
-        m5_timer_start(2);
-#endif
         // check if we need to forward theta
         if (req->producer_forward[1]) {
             theta_addr =
@@ -144,24 +134,12 @@ inline void run_canny_non_max(int device_id, volatile task_struct_t *req,
         } else {
             theta_addr = (uint32_t) args->theta;
         }
-#ifdef TIME
-        m5_timer_stop(2);
-#endif
     }
 
-#ifdef TIME
-    m5_timer_start(3);
-#endif
     canny_non_max_driver(device_id, IMG_HEIGHT, IMG_WIDTH, hypo_addr,
             theta_addr, 0, acc->spm_part[acc->curr_spm_out_part], acc);
-#ifdef TIME
-    m5_timer_stop(3);
-#endif
 
     if (acc->status == ACC_STATUS_RUNNING) {
-#ifdef TIME
-        m5_timer_start(2);
-#endif
         // reduce pending reads for the hypotenuse producer
         if (req->producer_forward[0]) {
             req->producer_acc[0]->spm_pending_reads[
@@ -173,9 +151,6 @@ inline void run_canny_non_max(int device_id, volatile task_struct_t *req,
             req->producer_acc[1]->spm_pending_reads[
                 req->producer_spm_part[1]]--;
         }
-#ifdef TIME
-        m5_timer_stop(2);
-#endif
     }
 }
 
@@ -473,10 +448,6 @@ inline void run_isp(int device_id, volatile task_struct_t *req,
 inline void run_accelerator(int acc_id, int device_id,
         volatile task_struct_t *req, volatile acc_state_t *acc)
 {
-#ifdef TIME
-    m5_timer_start(1);
-#endif
-
     // accelerator specific parsing and driver code
     switch (acc_id) {
         case ACC_CANNY_NON_MAX:
@@ -516,10 +487,6 @@ inline void run_accelerator(int acc_id, int device_id,
     }
 
     acc->running_req = req;
-
-#ifdef TIME
-    m5_timer_stop(1);
-#endif
 }
 
 /**
@@ -591,10 +558,6 @@ inline void finish_isp(int device_id, volatile task_struct_t *req,
 inline void finish_accelerator(int acc_id, int device_id,
         volatile task_struct_t *req, volatile acc_state_t *acc)
 {
-#ifdef TIME
-    m5_timer_start(1);
-#endif
-
     // we need to dump output to memory if even one of the children nodes is
     // not pipelined
     uint8_t perform_mem_write = 0;
@@ -644,10 +607,6 @@ inline void finish_accelerator(int acc_id, int device_id,
 
     *(acc->flags) = 0;
     acc->running_req = NULL;
-
-#ifdef TIME
-    m5_timer_stop(1);
-#endif
 }
 
 /**
@@ -671,7 +630,6 @@ void launch_requests()
                 run_accelerator(i, j, curr_req, &acc_state[i][j]);
 
                 if (acc_state[i][j].status == ACC_STATUS_IDLE) {
-                    printf("Unable to launch on i=%d, j=%d\n", i, j);
                     continue;
                 }
 

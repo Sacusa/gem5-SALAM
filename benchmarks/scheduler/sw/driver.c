@@ -27,9 +27,6 @@ inline void canny_non_max_driver(
         int device_id, uint32_t img_height, uint32_t img_width,
         uint32_t hypo_addr, uint32_t theta_addr, uint32_t output_addr,
         uint32_t output_spm_addr, volatile acc_state_t *acc) {
-#ifdef TIME
-    m5_timer_start(4);
-#endif
     // accelerator offsets
     const uint32_t offset_dma = CNM0_DMA - CNM0_BASE;
     const uint32_t offset_hypo_spm = CNM0_HYPO_SPM - CNM0_BASE;
@@ -56,11 +53,6 @@ inline void canny_non_max_driver(
     volatile uint32_t *CNMImgHeight     = (uint32_t*) (mmr_addr + 1);
     volatile uint32_t *CNMImgWidth      = (uint32_t*) (mmr_addr + 9);
     volatile uint32_t *CNMOutputSpmAddr = (uint32_t*) (mmr_addr + 17);
-
-#ifdef TIME
-    m5_timer_stop(4);
-    m5_timer_start(5);
-#endif
 
     if (acc->status == ACC_STATUS_IDLE) {
         // DMA transfer for hypotenuse
@@ -123,10 +115,6 @@ inline void canny_non_max_driver(
 
         acc->status = ACC_STATUS_DMA_OUT;
     }
-
-#ifdef TIME
-    m5_timer_stop(5);
-#endif
 }
 
 inline void convolution_driver(
