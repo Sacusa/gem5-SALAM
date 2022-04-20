@@ -1207,9 +1207,6 @@ class LPDDR5_5500_1x16_BG_BL32(DRAMCtrl):
     # Increase buffer size to account for more bank resources
     read_buffer_size = 64
 
-    # Set page policy to better suit DMC Huxley
-    page_policy = 'close_adaptive'
-
     # 16-bit channel interface
     device_bus_width = 16
 
