@@ -41,7 +41,7 @@ done
 cp main0.template main.c
 
 # generate scheduler command and store the schedule
-scheduler_command="./main.py ${policy} resource_configs/resources.cfg 1"
+scheduler_command="./main.py -p ${policy} -c"
 for (( i=0; i<${num_canny}; i++)); do
     scheduler_command+=" dags/canny.cfg"
 done

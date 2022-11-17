@@ -14,5 +14,6 @@ do
     ./create_binary.sh ${policy} gru    4 harris 4 lstm   4
 done
 
-mkdir -p bin
-mv *.elf bin/
+OUTDIR=bin
+mkdir -p ${OUTDIR}
+mv *.elf ${OUTDIR}
