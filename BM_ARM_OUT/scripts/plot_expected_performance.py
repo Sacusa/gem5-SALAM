@@ -34,7 +34,7 @@ for line in open(input_file):
     tokens = line.strip().split()
     policy = tokens[0][1:-1]
 
-    stat_value[policy].append(float(tokens[21][:-1]))
+    stat_value[policy].append(float(tokens[29][:-1]))
 
 # Normalize the results and calculate geomean
 #for policy in policies:

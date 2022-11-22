@@ -9,6 +9,8 @@ class ReadState(Enum):
     REM_ARGUMENTS = auto()
     RESULTS = auto()
 
+avg = lambda l : sum(l) / len(l)
+
 def acc_runtime(ax):
     accelerators = ['canny_non_max', 'convolution', 'edge_tracking',
             'elem_matrix', 'grayscale', 'harris_non_max', 'isp']
@@ -23,12 +25,12 @@ def acc_runtime(ax):
             if 'Transfer completed' in line:
                 time = float(line.split()[5])
 
-                if read_state.FIRST_ARGUMENT:
+                if read_state == ReadState.FIRST_ARGUMENT:
                     runtime['memory'][i].append(time)
                     read_state = ReadState.REM_ARGUMENTS
-                elif read_state.REM_ARGUMENTS:
+                elif read_state == ReadState.REM_ARGUMENTS:
                     runtime['memory'][i][-1] += time
-                elif read_state.RESULTS:
+                elif read_state == ReadState.RESULTS:
                     runtime['memory'][i][-1] += time
                     read_state = ReadState.FIRST_ARGUMENT
                 else:
@@ -46,8 +48,12 @@ def acc_runtime(ax):
             avg_compute_ratio += compute_time / (compute_time + memory_time)
         avg_compute_ratio = (avg_compute_ratio / len(runtime['compute'][i])) * 100
 
+        print(acc + ': ' + str(avg(runtime['compute'][i])) + ', ' + \
+                str(avg(runtime['memory'][i])) + ', ' + \
+                str(100 - avg_compute_ratio))
         runtime['compute'][i] = avg_compute_ratio
         runtime['memory'][i] = 100 - avg_compute_ratio
+    print()
 
     # add the bars
     rects1 = ax.bar(accelerators, runtime['compute'], width, label='Compute',
@@ -77,7 +83,12 @@ def pipeline_runtime(ax):
         runtime['memory'].append(0)
         read_state = ReadState.FIRST_ARGUMENT
 
-        for line in open('../no_fwd/' + pipeline + '_no_fwd/debug-trace.txt'):
+        app_mix_str = ''
+        for app in sorted(pipelines):
+            app_mix_str += app + '_'
+            app_mix_str += '1_' if app == pipeline else '0_'
+
+        for line in open('../solo_app_wo_fwd/' + app_mix_str + 'GEDF/debug-trace.txt'):
             if 'Transfer completed' in line:
                 runtime['memory'][i] += float(line.split()[5])
 
@@ -86,6 +97,9 @@ def pipeline_runtime(ax):
 
         compute_ratio = (runtime['compute'][i] / (runtime['compute'][i] + \
                 runtime['memory'][i])) * 100
+
+        print(pipeline + ': ' + str(runtime['compute'][i]) + ', ' + \
+                str(runtime['memory'][i]) + ', ' + str(100 - compute_ratio))
         runtime['compute'][i] = compute_ratio
         runtime['memory'][i] = 100 - compute_ratio
 
@@ -101,7 +115,7 @@ def pipeline_runtime(ax):
     ax.set_xticklabels(pipelines, rotation='vertical')
 
     ax.set_yticks(range(10, 110, 10))
-    #ax.set_ylabel('Time (%)', fontsize=25)
+    ax.set_ylabel('Time (%)', fontsize=25)
     ax.set_ylim([0,120])
 
     ax.grid(color='silver', linestyle='-', linewidth=1, zorder=0)

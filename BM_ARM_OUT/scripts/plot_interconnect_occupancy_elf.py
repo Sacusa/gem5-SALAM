@@ -62,6 +62,8 @@ for app_mix in app_mixes:
 for policy in policies_ext:
     occupancy[policy].append(geo_mean(occupancy[policy]))
 
+print(occupancy['xbar'])
+
 # plot parameters
 x = np.arange(len(app_mixes) + 1)
 
