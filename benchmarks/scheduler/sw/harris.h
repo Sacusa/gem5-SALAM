@@ -454,7 +454,7 @@ void init_harris()
 #endif
 }
 
-void add_harris_dag(task_struct_t ***nodes, int num_images)
+void add_harris_dag(task_struct_t ***nodes, int *num_nodes, int num_images)
 {
     harris_data_t *imgs = (harris_data_t*)
         get_memory(num_images * sizeof(harris_data_t));
@@ -482,6 +482,8 @@ void add_harris_dag(task_struct_t ***nodes, int num_images)
 
         // Step 5: Non-max suppression
         harris_non_max_suppression(&imgs[i], nodes[i]);
+
+        num_nodes[i] = 18;
     }
 }
 

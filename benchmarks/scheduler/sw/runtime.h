@@ -19,8 +19,10 @@
 #define MAX_CHILDREN        50
 #define MAX_DAGS            50
 #define MAX_NODES           500
-//#define VERIFY
+#define MAX_READY_QUEUE_SIZE 500
+#define VERIFY
 //#define TIME
+#define DEBUG
 
 /**
  * Bookkeeping for accelerators
@@ -50,8 +52,20 @@ enum req_status_t {
     REQ_STATUS_COMPLETED
 };
 
+/**
+ * Supported scheduling policies
+ */
+enum scheduling_policy_t {
+    FCFS = 0,
+    GEDF_D,
+    GEDF_N,
+    LAX,
+    ELF
+};
+
 typedef struct task_struct_t task_struct_t;
 typedef struct acc_state_t acc_state_t;
+typedef enum scheduling_policy_t scheduling_policy_t;
 
 struct task_struct_t {
     /**
@@ -98,7 +112,7 @@ struct acc_state_t {
      * Bookkeeping structures
      */
     uint8_t status;
-    task_struct_t *running_req;
+    volatile task_struct_t *running_req;
     uint8_t curr_spm_out_part;
     uint8_t spm_pending_reads[MAX_ACC_SPM_PARTS];
 };
@@ -155,7 +169,7 @@ typedef struct {
 /**
  * The actual runtime
  */
-void runtime(task_struct_t****, int**);
+void runtime(task_struct_t ***, int, int [MAX_DAGS], scheduling_policy_t);
 
 // helper methods
 void assertf(bool, const char*, ...);

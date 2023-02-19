@@ -428,7 +428,8 @@ void init_lstm()
 #endif
 }
 
-void add_lstm_dag(task_struct_t ***nodes, int num_frames, int seq_length)
+void add_lstm_dag(task_struct_t ***nodes, int *num_nodes, int num_frames,
+        int seq_length)
 {
     const int nodes_per_cell = 18;
 
@@ -450,6 +451,8 @@ void add_lstm_dag(task_struct_t ***nodes, int num_frames, int seq_length)
             lstm_output_gate(cell, nodes[i], node_index + 13,
                     j == (seq_length - 1));
         }
+
+        num_nodes[i] = nodes_per_cell * seq_length;
     }
 }
 

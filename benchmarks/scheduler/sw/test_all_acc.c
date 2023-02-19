@@ -27,31 +27,18 @@ void harris_non_max_check_output(harris_non_max_args*, uint8_t*);
 void add_isp();
 void isp_check_output(isp_args*);
 
-task_struct_t ****run_queue;
-int **run_queue_size;
+task_struct_t ***nodes;
 
 int main(void)
 {
-    run_queue = (task_struct_t****)
-        get_memory(NUM_ACCS * sizeof(task_struct_t***));
-    run_queue_size = (int**) get_memory(NUM_ACCS * sizeof(int*));
+    int num_dags = NUM_ACCS;
+    int num_nodes[MAX_DAGS];
 
-    for (int i = 0; i < NUM_ACCS; i++) {
-        run_queue[i] = (task_struct_t***)
-            get_memory(MAX_ACC_INSTANCES * sizeof(task_struct_t**));
-        run_queue_size[i] = (int*)
-            get_memory(MAX_ACC_INSTANCES * sizeof(int));
+    nodes = (task_struct_t***) get_memory(num_dags * sizeof(task_struct_t**));
 
-        for (int j = 0; j < MAX_ACC_INSTANCES; j++) {
-            run_queue[i][j] = (task_struct_t**)
-                get_memory(MAX_NODES * sizeof(task_struct_t*));
-        }
-    }
-
-    for (int i = 0; i < NUM_ACCS; i++) {
-        for (int j = 0; j < MAX_ACC_INSTANCES; j++) {
-            run_queue_size[i][j] = 0;
-        }
+    for (int i = 0; i < num_dags; i++) {
+        nodes[i] = (task_struct_t**) get_memory(sizeof(task_struct_t*));
+        num_nodes[i] = 1;
     }
 
     add_canny_non_max();
@@ -62,23 +49,24 @@ int main(void)
     uint8_t *expected = add_harris_non_max();
     add_isp();
 
-    runtime(run_queue, run_queue_size);
+    runtime(nodes, num_dags, num_nodes, FCFS);
 
 #ifdef VERIFY
+    // TODO: fix the following
     canny_non_max_check_output((canny_non_max_args*)
-            run_queue[ACC_CANNY_NON_MAX][0][0]->acc_args);
+            nodes[ACC_CANNY_NON_MAX][0]->acc_args);
     convolution_check_output((convolution_args*)
-            run_queue[ACC_CONVOLUTION][0][0]->acc_args);
+            nodes[ACC_CONVOLUTION][0]->acc_args);
     edge_tracking_check_output((edge_tracking_args*)
-            run_queue[ACC_EDGE_TRACKING][0][0]->acc_args);
+            nodes[ACC_EDGE_TRACKING][0]->acc_args);
     elem_matrix_check_output((elem_matrix_args*)
-            run_queue[ACC_ELEM_MATRIX][0][0]->acc_args);
+            nodes[ACC_ELEM_MATRIX][0]->acc_args);
     grayscale_check_output((grayscale_args*)
-            run_queue[ACC_GRAYSCALE][0][0]->acc_args);
+            nodes[ACC_GRAYSCALE][0]->acc_args);
     harris_non_max_check_output((harris_non_max_args*)
-            run_queue[ACC_HARRIS_NON_MAX][0][0]->acc_args, expected);
+            nodes[ACC_HARRIS_NON_MAX][0]->acc_args, expected);
     isp_check_output((isp_args*)
-            run_queue[ACC_ISP][0][0]->acc_args);
+            nodes[ACC_ISP][0]->acc_args);
 #endif
 
     m5_exit();
@@ -127,8 +115,7 @@ void add_canny_non_max()
         }
     }
 
-    run_queue[ACC_CANNY_NON_MAX][0][0] = req;
-    run_queue_size[ACC_CANNY_NON_MAX][0] = 1;
+    nodes[ACC_CANNY_NON_MAX][0] = req;
 }
 
 void canny_non_max_check_output(canny_non_max_args *args)
@@ -244,8 +231,7 @@ void add_convolution()
         }
     }
 
-    run_queue[ACC_CONVOLUTION][0][0] = req;
-    run_queue_size[ACC_CONVOLUTION][0] = 1;
+    nodes[ACC_CONVOLUTION][0] = req;
 }
 
 void convolution_check_output(convolution_args *args)
@@ -332,8 +318,7 @@ void add_edge_tracking()
         }
     }
 
-    run_queue[ACC_EDGE_TRACKING][0][0] = req;
-    run_queue_size[ACC_EDGE_TRACKING][0] = 1;
+    nodes[ACC_EDGE_TRACKING][0] = req;
 }
 
 void edge_tracking_check_output(edge_tracking_args* args)
@@ -402,8 +387,7 @@ void add_elem_matrix()
         args->output[i] = -1;
     }
 
-    run_queue[ACC_ELEM_MATRIX][0][0] = req;
-    run_queue_size[ACC_ELEM_MATRIX][0] = 1;
+    nodes[ACC_ELEM_MATRIX][0] = req;
 }
 
 void elem_matrix_check_output(elem_matrix_args* args)
@@ -458,8 +442,7 @@ void add_grayscale()
         args->output[i] = -1;
     }
 
-    run_queue[ACC_GRAYSCALE][0][0] = req;
-    run_queue_size[ACC_GRAYSCALE][0] = 1;
+    nodes[ACC_GRAYSCALE][0] = req;
 }
 
 void grayscale_check_output(grayscale_args *args)
@@ -553,8 +536,7 @@ uint8_t *add_harris_non_max()
         }
     }
 
-    run_queue[ACC_HARRIS_NON_MAX][0][0] = req;
-    run_queue_size[ACC_HARRIS_NON_MAX][0] = 1;
+    nodes[ACC_HARRIS_NON_MAX][0] = req;
 
     return expected;
 }
@@ -608,8 +590,7 @@ void add_isp()
 
     memset(args->input, 128, (IMG_HEIGHT+2) * (IMG_WIDTH+2));
 
-    run_queue[ACC_ISP][0][0] = req;
-    run_queue_size[ACC_ISP][0] = 1;
+    nodes[ACC_ISP][0] = req;
 }
 
 void isp_check_output(isp_args *args)

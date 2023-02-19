@@ -348,7 +348,7 @@ void init_canny()
 #endif
 }
 
-void add_canny_dag(task_struct_t ***nodes, int num_images)
+void add_canny_dag(task_struct_t ***nodes, int *num_nodes, int num_images)
 {
     canny_data_t *imgs = (canny_data_t*)
         get_memory(num_images * sizeof(canny_data_t));
@@ -376,6 +376,8 @@ void add_canny_dag(task_struct_t ***nodes, int num_images)
 
         // Steps 5 and 6: Double threshold and edge tracking by hysteresis
         canny_thr_and_edge_tracking(&imgs[i], nodes[i]);
+
+        num_nodes[i] = 12;
     }
 }
 

@@ -50,12 +50,15 @@ int acc_spm_part_offset[NUM_ACCS][MAX_ACC_SPM_PARTS] = {
 };
 
 volatile acc_state_t acc_state[NUM_ACCS][MAX_ACC_INSTANCES];
-volatile task_struct_t *run_queue[NUM_ACCS][MAX_ACC_INSTANCES][MAX_NODES];
-volatile int run_queue_size[NUM_ACCS][MAX_ACC_INSTANCES];
-volatile int run_queue_index[NUM_ACCS][MAX_ACC_INSTANCES];
+volatile int num_available_instances[NUM_ACCS];
+volatile task_struct_t *ready_queue[NUM_ACCS][MAX_READY_QUEUE_SIZE];
+volatile int ready_queue_size[NUM_ACCS];
+volatile int ready_queue_start[NUM_ACCS];
+volatile int ready_queue_end[NUM_ACCS];
 volatile int num_running = 0;
+volatile scheduling_policy_t scheduling_policy;
 
-inline void init_task_struct(task_struct_t *task_struct)
+void init_task_struct(task_struct_t *task_struct)
 {
     for (int i = 0; i < MAX_ACC_ARGS; i++) {
         task_struct->producer_forward[i] = 0;
@@ -76,7 +79,7 @@ void assertf(bool cond, const char * format, ...)
     }
 }
 
-inline void enable_interrupts()
+void enable_interrupts()
 {
     __asm__ ("push {r1}");
     __asm__ ("mrs r1, CPSR");
@@ -85,7 +88,7 @@ inline void enable_interrupts()
     __asm__ ("pop {r1}");
 }
 
-inline void disable_interrupts()
+void disable_interrupts()
 {
     __asm__ ("push {r1}");
     __asm__ ("mrs r1, CPSR");
@@ -98,7 +101,7 @@ inline void disable_interrupts()
  * Functions for running each accelerator
  */
 
-inline void run_canny_non_max(int device_id, volatile task_struct_t *req,
+void run_canny_non_max(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     canny_non_max_args *args = (canny_non_max_args*) req->acc_args;
@@ -154,7 +157,7 @@ inline void run_canny_non_max(int device_id, volatile task_struct_t *req,
     }
 }
 
-inline void run_convolution(int device_id, volatile task_struct_t *req,
+void run_convolution(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     convolution_args *args = (convolution_args*) req->acc_args;
@@ -206,7 +209,7 @@ inline void run_convolution(int device_id, volatile task_struct_t *req,
     }
 }
 
-inline void run_edge_tracking(int device_id, volatile task_struct_t *req,
+void run_edge_tracking(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     edge_tracking_args *args = (edge_tracking_args*) req->acc_args;
@@ -245,7 +248,7 @@ inline void run_edge_tracking(int device_id, volatile task_struct_t *req,
     }
 }
 
-inline void run_elem_matrix(int device_id, volatile task_struct_t *req,
+void run_elem_matrix(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     elem_matrix_args *args = (elem_matrix_args*) req->acc_args;
@@ -331,7 +334,7 @@ inline void run_elem_matrix(int device_id, volatile task_struct_t *req,
     }
 }
 
-inline void run_grayscale(int device_id, volatile task_struct_t *req,
+void run_grayscale(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     grayscale_args *args = (grayscale_args*) req->acc_args;
@@ -369,7 +372,7 @@ inline void run_grayscale(int device_id, volatile task_struct_t *req,
     }
 }
 
-inline void run_harris_non_max(int device_id, volatile task_struct_t *req,
+void run_harris_non_max(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     harris_non_max_args *args = (harris_non_max_args*) req->acc_args;
@@ -407,7 +410,7 @@ inline void run_harris_non_max(int device_id, volatile task_struct_t *req,
     }
 }
 
-inline void run_isp(int device_id, volatile task_struct_t *req,
+void run_isp(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     isp_args *args = (isp_args*) req->acc_args;
@@ -445,9 +448,11 @@ inline void run_isp(int device_id, volatile task_struct_t *req,
     }
 }
 
-inline void run_accelerator(int acc_id, int device_id,
-        volatile task_struct_t *req, volatile acc_state_t *acc)
+void run_accelerator(int acc_id, int device_id,
+        volatile task_struct_t *req)
 {
+    volatile acc_state_t *acc = &acc_state[acc_id][device_id];
+
     // accelerator specific parsing and driver code
     switch (acc_id) {
         case ACC_CANNY_NON_MAX:
@@ -473,19 +478,6 @@ inline void run_accelerator(int acc_id, int device_id,
             break;
     }
 
-    if (acc->status == ACC_STATUS_RUNNING) {
-        // set the number of pending reads only after the accelerator
-        // starts running
-        for (int c = 0; c < req->num_children; c++) {
-            task_struct_t *child = req->children[c];
-            for (int a = 0; a < MAX_ACC_ARGS; a++) {
-                if ((child->producer[a] == req) && child->producer_forward[a]) {
-                    acc->spm_pending_reads[acc->curr_spm_out_part]++;
-                }
-            }
-        }
-    }
-
     acc->running_req = req;
 }
 
@@ -493,7 +485,7 @@ inline void run_accelerator(int acc_id, int device_id,
  * Functions for copying accelerator outputs
  */
 
-inline void finish_canny_non_max(int device_id, volatile task_struct_t *req,
+void finish_canny_non_max(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     canny_non_max_args *args = (canny_non_max_args*) req->acc_args;
@@ -502,7 +494,7 @@ inline void finish_canny_non_max(int device_id, volatile task_struct_t *req,
             acc);
 }
 
-inline void finish_convolution(int device_id, volatile task_struct_t *req,
+void finish_convolution(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     convolution_args *args = (convolution_args*) req->acc_args;
@@ -511,7 +503,7 @@ inline void finish_convolution(int device_id, volatile task_struct_t *req,
             acc);
 }
 
-inline void finish_edge_tracking(int device_id, volatile task_struct_t *req,
+void finish_edge_tracking(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     edge_tracking_args *args = (edge_tracking_args*) req->acc_args;
@@ -520,7 +512,7 @@ inline void finish_edge_tracking(int device_id, volatile task_struct_t *req,
             acc);
 }
 
-inline void finish_elem_matrix(int device_id, volatile task_struct_t *req,
+void finish_elem_matrix(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     elem_matrix_args *args = (elem_matrix_args*) req->acc_args;
@@ -529,7 +521,7 @@ inline void finish_elem_matrix(int device_id, volatile task_struct_t *req,
             acc->spm_part[acc->curr_spm_out_part], acc);
 }
 
-inline void finish_grayscale(int device_id, volatile task_struct_t *req,
+void finish_grayscale(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     grayscale_args *args = (grayscale_args*) req->acc_args;
@@ -538,7 +530,7 @@ inline void finish_grayscale(int device_id, volatile task_struct_t *req,
             acc);
 }
 
-inline void finish_harris_non_max(int device_id, volatile task_struct_t *req,
+void finish_harris_non_max(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     harris_non_max_args *args = (harris_non_max_args*) req->acc_args;
@@ -547,7 +539,7 @@ inline void finish_harris_non_max(int device_id, volatile task_struct_t *req,
             acc);
 }
 
-inline void finish_isp(int device_id, volatile task_struct_t *req,
+void finish_isp(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     isp_args *args = (isp_args*) req->acc_args;
@@ -555,26 +547,10 @@ inline void finish_isp(int device_id, volatile task_struct_t *req,
             acc->spm_part[acc->curr_spm_out_part], acc);
 }
 
-inline void finish_accelerator(int acc_id, int device_id,
-        volatile task_struct_t *req, volatile acc_state_t *acc)
+void finish_accelerator(int acc_id, int device_id,
+        volatile task_struct_t *req, bool perform_mem_write)
 {
-    // we need to dump output to memory if even one of the children nodes is
-    // not pipelined
-    uint8_t perform_mem_write = 0;
-
-    if (!req->num_children) {
-        perform_mem_write = 1;
-    }
-
-    for (int c = 0; (c < req->num_children) && !perform_mem_write; c++) {
-        task_struct_t *child = req->children[c];
-        for (int a = 0; a < MAX_ACC_ARGS; a++) {
-            if ((child->producer[a] == req) && !child->producer_forward[a]) {
-                perform_mem_write = 1;
-                break;
-            }
-        }
-    }
+    volatile acc_state_t *acc = &acc_state[acc_id][device_id];
 
     if (perform_mem_write) {
         switch (acc_id) {
@@ -613,35 +589,92 @@ inline void finish_accelerator(int acc_id, int device_id,
  * The actual runtime
  */
 
+void push_request(task_struct_t *req)
+{
+    int acc_id = req->acc_id;
+
+    if (ready_queue_size[acc_id] == MAX_READY_QUEUE_SIZE) {
+        m5_fail_1();
+    }
+
+    ready_queue[acc_id][ready_queue_end[acc_id]] = req;
+    ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                              MAX_READY_QUEUE_SIZE;
+
+    ready_queue_size[acc_id]++;
+
+#ifdef DEBUG
+    printf("Pushing ready request for acc id %d\n", req->acc_id);
+#endif
+}
+
+volatile task_struct_t *peek_request(int acc_id)
+{
+    if (ready_queue_size[acc_id] == 0) { return NULL; }
+
+    return ready_queue[acc_id][ready_queue_start[acc_id]];
+}
+
+volatile task_struct_t *pop_request(int acc_id)
+{
+    volatile task_struct_t *req = peek_request(acc_id);
+
+    if (req != NULL) {
+        ready_queue_start[acc_id] = (ready_queue_start[acc_id] + 1) % \
+                                    MAX_READY_QUEUE_SIZE;
+        ready_queue_size[acc_id]--;
+    }
+
+    return req;
+}
+
 void launch_requests()
 {
     for (int i = 0; i < NUM_ACCS; i++) {
-        for (int j = 0; j < acc_instances[i]; j++) {
-            if (run_queue_index[i][j] == run_queue_size[i][j]) {
-                continue;
-            }
-
-            volatile task_struct_t *curr_req =
-                run_queue[i][j][run_queue_index[i][j]];
-
-            // Launch the ready request for this accelerator
-            if ((acc_state[i][j].status == ACC_STATUS_IDLE) && \
-                (curr_req->status == REQ_STATUS_READY)) {
-                run_accelerator(i, j, curr_req, &acc_state[i][j]);
-
+        while ((ready_queue_size[i] > 0) && \
+               (num_available_instances[i] > 0)) {
+            for (int j = 0; j < acc_instances[i]; j++) {
                 if (acc_state[i][j].status == ACC_STATUS_IDLE) {
-                    continue;
-                }
+                    volatile task_struct_t *req = peek_request(i);
+                    run_accelerator(i, j, req);
 
-                curr_req->status = REQ_STATUS_COMPLETED;
-                run_queue_index[i][j]++;
-                num_running++;
+                    if (acc_state[i][j].status == ACC_STATUS_IDLE) {
+                        continue;
+                    }
+
+                    req = pop_request(i);
+                    req->status = REQ_STATUS_COMPLETED;
+                    num_running++;
+                    num_available_instances[i]--;
+
+                    break;
+                }
             }
         }
     }
 }
 
-void runtime(task_struct_t ****run_queue_arg, int **run_queue_size_arg)
+void schedule_fcfs()
+{
+    /* FCFS does not reorder requests; it just executes requests in the order
+     * they become ready, so nothing to do here.
+     */
+    return;
+}
+
+void schedule()
+{
+    switch (scheduling_policy) {
+        case FCFS: schedule_fcfs(); break;
+        case GEDF_D:
+        case GEDF_N:
+        case LAX:
+        case ELF: assertf(false, "Policy not implemented");
+    }
+}
+
+void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
+        scheduling_policy_t policy)
 {
 #ifdef TIME
     m5_timer_start(0);
@@ -663,12 +696,22 @@ void runtime(task_struct_t ****run_queue_arg, int **run_queue_size_arg)
             acc_state[i][j].status = ACC_STATUS_IDLE;
             acc_state[i][j].running_req = NULL;
             acc_state[i][j].curr_spm_out_part = 0;
+        }
 
-            for (int k = 0; k < MAX_NODES; k++) {
-                run_queue[i][j][k] = run_queue_arg[i][j][k];
+        ready_queue_size[i] = 0;
+        ready_queue_start[i] = 0;
+        ready_queue_end[i] = 0;
+
+        num_available_instances[i] = acc_instances[i];
+    }
+
+    scheduling_policy = policy;
+
+    for (int i = 0; i < num_dags; i++) {
+        for (int j = 0; j < num_nodes[i]; j++) {
+            if (nodes[i][j]->num_parents == 0) {
+                push_request(nodes[i][j]);
             }
-            run_queue_size[i][j] = run_queue_size_arg[i][j];
-            run_queue_index[i][j] = 0;
         }
     }
 
@@ -682,9 +725,11 @@ void runtime(task_struct_t ****run_queue_arg, int **run_queue_size_arg)
     m5_timer_start(0);
 #endif
 
-    // launch more ready requests
+    schedule();
+
+    // launch ready requests
     disable_interrupts();
-    launch_requests();
+    launch_requests(nodes);
     enable_interrupts();
 
     while (num_running);
@@ -698,48 +743,73 @@ void runtime(task_struct_t ****run_queue_arg, int **run_queue_size_arg)
 
 void isr(int i, int j)  // i = accelerator id, j = device id
 {
-    bool can_launch_requests = false;
-
     if ((acc_state[i][j].status == ACC_STATUS_DMA_ARG1) ||
         (acc_state[i][j].status == ACC_STATUS_DMA_ARG2)) {
         *acc_state[i][j].dma = 0;
-        run_accelerator(i, j, acc_state[i][j].running_req,
-                &acc_state[i][j]);
+        run_accelerator(i, j, acc_state[i][j].running_req);
     }
 
     else if (acc_state[i][j].status == ACC_STATUS_RUNNING) {
         *acc_state[i][j].flags = 0;
 
-        task_struct_t *node = acc_state[i][j].running_req;
+        volatile task_struct_t *node = acc_state[i][j].running_req;
 
         for (int c = 0; c < node->num_children; c++) {
             task_struct_t *child = node->children[c];
 
             child->completed_parents++;
 
-            if (child->completed_parents == \
-                child->num_parents) {
+            if (child->completed_parents == child->num_parents) {
                 child->status = REQ_STATUS_READY;
-                can_launch_requests = true;
-            }
-
-            // set parent SPM partitions if forwarding data
-            for (int a = 0; a < MAX_ACC_ARGS; a++) {
-                if ((child->producer[a] == node) &&
-                    child->producer_forward[a]) {
-                    child->producer_spm_part[a] =
-                        acc_state[i][j].curr_spm_out_part;
-                    child->producer_acc[a] =
-                        &acc_state[i][j];
-                }
+                push_request(child);
             }
         }
 
-        finish_accelerator(i, j, node, &acc_state[i][j]);
+        num_available_instances[i]++;
+        schedule();
 
-        if (acc_state[i][j].status == ACC_STATUS_IDLE) {
+        int node_spm_out_part = acc_state[i][j].curr_spm_out_part;
+        int num_forwards = 0;
+
+        for (int c = 0; c < node->num_children; c++) {
+            task_struct_t *child = node->children[c];
+
+            int ready_queue_index = ready_queue_start[child->acc_id];
+
+            for (int n = 0; n < num_available_instances[child->acc_id]; n++) {
+                if (ready_queue[child->acc_id][ready_queue_index] == child) {
+                    // The child node is among the next set of nodes to be
+                    // scheduled, so update its metadata to receive data
+                    // from the producer
+                    for (int a = 0; a < MAX_ACC_ARGS; a++) {
+                        if (child->producer[a] == node) {
+                            child->producer_forward[a] = 1;
+                            child->producer_acc[a] = &acc_state[i][j];
+                            child->producer_spm_part[a] = node_spm_out_part;
+
+                            break;
+                        }
+                    }
+
+                    num_forwards++;
+                    break;
+                }
+
+                ready_queue_index = (ready_queue_index + 1) % \
+                                    MAX_READY_QUEUE_SIZE;
+            }
+        }
+
+#ifdef DEBUG
+        printf("ISR: number of forwards = %d\n", num_forwards);
+#endif
+
+        bool write_out_to_mem = num_forwards != node->num_children;
+        finish_accelerator(i, j, node, write_out_to_mem);
+        acc_state[i][j].spm_pending_reads[node_spm_out_part] = num_forwards;
+
+        if (!write_out_to_mem) {
             num_running--;
-            can_launch_requests = true;
         }
     }
 
@@ -748,7 +818,6 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         acc_state[i][j].status = ACC_STATUS_IDLE;
 
         num_running--;
-        can_launch_requests = true;
     }
 
     else {
@@ -757,9 +826,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         m5_exit();
     }
 
-    if (can_launch_requests) {
-        launch_requests();
-    }
+    launch_requests();
 }
 
 void data_abort_handler(uint32_t pc)

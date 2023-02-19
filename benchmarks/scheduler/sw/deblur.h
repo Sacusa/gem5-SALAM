@@ -296,7 +296,7 @@ void init_deblur()
 #endif
 }
 
-void add_deblur_dag(task_struct_t ***nodes, int num_images,
+void add_deblur_dag(task_struct_t ***nodes, int *num_nodes, int num_images,
         int num_iters)
 {
     deblur_data_t *imgs = (deblur_data_t*)
@@ -324,6 +324,8 @@ void add_deblur_dag(task_struct_t ***nodes, int num_images,
             deblur_run_mult_psf_flip(&imgs[i], j == 0, j != (num_iters-1),
                     nodes[i], node_index+3);
         }
+
+        num_nodes[i] = 2 * (num_iters * 4);
     }
 }
 

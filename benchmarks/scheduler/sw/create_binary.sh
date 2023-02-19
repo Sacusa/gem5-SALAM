@@ -37,53 +37,8 @@ for (( i=1; i<${#}; )); do
     shift
 done
 
-# first half of the template
-cp main0.template main.c
-
-# generate scheduler command and store the schedule
-scheduler_command="./main.py -p ${policy} -c"
-for (( i=0; i<${num_canny}; i++)); do
-    scheduler_command+=" dags/canny.cfg"
-done
-for (( i=0; i<${num_deblur}; i++)); do
-    scheduler_command+=" dags/deblur_5.cfg"
-done
-for (( i=0; i<${num_gru}; i++)); do
-    scheduler_command+=" dags/gru_8.cfg"
-done
-for (( i=0; i<${num_harris}; i++)); do
-    scheduler_command+=" dags/harris.cfg"
-done
-for (( i=0; i<${num_lstm}; i++)); do
-    scheduler_command+=" dags/lstm_8.cfg"
-done
-
-cd ~/scheduler
-schedule=`${scheduler_command}`
-cd - &> /dev/null
-
-# generate and inject schedule code
-code=$'void schedule(task_struct_t ***nodes)\n'
-code+=$'{\n'
-code+=$'    task_struct_t ****run_queue = (task_struct_t****)\n'
-code+=$'        get_memory(NUM_ACCS * sizeof(task_struct_t***));\n'
-code+=$'    int **run_queue_size = (int**) get_memory(NUM_ACCS * sizeof(int*));\n\n'
-code+=$'    for (int i = 0; i < NUM_ACCS; i++) {\n'
-code+=$'        run_queue[i] = (task_struct_t***)\n'
-code+=$'            get_memory(MAX_ACC_INSTANCES * sizeof(task_struct_t**));\n'
-code+=$'        run_queue_size[i] = (int*)\n'
-code+=$'            get_memory(MAX_ACC_INSTANCES * sizeof(int));\n\n'
-code+=$'        for (int j = 0; j < MAX_ACC_INSTANCES; j++) {\n'
-code+=$'            run_queue[i][j] = (task_struct_t**)\n'
-code+=$'                get_memory(MAX_NODES * sizeof(task_struct_t*));\n'
-code+=$'        }\n'
-code+=$'    }\n\n'
-code+=${schedule#*$'\n'}  # clip the first line with the performance results
-code+=$'\n\n     runtime(run_queue, run_queue_size);\n}\n'
-echo "${code}" >> main.c
-
-# second half of the template
-cat main1.template >> main.c
+# copy the template
+cp main.template main.c
 
 # modify DAG counts in the code
 sed -i '/int num_canny/c\    int num_canny = '"${num_canny};" main.c
@@ -91,6 +46,10 @@ sed -i '/int num_deblur/c\    int num_deblur = '"${num_deblur};" main.c
 sed -i '/int num_gru/c\    int num_gru = '"${num_gru};" main.c
 sed -i '/int num_harris/c\    int num_harris = '"${num_harris};" main.c
 sed -i '/int num_lstm/c\    int num_lstm = '"${num_lstm};" main.c
+
+# create the runtime call
+num_dags=$(($num_canny + $num_deblur + $num_gru + $num_harris + $num_lstm))
+sed -i '/runtime_call/c\    runtime(nodes, '"${num_dags}"', num_nodes, '"${policy}"');' main.c
 
 # compile and rename binary
 make main.elf &> /dev/null

@@ -101,8 +101,8 @@ void gru_cell_init(gru_cell_data_t *cell, task_struct_t **nodes,
     gru_retval[0] = task;
 }
 
-void gru_update_gate(gru_cell_data_t *cell, task_struct_t **nodes, int node_index,
-        bool is_first)
+void gru_update_gate(gru_cell_data_t *cell, task_struct_t **nodes,
+        int node_index, bool is_first)
 {
     task_struct_t *task[4];
     elem_matrix_args *args[4];
@@ -183,8 +183,8 @@ void gru_update_gate(gru_cell_data_t *cell, task_struct_t **nodes, int node_inde
     gru_retval[2] = task[3];
 }
 
-void gru_reset_gate(gru_cell_data_t *cell, task_struct_t **nodes, int node_index,
-        bool is_first)
+void gru_reset_gate(gru_cell_data_t *cell, task_struct_t **nodes,
+        int node_index, bool is_first)
 {
     task_struct_t *task[8];
     elem_matrix_args *args[8];
@@ -311,8 +311,8 @@ void gru_reset_gate(gru_cell_data_t *cell, task_struct_t **nodes, int node_index
     gru_retval[3] = task[7];
 }
 
-void gru_cell_output(gru_cell_data_t *cell, task_struct_t **nodes, int node_index,
-        bool is_last)
+void gru_cell_output(gru_cell_data_t *cell, task_struct_t **nodes,
+        int node_index, bool is_last)
 {
     task_struct_t *task[2];
     elem_matrix_args *args[2];
@@ -392,7 +392,8 @@ void init_gru()
 #endif
 }
 
-void add_gru_dag(task_struct_t ***nodes, int num_frames, int seq_length)
+void add_gru_dag(task_struct_t ***nodes, int *num_nodes, int num_frames,
+        int seq_length)
 {
     const int nodes_per_cell = 15;
 
@@ -412,6 +413,8 @@ void add_gru_dag(task_struct_t ***nodes, int num_frames, int seq_length)
             gru_cell_output(cell, nodes[i], node_index + 13,
                     j == (seq_length - 1));
         }
+
+        num_nodes[i] = nodes_per_cell * seq_length;
     }
 }
 
