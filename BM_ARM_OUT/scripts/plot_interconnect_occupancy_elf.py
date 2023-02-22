@@ -36,7 +36,7 @@ def get_stat(app_mix, interconnect):
 
     for policy in policies:
         for line in open(base_dir_name + policy + '_pipeline/stats.txt'):
-            if 'system.acctest.local_bus.utilization' in line:
+            if 'system.acctest.local_bus.occupancy' in line:
                 values.append(float(line.split()[1]))
                 break
 
@@ -62,6 +62,7 @@ for app_mix in app_mixes:
 for policy in policies_ext:
     occupancy[policy].append(geo_mean(occupancy[policy]))
 
+print(occupancy['APRX3'])
 print(occupancy['xbar'])
 
 # plot parameters
