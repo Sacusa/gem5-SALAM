@@ -597,15 +597,115 @@ void push_request(task_struct_t *req)
         m5_fail_1();
     }
 
-    ready_queue[acc_id][ready_queue_end[acc_id]] = req;
-    ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
-                              MAX_READY_QUEUE_SIZE;
+    switch (scheduling_policy) {
+        case FCFS: {
+            ready_queue[acc_id][ready_queue_end[acc_id]] = req;
+            ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                                      MAX_READY_QUEUE_SIZE;
+            break;
+        }
+
+        case GEDF_D: {
+            if (ready_queue_size[acc_id] == 0) {
+                ready_queue[acc_id][ready_queue_end[acc_id]] = req;
+                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                                          MAX_READY_QUEUE_SIZE;
+            }
+            else {
+                int pos = ready_queue_start[acc_id];
+                while ((pos != ready_queue_end[acc_id]) && \
+                       (ready_queue[acc_id][pos]->dag_deadline <= \
+                        req->dag_deadline)) {
+                    pos = (pos + 1) % MAX_READY_QUEUE_SIZE;
+                }
+
+                if (pos != ready_queue_end[acc_id]) {
+                    int i = ready_queue_end[acc_id];
+                    while (i != pos) {
+                        int j = i - 1;
+                        if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
+                        ready_queue[acc_id][i] = ready_queue[acc_id][j];
+                        i = j;
+                    }
+                }
+
+                ready_queue[acc_id][pos] = req;
+                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                                          MAX_READY_QUEUE_SIZE;
+            }
+
+            break;
+        }
+
+        case GEDF_N: {
+            if (ready_queue_size[acc_id] == 0) {
+                ready_queue[acc_id][ready_queue_end[acc_id]] = req;
+                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                                          MAX_READY_QUEUE_SIZE;
+            }
+            else {
+                int pos = ready_queue_start[acc_id];
+                while ((pos != ready_queue_end[acc_id]) && \
+                       (ready_queue[acc_id][pos]->node_deadline <= \
+                        req->node_deadline)) {
+                    pos = (pos + 1) % MAX_READY_QUEUE_SIZE;
+                }
+
+                if (pos != ready_queue_end[acc_id]) {
+                    int i = ready_queue_end[acc_id];
+                    while (i != pos) {
+                        int j = i - 1;
+                        if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
+                        ready_queue[acc_id][i] = ready_queue[acc_id][j];
+                        i = j;
+                    }
+                }
+
+                ready_queue[acc_id][pos] = req;
+                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                                          MAX_READY_QUEUE_SIZE;
+            }
+
+            break;
+        }
+
+        case LAX: {
+            if (ready_queue_size[acc_id] == 0) {
+                ready_queue[acc_id][ready_queue_end[acc_id]] = req;
+                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                                          MAX_READY_QUEUE_SIZE;
+            }
+            else {
+                // TODO: update_laxity
+
+                int pos = ready_queue_start[acc_id];
+                while ((pos != ready_queue_end[acc_id]) && \
+                       (ready_queue[acc_id][pos]->laxity <= req->laxity)) {
+                    pos = (pos + 1) % MAX_READY_QUEUE_SIZE;
+                }
+
+                if (pos != ready_queue_end[acc_id]) {
+                    int i = ready_queue_end[acc_id];
+                    while (i != pos) {
+                        int j = i - 1;
+                        if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
+                        ready_queue[acc_id][i] = ready_queue[acc_id][j];
+                        i = j;
+                    }
+                }
+
+                ready_queue[acc_id][pos] = req;
+                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                                          MAX_READY_QUEUE_SIZE;
+            }
+
+            break;
+        }
+
+        case ELF: assertf(false, "Policy not implemented");
+    }
 
     ready_queue_size[acc_id]++;
-
-#ifdef DEBUG
-    printf("Pushing ready request for acc id %d\n", req->acc_id);
-#endif
 }
 
 volatile task_struct_t *peek_request(int acc_id)
@@ -633,6 +733,16 @@ void launch_requests()
     for (int i = 0; i < NUM_ACCS; i++) {
         while ((ready_queue_size[i] > 0) && \
                (num_available_instances[i] > 0)) {
+
+            // This flag helps break out of the while loop if none of the
+            // available instances are able to serve the next ready request.
+            //
+            // This can happen for two reasons:
+            // 1) All instances are waiting for scratchpad resources.
+            // 2) The only available instances is writing out its results to
+            //    the main memory.
+            bool unable_to_launch = true;
+
             for (int j = 0; j < acc_instances[i]; j++) {
                 if (acc_state[i][j].status == ACC_STATUS_IDLE) {
                     volatile task_struct_t *req = peek_request(i);
@@ -647,29 +757,16 @@ void launch_requests()
                     num_running++;
                     num_available_instances[i]--;
 
+                    unable_to_launch = false;
+
                     break;
                 }
             }
+
+            if (unable_to_launch) {
+                break;
+            }
         }
-    }
-}
-
-void schedule_fcfs()
-{
-    /* FCFS does not reorder requests; it just executes requests in the order
-     * they become ready, so nothing to do here.
-     */
-    return;
-}
-
-void schedule()
-{
-    switch (scheduling_policy) {
-        case FCFS: schedule_fcfs(); break;
-        case GEDF_D:
-        case GEDF_N:
-        case LAX:
-        case ELF: assertf(false, "Policy not implemented");
     }
 }
 
@@ -725,11 +822,9 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
     m5_timer_start(0);
 #endif
 
-    schedule();
-
     // launch ready requests
     disable_interrupts();
-    launch_requests(nodes);
+    launch_requests();
     enable_interrupts();
 
     while (num_running);
@@ -766,7 +861,6 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         }
 
         num_available_instances[i]++;
-        schedule();
 
         int node_spm_out_part = acc_state[i][j].curr_spm_out_part;
         int num_forwards = 0;
@@ -774,9 +868,13 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         for (int c = 0; c < node->num_children; c++) {
             task_struct_t *child = node->children[c];
 
+            if (child->status != REQ_STATUS_READY) { continue; }
+
             int ready_queue_index = ready_queue_start[child->acc_id];
 
-            for (int n = 0; n < num_available_instances[child->acc_id]; n++) {
+            for (int n = 0; (n < num_available_instances[child->acc_id]) && \
+                    (ready_queue_index != ready_queue_end[child->acc_id]);
+                    n++) {
                 if (ready_queue[child->acc_id][ready_queue_index] == child) {
                     // The child node is among the next set of nodes to be
                     // scheduled, so update its metadata to receive data
@@ -800,11 +898,8 @@ void isr(int i, int j)  // i = accelerator id, j = device id
             }
         }
 
-#ifdef DEBUG
-        printf("ISR: number of forwards = %d\n", num_forwards);
-#endif
-
-        bool write_out_to_mem = num_forwards != node->num_children;
+        bool write_out_to_mem = (node->num_children == 0) || \
+                                (num_forwards != node->num_children);
         finish_accelerator(i, j, node, write_out_to_mem);
         acc_state[i][j].spm_pending_reads[node_spm_out_part] = num_forwards;
 

@@ -22,7 +22,6 @@
 #define MAX_READY_QUEUE_SIZE 500
 #define VERIFY
 //#define TIME
-#define DEBUG
 
 /**
  * Bookkeeping for accelerators
@@ -80,6 +79,10 @@ struct task_struct_t {
     task_struct_t *children[MAX_CHILDREN];
     task_struct_t *producer[MAX_ACC_ARGS];
 
+    uint32_t input_size[MAX_ACC_ARGS];
+    int dag_deadline;
+    int node_deadline;
+
     /**
      * Scheduler sets the following fields
      */
@@ -92,7 +95,7 @@ struct task_struct_t {
      */
     int status;
     int earliest_start;
-    int deadline;
+    int laxity;
 
     int completed_parents;
     uint8_t producer_spm_part[MAX_ACC_ARGS];    // partition of the producer's

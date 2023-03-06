@@ -7,6 +7,8 @@
 
 #include "runtime.h"
 
+#define CANNY_DEADLINE 16667
+
 typedef struct {
     // ISP
     uint8_t *raw_img;
@@ -57,6 +59,8 @@ void canny_process_raw(canny_data_t *img, task_struct_t **nodes)
     task->producer_forward[0] = 0;
     task->status = REQ_STATUS_READY;
     task->completed_parents = 0;
+    task->dag_deadline = CANNY_DEADLINE;
+    task->node_deadline = 13564;
 
     canny_retval[0][0] = task;
     nodes[0] = task;
@@ -88,6 +92,8 @@ void canny_convert_to_grayscale(canny_data_t *img, task_struct_t **nodes)
 #endif
     task->producer_forward[0] = 0;
     task->completed_parents = 0;
+    task->dag_deadline = CANNY_DEADLINE;
+    task->node_deadline = 13601;
 
 #ifndef VERIFY
     canny_retval[0][0]->children[0] = task;
@@ -137,6 +143,8 @@ void canny_noise_reduction(canny_data_t *img, task_struct_t **nodes)
     task->producer_forward[0] = 0;
     task->status = REQ_STATUS_WAITING;
     task->completed_parents = 0;
+    task->dag_deadline = CANNY_DEADLINE;
+    task->node_deadline = 15177;
 
     canny_retval[1][0]->children[0] = task;
     canny_retval[2][0] = task;
@@ -236,6 +244,7 @@ void canny_gradient_calculation(canny_data_t *img, task_struct_t **nodes)
         task[i]->producer_forward[0] = 0;
         task[i]->status = REQ_STATUS_WAITING;
         task[i]->completed_parents = 0;
+        task[i]->dag_deadline = CANNY_DEADLINE;
         nodes[3+i] = task[i];
     }
     for (int i = 2; i < 7; i++) {
@@ -246,33 +255,42 @@ void canny_gradient_calculation(canny_data_t *img, task_struct_t **nodes)
         task[i]->num_children = 1;
         task[i]->status = REQ_STATUS_WAITING;
         task[i]->completed_parents = 0;
+        task[i]->dag_deadline = CANNY_DEADLINE;
         nodes[3+i] = task[i];
     }
 
     task[0]->children[0] = task[2];
     task[0]->children[1] = task[3];
+    task[0]->node_deadline = 15846;
+
     task[1]->children[0] = task[3];
     task[1]->children[1] = task[4];
+    task[1]->node_deadline = 15846;
 
     task[2]->children[0] = task[5];
     task[2]->num_parents = 1;
     task[2]->producer[0] = task[0];
+    task[2]->node_deadline = 15885;
 
     task[3]->num_parents = 2;
     task[3]->producer[0] = task[0];
     task[3]->producer[1] = task[1];
+    task[3]->node_deadline = 15981;
 
     task[4]->children[0] = task[5];
     task[4]->num_parents = 1;
     task[4]->producer[0] = task[1];
+    task[4]->node_deadline = 15885;
 
     task[5]->children[0] = task[6];
     task[5]->num_parents = 2;
     task[5]->producer[0] = task[2];
     task[5]->producer[1] = task[4];
+    task[5]->node_deadline = 15942;
 
     task[6]->num_parents = 1;
     task[6]->producer[0] = task[5];
+    task[6]->node_deadline = 15981;
 
     canny_retval[2][0]->children[0] = task[0];
     canny_retval[2][0]->children[1] = task[1];
@@ -303,6 +321,8 @@ void canny_non_max_suppression(canny_data_t *img, task_struct_t **nodes)
     task->producer_forward[1] = 0;
     task->status = REQ_STATUS_WAITING;
     task->completed_parents = 0;
+    task->dag_deadline = CANNY_DEADLINE;
+    task->node_deadline = 16427;
 
     canny_retval[3][0]->children[0] = task;
     canny_retval[3][1]->children[0] = task;
@@ -331,6 +351,8 @@ void canny_thr_and_edge_tracking(canny_data_t *img, task_struct_t **nodes)
     task->producer_forward[0] = 0;
     task->status = REQ_STATUS_WAITING;
     task->completed_parents = 0;
+    task->dag_deadline = CANNY_DEADLINE;
+    task->node_deadline = 16667;
 
     canny_retval[4][0]->children[0] = task;
     nodes[11] = task;

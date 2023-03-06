@@ -7,6 +7,8 @@
 
 #include "runtime.h"
 
+#define GRU_DEADLINE 7000
+
 typedef struct {
     float data_input[NUM_PIXELS];
     float cell_state[NUM_PIXELS];
@@ -46,7 +48,7 @@ float *gru_rg_bias2;
 task_struct_t *gru_retval[5];
 
 void gru_cell_init(gru_cell_data_t *cell, task_struct_t **nodes,
-        int node_index, int input_seed, bool is_first)
+        int node_index, int input_seed, bool is_first, uint32_t earliest_start)
 {
     task_struct_t *task = (task_struct_t*) get_memory(sizeof(task_struct_t));
     elem_matrix_args *args = (elem_matrix_args*)
@@ -95,6 +97,8 @@ void gru_cell_init(gru_cell_data_t *cell, task_struct_t **nodes,
     task->producer_forward[0] = 0;
     task->producer_forward[1] = 0;
     task->completed_parents = 0;
+    task->dag_deadline = GRU_DEADLINE;
+    task->node_deadline = earliest_start + 57;
 
     nodes[node_index] = task;
 
@@ -102,7 +106,7 @@ void gru_cell_init(gru_cell_data_t *cell, task_struct_t **nodes,
 }
 
 void gru_update_gate(gru_cell_data_t *cell, task_struct_t **nodes,
-        int node_index, bool is_first)
+        int node_index, bool is_first, uint32_t earliest_start)
 {
     task_struct_t *task[4];
     elem_matrix_args *args[4];
@@ -155,19 +159,23 @@ void gru_update_gate(gru_cell_data_t *cell, task_struct_t **nodes,
         task[i]->producer_forward[1] = 0;
         task[i]->status = REQ_STATUS_WAITING;
         task[i]->completed_parents = 0;
+        task[i]->dag_deadline = GRU_DEADLINE;
 
         nodes[node_index + i] = task[i];
     }
 
     task[0]->children[0] = task[1];
     task[0]->producer[0] = gru_retval[0];
+    task[0]->node_deadline = earliest_start + 382;
 
     task[1]->children[0] = task[2];
     task[1]->producer[0] = task[0];
+    task[1]->node_deadline = earliest_start + 439;
 
     task[2]->num_children = 2;
     task[2]->children[0] = task[3];
     task[2]->producer[0] = task[1];
+    task[2]->node_deadline = earliest_start + 478;
 
     if (is_first) {
         task[3]->producer[1] = task[2];
@@ -177,6 +185,7 @@ void gru_update_gate(gru_cell_data_t *cell, task_struct_t **nodes,
         task[3]->producer[1] = task[2];
         gru_retval[4]->children[1] = task[3];
     }
+    task[3]->node_deadline = earliest_start + 535;
 
     gru_retval[0]->children[0] = task[0];
     gru_retval[1] = task[2];
@@ -184,7 +193,7 @@ void gru_update_gate(gru_cell_data_t *cell, task_struct_t **nodes,
 }
 
 void gru_reset_gate(gru_cell_data_t *cell, task_struct_t **nodes,
-        int node_index, bool is_first)
+        int node_index, bool is_first, uint32_t earliest_start)
 {
     task_struct_t *task[8];
     elem_matrix_args *args[8];
@@ -263,6 +272,7 @@ void gru_reset_gate(gru_cell_data_t *cell, task_struct_t **nodes,
         task[i]->producer_forward[1] = 0;
         task[i]->status = REQ_STATUS_WAITING;
         task[i]->completed_parents = 0;
+        task[i]->dag_deadline = GRU_DEADLINE;
 
         nodes[node_index + i] = task[i];
     }
@@ -270,14 +280,17 @@ void gru_reset_gate(gru_cell_data_t *cell, task_struct_t **nodes,
     task[0]->children[0] = task[1];
     task[0]->num_parents = 1;
     task[0]->producer[0] = gru_retval[0];
+    task[0]->node_deadline = earliest_start + 114;
 
     task[1]->children[0] = task[2];
     task[1]->num_parents = 1;
     task[1]->producer[0] = task[0];
+    task[1]->node_deadline = earliest_start + 171;
 
     task[2]->children[0] = task[3];
     task[2]->num_parents = 1;
     task[2]->producer[0] = task[1];
+    task[2]->node_deadline = earliest_start + 210;
 
     task[3]->children[0] = task[4];
     if (is_first) {
@@ -290,29 +303,34 @@ void gru_reset_gate(gru_cell_data_t *cell, task_struct_t **nodes,
         task[3]->producer[1] = gru_retval[4];
         gru_retval[4]->children[2] = task[3];
     }
+    task[3]->node_deadline = earliest_start + 267;
 
     task[4]->children[0] = task[5];
     task[4]->num_parents = 1;
     task[4]->producer[0] = task[3];
+    task[4]->node_deadline = earliest_start + 324;
 
     task[5]->children[0] = task[6];
     task[5]->num_parents = 1;
     task[5]->producer[0] = task[4];
+    task[5]->node_deadline = earliest_start + 382;
 
     task[6]->children[0] = task[7];
     task[6]->num_parents = 1;
     task[6]->producer[0] = task[5];
+    task[6]->node_deadline = earliest_start + 439;
 
     task[7]->children[0] = task[8];
     task[7]->num_parents = 1;
     task[7]->producer[0] = task[6];
+    task[7]->node_deadline = earliest_start + 478;
 
     gru_retval[0]->children[1] = task[0];
     gru_retval[3] = task[7];
 }
 
 void gru_cell_output(gru_cell_data_t *cell, task_struct_t **nodes,
-        int node_index, bool is_last)
+        int node_index, bool is_last, uint32_t earliest_start)
 {
     task_struct_t *task[2];
     elem_matrix_args *args[2];
@@ -344,6 +362,7 @@ void gru_cell_output(gru_cell_data_t *cell, task_struct_t **nodes,
         task[i]->producer_forward[1] = 0;
         task[i]->status = REQ_STATUS_WAITING;
         task[i]->completed_parents = 0;
+        task[i]->dag_deadline = GRU_DEADLINE;
 
         nodes[node_index + i] = task[i];
     }
@@ -352,6 +371,7 @@ void gru_cell_output(gru_cell_data_t *cell, task_struct_t **nodes,
     task[0]->children[0] = task[1];
     task[0]->producer[0] = gru_retval[1];
     task[0]->producer[1] = gru_retval[3];
+    task[0]->node_deadline = earliest_start + 535;
 
     if (is_last) {
         task[1]->num_children = 0;
@@ -360,6 +380,7 @@ void gru_cell_output(gru_cell_data_t *cell, task_struct_t **nodes,
     }
     task[1]->producer[0] = gru_retval[2];
     task[1]->producer[1] = task[0];
+    task[1]->node_deadline = earliest_start + 592;
 
     gru_retval[1]->children[1] = task[0];
     gru_retval[2]->children[0] = task[1];
@@ -397,21 +418,30 @@ void add_gru_dag(task_struct_t ***nodes, int *num_nodes, int num_frames,
 {
     const int nodes_per_cell = 15;
 
+    const uint32_t cell_runtime = 592;
+
     for (int i = 0; i < num_frames; i++) {
+        uint32_t earliest_start = GRU_DEADLINE - (cell_runtime * seq_length);
+
         for (int j = 0; j < seq_length; j++) {
             int cell_index = (i * seq_length) + j;
             int node_index = j * nodes_per_cell;
             gru_cell_data_t *cell = (gru_cell_data_t*) get_memory_aligned(
                     sizeof(gru_cell_data_t), CACHELINE_SIZE);
 
-            gru_cell_init(cell, nodes[i], node_index, cell_index, j == 0);
+            gru_cell_init(cell, nodes[i], node_index, cell_index, j == 0,
+                    earliest_start);
 
-            gru_update_gate(cell, nodes[i], node_index + 1, j == 0);
+            gru_update_gate(cell, nodes[i], node_index + 1, j == 0,
+                    earliest_start);
 
-            gru_reset_gate(cell, nodes[i], node_index + 5, j == 0);
+            gru_reset_gate(cell, nodes[i], node_index + 5, j == 0,
+                    earliest_start);
 
             gru_cell_output(cell, nodes[i], node_index + 13,
-                    j == (seq_length - 1));
+                    j == (seq_length - 1), earliest_start);
+
+            earliest_start += cell_runtime;
         }
 
         num_nodes[i] = nodes_per_cell * seq_length;

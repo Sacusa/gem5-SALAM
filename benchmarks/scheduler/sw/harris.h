@@ -7,6 +7,8 @@
 
 #include "runtime.h"
 
+#define HARRIS_DEADLINE 16667
+
 typedef struct {
     // ISP
     uint8_t *raw_img;
@@ -60,6 +62,8 @@ void harris_process_raw(harris_data_t *img, task_struct_t **nodes)
     task->producer_forward[0] = 0;
     task->status = REQ_STATUS_READY;
     task->completed_parents = 0;
+    task->dag_deadline = HARRIS_DEADLINE;
+    task->node_deadline = 14026;
 
     harris_retval[0][0] = task;
     nodes[0] = task;
@@ -92,6 +96,8 @@ void harris_convert_to_grayscale(harris_data_t *img, task_struct_t **nodes)
 #endif
     task->producer_forward[0] = 0;
     task->completed_parents = 0;
+    task->dag_deadline = HARRIS_DEADLINE;
+    task->node_deadline = 14063;
 
 #ifndef VERIFY
     harris_retval[0][0]->children[0] = task;
@@ -147,6 +153,8 @@ void harris_spatial_derivative_calc(harris_data_t *img, task_struct_t **nodes)
         task[i]->producer_forward[0] = 0;
         task[i]->status = REQ_STATUS_WAITING;
         task[i]->completed_parents = 0;
+        task[i]->dag_deadline = HARRIS_DEADLINE;
+        task[i]->node_deadline = 14731;
 
         harris_retval[1][0]->children[i] = task[i];
         harris_retval[2][i] = task[i];
@@ -243,6 +251,7 @@ void harris_structure_tensor_setup(harris_data_t *img, task_struct_t **nodes)
         task[i]->producer_forward[0] = 0;
         task[i]->producer_forward[1] = 0;
         task[i]->completed_parents = 0;
+        task[i]->dag_deadline = HARRIS_DEADLINE;
 
         task[i+3]->acc_id = ACC_CONVOLUTION;
         task[i+3]->acc_args = (void*) c_args[i];
@@ -250,6 +259,7 @@ void harris_structure_tensor_setup(harris_data_t *img, task_struct_t **nodes)
         task[i+3]->producer[0] = NULL;
         task[i+3]->producer_forward[0] = 0;
         task[i+3]->completed_parents = 0;
+        task[i+3]->dag_deadline = HARRIS_DEADLINE;
 
         harris_retval[3][i] = task[i+3];
         nodes[i+4] = task[i];
@@ -260,29 +270,35 @@ void harris_structure_tensor_setup(harris_data_t *img, task_struct_t **nodes)
     task[0]->children[0] = task[3];
     task[0]->num_parents = 1;
     task[0]->producer[0] = harris_retval[2][0];
+    task[0]->node_deadline = 14771;
 
     task[1]->num_children = 1;
     task[1]->children[0] = task[4];
     task[1]->num_parents = 2;
     task[1]->producer[0] = harris_retval[2][0];
     task[1]->producer[1] = harris_retval[2][1];
+    task[1]->node_deadline = 14812;
 
     task[2]->num_children = 1;
     task[2]->children[0] = task[5];
     task[2]->num_parents = 1;
     task[2]->producer[0] = harris_retval[2][1];
+    task[2]->node_deadline = 14771;
 
     task[3]->num_children = 2;
     task[3]->num_parents = 1;
     task[3]->producer[0] = task[0];
+    task[3]->node_deadline = 16347;
 
     task[4]->num_children = 1;
     task[4]->num_parents = 1;
     task[4]->producer[0] = task[1];
+    task[4]->node_deadline = 16389;
 
     task[5]->num_children = 2;
     task[5]->num_parents = 1;
     task[5]->producer[0] = task[2];
+    task[5]->node_deadline = 16347;
 
     harris_retval[2][0]->children[0] = task[0];
     harris_retval[2][0]->children[1] = task[1];
@@ -369,6 +385,7 @@ void harris_response_calc(harris_data_t *img, task_struct_t **nodes)
         task[i]->producer_forward[0] = 0;
         task[i]->producer_forward[1] = 0;
         task[i]->completed_parents = 0;
+        task[i]->dag_deadline = HARRIS_DEADLINE;
         nodes[i+10] = task[i];
     }
 
@@ -377,38 +394,45 @@ void harris_response_calc(harris_data_t *img, task_struct_t **nodes)
     task[0]->num_parents = 2;
     task[0]->producer[0] = harris_retval[3][0];
     task[0]->producer[1] = harris_retval[3][2];
+    task[0]->node_deadline = 16428;
 
     task[1]->num_children = 1;
     task[1]->children[0] = task[3];
     task[1]->num_parents = 1;
     task[1]->producer[0] = harris_retval[3][1];
+    task[1]->node_deadline = 16428;
 
     task[2]->num_children = 1;
     task[2]->children[0] = task[4];
     task[2]->num_parents = 2;
     task[2]->producer[0] = harris_retval[3][0];
     task[2]->producer[1] = harris_retval[3][2];
+    task[2]->node_deadline = 16404;
 
     task[3]->num_children = 1;
     task[3]->children[0] = task[6];
     task[3]->num_parents = 2;
     task[3]->producer[0] = task[0];
     task[3]->producer[1] = task[1];
+    task[3]->node_deadline = 16485;
 
     task[4]->num_children = 1;
     task[4]->children[0] = task[5];
     task[4]->num_parents = 1;
     task[4]->producer[0] = task[2];
+    task[4]->node_deadline = 16443;
 
     task[5]->num_children = 1;
     task[5]->children[0] = task[6];
     task[5]->num_parents = 1;
     task[5]->producer[0] = task[4];
+    task[5]->node_deadline = 16485;
 
     task[6]->num_children = 1;
     task[6]->num_parents = 2;
     task[6]->producer[0] = task[3];
     task[6]->producer[1] = task[5];
+    task[6]->node_deadline = 16542;
 
     harris_retval[3][0]->children[0] = task[0];
     harris_retval[3][0]->children[1] = task[2];
@@ -437,6 +461,8 @@ void harris_non_max_suppression(harris_data_t *img, task_struct_t **nodes)
     task->producer_forward[0] = 0;
     task->status = REQ_STATUS_WAITING;
     task->completed_parents = 0;
+    task->dag_deadline = HARRIS_DEADLINE;
+    task->node_deadline = 16667;
 
     harris_retval[4][0]->children[0] = task;
     nodes[17] = task;

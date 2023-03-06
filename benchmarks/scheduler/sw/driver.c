@@ -11,16 +11,29 @@ inline void dcache_flush(uint32_t addr, uint32_t num_bytes)
     }
 
     uint32_t num_lines = num_bytes / CACHELINE_SIZE;
-    if (num_lines % CACHELINE_SIZE) {
+    if (num_bytes % CACHELINE_SIZE) {
         num_lines += 1;
     }
 
     for (int i = 0; i < num_lines; i++) {
+        // Write-back the line if it is dirty
         __asm__ ("mcr  p15, 0, %[addr], c7, c14, 1"
                 : /* no outputs */
                 : [addr] "r" (addr + (i * CACHELINE_SIZE))
                 : /* no clobbers */);
+
+        // Invalidate the cache line
+        __asm__ ("mcr  p15, 0, %[addr], c7, c6, 1"
+                : /* no outputs */
+                : [addr] "r" (addr + (i * CACHELINE_SIZE))
+                : /* no clobbers */);
     }
+
+    // Data Memory Barrier (DMB)
+    __asm__ ("mcr  p15, 0, r0, c7, c10, 5"
+            : /* no outputs */
+            : /* no inputs */
+            : /* no clobbers */);
 }
 
 inline void canny_non_max_driver(
