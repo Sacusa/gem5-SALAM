@@ -107,6 +107,10 @@ void lstm_init_cell_data(lstm_cell_data_t *cell, task_struct_t **nodes,
     task->producer_forward[0] = 0;
     task->producer_forward[1] = 0;
     task->completed_parents = 0;
+
+    task->input_size = 131072;
+    task->output_size = 65536;
+    task->compute_time = RUNTIME_ELEM_MATRIX_ADD;
     task->dag_deadline = LSTM_DEADLINE;
     task->node_deadline = earliest_start + 55;
 
@@ -173,14 +177,23 @@ void lstm_forget_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
 
     task[0]->children[0] = task[1];
     task[0]->producer[0] = lstm_retval[0];
+    task[0]->input_size = 131072;
+    task[0]->output_size = 65536;
+    task[0]->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task[0]->node_deadline = earliest_start + 112;
 
     task[1]->children[0] = task[2];
     task[1]->producer[0] = task[0];
+    task[1]->input_size = 131072;
+    task[1]->output_size = 65536;
+    task[1]->compute_time = RUNTIME_ELEM_MATRIX_ADD;
     task[1]->node_deadline = earliest_start + 169;
 
     task[2]->children[0] = task[3];
     task[2]->producer[0] = task[1];
+    task[2]->input_size = 65536;
+    task[2]->output_size = 65536;
+    task[2]->compute_time = RUNTIME_ELEM_MATRIX_SIGMOID;
     task[2]->node_deadline = earliest_start + 209;
 
     if (is_first) {
@@ -193,6 +206,9 @@ void lstm_forget_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
         lstm_retval[2]->children[1] = task[3];
     }
     task[3]->producer[1] = task[2];
+    task[3]->input_size = 131072;
+    task[3]->output_size = 65536;
+    task[3]->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task[3]->node_deadline = earliest_start + 266;
 
     lstm_retval[0]->children[0] = task[0];
@@ -284,32 +300,53 @@ void lstm_input_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
 
     task[0]->children[0] = task[1];
     task[0]->producer[0] = lstm_retval[0];
+    task[0]->input_size = 131072;
+    task[0]->output_size = 65536;
+    task[0]->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task[0]->node_deadline = earliest_start + 112;
 
     task[1]->children[0] = task[2];
     task[1]->producer[0] = task[0];
+    task[1]->input_size = 131072;
+    task[1]->output_size = 65536;
+    task[1]->compute_time = RUNTIME_ELEM_MATRIX_ADD;
     task[1]->node_deadline = earliest_start + 169;
 
     task[2]->children[0] = task[6];
     task[2]->producer[0] = task[1];
+    task[2]->input_size = 65536;
+    task[2]->output_size = 65536;
+    task[2]->compute_time = RUNTIME_ELEM_MATRIX_SIGMOID;
     task[2]->node_deadline = earliest_start + 209;
 
     task[3]->children[0] = task[4];
     task[3]->producer[0] = lstm_retval[0];
+    task[3]->input_size = 131072;
+    task[3]->output_size = 65536;
+    task[3]->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task[3]->node_deadline = earliest_start + 112;
 
     task[4]->children[0] = task[5];
     task[4]->producer[0] = task[3];
+    task[4]->input_size = 131072;
+    task[4]->output_size = 65536;
+    task[4]->compute_time = RUNTIME_ELEM_MATRIX_ADD;
     task[4]->node_deadline = earliest_start + 169;
 
     task[5]->children[0] = task[6];
     task[5]->producer[0] = task[4];
+    task[5]->input_size = 65536;
+    task[5]->output_size = 65536;
+    task[5]->compute_time = RUNTIME_ELEM_MATRIX_TANH;
     task[5]->node_deadline = earliest_start + 209;
 
     task[6]->children[0] = task[7];
     task[6]->num_parents = 2;
     task[6]->producer[0] = task[2];
     task[6]->producer[1] = task[5];
+    task[6]->input_size = 131072;
+    task[6]->output_size = 65536;
+    task[6]->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task[6]->node_deadline = earliest_start + 266;
 
     if (is_last) {
@@ -321,6 +358,9 @@ void lstm_input_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
     task[7]->num_parents = 2;
     task[7]->producer[0] = lstm_retval[1];
     task[7]->producer[1] = task[6];
+    task[7]->input_size = 131072;
+    task[7]->output_size = 65536;
+    task[7]->compute_time = RUNTIME_ELEM_MATRIX_ADD;
     task[7]->node_deadline = earliest_start + 323;
 
     lstm_retval[0]->children[1] = task[0];
@@ -392,18 +432,30 @@ void lstm_output_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
 
     task[0]->children[0] = task[1];
     task[0]->producer[0] = lstm_retval[0];
+    task[0]->input_size = 131072;
+    task[0]->output_size = 65536;
+    task[0]->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task[0]->node_deadline = earliest_start + 266;
 
     task[1]->children[0] = task[2];
     task[1]->producer[0] = task[0];
+    task[1]->input_size = 131072;
+    task[1]->output_size = 65536;
+    task[1]->compute_time = RUNTIME_ELEM_MATRIX_ADD;
     task[1]->node_deadline = earliest_start + 323;
 
     task[2]->children[0] = task[4];
     task[2]->producer[0] = task[1];
+    task[2]->input_size = 65536;
+    task[2]->output_size = 65536;
+    task[2]->compute_time = RUNTIME_ELEM_MATRIX_SIGMOID;
     task[2]->node_deadline = earliest_start + 362;
 
     task[3]->children[0] = task[4];
     task[3]->producer[0] = lstm_retval[2];
+    task[3]->input_size = 65536;
+    task[3]->output_size = 65536;
+    task[3]->compute_time = RUNTIME_ELEM_MATRIX_TANH;
     task[3]->node_deadline = earliest_start + 362;
 
     if (is_last) {
@@ -415,6 +467,9 @@ void lstm_output_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
     task[4]->num_parents = 2;
     task[4]->producer[0] = task[3];
     task[4]->producer[1] = task[2];
+    task[4]->input_size = 131072;
+    task[4]->output_size = 65536;
+    task[4]->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task[4]->node_deadline = earliest_start + 421;
 
     lstm_retval[0]->children[3] = task[0];

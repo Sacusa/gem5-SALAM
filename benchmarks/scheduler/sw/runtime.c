@@ -2,6 +2,8 @@
 #include "runtime.h"
 #include "driver.c"
 
+#define min(a,b) ((a) < (b) ? (a) : (b))
+
 int acc_instances[NUM_ACCS] = {
     /* ACC_CANNY_NON_MAX  */ 1,
     /* ACC_CONVOLUTION    */ 2,
@@ -56,7 +58,12 @@ volatile int ready_queue_size[NUM_ACCS];
 volatile int ready_queue_start[NUM_ACCS];
 volatile int ready_queue_end[NUM_ACCS];
 volatile int num_running = 0;
+
 volatile scheduling_policy_t scheduling_policy;
+// TODO: set this in runtime
+volatile mem_predictor_t mem_predictor = MEM_PRED_LAST_VAL;
+bool sort_ready_queue[NUM_ACCS];
+volatile uint32_t runtime_start_time;
 
 void init_task_struct(task_struct_t *task_struct)
 {
@@ -589,6 +596,72 @@ void finish_accelerator(int acc_id, int device_id,
  * The actual runtime
  */
 
+float mem_prediction = 0;
+
+// Last value predictor
+void update_last_val_predictor(uint32_t time, uint32_t size)
+{
+    mem_prediction = ((float)time / 1000) / size;
+}
+
+// Average predictor
+#define MAX_MEM_HIST_SIZE 20
+float mem_hist[MAX_MEM_HIST_SIZE];
+uint8_t mem_hist_size = 0;
+uint8_t mem_hist_pos = 0;
+
+void update_average_predictor(uint32_t time, uint32_t size)
+{
+    float mem_time_per_byte = ((float)time / 1000) / size;
+
+    mem_hist[mem_hist_pos] = mem_time_per_byte;
+    mem_hist_size = min(MAX_MEM_HIST_SIZE, mem_hist_size + 1);
+    mem_hist_pos = (mem_hist_pos + 1) % MAX_MEM_HIST_SIZE;
+
+    double product = 1;
+    for (int i = 0; i < mem_hist_size; i++) {
+        product *= mem_hist[i];
+    }
+
+    mem_prediction = pow(product, 1 / mem_hist_size);
+}
+
+// EWMA predictor
+const float alpha = 0.25;
+bool is_first_observation = true;
+
+void update_ewma_predictor(uint32_t time, uint32_t size)
+{
+    float mem_time_per_byte = ((float)time / 1000) / size;
+
+    if (is_first_observation) {
+        mem_prediction = mem_time_per_byte;
+        is_first_observation = false;
+    }
+    else {
+        mem_prediction = (alpha * mem_time_per_byte) + \
+                         ((1 - alpha) * mem_prediction);
+    }
+}
+
+void update_mem_time_predictor(uint32_t time, uint32_t size)
+{
+    switch (mem_predictor) {
+        case MEM_PRED_LAST_VAL: update_last_val_predictor(time, size); break;
+        case MEM_PRED_AVERAGE: update_average_predictor(time, size); break;
+        case MEM_PRED_EWMA: update_ewma_predictor(time, size); break;
+        default:
+            printf("Invalid memory time predictor selected.\n");
+            m5_exit(0);
+    }
+}
+
+uint32_t get_runtime(volatile task_struct_t *node)
+{
+    return (node->compute_time + \
+            ((node->input_size + node->output_size) * mem_prediction));
+}
+
 void push_request(task_struct_t *req)
 {
     int acc_id = req->acc_id;
@@ -670,34 +743,11 @@ void push_request(task_struct_t *req)
         }
 
         case LAX: {
-            if (ready_queue_size[acc_id] == 0) {
-                ready_queue[acc_id][ready_queue_end[acc_id]] = req;
-                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
-                                          MAX_READY_QUEUE_SIZE;
-            }
-            else {
-                // TODO: update_laxity
+            ready_queue[acc_id][ready_queue_end[acc_id]] = req;
+            ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                                      MAX_READY_QUEUE_SIZE;
 
-                int pos = ready_queue_start[acc_id];
-                while ((pos != ready_queue_end[acc_id]) && \
-                       (ready_queue[acc_id][pos]->laxity <= req->laxity)) {
-                    pos = (pos + 1) % MAX_READY_QUEUE_SIZE;
-                }
-
-                if (pos != ready_queue_end[acc_id]) {
-                    int i = ready_queue_end[acc_id];
-                    while (i != pos) {
-                        int j = i - 1;
-                        if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
-                        ready_queue[acc_id][i] = ready_queue[acc_id][j];
-                        i = j;
-                    }
-                }
-
-                ready_queue[acc_id][pos] = req;
-                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
-                                          MAX_READY_QUEUE_SIZE;
-            }
+            sort_ready_queue[acc_id] = true;
 
             break;
         }
@@ -726,6 +776,58 @@ volatile task_struct_t *pop_request(int acc_id)
     }
 
     return req;
+}
+
+void ready_queue_laxity_sort(int acc_id)
+{
+    if (ready_queue_size[acc_id] <= 1) { return; }
+
+    int i = ready_queue_start[acc_id];
+    while (i != ready_queue_end[acc_id]) {
+        volatile task_struct_t *node = ready_queue[acc_id][i];
+        node->laxity = node->node_deadline - get_runtime(node) - \
+                       (m5_get_time() / 1000) + runtime_start_time;
+        i = (i + 1) % MAX_READY_QUEUE_SIZE;
+    }
+
+    i = (ready_queue_end[acc_id] == 0) ? \
+        (MAX_READY_QUEUE_SIZE - 1) : \
+        (ready_queue_end[acc_id] - 1);
+
+    while (i != ready_queue_start[acc_id]) {
+        int j_plus_1 = -1;
+
+        for (int j = ready_queue_start[acc_id]; j != i; j = j_plus_1) {
+            j_plus_1 = (j + 1) % MAX_READY_QUEUE_SIZE;
+
+            if (ready_queue[acc_id][j]->laxity > \
+                    ready_queue[acc_id][j_plus_1]->laxity) {
+                volatile task_struct_t *temp = ready_queue[acc_id][j];
+                ready_queue[acc_id][j] = ready_queue[acc_id][j_plus_1];
+                ready_queue[acc_id][j_plus_1] = temp;
+            }
+        }
+
+        i = (i == 0) ? (MAX_READY_QUEUE_SIZE - 1) : (i - 1);
+    }
+}
+
+void sort_requests()
+{
+    switch (scheduling_policy) {
+        case FCFS:
+        case GEDF_D:
+        case GEDF_N:
+            return;
+    }
+
+    for (int i = 0; i < NUM_ACCS; i++) {
+        if ((ready_queue_size[i] > 0) && (num_available_instances[i] > 0) && \
+                sort_ready_queue[i]) {
+            ready_queue_laxity_sort(i);
+            sort_ready_queue[i] = false;
+        }
+    }
 }
 
 void launch_requests()
@@ -773,10 +875,6 @@ void launch_requests()
 void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
         scheduling_policy_t policy)
 {
-#ifdef TIME
-    m5_timer_start(0);
-#endif
-
     // Initialize structures
     for (int i = 0; i < NUM_ACCS; i++) {
         for (int j = 0; j < acc_instances[i]; j++) {
@@ -803,6 +901,7 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
     }
 
     scheduling_policy = policy;
+    runtime_start_time = m5_get_time() / 1000;
 
     for (int i = 0; i < num_dags; i++) {
         for (int j = 0; j < num_nodes[i]; j++) {
@@ -812,15 +911,7 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
         }
     }
 
-#ifdef TIME
-    m5_timer_stop(0);
-#endif
-
     m5_reset_stats();
-
-#ifdef TIME
-    m5_timer_start(0);
-#endif
 
     // launch ready requests
     disable_interrupts();
@@ -829,10 +920,6 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
 
     while (num_running);
 
-#ifdef TIME
-    m5_timer_stop(0);
-#endif
-
     m5_dump_stats();
 }
 
@@ -840,6 +927,9 @@ void isr(int i, int j)  // i = accelerator id, j = device id
 {
     if ((acc_state[i][j].status == ACC_STATUS_DMA_ARG1) ||
         (acc_state[i][j].status == ACC_STATUS_DMA_ARG2)) {
+        update_mem_time_predictor(m5_get_time() - dma_start_time[i][j],
+                dma_size[i][j]);
+
         *acc_state[i][j].dma = 0;
         run_accelerator(i, j, acc_state[i][j].running_req);
     }
@@ -861,6 +951,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         }
 
         num_available_instances[i]++;
+        sort_requests();
 
         int node_spm_out_part = acc_state[i][j].curr_spm_out_part;
         int num_forwards = 0;
@@ -909,6 +1000,9 @@ void isr(int i, int j)  // i = accelerator id, j = device id
     }
 
     else if (acc_state[i][j].status == ACC_STATUS_DMA_OUT) {
+        update_mem_time_predictor(m5_get_time() - dma_start_time[i][j],
+                dma_size[i][j]);
+
         *acc_state[i][j].dma = 0;
         acc_state[i][j].status = ACC_STATUS_IDLE;
 

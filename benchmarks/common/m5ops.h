@@ -79,6 +79,16 @@ static void m5_timer_stop(uint8_t timer_id)
         case 15: __asm__ (".inst 0xEE00F110 | (0x57 << 16)"); break;
     }
 }
+static uint32_t __attribute__((optimize("-O0"))) m5_get_time()
+{
+    uint32_t retval = 0;
+    __asm__ (".inst 0xEE000110 | (0x58 << 16)");
+    __asm__ ("mov %0, r0"
+            : "=r" (retval)
+            : /* no inputs */
+            : /* no clobbers */);
+    return retval;
+}
 #elif defined(__aarch64__)
 static void m5_checkpoint(void)
 {

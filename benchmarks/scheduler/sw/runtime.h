@@ -20,8 +20,27 @@
 #define MAX_DAGS            50
 #define MAX_NODES           500
 #define MAX_READY_QUEUE_SIZE 500
-#define VERIFY
-//#define TIME
+//#define VERIFY
+
+/**
+ * Accelerator compute times (in microseconds)
+ */
+#define RUNTIME_CANNY_NON_MAX       400
+#define RUNTIME_CONVOLUTION_3       637
+#define RUNTIME_CONVOLUTION_5       1546
+#define RUNTIME_EDGE_TRACKING       220
+#define RUNTIME_ELEM_MATRIX_ADD     11
+#define RUNTIME_ELEM_MATRIX_SUB     11
+#define RUNTIME_ELEM_MATRIX_MUL     11
+#define RUNTIME_ELEM_MATRIX_DIV     11
+#define RUNTIME_ELEM_MATRIX_SQR     8
+#define RUNTIME_ELEM_MATRIX_SQRT    8
+#define RUNTIME_ELEM_MATRIX_ATAN2   11
+#define RUNTIME_ELEM_MATRIX_TANH    8
+#define RUNTIME_ELEM_MATRIX_SIGMOID 8
+#define RUNTIME_GRAYSCALE           10
+#define RUNTIME_HARRIS_NON_MAX      105
+#define RUNTIME_ISP                 35
 
 /**
  * Bookkeeping for accelerators
@@ -62,9 +81,16 @@ enum scheduling_policy_t {
     ELF
 };
 
+enum mem_predictor_t {
+    MEM_PRED_LAST_VAL = 0,
+    MEM_PRED_AVERAGE,
+    MEM_PRED_EWMA
+};
+
 typedef struct task_struct_t task_struct_t;
 typedef struct acc_state_t acc_state_t;
 typedef enum scheduling_policy_t scheduling_policy_t;
+typedef enum mem_predictor_t mem_predictor_t;
 
 struct task_struct_t {
     /**
@@ -79,7 +105,9 @@ struct task_struct_t {
     task_struct_t *children[MAX_CHILDREN];
     task_struct_t *producer[MAX_ACC_ARGS];
 
-    uint32_t input_size[MAX_ACC_ARGS];
+    uint32_t input_size;
+    uint32_t output_size;
+    uint32_t compute_time;
     int dag_deadline;
     int node_deadline;
 
@@ -95,7 +123,7 @@ struct task_struct_t {
      */
     int status;
     int earliest_start;
-    int laxity;
+    int32_t laxity;
 
     int completed_parents;
     uint8_t producer_spm_part[MAX_ACC_ARGS];    // partition of the producer's

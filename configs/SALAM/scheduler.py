@@ -453,6 +453,6 @@ if buildEnv['TARGET_ISA'] == "arm" and not options.bare_metal \
             sys = getattr(root, sysname)
             sys.generateDtb(m5.options.outdir, '%s.dtb' % sysname)
 
-test_sys.cpu[0].wait_for_remote_gdb = True
+#test_sys.cpu[0].wait_for_remote_gdb = True
 Simulation.setWorkCountOptions(test_sys, options)
 Simulation.run(options, root, test_sys, FutureClass)

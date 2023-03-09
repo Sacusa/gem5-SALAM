@@ -1,7 +1,10 @@
 #include "../../common/m5ops.h"
 #include "runtime.h"
 
-inline void dcache_flush(uint32_t addr, uint32_t num_bytes)
+volatile uint32_t dma_start_time[NUM_ACCS][MAX_ACC_INSTANCES];
+volatile uint32_t dma_size[NUM_ACCS][MAX_ACC_INSTANCES];
+
+void dcache_flush(uint32_t addr, uint32_t num_bytes)
 {
     // only flush lines in the cacheable region
     // we assume here that the data would NOT be spread across cacheable and
@@ -36,7 +39,7 @@ inline void dcache_flush(uint32_t addr, uint32_t num_bytes)
             : /* no clobbers */);
 }
 
-inline void canny_non_max_driver(
+void canny_non_max_driver(
         int device_id, uint32_t img_height, uint32_t img_width,
         uint32_t hypo_addr, uint32_t theta_addr, uint32_t output_addr,
         uint32_t output_spm_addr, volatile acc_state_t *acc) {
@@ -76,10 +79,8 @@ inline void canny_non_max_driver(
         *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
+        dma_start_time[ACC_CANNY_NON_MAX][device_id] = m5_get_time();
+        dma_size[ACC_CANNY_NON_MAX][device_id] = data_size;
 
         acc->status = ACC_STATUS_DMA_ARG1;
     }
@@ -92,10 +93,8 @@ inline void canny_non_max_driver(
         *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
+        dma_start_time[ACC_CANNY_NON_MAX][device_id] = m5_get_time();
+        dma_size[ACC_CANNY_NON_MAX][device_id] = data_size;
 
         acc->status = ACC_STATUS_DMA_ARG2;
     }
@@ -104,11 +103,6 @@ inline void canny_non_max_driver(
         *CNMImgWidth = img_width;
         *CNMOutputSpmAddr = output_spm_addr;
         *CNMFlags = DEV_INIT;
-
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
 
         acc->status = ACC_STATUS_RUNNING;
     }
@@ -121,16 +115,14 @@ inline void canny_non_max_driver(
         *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
+        dma_start_time[ACC_CANNY_NON_MAX][device_id] = m5_get_time();
+        dma_size[ACC_CANNY_NON_MAX][device_id] = data_size;
 
         acc->status = ACC_STATUS_DMA_OUT;
     }
 }
 
-inline void convolution_driver(
+void convolution_driver(
         int device_id, uint32_t img_height, uint32_t img_width,
         uint32_t input_addr, uint32_t kernel_addr, uint32_t kern_height,
         uint32_t kern_width, uint8_t mod_and_floor, uint32_t output_addr,
@@ -178,10 +170,8 @@ inline void convolution_driver(
             *DmaCopyLen = data_size;
             *DmaFlags   = DEV_INIT;
 
-#ifdef TIME
-            m5_timer_stop(0);
-            m5_timer_start(0);
-#endif
+            dma_start_time[ACC_CONVOLUTION][device_id] = m5_get_time();
+            dma_size[ACC_CONVOLUTION][device_id] = data_size;
 
             // Remain in this state only if we actually perform a DMA transfer
             return;
@@ -198,10 +188,8 @@ inline void convolution_driver(
         *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
+        dma_start_time[ACC_CONVOLUTION][device_id] = m5_get_time();
+        dma_size[ACC_CONVOLUTION][device_id] = data_size;
 
         acc->status = ACC_STATUS_DMA_ARG2;
     }
@@ -216,11 +204,6 @@ inline void convolution_driver(
         *ConvolutionOutputSpmAddr = output_spm_addr;
         *ConvolutionFlags = DEV_INIT;
 
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
-
         acc->status = ACC_STATUS_RUNNING;
     }
     else if (acc->status == ACC_STATUS_RUNNING) {
@@ -233,16 +216,14 @@ inline void convolution_driver(
         *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
+        dma_start_time[ACC_CONVOLUTION][device_id] = m5_get_time();
+        dma_size[ACC_CONVOLUTION][device_id] = data_size;
 
         acc->status = ACC_STATUS_DMA_OUT;
     }
 }
 
-inline void edge_tracking_driver(
+void edge_tracking_driver(
         int device_id, uint32_t img_height, uint32_t img_width,
         uint32_t input_addr, float thr_weak_ratio, float thr_strong_ratio,
         uint32_t output_addr, uint32_t output_spm_addr,
@@ -285,10 +266,8 @@ inline void edge_tracking_driver(
         *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
+        dma_start_time[ACC_EDGE_TRACKING][device_id] = m5_get_time();
+        dma_size[ACC_EDGE_TRACKING][device_id] = data_size;
 
         acc->status = ACC_STATUS_DMA_ARG1;
     }
@@ -301,11 +280,6 @@ inline void edge_tracking_driver(
         *EdgeTrackingOutputSpmAddr = output_spm_addr;
         *EdgeTrackingFlags = DEV_INIT;
 
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
-
         acc->status = ACC_STATUS_RUNNING;
     }
     else if (acc->status == ACC_STATUS_RUNNING) {
@@ -317,16 +291,14 @@ inline void edge_tracking_driver(
         *DmaCopyLen = num_elems;
         *DmaFlags   = DEV_INIT;
 
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
+        dma_start_time[ACC_EDGE_TRACKING][device_id] = m5_get_time();
+        dma_size[ACC_EDGE_TRACKING][device_id] = num_elems;
 
         acc->status = ACC_STATUS_DMA_OUT;
     }
 }
 
-inline void elem_matrix_driver(
+void elem_matrix_driver(
         int device_id, uint32_t img_height, uint32_t img_width,
         uint32_t arg1_addr, uint32_t arg2_addr, uint8_t is_arg2_scalar,
         uint8_t op, uint8_t do_one_minus, uint32_t output_addr,
@@ -371,10 +343,8 @@ inline void elem_matrix_driver(
             *DmaCopyLen = data_size;
             *DmaFlags   = DEV_INIT;
 
-#ifdef TIME
-            m5_timer_stop(0);
-            m5_timer_start(0);
-#endif
+            dma_start_time[ACC_ELEM_MATRIX][device_id] = m5_get_time();
+            dma_size[ACC_ELEM_MATRIX][device_id] = data_size;
 
             // Remain in this state only if we actually perform a DMA transfer
             return;
@@ -397,10 +367,8 @@ inline void elem_matrix_driver(
             *DmaCopyLen = data_size;
             *DmaFlags = DEV_INIT;
 
-#ifdef TIME
-            m5_timer_stop(0);
-            m5_timer_start(0);
-#endif
+            dma_start_time[ACC_ELEM_MATRIX][device_id] = m5_get_time();
+            dma_size[ACC_ELEM_MATRIX][device_id] = data_size;
 
             // Remain in this state only if we actually perform a DMA transfer
             return;
@@ -418,11 +386,6 @@ inline void elem_matrix_driver(
         *EMOutputSpmAddr = output_spm_addr;
         *EMFlags = DEV_INIT;
 
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
-
         acc->status = ACC_STATUS_RUNNING;
     }
     else if (acc->status == ACC_STATUS_RUNNING) {
@@ -434,16 +397,14 @@ inline void elem_matrix_driver(
         *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
+        dma_start_time[ACC_ELEM_MATRIX][device_id] = m5_get_time();
+        dma_size[ACC_ELEM_MATRIX][device_id] = data_size;
 
         acc->status = ACC_STATUS_DMA_OUT;
     }
 }
 
-inline void grayscale_driver(
+void grayscale_driver(
         int device_id, uint32_t img_height, uint32_t img_width,
         uint32_t input_addr, uint32_t output_addr, uint32_t output_spm_addr,
         volatile acc_state_t *acc) {
@@ -481,10 +442,8 @@ inline void grayscale_driver(
         *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
+        dma_start_time[ACC_GRAYSCALE][device_id] = m5_get_time();
+        dma_size[ACC_GRAYSCALE][device_id] = data_size;
 
         acc->status = ACC_STATUS_DMA_ARG1;
     }
@@ -493,11 +452,6 @@ inline void grayscale_driver(
         *GrayscaleNumElems = num_elems;
         *GrayscaleOutputSpmAddr = output_spm_addr;
         *GrayscaleFlags = DEV_INIT;
-
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
 
         acc->status = ACC_STATUS_RUNNING;
     }
@@ -511,16 +465,14 @@ inline void grayscale_driver(
         *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
+        dma_start_time[ACC_GRAYSCALE][device_id] = m5_get_time();
+        dma_size[ACC_GRAYSCALE][device_id] = data_size;
 
         acc->status = ACC_STATUS_DMA_OUT;
     }
 }
 
-inline void harris_non_max_driver(
+void harris_non_max_driver(
         int device_id, uint32_t img_height, uint32_t img_width,
         uint32_t input_addr, uint32_t output_addr, uint32_t output_spm_addr,
         volatile acc_state_t *acc) {
@@ -557,10 +509,8 @@ inline void harris_non_max_driver(
         *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
+        dma_start_time[ACC_HARRIS_NON_MAX][device_id] = m5_get_time();
+        dma_size[ACC_HARRIS_NON_MAX][device_id] = data_size;
 
         acc->status = ACC_STATUS_DMA_ARG1;
     }
@@ -570,11 +520,6 @@ inline void harris_non_max_driver(
         *HNMImgWidth = img_width;
         *HNMOutputSpmAddr = output_spm_addr;
         *HNMFlags = DEV_INIT;
-
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
 
         acc->status = ACC_STATUS_RUNNING;
     }
@@ -588,16 +533,14 @@ inline void harris_non_max_driver(
         *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
+        dma_start_time[ACC_HARRIS_NON_MAX][device_id] = m5_get_time();
+        dma_size[ACC_HARRIS_NON_MAX][device_id] = data_size;
 
         acc->status = ACC_STATUS_DMA_OUT;
     }
 }
 
-inline void isp_driver(int device_id,
+void isp_driver(int device_id,
         uint32_t img_height, uint32_t img_width, uint32_t input_addr,
         uint32_t output_addr, uint32_t output_spm_addr,
         volatile acc_state_t *acc) {
@@ -634,10 +577,8 @@ inline void isp_driver(int device_id,
         *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
+        dma_start_time[ACC_ISP][device_id] = m5_get_time();
+        dma_size[ACC_ISP][device_id] = data_size;
 
         acc->status = ACC_STATUS_DMA_ARG1;
     }
@@ -647,11 +588,6 @@ inline void isp_driver(int device_id,
         *IspImgWidth = img_width;
         *IspOutputSpmAddr = output_spm_addr;
         *IspFlags = DEV_INIT;
-
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
 
         acc->status = ACC_STATUS_RUNNING;
     }
@@ -665,10 +601,8 @@ inline void isp_driver(int device_id,
         *DmaCopyLen = data_size;
         *DmaFlags   = DEV_INIT;
 
-#ifdef TIME
-        m5_timer_stop(0);
-        m5_timer_start(0);
-#endif
+        dma_start_time[ACC_ISP][device_id] = m5_get_time();
+        dma_size[ACC_ISP][device_id] = data_size;
 
         acc->status = ACC_STATUS_DMA_OUT;
     }

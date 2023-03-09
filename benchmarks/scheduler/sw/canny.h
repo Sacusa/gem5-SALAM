@@ -59,6 +59,10 @@ void canny_process_raw(canny_data_t *img, task_struct_t **nodes)
     task->producer_forward[0] = 0;
     task->status = REQ_STATUS_READY;
     task->completed_parents = 0;
+
+    task->input_size = 16900;
+    task->output_size = 49152;
+    task->compute_time = RUNTIME_ISP;
     task->dag_deadline = CANNY_DEADLINE;
     task->node_deadline = 13564;
 
@@ -92,6 +96,10 @@ void canny_convert_to_grayscale(canny_data_t *img, task_struct_t **nodes)
 #endif
     task->producer_forward[0] = 0;
     task->completed_parents = 0;
+
+    task->input_size = 49152;
+    task->output_size = 65536;
+    task->compute_time = RUNTIME_GRAYSCALE;
     task->dag_deadline = CANNY_DEADLINE;
     task->node_deadline = 13601;
 
@@ -143,6 +151,10 @@ void canny_noise_reduction(canny_data_t *img, task_struct_t **nodes)
     task->producer_forward[0] = 0;
     task->status = REQ_STATUS_WAITING;
     task->completed_parents = 0;
+
+    task->input_size = 65636;
+    task->output_size = 65536;
+    task->compute_time = RUNTIME_CONVOLUTION_5;
     task->dag_deadline = CANNY_DEADLINE;
     task->node_deadline = 15177;
 
@@ -261,35 +273,56 @@ void canny_gradient_calculation(canny_data_t *img, task_struct_t **nodes)
 
     task[0]->children[0] = task[2];
     task[0]->children[1] = task[3];
+    task[0]->input_size = 65572;
+    task[0]->output_size = 65536;
+    task[0]->compute_time = RUNTIME_CONVOLUTION_3;
     task[0]->node_deadline = 15846;
 
     task[1]->children[0] = task[3];
     task[1]->children[1] = task[4];
+    task[1]->input_size = 65572;
+    task[1]->output_size = 65536;
+    task[1]->compute_time = RUNTIME_CONVOLUTION_3;
     task[1]->node_deadline = 15846;
 
     task[2]->children[0] = task[5];
     task[2]->num_parents = 1;
     task[2]->producer[0] = task[0];
+    task[2]->input_size = 65536;
+    task[2]->output_size = 65536;
+    task[2]->compute_time = RUNTIME_ELEM_MATRIX_SQR;
     task[2]->node_deadline = 15885;
 
     task[3]->num_parents = 2;
     task[3]->producer[0] = task[0];
     task[3]->producer[1] = task[1];
+    task[3]->input_size = 131072;
+    task[3]->output_size = 65536;
+    task[3]->compute_time = RUNTIME_ELEM_MATRIX_ATAN2;
     task[3]->node_deadline = 15981;
 
     task[4]->children[0] = task[5];
     task[4]->num_parents = 1;
     task[4]->producer[0] = task[1];
+    task[4]->input_size = 65536;
+    task[4]->output_size = 65536;
+    task[4]->compute_time = RUNTIME_ELEM_MATRIX_SQR;
     task[4]->node_deadline = 15885;
 
     task[5]->children[0] = task[6];
     task[5]->num_parents = 2;
     task[5]->producer[0] = task[2];
     task[5]->producer[1] = task[4];
+    task[5]->input_size = 131072;
+    task[5]->output_size = 65536;
+    task[5]->compute_time = RUNTIME_ELEM_MATRIX_ADD;
     task[5]->node_deadline = 15942;
 
     task[6]->num_parents = 1;
     task[6]->producer[0] = task[5];
+    task[6]->input_size = 65536;
+    task[6]->output_size = 65536;
+    task[6]->compute_time = RUNTIME_ELEM_MATRIX_SQRT;
     task[6]->node_deadline = 15981;
 
     canny_retval[2][0]->children[0] = task[0];
@@ -321,6 +354,10 @@ void canny_non_max_suppression(canny_data_t *img, task_struct_t **nodes)
     task->producer_forward[1] = 0;
     task->status = REQ_STATUS_WAITING;
     task->completed_parents = 0;
+
+    task->input_size = 131072;
+    task->output_size = 65536;
+    task->compute_time = RUNTIME_CANNY_NON_MAX;
     task->dag_deadline = CANNY_DEADLINE;
     task->node_deadline = 16427;
 
@@ -351,6 +388,10 @@ void canny_thr_and_edge_tracking(canny_data_t *img, task_struct_t **nodes)
     task->producer_forward[0] = 0;
     task->status = REQ_STATUS_WAITING;
     task->completed_parents = 0;
+
+    task->input_size = 65536;
+    task->output_size = 16384;
+    task->compute_time = RUNTIME_EDGE_TRACKING;
     task->dag_deadline = CANNY_DEADLINE;
     task->node_deadline = 16667;
 

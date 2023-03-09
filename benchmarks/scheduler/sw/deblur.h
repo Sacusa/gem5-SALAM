@@ -73,6 +73,10 @@ void deblur_process_raw(deblur_data_t *img, task_struct_t **nodes,
     task->producer_forward[0] = 0;
     task->status = REQ_STATUS_READY;
     task->completed_parents = 0;
+
+    task->input_size = 16900;
+    task->output_size = 49152;
+    task->compute_time = RUNTIME_ISP;
     task->dag_deadline = DEBLUR_DEADLINE;
     task->node_deadline = earliest_start + 50;
 
@@ -107,6 +111,10 @@ void deblur_convert_to_grayscale(deblur_data_t *img, task_struct_t **nodes,
 #endif
     task->producer_forward[0] = 0;
     task->completed_parents = 0;
+
+    task->input_size = 49152;
+    task->output_size = 65536;
+    task->compute_time = RUNTIME_GRAYSCALE;
     task->dag_deadline = DEBLUR_DEADLINE;
     task->node_deadline = earliest_start + 87;
 
@@ -151,6 +159,10 @@ void deblur_run_conv_psf(deblur_data_t *img, task_struct_t **nodes,
     task->status = REQ_STATUS_WAITING;
     task->producer_forward[0] = 0;
     task->completed_parents = 0;
+
+    task->input_size = 65636;
+    task->output_size = 65536;
+    task->compute_time = RUNTIME_CONVOLUTION_5;
     task->dag_deadline = DEBLUR_DEADLINE;
     task->node_deadline = earliest_start + 1576;
 
@@ -181,6 +193,10 @@ void deblur_run_div_ut_psf(deblur_data_t *img, task_struct_t **nodes,
     task->producer_forward[1] = 0;
     task->status = REQ_STATUS_WAITING;
     task->completed_parents = 0;
+
+    task->input_size = 131072;
+    task->output_size = 65536;
+    task->compute_time = RUNTIME_ELEM_MATRIX_DIV;
     task->dag_deadline = DEBLUR_DEADLINE;
     task->node_deadline = earliest_start + 1633;
 
@@ -212,6 +228,10 @@ void deblur_run_conv_psf_flip(deblur_data_t *img, task_struct_t **nodes,
     task->producer_forward[0] = 0;
     task->status = REQ_STATUS_WAITING;
     task->completed_parents = 0;
+
+    task->input_size = 65636;
+    task->output_size = 65536;
+    task->compute_time = RUNTIME_CONVOLUTION_5;
     task->dag_deadline = DEBLUR_DEADLINE;
     task->node_deadline = earliest_start + 3210;
 
@@ -257,6 +277,10 @@ void deblur_run_mult_psf_flip(deblur_data_t *img, bool is_first, bool has_child,
     task->producer_forward[1] = 0;
     task->status = REQ_STATUS_WAITING;
     task->completed_parents = 0;
+
+    task->input_size = 131072;
+    task->output_size = 65536;
+    task->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task->dag_deadline = DEBLUR_DEADLINE;
     task->node_deadline = earliest_start + 3267;
 

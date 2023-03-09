@@ -97,6 +97,10 @@ void gru_cell_init(gru_cell_data_t *cell, task_struct_t **nodes,
     task->producer_forward[0] = 0;
     task->producer_forward[1] = 0;
     task->completed_parents = 0;
+
+    task->input_size = 131072;
+    task->output_size = 65536;
+    task->compute_time = RUNTIME_ELEM_MATRIX_ADD;
     task->dag_deadline = GRU_DEADLINE;
     task->node_deadline = earliest_start + 57;
 
@@ -166,15 +170,24 @@ void gru_update_gate(gru_cell_data_t *cell, task_struct_t **nodes,
 
     task[0]->children[0] = task[1];
     task[0]->producer[0] = gru_retval[0];
+    task[0]->input_size = 131072;
+    task[0]->output_size = 65536;
+    task[0]->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task[0]->node_deadline = earliest_start + 382;
 
     task[1]->children[0] = task[2];
     task[1]->producer[0] = task[0];
+    task[1]->input_size = 131072;
+    task[1]->output_size = 65536;
+    task[1]->compute_time = RUNTIME_ELEM_MATRIX_ADD;
     task[1]->node_deadline = earliest_start + 439;
 
     task[2]->num_children = 2;
     task[2]->children[0] = task[3];
     task[2]->producer[0] = task[1];
+    task[2]->input_size = 65536;
+    task[2]->output_size = 65536;
+    task[2]->compute_time = RUNTIME_ELEM_MATRIX_SIGMOID;
     task[2]->node_deadline = earliest_start + 478;
 
     if (is_first) {
@@ -185,6 +198,9 @@ void gru_update_gate(gru_cell_data_t *cell, task_struct_t **nodes,
         task[3]->producer[1] = task[2];
         gru_retval[4]->children[1] = task[3];
     }
+    task[3]->input_size = 131072;
+    task[3]->output_size = 65536;
+    task[3]->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task[3]->node_deadline = earliest_start + 535;
 
     gru_retval[0]->children[0] = task[0];
@@ -280,16 +296,25 @@ void gru_reset_gate(gru_cell_data_t *cell, task_struct_t **nodes,
     task[0]->children[0] = task[1];
     task[0]->num_parents = 1;
     task[0]->producer[0] = gru_retval[0];
+    task[0]->input_size = 131072;
+    task[0]->output_size = 65536;
+    task[0]->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task[0]->node_deadline = earliest_start + 114;
 
     task[1]->children[0] = task[2];
     task[1]->num_parents = 1;
     task[1]->producer[0] = task[0];
+    task[1]->input_size = 131072;
+    task[1]->output_size = 65536;
+    task[1]->compute_time = RUNTIME_ELEM_MATRIX_ADD;
     task[1]->node_deadline = earliest_start + 171;
 
     task[2]->children[0] = task[3];
     task[2]->num_parents = 1;
     task[2]->producer[0] = task[1];
+    task[2]->input_size = 65536;
+    task[2]->output_size = 65536;
+    task[2]->compute_time = RUNTIME_ELEM_MATRIX_SIGMOID;
     task[2]->node_deadline = earliest_start + 210;
 
     task[3]->children[0] = task[4];
@@ -303,26 +328,41 @@ void gru_reset_gate(gru_cell_data_t *cell, task_struct_t **nodes,
         task[3]->producer[1] = gru_retval[4];
         gru_retval[4]->children[2] = task[3];
     }
+    task[3]->input_size = 131072;
+    task[3]->output_size = 65536;
+    task[3]->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task[3]->node_deadline = earliest_start + 267;
 
     task[4]->children[0] = task[5];
     task[4]->num_parents = 1;
     task[4]->producer[0] = task[3];
+    task[4]->input_size = 131072;
+    task[4]->output_size = 65536;
+    task[4]->compute_time = RUNTIME_ELEM_MATRIX_ADD;
     task[4]->node_deadline = earliest_start + 324;
 
     task[5]->children[0] = task[6];
     task[5]->num_parents = 1;
     task[5]->producer[0] = task[4];
+    task[5]->input_size = 131072;
+    task[5]->output_size = 65536;
+    task[5]->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task[5]->node_deadline = earliest_start + 382;
 
     task[6]->children[0] = task[7];
     task[6]->num_parents = 1;
     task[6]->producer[0] = task[5];
+    task[6]->input_size = 131072;
+    task[6]->output_size = 65536;
+    task[6]->compute_time = RUNTIME_ELEM_MATRIX_ADD;
     task[6]->node_deadline = earliest_start + 439;
 
     task[7]->children[0] = task[8];
     task[7]->num_parents = 1;
     task[7]->producer[0] = task[6];
+    task[7]->input_size = 65536;
+    task[7]->output_size = 65536;
+    task[7]->compute_time = RUNTIME_ELEM_MATRIX_TANH;
     task[7]->node_deadline = earliest_start + 478;
 
     gru_retval[0]->children[1] = task[0];
@@ -371,6 +411,9 @@ void gru_cell_output(gru_cell_data_t *cell, task_struct_t **nodes,
     task[0]->children[0] = task[1];
     task[0]->producer[0] = gru_retval[1];
     task[0]->producer[1] = gru_retval[3];
+    task[0]->input_size = 131072;
+    task[0]->output_size = 65536;
+    task[0]->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task[0]->node_deadline = earliest_start + 535;
 
     if (is_last) {
@@ -380,6 +423,9 @@ void gru_cell_output(gru_cell_data_t *cell, task_struct_t **nodes,
     }
     task[1]->producer[0] = gru_retval[2];
     task[1]->producer[1] = task[0];
+    task[1]->input_size = 131072;
+    task[1]->output_size = 65536;
+    task[1]->compute_time = RUNTIME_ELEM_MATRIX_ADD;
     task[1]->node_deadline = earliest_start + 592;
 
     gru_retval[1]->children[1] = task[0];
