@@ -198,7 +198,6 @@ pseudoInst(ThreadContext *tc, uint8_t func, uint8_t subfunc)
         break;
 
       case M5OP_ANNOTATE:
-      case M5OP_RESERVED4:
       case M5OP_RESERVED5:
         warn("Unimplemented m5 op (0x%x)\n", func);
         break;
@@ -737,6 +736,14 @@ m5timerstop(ThreadContext *tc, uint32_t inst)
     uint32_t timer_id = (inst >> 12) & 0x0F;
     DPRINTF(PseudoInst, "Stop timer called for timer #%d\n", timer_id);
     tc->stopTimer(timer_id);
+}
+
+void
+m5gettime(ThreadContext *tc)
+{
+    uint32_t retval = curTick() / 1000;
+    DPRINTF(PseudoInst, "Get time returning %d\n", retval);
+    tc->setIntReg(ArmISA::INTREG_R0, retval);
 }
 
 } // namespace PseudoInst

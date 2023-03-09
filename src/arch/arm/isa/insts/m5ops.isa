@@ -602,4 +602,16 @@ let {{
     header_output += BasicDeclare.subst(m5timerstopIop)
     decoder_output += BasicConstructor.subst(m5timerstopIop)
     exec_output += PredOpExecute.subst(m5timerstopIop)
+
+    m5gettime_code = '''
+    PseudoInst::m5gettime(xc->tcBase());
+    '''
+
+    m5gettimeIop = InstObjParams("m5gettime", "M5gettime", "PredOp",
+                           { "code": m5gettime_code,
+                             "predicate_test": predicateTest },
+                             ["IsNonSpeculative"])
+    header_output += BasicDeclare.subst(m5gettimeIop)
+    decoder_output += BasicConstructor.subst(m5gettimeIop)
+    exec_output += PredOpExecute.subst(m5gettimeIop)
 }};

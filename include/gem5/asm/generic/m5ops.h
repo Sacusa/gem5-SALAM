@@ -74,8 +74,8 @@
 
 #define M5OP_TIMER_START        0x56 // Start timing an event
 #define M5OP_TIMER_STOP         0x57 // Stop timing an event
+#define M5OP_GET_TIME           0x58 // Return current time (in ns)
 
-#define M5OP_RESERVED4          0x58 // Reserved for user
 #define M5OP_RESERVED5          0x59 // Reserved for user
 
 #define M5OP_WORK_BEGIN         0x5a
@@ -131,7 +131,8 @@
     M5OP(m5_work_end, M5OP_WORK_END, 0);                        \
     M5OP(m5_dist_toggle_sync, M5OP_DIST_TOGGLE_SYNC, 0);        \
     M5OP(m5_timer_start, M5OP_TIMER_START, 0);                  \
-    M5OP(m5_timer_stop, M5OP_TIMER_STOP, 0);
+    M5OP(m5_timer_stop, M5OP_TIMER_STOP, 0);                    \
+    M5OP(m5_get_time, M5OP_GET_TIME, 0);
 
 #define M5OP_FOREACH_ANNOTATION                      \
     M5_ANNOTATION(m5a_bsm, M5OP_AN_BSM);             \
