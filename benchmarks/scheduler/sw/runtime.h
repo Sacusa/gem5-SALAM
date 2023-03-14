@@ -22,6 +22,16 @@
 #define MAX_READY_QUEUE_SIZE 500
 //#define VERIFY
 
+/* Enable gem5 timers for the following functions:
+ * Timer 0: push_request()
+ * Timer 1: sort_requests()
+ * Timer 2: update_mem_time_predictor()
+ *
+ * It also enables the collection and printing of other statistics using
+ * structures and gem5 pseudo instructions.
+ */
+#define ENABLE_STATS
+
 /**
  * Accelerator compute times (in microseconds)
  */
@@ -87,10 +97,22 @@ enum mem_predictor_t {
     MEM_PRED_EWMA
 };
 
+/**
+ * Structures for statistics
+ */
+enum m5_stat_t {
+    DEGREE_OF_PARALLELISM = 0,
+    DAG_DEADLINES_MET,
+    NODE_DEADLINES_MET,
+    PREDICTED_RUNTIME
+};
+
 typedef struct task_struct_t task_struct_t;
 typedef struct acc_state_t acc_state_t;
 typedef enum scheduling_policy_t scheduling_policy_t;
 typedef enum mem_predictor_t mem_predictor_t;
+typedef enum req_status_t req_status_t;
+typedef enum m5_stat_t m5_stat_t;
 
 struct task_struct_t {
     /**
@@ -122,7 +144,7 @@ struct task_struct_t {
     /**
      * The following fields are for use by the runtime
      */
-    int status;
+    req_status_t status;
     int earliest_start;
     int32_t laxity;
 

@@ -71,6 +71,10 @@ volatile mem_predictor_t mem_predictor = MEM_PRED_LAST_VAL;
 bool sort_ready_queue[NUM_ACCS];
 volatile uint32_t runtime_start_time;
 
+// Structures for statistics
+volatile uint32_t dag_deadlines_met = 0;
+volatile uint32_t node_deadlines_met = 0;
+
 void init_task_struct(task_struct_t *task_struct)
 {
     for (int i = 0; i < MAX_ACC_ARGS; i++) {
@@ -652,6 +656,10 @@ void update_ewma_predictor(uint32_t time, uint32_t size)
 
 void update_mem_time_predictor(uint32_t time, uint32_t size)
 {
+#ifdef ENABLE_STATS
+    m5_timer_start(2);
+#endif
+
     switch (mem_predictor) {
         case MEM_PRED_LAST_VAL: update_last_val_predictor(time, size); break;
         case MEM_PRED_AVERAGE: update_average_predictor(time, size); break;
@@ -660,6 +668,10 @@ void update_mem_time_predictor(uint32_t time, uint32_t size)
             printf("Invalid memory time predictor selected.\n");
             m5_exit(0);
     }
+
+#ifdef ENABLE_STATS
+    m5_timer_stop(2);
+#endif
 }
 
 uint32_t get_runtime(volatile task_struct_t *node)
@@ -670,6 +682,10 @@ uint32_t get_runtime(volatile task_struct_t *node)
 
 void push_request(task_struct_t *req)
 {
+#ifdef ENABLE_STATS
+    m5_timer_start(0);
+#endif
+
     int acc_id = req->acc_id;
 
     if (ready_queue_size[acc_id] == MAX_READY_QUEUE_SIZE) {
@@ -788,6 +804,10 @@ void push_request(task_struct_t *req)
     }
 
     ready_queue_size[acc_id]++;
+
+#ifdef ENABLE_STATS
+    m5_timer_stop(0);
+#endif
 }
 
 volatile task_struct_t *peek_request(int acc_id)
@@ -967,6 +987,10 @@ void sort_requests()
             return;
     }
 
+#ifdef ENABLE_STATS
+    m5_timer_start(1);
+#endif
+
     for (int i = 0; i < NUM_ACCS; i++) {
         if ((ready_queue_size[i] > 0) && (num_available_instances[i] > 0) && \
                 sort_ready_queue[i]) {
@@ -977,6 +1001,10 @@ void sort_requests()
             sort_ready_queue[i] = false;
         }
     }
+
+#ifdef ENABLE_STATS
+    m5_timer_stop(1);
+#endif
 }
 
 void launch_requests()
@@ -1068,9 +1096,19 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
     // launch ready requests
     disable_interrupts();
     launch_requests();
+
+#ifdef ENABLE_STATS
+    m5_print_stat(DEGREE_OF_PARALLELISM, num_running);
+#endif
+
     enable_interrupts();
 
     while (num_running);
+
+#ifdef ENABLE_STATS
+    m5_print_stat(DAG_DEADLINES_MET, dag_deadlines_met);
+    m5_print_stat(NODE_DEADLINES_MET, node_deadlines_met);
+#endif
 
     m5_dump_stats();
 }
@@ -1148,6 +1186,14 @@ void isr(int i, int j)  // i = accelerator id, j = device id
 
         if (!write_out_to_mem) {
             num_running--;
+
+#ifdef ENABLE_STATS
+            uint32_t curr_time = (m5_get_time() / 1000) + runtime_start_time;
+
+            if (curr_time <= node->node_deadline) {
+                node_deadlines_met++;
+            }
+#endif
         }
     }
 
@@ -1159,6 +1205,19 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         acc_state[i][j].status = ACC_STATUS_IDLE;
 
         num_running--;
+
+#ifdef ENABLE_STATS
+        volatile task_struct_t *node = acc_state[i][j].running_req;
+        uint32_t curr_time = (m5_get_time() / 1000) + runtime_start_time;
+
+        if ((node->num_children == 0) && (curr_time <= node->dag_deadline)) {
+            dag_deadlines_met++;
+        }
+
+        if (curr_time <= node->node_deadline) {
+            node_deadlines_met++;
+        }
+#endif
     }
 
     else {
@@ -1168,6 +1227,10 @@ void isr(int i, int j)  // i = accelerator id, j = device id
     }
 
     launch_requests();
+
+#ifdef ENABLE_STATS
+    m5_print_stat(DEGREE_OF_PARALLELISM, num_running);
+#endif
 }
 
 void data_abort_handler(uint32_t pc)
