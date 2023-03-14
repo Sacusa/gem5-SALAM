@@ -108,6 +108,7 @@ struct task_struct_t {
     uint32_t input_size;
     uint32_t output_size;
     uint32_t compute_time;
+    uint32_t runtime;
     int dag_deadline;
     int node_deadline;
 

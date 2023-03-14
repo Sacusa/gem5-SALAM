@@ -53,10 +53,16 @@ int acc_spm_part_offset[NUM_ACCS][MAX_ACC_SPM_PARTS] = {
 
 volatile acc_state_t acc_state[NUM_ACCS][MAX_ACC_INSTANCES];
 volatile int num_available_instances[NUM_ACCS];
+
 volatile task_struct_t *ready_queue[NUM_ACCS][MAX_READY_QUEUE_SIZE];
 volatile int ready_queue_size[NUM_ACCS];
 volatile int ready_queue_start[NUM_ACCS];
 volatile int ready_queue_end[NUM_ACCS];
+
+// Pipeline nodes for ELF
+volatile task_struct_t *pipeline_nodes[NUM_ACCS][MAX_READY_QUEUE_SIZE];
+volatile int num_pipeline_nodes[NUM_ACCS];
+
 volatile int num_running = 0;
 
 volatile scheduling_policy_t scheduling_policy;
@@ -752,7 +758,33 @@ void push_request(task_struct_t *req)
             break;
         }
 
-        case ELF: assertf(false, "Policy not implemented");
+        case ELF: {
+            if (num_pipeline_nodes[acc_id] == 0) {
+                pipeline_nodes[acc_id][num_pipeline_nodes[acc_id]] = req;
+                num_pipeline_nodes[acc_id]++;
+            }
+            else {
+                int pos = 0;
+                while ((pos < num_pipeline_nodes[acc_id]) && \
+                       (ready_queue[acc_id][pos]->node_deadline <= \
+                        req->node_deadline)) {
+                    pos++;
+                }
+
+                if (pos < num_pipeline_nodes[acc_id]) {
+                    for (int i = num_pipeline_nodes[acc_id]; i > pos; i--) {
+                        ready_queue[acc_id][i] = ready_queue[acc_id][i-1];
+                    }
+                }
+
+                pipeline_nodes[acc_id][pos] = req;
+                num_pipeline_nodes[acc_id]++;
+            }
+
+            sort_ready_queue[acc_id] = true;
+
+            break;
+        }
     }
 
     ready_queue_size[acc_id]++;
@@ -778,23 +810,28 @@ volatile task_struct_t *pop_request(int acc_id)
     return req;
 }
 
-void ready_queue_laxity_sort(int acc_id)
+void LAX_sort(int acc_id)
 {
     if (ready_queue_size[acc_id] <= 1) { return; }
 
-    int i = ready_queue_start[acc_id];
-    while (i != ready_queue_end[acc_id]) {
+    // Update node laxities
+    for (int i = ready_queue_start[acc_id];
+         i != ready_queue_end[acc_id];
+         i = (i + 1) % MAX_READY_QUEUE_SIZE) {
+
         volatile task_struct_t *node = ready_queue[acc_id][i];
-        node->laxity = node->node_deadline - get_runtime(node) - \
+        node->runtime = get_runtime(node);
+        node->laxity = node->node_deadline - node->runtime - \
                        (m5_get_time() / 1000) + runtime_start_time;
-        i = (i + 1) % MAX_READY_QUEUE_SIZE;
     }
 
-    i = (ready_queue_end[acc_id] == 0) ? \
-        (MAX_READY_QUEUE_SIZE - 1) : \
-        (ready_queue_end[acc_id] - 1);
+    // Using bubble sort to sort the queues since they rarely have >10 elements
+    // Maybe switch to something faster?
+    for (int i = (ready_queue_end[acc_id] == 0) ? \
+            (MAX_READY_QUEUE_SIZE - 1) : (ready_queue_end[acc_id] - 1);
+         i != ready_queue_start[acc_id];
+         i = (i == 0) ? (MAX_READY_QUEUE_SIZE - 1) : (i - 1)) {
 
-    while (i != ready_queue_start[acc_id]) {
         int j_plus_1 = -1;
 
         for (int j = ready_queue_start[acc_id]; j != i; j = j_plus_1) {
@@ -807,9 +844,118 @@ void ready_queue_laxity_sort(int acc_id)
                 ready_queue[acc_id][j_plus_1] = temp;
             }
         }
-
-        i = (i == 0) ? (MAX_READY_QUEUE_SIZE - 1) : (i - 1);
     }
+}
+
+void ELF_sort(int acc_id)
+{
+    if (num_pipeline_nodes[acc_id] == 0) { return; }
+
+    // Ensure that the number of pipeline nodes is not more than the number
+    // of available instances. If it is, then just add the extra nodes to the
+    // ready queue.
+    if (num_pipeline_nodes[acc_id] > num_available_instances[acc_id]) {
+        for (int p = num_available_instances[acc_id];
+                p < num_pipeline_nodes[acc_id]; p++) {
+
+            volatile task_struct_t *node = pipeline_nodes[acc_id][p];
+            int pos = ready_queue_start[acc_id];
+
+            while ((pos != ready_queue_end[acc_id]) && \
+                   (ready_queue[acc_id][pos]->node_deadline <= \
+                    node->node_deadline)) {
+                pos = (pos + 1) % MAX_READY_QUEUE_SIZE;
+            }
+
+            if (pos != ready_queue_end[acc_id]) {
+                int i = ready_queue_end[acc_id];
+                while (i != pos) {
+                    int j = i - 1;
+                    if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
+                    ready_queue[acc_id][i] = ready_queue[acc_id][j];
+                    i = j;
+                }
+            }
+
+            ready_queue[acc_id][pos] = node;
+            ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                                      MAX_READY_QUEUE_SIZE;
+        }
+
+        num_pipeline_nodes[acc_id] = num_available_instances[acc_id];
+    }
+
+    // Update node laxities in ready queue
+    for (int i = ready_queue_start[acc_id];
+         i != ready_queue_end[acc_id];
+         i = (i + 1) % MAX_READY_QUEUE_SIZE) {
+
+        volatile task_struct_t *node = ready_queue[acc_id][i];
+        node->runtime = get_runtime(node);
+        node->laxity = node->node_deadline - node->runtime - \
+                       (m5_get_time() / 1000) + runtime_start_time;
+    }
+
+    for (int p = 0; p < num_pipeline_nodes[acc_id]; p++) {
+        volatile task_struct_t *node = pipeline_nodes[acc_id][p];
+        node->runtime = get_runtime(node);
+        node->laxity = node->node_deadline - node->runtime - \
+                       (m5_get_time() / 1000) + runtime_start_time;
+
+        // Find the insertion position for the pipeline node. We need it to:
+        // 1) check the laxities of nodes before it in the ready queue
+        // 2) know the insertion position if forwarding is not possible
+        bool can_forward = true;
+        int pos;
+
+        for (pos = ready_queue_start[acc_id];
+             pos != ready_queue_end[acc_id];
+             pos = (pos + 1) % MAX_READY_QUEUE_SIZE) {
+            if (ready_queue[acc_id][pos]->node_deadline > node->node_deadline)
+            {
+                break;
+            }
+
+            if (ready_queue[acc_id][pos]->laxity < node->runtime) {
+                can_forward = false;
+            }
+        }
+
+        if (can_forward) {
+            // Reduce node laxities and insert the node at the *start* of the
+            // queue.
+            for (int i = ready_queue_start[acc_id]; i != pos;
+                 i = (i + 1) % MAX_READY_QUEUE_SIZE) {
+                ready_queue[acc_id][i]->laxity -= node->runtime;
+            }
+
+            ready_queue_start[acc_id] = (ready_queue_start[acc_id] == 0) ? \
+                                        (MAX_READY_QUEUE_SIZE - 1) : \
+                                        (ready_queue_start[acc_id] - 1);
+            ready_queue[acc_id][ready_queue_start[acc_id]] = node;
+
+            // Modifying the deadline to maintain the queue invariant
+            node->node_deadline = 0;
+        }
+        else {
+            // Cannot forward, so perform sorted insertion into ready queue
+            if (pos != ready_queue_end[acc_id]) {
+                int i = ready_queue_end[acc_id];
+                while (i != pos) {
+                    int j = i - 1;
+                    if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
+                    ready_queue[acc_id][i] = ready_queue[acc_id][j];
+                    i = j;
+                }
+            }
+
+            ready_queue[acc_id][pos] = node;
+            ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                                      MAX_READY_QUEUE_SIZE;
+        }
+    }
+
+    num_pipeline_nodes[acc_id] = 0;
 }
 
 void sort_requests()
@@ -824,7 +970,10 @@ void sort_requests()
     for (int i = 0; i < NUM_ACCS; i++) {
         if ((ready_queue_size[i] > 0) && (num_available_instances[i] > 0) && \
                 sort_ready_queue[i]) {
-            ready_queue_laxity_sort(i);
+            switch (scheduling_policy) {
+                case LAX: LAX_sort(i); break;
+                case ELF: ELF_sort(i); break;
+            }
             sort_ready_queue[i] = false;
         }
     }
@@ -898,6 +1047,7 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
         ready_queue_end[i] = 0;
 
         num_available_instances[i] = acc_instances[i];
+        num_pipeline_nodes[i] = 0;
     }
 
     scheduling_policy = policy;
@@ -910,6 +1060,8 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
             }
         }
     }
+
+    sort_requests();
 
     m5_reset_stats();
 
