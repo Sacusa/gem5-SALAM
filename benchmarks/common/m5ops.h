@@ -89,6 +89,15 @@ static uint32_t __attribute__((optimize("-O0"))) m5_get_time()
             : /* no clobbers */);
     return retval;
 }
+static void __attribute__((optimize("-O0"))) m5_print_stat(uint32_t stat,
+        uint32_t value)
+{
+    __asm__ ("push {r0-r1}");
+    __asm__ ("mov r0, %0" :: "r" (stat));
+    __asm__ ("mov r1, %0" :: "r" (value));
+    __asm__ (".inst 0xEE000110 | (0x59 << 16)");
+    __asm__ ("pop  {r0-r1}");
+}
 #elif defined(__aarch64__)
 static void m5_checkpoint(void)
 {

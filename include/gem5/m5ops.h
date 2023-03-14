@@ -69,6 +69,7 @@ void m5_work_end(uint64_t workid, uint64_t threadid);
 void m5_timer_start(uint32_t timer_id);
 void m5_timer_stop(uint32_t timer_id);
 void m5_get_time(void);
+void m5_print_stat(uint32_t stat, uint32_t value);
 
 // These operations are for critical path annotation
 void m5a_bsm(char *sm, const void *id, int flags);

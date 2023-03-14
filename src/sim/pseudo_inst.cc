@@ -64,6 +64,7 @@
 #include "cpu/thread_context.hh"
 #include "debug/Loader.hh"
 #include "debug/PseudoInst.hh"
+#include "debug/SchedulerStats.hh"
 #include "debug/Quiesce.hh"
 #include "debug/WorkItems.hh"
 #include "dev/net/dist_iface.hh"
@@ -198,7 +199,6 @@ pseudoInst(ThreadContext *tc, uint8_t func, uint8_t subfunc)
         break;
 
       case M5OP_ANNOTATE:
-      case M5OP_RESERVED5:
         warn("Unimplemented m5 op (0x%x)\n", func);
         break;
 
@@ -744,6 +744,35 @@ m5gettime(ThreadContext *tc)
     uint32_t retval = curTick() / 1000;
     DPRINTF(PseudoInst, "Get time returning %d\n", retval);
     tc->setIntReg(ArmISA::INTREG_R0, retval);
+}
+
+void
+m5printstat(ThreadContext *tc, uint32_t stat, uint32_t value)
+{
+    enum stat_t {
+        DEGREE_OF_PARALLELISM = 0,
+        DAG_DEADLINES_MET,
+        NODE_DEADLINES_MET,
+        PREDICTED_RUNTIME,
+        NUM_STATS
+    };
+
+    assert(stat < NUM_STATS);
+
+    if (stat == DEGREE_OF_PARALLELISM) {
+        DPRINTF(SchedulerStats, "Number of accelerators running = %d\n",
+                value);
+    }
+    else if (stat == DAG_DEADLINES_MET) {
+        DPRINTF(SchedulerStats, "Number of DAG deadlines met = %d\n", value);
+    }
+    else if (stat == NODE_DEADLINES_MET) {
+        DPRINTF(SchedulerStats, "Number of node deadlines met = %d\n", value);
+    }
+    else if (stat == PREDICTION_ACCURACY) {
+        DPRINTF(SchedulerStats, "Total predicted execution time = %d\n",
+                value);
+    }
 }
 
 } // namespace PseudoInst

@@ -93,6 +93,7 @@ void togglesync(ThreadContext *tc);
 void m5timerstart(ThreadContext *tc, uint32_t timer_id);
 void m5timerstop(ThreadContext *tc, uint32_t timer_id);
 void m5gettime(ThreadContext *tc);
+void m5printstat(ThreadContext *tc, uint32_t stat, uint32_t value);
 
 } // namespace PseudoInst
 

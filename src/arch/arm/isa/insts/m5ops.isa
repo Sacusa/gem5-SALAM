@@ -614,4 +614,16 @@ let {{
     header_output += BasicDeclare.subst(m5gettimeIop)
     decoder_output += BasicConstructor.subst(m5gettimeIop)
     exec_output += PredOpExecute.subst(m5gettimeIop)
+
+    m5printstat_code = '''
+    PseudoInst::m5printstat(xc->tcBase(), R0, R1);
+    '''
+
+    m5printstatIop = InstObjParams("m5printstat", "M5printstat", "PredOp",
+                           { "code": m5printstat_code,
+                             "predicate_test": predicateTest },
+                             ["IsNonSpeculative"])
+    header_output += BasicDeclare.subst(m5printstatIop)
+    decoder_output += BasicConstructor.subst(m5printstatIop)
+    exec_output += PredOpExecute.subst(m5printstatIop)
 }};
