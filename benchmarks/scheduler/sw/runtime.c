@@ -74,6 +74,7 @@ volatile uint32_t runtime_start_time;
 // Structures for statistics
 volatile uint32_t dag_deadlines_met = 0;
 volatile uint32_t node_deadlines_met = 0;
+volatile float predicted_runtime = 0;
 
 void init_task_struct(task_struct_t *task_struct)
 {
@@ -674,7 +675,7 @@ void update_mem_time_predictor(uint32_t time, uint32_t size)
 #endif
 }
 
-uint32_t get_runtime(volatile task_struct_t *node)
+float get_runtime(volatile task_struct_t *node)
 {
     return (node->compute_time + \
             ((node->input_size + node->output_size) * mem_prediction));
@@ -1036,6 +1037,10 @@ void launch_requests()
                     num_running++;
                     num_available_instances[i]--;
 
+#ifdef ENABLE_STATS
+                    predicted_runtime += get_runtime(req);
+#endif
+
                     unable_to_launch = false;
 
                     break;
@@ -1108,6 +1113,7 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
 #ifdef ENABLE_STATS
     m5_print_stat(DAG_DEADLINES_MET, dag_deadlines_met);
     m5_print_stat(NODE_DEADLINES_MET, node_deadlines_met);
+    m5_print_stat(PREDICTED_RUNTIME, (uint32_t)predicted_runtime);
 #endif
 
     m5_dump_stats();
