@@ -118,11 +118,11 @@ struct task_struct_t {
     /**
      * User provides the following fields
      */
-    int acc_id;
+    uint8_t acc_id;
     void *acc_args;
 
-    int num_children;
-    int num_parents;
+    uint16_t num_children;
+    uint16_t num_parents;
 
     task_struct_t *children[MAX_CHILDREN];
     task_struct_t *producer[MAX_ACC_ARGS];
@@ -131,24 +131,24 @@ struct task_struct_t {
     uint32_t output_size;
     uint32_t compute_time;
     float runtime;
-    int dag_deadline;
-    int node_deadline;
+    uint32_t dag_deadline;
+    uint32_t node_deadline;
 
     /**
      * Scheduler sets the following fields
      */
-    int producer_forward[MAX_ACC_ARGS]; // bit vector with value set to 1 if
-                                        // the corresponding entry in
-                                        // arg_producer will forward data
+    uint8_t producer_forward[MAX_ACC_ARGS]; // bit vector with value set to 1
+                                            // if the corresponding entry in
+                                            // arg_producer will forward data
 
     /**
      * The following fields are for use by the runtime
      */
     req_status_t status;
-    int earliest_start;
+    uint32_t orig_node_deadline;
     float laxity;
 
-    int completed_parents;
+    uint16_t completed_parents;
     uint8_t producer_spm_part[MAX_ACC_ARGS];    // partition of the producer's
                                                 // output SPM to read from
     volatile acc_state_t *producer_acc[MAX_ACC_ARGS];   // producer accelerator

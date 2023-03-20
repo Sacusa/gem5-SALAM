@@ -600,7 +600,6 @@ void finish_accelerator(int acc_id, int device_id,
     }
 
     *(acc->flags) = 0;
-    acc->running_req = NULL;
 }
 
 /**
@@ -657,6 +656,10 @@ void update_ewma_predictor(uint32_t time, uint32_t size)
 
 void update_mem_time_predictor(uint32_t time, uint32_t size)
 {
+    // The size here is fairly random. We just want to avoid recording time
+    // for convolution filter DMA transfers because they tend to be skewed.
+    if (size < 512) { return; }
+
 #ifdef ENABLE_STATS
     m5_timer_start(2);
 #endif
@@ -777,20 +780,21 @@ void push_request(task_struct_t *req)
 
         case ELF: {
             if (num_pipeline_nodes[acc_id] == 0) {
-                pipeline_nodes[acc_id][num_pipeline_nodes[acc_id]] = req;
-                num_pipeline_nodes[acc_id]++;
+                pipeline_nodes[acc_id][0] = req;
+                num_pipeline_nodes[acc_id] = 1;
             }
             else {
                 int pos = 0;
                 while ((pos < num_pipeline_nodes[acc_id]) && \
-                       (ready_queue[acc_id][pos]->node_deadline <= \
+                       (pipeline_nodes[acc_id][pos]->node_deadline <= \
                         req->node_deadline)) {
                     pos++;
                 }
 
                 if (pos < num_pipeline_nodes[acc_id]) {
                     for (int i = num_pipeline_nodes[acc_id]; i > pos; i--) {
-                        ready_queue[acc_id][i] = ready_queue[acc_id][i-1];
+                        pipeline_nodes[acc_id][i] =
+                            pipeline_nodes[acc_id][i-1];
                     }
                 }
 
@@ -842,8 +846,8 @@ void LAX_sort(int acc_id)
 
         volatile task_struct_t *node = ready_queue[acc_id][i];
         node->runtime = get_runtime(node);
-        node->laxity = node->node_deadline - node->runtime - \
-                       (m5_get_time() / 1000) + runtime_start_time;
+        node->laxity = node->node_deadline + runtime_start_time - \
+                       node->runtime - (m5_get_time() / 1000);
     }
 
     // Using bubble sort to sort the queues since they rarely have >10 elements
@@ -871,6 +875,10 @@ void LAX_sort(int acc_id)
 void ELF_sort(int acc_id)
 {
     if (num_pipeline_nodes[acc_id] == 0) { return; }
+
+#ifdef ENABLE_STATS
+    m5_timer_start(3);
+#endif
 
     // Ensure that the number of pipeline nodes is not more than the number
     // of available instances. If it is, then just add the extra nodes to the
@@ -906,22 +914,18 @@ void ELF_sort(int acc_id)
         num_pipeline_nodes[acc_id] = num_available_instances[acc_id];
     }
 
-    // Update node laxities in ready queue
-    for (int i = ready_queue_start[acc_id];
-         i != ready_queue_end[acc_id];
-         i = (i + 1) % MAX_READY_QUEUE_SIZE) {
+#ifdef ENABLE_STATS
+    m5_timer_stop(3);
+    m5_timer_start(4);
+#endif
 
-        volatile task_struct_t *node = ready_queue[acc_id][i];
-        node->runtime = get_runtime(node);
-        node->laxity = node->node_deadline - node->runtime - \
-                       (m5_get_time() / 1000) + runtime_start_time;
-    }
+    int laxity_update = ready_queue_start[acc_id];
 
     for (int p = 0; p < num_pipeline_nodes[acc_id]; p++) {
         volatile task_struct_t *node = pipeline_nodes[acc_id][p];
         node->runtime = get_runtime(node);
-        node->laxity = node->node_deadline - node->runtime - \
-                       (m5_get_time() / 1000) + runtime_start_time;
+        node->laxity = node->node_deadline + runtime_start_time - \
+                       node->runtime - (m5_get_time() / 1000);
 
         // Find the insertion position for the pipeline node. We need it to:
         // 1) check the laxities of nodes before it in the ready queue
@@ -932,12 +936,23 @@ void ELF_sort(int acc_id)
         for (pos = ready_queue_start[acc_id];
              pos != ready_queue_end[acc_id];
              pos = (pos + 1) % MAX_READY_QUEUE_SIZE) {
-            if (ready_queue[acc_id][pos]->node_deadline > node->node_deadline)
+
+            volatile task_struct_t *rq_node = ready_queue[acc_id][pos];
+
+            if (pos == laxity_update) {
+                rq_node->runtime = get_runtime(rq_node);
+                rq_node->laxity = rq_node->node_deadline + \
+                                  runtime_start_time - rq_node->runtime - \
+                                  (m5_get_time() / 1000);
+                laxity_update = (laxity_update + 1) % MAX_READY_QUEUE_SIZE;
+            }
+
+            if (rq_node->node_deadline > node->node_deadline)
             {
                 break;
             }
 
-            if (ready_queue[acc_id][pos]->laxity < node->runtime) {
+            if (rq_node->laxity < node->runtime) {
                 can_forward = false;
             }
         }
@@ -945,10 +960,12 @@ void ELF_sort(int acc_id)
         if (can_forward) {
             // Reduce node laxities and insert the node at the *start* of the
             // queue.
+            /*
             for (int i = ready_queue_start[acc_id]; i != pos;
                  i = (i + 1) % MAX_READY_QUEUE_SIZE) {
                 ready_queue[acc_id][i]->laxity -= node->runtime;
             }
+            */
 
             ready_queue_start[acc_id] = (ready_queue_start[acc_id] == 0) ? \
                                         (MAX_READY_QUEUE_SIZE - 1) : \
@@ -956,6 +973,7 @@ void ELF_sort(int acc_id)
             ready_queue[acc_id][ready_queue_start[acc_id]] = node;
 
             // Modifying the deadline to maintain the queue invariant
+            node->orig_node_deadline = node->node_deadline;
             node->node_deadline = 0;
         }
         else {
@@ -975,6 +993,10 @@ void ELF_sort(int acc_id)
                                       MAX_READY_QUEUE_SIZE;
         }
     }
+
+#ifdef ENABLE_STATS
+    m5_timer_stop(4);
+#endif
 
     num_pipeline_nodes[acc_id] = 0;
 }
@@ -1108,7 +1130,10 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
 
     enable_interrupts();
 
-    while (num_running);
+    while (num_running) {
+        // Put the thread to sleep until interrupted
+        m5_quiesce();
+    }
 
 #ifdef ENABLE_STATS
     m5_print_stat(DAG_DEADLINES_MET, dag_deadlines_met);
@@ -1191,15 +1216,23 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         acc_state[i][j].spm_pending_reads[node_spm_out_part] = num_forwards;
 
         if (!write_out_to_mem) {
-            num_running--;
-
 #ifdef ENABLE_STATS
-            uint32_t curr_time = (m5_get_time() / 1000) + runtime_start_time;
+            uint32_t curr_time = (m5_get_time() / 1000) - runtime_start_time;
 
-            if (curr_time <= node->node_deadline) {
-                node_deadlines_met++;
+            if (node->node_deadline == 0) {
+                if (curr_time <= node->orig_node_deadline) {
+                    node_deadlines_met++;
+                }
+            }
+            else {
+                if (curr_time <= node->node_deadline) {
+                    node_deadlines_met++;
+                }
             }
 #endif
+
+            acc_state[i][j].running_req = NULL;
+            num_running--;
         }
     }
 
@@ -1210,20 +1243,28 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         *acc_state[i][j].dma = 0;
         acc_state[i][j].status = ACC_STATUS_IDLE;
 
-        num_running--;
-
 #ifdef ENABLE_STATS
         volatile task_struct_t *node = acc_state[i][j].running_req;
-        uint32_t curr_time = (m5_get_time() / 1000) + runtime_start_time;
+        uint32_t curr_time = (m5_get_time() / 1000) - runtime_start_time;
 
         if ((node->num_children == 0) && (curr_time <= node->dag_deadline)) {
             dag_deadlines_met++;
         }
 
-        if (curr_time <= node->node_deadline) {
-            node_deadlines_met++;
+        if (node->node_deadline == 0) {
+            if (curr_time <= node->orig_node_deadline) {
+                node_deadlines_met++;
+            }
+        }
+        else {
+            if (curr_time <= node->node_deadline) {
+                node_deadlines_met++;
+            }
         }
 #endif
+
+        acc_state[i][j].running_req = NULL;
+        num_running--;
     }
 
     else {
