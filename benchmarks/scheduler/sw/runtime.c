@@ -59,16 +59,11 @@ volatile int ready_queue_size[NUM_ACCS];
 volatile int ready_queue_start[NUM_ACCS];
 volatile int ready_queue_end[NUM_ACCS];
 
-// Pipeline nodes for ELF
-volatile task_struct_t *pipeline_nodes[NUM_ACCS][MAX_READY_QUEUE_SIZE];
-volatile int num_pipeline_nodes[NUM_ACCS];
-
 volatile int num_running = 0;
 
 volatile scheduling_policy_t scheduling_policy;
 // TODO: set this in runtime
 volatile mem_predictor_t mem_predictor = MEM_PRED_LAST_VAL;
-bool sort_ready_queue[NUM_ACCS];
 volatile uint32_t runtime_start_time;
 
 // Structures for statistics
@@ -97,7 +92,7 @@ void assertf(bool cond, const char * format, ...)
     }
 }
 
-void enable_interrupts()
+inline void enable_interrupts()
 {
     __asm__ ("push {r1}");
     __asm__ ("mrs r1, CPSR");
@@ -106,7 +101,7 @@ void enable_interrupts()
     __asm__ ("pop {r1}");
 }
 
-void disable_interrupts()
+inline void disable_interrupts()
 {
     __asm__ ("push {r1}");
     __asm__ ("mrs r1, CPSR");
@@ -119,7 +114,7 @@ void disable_interrupts()
  * Functions for running each accelerator
  */
 
-void run_canny_non_max(int device_id, volatile task_struct_t *req,
+inline void run_canny_non_max(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     canny_non_max_args *args = (canny_non_max_args*) req->acc_args;
@@ -175,7 +170,7 @@ void run_canny_non_max(int device_id, volatile task_struct_t *req,
     }
 }
 
-void run_convolution(int device_id, volatile task_struct_t *req,
+inline void run_convolution(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     convolution_args *args = (convolution_args*) req->acc_args;
@@ -227,7 +222,7 @@ void run_convolution(int device_id, volatile task_struct_t *req,
     }
 }
 
-void run_edge_tracking(int device_id, volatile task_struct_t *req,
+inline void run_edge_tracking(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     edge_tracking_args *args = (edge_tracking_args*) req->acc_args;
@@ -266,7 +261,7 @@ void run_edge_tracking(int device_id, volatile task_struct_t *req,
     }
 }
 
-void run_elem_matrix(int device_id, volatile task_struct_t *req,
+inline void run_elem_matrix(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     elem_matrix_args *args = (elem_matrix_args*) req->acc_args;
@@ -352,7 +347,7 @@ void run_elem_matrix(int device_id, volatile task_struct_t *req,
     }
 }
 
-void run_grayscale(int device_id, volatile task_struct_t *req,
+inline void run_grayscale(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     grayscale_args *args = (grayscale_args*) req->acc_args;
@@ -390,7 +385,7 @@ void run_grayscale(int device_id, volatile task_struct_t *req,
     }
 }
 
-void run_harris_non_max(int device_id, volatile task_struct_t *req,
+inline void run_harris_non_max(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     harris_non_max_args *args = (harris_non_max_args*) req->acc_args;
@@ -428,7 +423,7 @@ void run_harris_non_max(int device_id, volatile task_struct_t *req,
     }
 }
 
-void run_isp(int device_id, volatile task_struct_t *req,
+inline void run_isp(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     isp_args *args = (isp_args*) req->acc_args;
@@ -466,7 +461,7 @@ void run_isp(int device_id, volatile task_struct_t *req,
     }
 }
 
-void run_accelerator(int acc_id, int device_id,
+inline void run_accelerator(int acc_id, int device_id,
         volatile task_struct_t *req)
 {
     volatile acc_state_t *acc = &acc_state[acc_id][device_id];
@@ -503,7 +498,7 @@ void run_accelerator(int acc_id, int device_id,
  * Functions for copying accelerator outputs
  */
 
-void finish_canny_non_max(int device_id, volatile task_struct_t *req,
+inline void finish_canny_non_max(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     canny_non_max_args *args = (canny_non_max_args*) req->acc_args;
@@ -512,7 +507,7 @@ void finish_canny_non_max(int device_id, volatile task_struct_t *req,
             acc);
 }
 
-void finish_convolution(int device_id, volatile task_struct_t *req,
+inline void finish_convolution(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     convolution_args *args = (convolution_args*) req->acc_args;
@@ -521,7 +516,7 @@ void finish_convolution(int device_id, volatile task_struct_t *req,
             acc);
 }
 
-void finish_edge_tracking(int device_id, volatile task_struct_t *req,
+inline void finish_edge_tracking(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     edge_tracking_args *args = (edge_tracking_args*) req->acc_args;
@@ -530,7 +525,7 @@ void finish_edge_tracking(int device_id, volatile task_struct_t *req,
             acc);
 }
 
-void finish_elem_matrix(int device_id, volatile task_struct_t *req,
+inline void finish_elem_matrix(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     elem_matrix_args *args = (elem_matrix_args*) req->acc_args;
@@ -539,7 +534,7 @@ void finish_elem_matrix(int device_id, volatile task_struct_t *req,
             acc->spm_part[acc->curr_spm_out_part], acc);
 }
 
-void finish_grayscale(int device_id, volatile task_struct_t *req,
+inline void finish_grayscale(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     grayscale_args *args = (grayscale_args*) req->acc_args;
@@ -548,7 +543,7 @@ void finish_grayscale(int device_id, volatile task_struct_t *req,
             acc);
 }
 
-void finish_harris_non_max(int device_id, volatile task_struct_t *req,
+inline void finish_harris_non_max(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     harris_non_max_args *args = (harris_non_max_args*) req->acc_args;
@@ -557,7 +552,7 @@ void finish_harris_non_max(int device_id, volatile task_struct_t *req,
             acc);
 }
 
-void finish_isp(int device_id, volatile task_struct_t *req,
+inline void finish_isp(int device_id, volatile task_struct_t *req,
         volatile acc_state_t *acc)
 {
     isp_args *args = (isp_args*) req->acc_args;
@@ -565,7 +560,7 @@ void finish_isp(int device_id, volatile task_struct_t *req,
             acc->spm_part[acc->curr_spm_out_part], acc);
 }
 
-void finish_accelerator(int acc_id, int device_id,
+inline void finish_accelerator(int acc_id, int device_id,
         volatile task_struct_t *req, bool perform_mem_write)
 {
     volatile acc_state_t *acc = &acc_state[acc_id][device_id];
@@ -609,7 +604,7 @@ void finish_accelerator(int acc_id, int device_id,
 float mem_prediction = 0;
 
 // Last value predictor
-void update_last_val_predictor(uint32_t time, uint32_t size)
+inline void update_last_val_predictor(uint32_t time, uint32_t size)
 {
     mem_prediction = ((float)time / 1000) / size;
 }
@@ -620,7 +615,7 @@ float mem_hist[MAX_MEM_HIST_SIZE];
 uint8_t mem_hist_size = 0;
 uint8_t mem_hist_pos = 0;
 
-void update_average_predictor(uint32_t time, uint32_t size)
+inline void update_average_predictor(uint32_t time, uint32_t size)
 {
     float mem_time_per_byte = ((float)time / 1000) / size;
 
@@ -640,7 +635,7 @@ void update_average_predictor(uint32_t time, uint32_t size)
 const float alpha = 0.25;
 bool is_first_observation = true;
 
-void update_ewma_predictor(uint32_t time, uint32_t size)
+inline void update_ewma_predictor(uint32_t time, uint32_t size)
 {
     float mem_time_per_byte = ((float)time / 1000) / size;
 
@@ -654,7 +649,7 @@ void update_ewma_predictor(uint32_t time, uint32_t size)
     }
 }
 
-void update_mem_time_predictor(uint32_t time, uint32_t size)
+inline void update_mem_time_predictor(uint32_t time, uint32_t size)
 {
     // The size here is fairly random. We just want to avoid recording time
     // for convolution filter DMA transfers because they tend to be skewed.
@@ -678,19 +673,20 @@ void update_mem_time_predictor(uint32_t time, uint32_t size)
 #endif
 }
 
-float get_runtime(volatile task_struct_t *node)
+inline float get_runtime(volatile task_struct_t *node)
 {
     return (node->compute_time + \
             ((node->input_size + node->output_size) * mem_prediction));
 }
 
-void push_request(task_struct_t *req)
+inline void push_request(task_struct_t *req)
 {
 #ifdef ENABLE_STATS
     m5_timer_start(0);
 #endif
 
     int acc_id = req->acc_id;
+    req->orig_node_deadline = req->node_deadline;
 
     if (ready_queue_size[acc_id] == MAX_READY_QUEUE_SIZE) {
         m5_fail_1();
@@ -769,42 +765,120 @@ void push_request(task_struct_t *req)
         }
 
         case LAX: {
-            ready_queue[acc_id][ready_queue_end[acc_id]] = req;
-            ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
-                                      MAX_READY_QUEUE_SIZE;
+#ifdef ENABLE_STATS
+            float runtime = get_runtime(req);
+            req->runtime = runtime;
+            predicted_runtime += runtime;
+#else
+            req->runtime = get_runtime(req);
+#endif
 
-            sort_ready_queue[acc_id] = true;
+            req->laxity = req->orig_node_deadline + runtime_start_time - \
+                          req->runtime;
+
+            if ((req->laxity - (m5_get_time() / 1000)) <= 0) {
+                // De-prioritize a node if its laxity is negative. That is,
+                // the node is unlikely to finish before its deadline.
+                req->laxity = 0xffffffff;
+            }
+
+            if (ready_queue_size[acc_id] == 0) {
+                ready_queue[acc_id][ready_queue_end[acc_id]] = req;
+                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                                          MAX_READY_QUEUE_SIZE;
+            }
+            else {
+                int pos = ready_queue_start[acc_id];
+                while ((pos != ready_queue_end[acc_id]) && \
+                       (ready_queue[acc_id][pos]->laxity <= req->laxity)) {
+                    pos = (pos + 1) % MAX_READY_QUEUE_SIZE;
+                }
+
+                if (pos != ready_queue_end[acc_id]) {
+                    int i = ready_queue_end[acc_id];
+                    while (i != pos) {
+                        int j = i - 1;
+                        if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
+                        ready_queue[acc_id][i] = ready_queue[acc_id][j];
+                        i = j;
+                    }
+                }
+
+                ready_queue[acc_id][pos] = req;
+                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                                          MAX_READY_QUEUE_SIZE;
+            }
 
             break;
         }
 
         case ELF: {
-            if (num_pipeline_nodes[acc_id] == 0) {
-                pipeline_nodes[acc_id][0] = req;
-                num_pipeline_nodes[acc_id] = 1;
-            }
-            else {
-                int pos = 0;
-                while ((pos < num_pipeline_nodes[acc_id]) && \
-                       (pipeline_nodes[acc_id][pos]->node_deadline <= \
-                        req->node_deadline)) {
-                    pos++;
+            bool can_forward = true;
+            int pos;
+
+#ifdef ENABLE_STATS
+            float runtime = get_runtime(req);
+            req->runtime = runtime;
+            predicted_runtime += runtime;
+#else
+            req->runtime = get_runtime(req);
+#endif
+
+            req->laxity_initialized = false;
+
+            for (pos = ready_queue_start[acc_id];
+                 pos != ready_queue_end[acc_id];
+                 pos = (pos + 1) % MAX_READY_QUEUE_SIZE) {
+
+                volatile task_struct_t *rq_node = ready_queue[acc_id][pos];
+
+                if (!rq_node->laxity_initialized) {
+                    rq_node->laxity = rq_node->orig_node_deadline + \
+                                      runtime_start_time - rq_node->runtime;
+                    rq_node->laxity_initialized = true;
+                }
+                uint32_t laxity = rq_node->laxity - (m5_get_time() / 1000);
+
+                if (rq_node->orig_node_deadline > req->orig_node_deadline) {
+                    break;
                 }
 
-                if (pos < num_pipeline_nodes[acc_id]) {
-                    for (int i = num_pipeline_nodes[acc_id]; i > pos; i--) {
-                        pipeline_nodes[acc_id][i] =
-                            pipeline_nodes[acc_id][i-1];
+                if (laxity < req->runtime) {
+                    can_forward = false;
+                }
+            }
+
+            if (can_forward) {
+                // Reduce node laxities and insert the node at the start of the
+                // queue.
+                for (int i = ready_queue_start[acc_id]; i != pos;
+                     i = (i + 1) % MAX_READY_QUEUE_SIZE) {
+                    ready_queue[acc_id][i]->laxity -= req->runtime;
+                }
+
+                ready_queue_start[acc_id] = (ready_queue_start[acc_id]==0) ? \
+                                            (MAX_READY_QUEUE_SIZE - 1) : \
+                                            (ready_queue_start[acc_id] - 1);
+                ready_queue[acc_id][ready_queue_start[acc_id]] = req;
+
+                req->node_deadline = 0;
+            }
+            else {
+                // Cannot forward, so perform sorted insertion into ready queue
+                if (pos != ready_queue_end[acc_id]) {
+                    int i = ready_queue_end[acc_id];
+                    while (i != pos) {
+                        int j = i - 1;
+                        if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
+                        ready_queue[acc_id][i] = ready_queue[acc_id][j];
+                        i = j;
                     }
                 }
 
-                pipeline_nodes[acc_id][pos] = req;
-                num_pipeline_nodes[acc_id]++;
+                ready_queue[acc_id][pos] = req;
+                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                                          MAX_READY_QUEUE_SIZE;
             }
-
-            sort_ready_queue[acc_id] = true;
-
-            break;
         }
     }
 
@@ -835,202 +909,7 @@ volatile task_struct_t *pop_request(int acc_id)
     return req;
 }
 
-void LAX_sort(int acc_id)
-{
-    if (ready_queue_size[acc_id] <= 1) { return; }
-
-    // Update node laxities
-    for (int i = ready_queue_start[acc_id];
-         i != ready_queue_end[acc_id];
-         i = (i + 1) % MAX_READY_QUEUE_SIZE) {
-
-        volatile task_struct_t *node = ready_queue[acc_id][i];
-        node->runtime = get_runtime(node);
-        node->laxity = node->node_deadline + runtime_start_time - \
-                       node->runtime - (m5_get_time() / 1000);
-    }
-
-    // Using bubble sort to sort the queues since they rarely have >10 elements
-    // Maybe switch to something faster?
-    for (int i = (ready_queue_end[acc_id] == 0) ? \
-            (MAX_READY_QUEUE_SIZE - 1) : (ready_queue_end[acc_id] - 1);
-         i != ready_queue_start[acc_id];
-         i = (i == 0) ? (MAX_READY_QUEUE_SIZE - 1) : (i - 1)) {
-
-        int j_plus_1 = -1;
-
-        for (int j = ready_queue_start[acc_id]; j != i; j = j_plus_1) {
-            j_plus_1 = (j + 1) % MAX_READY_QUEUE_SIZE;
-
-            if (ready_queue[acc_id][j]->laxity > \
-                    ready_queue[acc_id][j_plus_1]->laxity) {
-                volatile task_struct_t *temp = ready_queue[acc_id][j];
-                ready_queue[acc_id][j] = ready_queue[acc_id][j_plus_1];
-                ready_queue[acc_id][j_plus_1] = temp;
-            }
-        }
-    }
-}
-
-void ELF_sort(int acc_id)
-{
-    if (num_pipeline_nodes[acc_id] == 0) { return; }
-
-#ifdef ENABLE_STATS
-    m5_timer_start(3);
-#endif
-
-    // Ensure that the number of pipeline nodes is not more than the number
-    // of available instances. If it is, then just add the extra nodes to the
-    // ready queue.
-    if (num_pipeline_nodes[acc_id] > num_available_instances[acc_id]) {
-        for (int p = num_available_instances[acc_id];
-                p < num_pipeline_nodes[acc_id]; p++) {
-
-            volatile task_struct_t *node = pipeline_nodes[acc_id][p];
-            int pos = ready_queue_start[acc_id];
-
-            while ((pos != ready_queue_end[acc_id]) && \
-                   (ready_queue[acc_id][pos]->node_deadline <= \
-                    node->node_deadline)) {
-                pos = (pos + 1) % MAX_READY_QUEUE_SIZE;
-            }
-
-            if (pos != ready_queue_end[acc_id]) {
-                int i = ready_queue_end[acc_id];
-                while (i != pos) {
-                    int j = i - 1;
-                    if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
-                    ready_queue[acc_id][i] = ready_queue[acc_id][j];
-                    i = j;
-                }
-            }
-
-            ready_queue[acc_id][pos] = node;
-            ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
-                                      MAX_READY_QUEUE_SIZE;
-        }
-
-        num_pipeline_nodes[acc_id] = num_available_instances[acc_id];
-    }
-
-#ifdef ENABLE_STATS
-    m5_timer_stop(3);
-    m5_timer_start(4);
-#endif
-
-    int laxity_update = ready_queue_start[acc_id];
-
-    for (int p = 0; p < num_pipeline_nodes[acc_id]; p++) {
-        volatile task_struct_t *node = pipeline_nodes[acc_id][p];
-        node->runtime = get_runtime(node);
-        node->laxity = node->node_deadline + runtime_start_time - \
-                       node->runtime - (m5_get_time() / 1000);
-
-        // Find the insertion position for the pipeline node. We need it to:
-        // 1) check the laxities of nodes before it in the ready queue
-        // 2) know the insertion position if forwarding is not possible
-        bool can_forward = true;
-        int pos;
-
-        for (pos = ready_queue_start[acc_id];
-             pos != ready_queue_end[acc_id];
-             pos = (pos + 1) % MAX_READY_QUEUE_SIZE) {
-
-            volatile task_struct_t *rq_node = ready_queue[acc_id][pos];
-
-            if (pos == laxity_update) {
-                rq_node->runtime = get_runtime(rq_node);
-                rq_node->laxity = rq_node->node_deadline + \
-                                  runtime_start_time - rq_node->runtime - \
-                                  (m5_get_time() / 1000);
-                laxity_update = (laxity_update + 1) % MAX_READY_QUEUE_SIZE;
-            }
-
-            if (rq_node->node_deadline > node->node_deadline)
-            {
-                break;
-            }
-
-            if (rq_node->laxity < node->runtime) {
-                can_forward = false;
-            }
-        }
-
-        if (can_forward) {
-            // Reduce node laxities and insert the node at the *start* of the
-            // queue.
-            /*
-            for (int i = ready_queue_start[acc_id]; i != pos;
-                 i = (i + 1) % MAX_READY_QUEUE_SIZE) {
-                ready_queue[acc_id][i]->laxity -= node->runtime;
-            }
-            */
-
-            ready_queue_start[acc_id] = (ready_queue_start[acc_id] == 0) ? \
-                                        (MAX_READY_QUEUE_SIZE - 1) : \
-                                        (ready_queue_start[acc_id] - 1);
-            ready_queue[acc_id][ready_queue_start[acc_id]] = node;
-
-            // Modifying the deadline to maintain the queue invariant
-            node->orig_node_deadline = node->node_deadline;
-            node->node_deadline = 0;
-        }
-        else {
-            // Cannot forward, so perform sorted insertion into ready queue
-            if (pos != ready_queue_end[acc_id]) {
-                int i = ready_queue_end[acc_id];
-                while (i != pos) {
-                    int j = i - 1;
-                    if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
-                    ready_queue[acc_id][i] = ready_queue[acc_id][j];
-                    i = j;
-                }
-            }
-
-            ready_queue[acc_id][pos] = node;
-            ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
-                                      MAX_READY_QUEUE_SIZE;
-        }
-    }
-
-#ifdef ENABLE_STATS
-    m5_timer_stop(4);
-#endif
-
-    num_pipeline_nodes[acc_id] = 0;
-}
-
-void sort_requests()
-{
-    switch (scheduling_policy) {
-        case FCFS:
-        case GEDF_D:
-        case GEDF_N:
-            return;
-    }
-
-#ifdef ENABLE_STATS
-    m5_timer_start(1);
-#endif
-
-    for (int i = 0; i < NUM_ACCS; i++) {
-        if ((ready_queue_size[i] > 0) && (num_available_instances[i] > 0) && \
-                sort_ready_queue[i]) {
-            switch (scheduling_policy) {
-                case LAX: LAX_sort(i); break;
-                case ELF: ELF_sort(i); break;
-            }
-            sort_ready_queue[i] = false;
-        }
-    }
-
-#ifdef ENABLE_STATS
-    m5_timer_stop(1);
-#endif
-}
-
-void launch_requests()
+inline void launch_requests()
 {
     for (int i = 0; i < NUM_ACCS; i++) {
         while ((ready_queue_size[i] > 0) && \
@@ -1058,10 +937,6 @@ void launch_requests()
                     req->status = REQ_STATUS_COMPLETED;
                     num_running++;
                     num_available_instances[i]--;
-
-#ifdef ENABLE_STATS
-                    predicted_runtime += get_runtime(req);
-#endif
 
                     unable_to_launch = false;
 
@@ -1102,21 +977,22 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
         ready_queue_end[i] = 0;
 
         num_available_instances[i] = acc_instances[i];
-        num_pipeline_nodes[i] = 0;
     }
 
     scheduling_policy = policy;
     runtime_start_time = m5_get_time() / 1000;
 
     for (int i = 0; i < num_dags; i++) {
+#ifdef VERIFY
         for (int j = 0; j < num_nodes[i]; j++) {
             if (nodes[i][j]->num_parents == 0) {
                 push_request(nodes[i][j]);
             }
         }
+#else
+        push_request(nodes[i][0]);
+#endif
     }
-
-    sort_requests();
 
     m5_reset_stats();
 
@@ -1172,7 +1048,6 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         }
 
         num_available_instances[i]++;
-        sort_requests();
 
         int node_spm_out_part = acc_state[i][j].curr_spm_out_part;
         int num_forwards = 0;
@@ -1219,15 +1094,8 @@ void isr(int i, int j)  // i = accelerator id, j = device id
 #ifdef ENABLE_STATS
             uint32_t curr_time = (m5_get_time() / 1000) - runtime_start_time;
 
-            if (node->node_deadline == 0) {
-                if (curr_time <= node->orig_node_deadline) {
-                    node_deadlines_met++;
-                }
-            }
-            else {
-                if (curr_time <= node->node_deadline) {
-                    node_deadlines_met++;
-                }
+            if (curr_time <= node->orig_node_deadline) {
+                node_deadlines_met++;
             }
 #endif
 
@@ -1251,15 +1119,8 @@ void isr(int i, int j)  // i = accelerator id, j = device id
             dag_deadlines_met++;
         }
 
-        if (node->node_deadline == 0) {
-            if (curr_time <= node->orig_node_deadline) {
-                node_deadlines_met++;
-            }
-        }
-        else {
-            if (curr_time <= node->node_deadline) {
-                node_deadlines_met++;
-            }
+        if (curr_time <= node->orig_node_deadline) {
+            node_deadlines_met++;
         }
 #endif
 

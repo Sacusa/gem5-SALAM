@@ -769,7 +769,7 @@ m5printstat(ThreadContext *tc, uint32_t stat, uint32_t value)
     else if (stat == NODE_DEADLINES_MET) {
         DPRINTF(SchedulerStats, "Number of node deadlines met = %d\n", value);
     }
-    else if (stat == PREDICTION_ACCURACY) {
+    else if (stat == PREDICTED_RUNTIME) {
         DPRINTF(SchedulerStats, "Total predicted execution time = %d\n",
                 value);
     }

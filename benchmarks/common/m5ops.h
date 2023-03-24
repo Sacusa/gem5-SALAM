@@ -37,6 +37,10 @@ static void m5_reset_stats(void)
              ".inst 0xEE000110 | (0x40 << 16);");
     __asm__ ("pop {r0-r3}");
 };
+static void m5_quiesce(void)
+{
+    __asm__ (".inst 0xEE000110 | (0x01 << 16)");
+}
 static void m5_timer_start(uint8_t timer_id)
 {
     switch (timer_id) {

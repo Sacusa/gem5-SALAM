@@ -130,7 +130,7 @@ struct task_struct_t {
     uint32_t input_size;
     uint32_t output_size;
     uint32_t compute_time;
-    float runtime;
+    uint32_t runtime;
     uint32_t dag_deadline;
     uint32_t node_deadline;
 
@@ -146,7 +146,8 @@ struct task_struct_t {
      */
     req_status_t status;
     uint32_t orig_node_deadline;
-    float laxity;
+    uint32_t laxity;
+    bool laxity_initialized;
 
     uint16_t completed_parents;
     uint8_t producer_spm_part[MAX_ACC_ARGS];    // partition of the producer's
