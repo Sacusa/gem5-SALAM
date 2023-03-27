@@ -62,8 +62,7 @@ volatile int ready_queue_end[NUM_ACCS];
 volatile int num_running = 0;
 
 volatile scheduling_policy_t scheduling_policy;
-// TODO: set this in runtime
-volatile mem_predictor_t mem_predictor = MEM_PRED_LAST_VAL;
+volatile mem_predictor_t mem_predictor;
 volatile uint32_t runtime_start_time;
 
 // Structures for statistics
@@ -979,7 +978,7 @@ inline void launch_requests()
 }
 
 void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
-        scheduling_policy_t policy)
+        scheduling_policy_t policy, mem_predictor_t predictor)
 {
     // Initialize structures
     for (int i = 0; i < NUM_ACCS; i++) {
@@ -1007,6 +1006,7 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
     }
 
     scheduling_policy = policy;
+    mem_predictor = predictor;
     runtime_start_time = m5_get_time() / 1000;
 
     for (int i = 0; i < num_dags; i++) {
@@ -1055,8 +1055,12 @@ void isr(int i, int j)  // i = accelerator id, j = device id
 {
     if ((acc_state[i][j].status == ACC_STATUS_DMA_ARG1) ||
         (acc_state[i][j].status == ACC_STATUS_DMA_ARG2)) {
-        update_mem_time_predictor(m5_get_time() - dma_start_time[i][j],
-                dma_size[i][j]);
+        switch (scheduling_policy) {
+            case LAX:
+            case ELF:
+                update_mem_time_predictor(m5_get_time() - dma_start_time[i][j],
+                        dma_size[i][j]);
+        }
 
         *acc_state[i][j].dma = 0;
         run_accelerator(i, j, acc_state[i][j].running_req);
@@ -1140,8 +1144,12 @@ void isr(int i, int j)  // i = accelerator id, j = device id
     }
 
     else if (acc_state[i][j].status == ACC_STATUS_DMA_OUT) {
-        update_mem_time_predictor(m5_get_time() - dma_start_time[i][j],
-                dma_size[i][j]);
+        switch (scheduling_policy) {
+            case LAX:
+            case ELF:
+                update_mem_time_predictor(m5_get_time() - dma_start_time[i][j],
+                        dma_size[i][j]);
+        }
 
         *acc_state[i][j].dma = 0;
         acc_state[i][j].status = ACC_STATUS_IDLE;

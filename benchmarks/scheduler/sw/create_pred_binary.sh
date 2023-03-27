@@ -1,12 +1,15 @@
 #!/bin/bash
 
-if [ "$#" -lt 3 ]; then
-    echo "Usage: $0 <policy> [<application> <num instances>]+"
+if [ "$#" -lt 4 ]; then
+    echo "Usage: $0 <policy> <predictor> [<application> <num instances>]+"
     exit -1
 fi
 
 # parse commandline arguments
 policy="$1"
+shift
+
+predictor="$1"
 shift
 
 num_canny=0
@@ -49,8 +52,8 @@ sed -i '/int num_lstm/c\    int num_lstm = '"${num_lstm};" main.c
 
 # create the runtime call
 num_dags=$(($num_canny + $num_deblur + $num_gru + $num_harris + $num_lstm))
-sed -i '/runtime_call/c\    runtime(nodes, '"${num_dags}"', num_nodes, '"${policy}"', MEM_PRED_LAST_VAL);' main.c
+sed -i '/runtime_call/c\    runtime(nodes, '"${num_dags}"', num_nodes, '"${policy}"', '"${predictor}"');' main.c
 
 # compile and rename binary
 make main.elf &> /dev/null
-mv main.elf canny_${num_canny}_deblur_${num_deblur}_gru_${num_gru}_harris_${num_harris}_lstm_${num_lstm}_${policy}.elf
+mv main.elf canny_${num_canny}_deblur_${num_deblur}_gru_${num_gru}_harris_${num_harris}_lstm_${num_lstm}_${policy}_${predictor}.elf

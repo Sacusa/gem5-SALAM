@@ -226,7 +226,8 @@ typedef struct {
 /**
  * The actual runtime
  */
-void runtime(task_struct_t ***, int, int [MAX_DAGS], scheduling_policy_t);
+void runtime(task_struct_t ***, int, int [MAX_DAGS], scheduling_policy_t,
+        mem_predictor_t);
 
 // helper methods
 void assertf(bool, const char*, ...);
