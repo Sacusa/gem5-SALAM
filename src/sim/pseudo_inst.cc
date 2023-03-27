@@ -755,7 +755,8 @@ m5printstat(ThreadContext *tc, uint32_t stat, uint32_t value)
         NUM_COLOCATIONS,
         DAG_DEADLINES_MET,
         NODE_DEADLINES_MET,
-        PREDICTED_RUNTIME,
+        PREDICTED_COMPUTE_TIME,
+        PREDICTED_MEMORY_TIME,
         NUM_STATS
     };
 
@@ -777,9 +778,11 @@ m5printstat(ThreadContext *tc, uint32_t stat, uint32_t value)
     else if (stat == NODE_DEADLINES_MET) {
         DPRINTF(SchedulerStats, "Number of node deadlines met = %d\n", value);
     }
-    else if (stat == PREDICTED_RUNTIME) {
-        DPRINTF(SchedulerStats, "Total predicted execution time = %d\n",
-                value);
+    else if (stat == PREDICTED_COMPUTE_TIME) {
+        DPRINTF(SchedulerStats, "Total predicted compute time = %d\n", value);
+    }
+    else if (stat == PREDICTED_MEMORY_TIME) {
+        DPRINTF(SchedulerStats, "Total predicted memory time = %d\n", value);
     }
 }
 

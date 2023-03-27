@@ -71,7 +71,8 @@ volatile uint32_t stat_num_forwards = 0;
 volatile uint32_t stat_num_colocations = 0;
 volatile uint32_t stat_dag_deadlines_met = 0;
 volatile uint32_t stat_node_deadlines_met = 0;
-volatile float stat_predicted_runtime = 0;
+volatile float stat_predicted_compute_time = 0;
+volatile float stat_predicted_memory_time = 0;
 
 void init_task_struct(task_struct_t *task_struct)
 {
@@ -667,7 +668,7 @@ inline void update_mem_time_predictor(uint32_t time, uint32_t size)
     if (size < 512) { return; }
 
 #ifdef ENABLE_STATS
-    m5_timer_start(2);
+    m5_timer_start(1);
 #endif
 
     switch (mem_predictor) {
@@ -680,14 +681,23 @@ inline void update_mem_time_predictor(uint32_t time, uint32_t size)
     }
 
 #ifdef ENABLE_STATS
-    m5_timer_stop(2);
+    m5_timer_stop(1);
 #endif
+}
+
+inline float get_compute_time(volatile task_struct_t *node)
+{
+    return node->compute_time;
+}
+
+inline float get_memory_time(volatile task_struct_t *node)
+{
+    return ((node->input_size + node->output_size) * mem_prediction);
 }
 
 inline float get_runtime(volatile task_struct_t *node)
 {
-    return (node->compute_time + \
-            ((node->input_size + node->output_size) * mem_prediction));
+    return (get_compute_time(node) + get_memory_time(node));
 }
 
 inline void push_request(task_struct_t *req)
@@ -777,9 +787,12 @@ inline void push_request(task_struct_t *req)
 
         case LAX: {
 #ifdef ENABLE_STATS
-            float runtime = get_runtime(req);
-            req->runtime = runtime;
-            stat_predicted_runtime += runtime;
+            float compute_time = get_compute_time(req);
+            float memory_time = get_memory_time(req);
+
+            req->runtime = compute_time + memory_time;
+            stat_predicted_compute_time += compute_time;
+            stat_predicted_memory_time += memory_time;
 #else
             req->runtime = get_runtime(req);
 #endif
@@ -828,9 +841,12 @@ inline void push_request(task_struct_t *req)
             int pos;
 
 #ifdef ENABLE_STATS
-            float runtime = get_runtime(req);
-            req->runtime = runtime;
-            stat_predicted_runtime += runtime;
+            float compute_time = get_compute_time(req);
+            float memory_time = get_memory_time(req);
+
+            req->runtime = compute_time + memory_time;
+            stat_predicted_compute_time += compute_time;
+            stat_predicted_memory_time += memory_time;
 #else
             req->runtime = get_runtime(req);
 #endif
@@ -1027,7 +1043,9 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
     m5_print_stat(NUM_COLOCATIONS, stat_num_colocations);
     m5_print_stat(DAG_DEADLINES_MET, stat_dag_deadlines_met);
     m5_print_stat(NODE_DEADLINES_MET, stat_node_deadlines_met);
-    m5_print_stat(PREDICTED_RUNTIME, (uint32_t)stat_predicted_runtime);
+    m5_print_stat(PREDICTED_COMPUTE_TIME,
+            (uint32_t)stat_predicted_compute_time);
+    m5_print_stat(PREDICTED_MEMORY_TIME, (uint32_t)stat_predicted_memory_time);
 #endif
 
     m5_dump_stats();

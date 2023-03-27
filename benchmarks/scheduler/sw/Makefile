@@ -32,12 +32,8 @@
 #			Frederik Lauer
 include ../../common/Makefile
 
-#TARGET = test_all_acc.elf test_forwarding.elf main.elf
-TARGET = test_all_acc.elf
-
-OBJS = ../../common/syscalls.o boot.o mem_manage.o runtime.o
-
-build : $(TARGET)
+OBJS = ../../common/syscalls.o ../../common/m5ops.o boot.o mem_manage.o runtime.o
+.SECONDARY: $(OBJS)
 
 %.elf: $(OBJS) %.o
 	$(CC) $(LNK_FILE_OPT) -o $@ $^ $(LNK_OPT) -lm

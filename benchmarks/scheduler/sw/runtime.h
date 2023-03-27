@@ -24,8 +24,7 @@
 
 /* Enable gem5 timers for the following functions:
  * Timer 0: push_request()
- * Timer 1: sort_requests()
- * Timer 2: update_mem_time_predictor()
+ * Timer 1: update_mem_time_predictor()
  *
  * It also enables the collection and printing of other statistics using
  * structures and gem5 pseudo instructions.
@@ -106,7 +105,8 @@ enum m5_stat_t {
     NUM_COLOCATIONS,
     DAG_DEADLINES_MET,
     NODE_DEADLINES_MET,
-    PREDICTED_RUNTIME
+    PREDICTED_COMPUTE_TIME,
+    PREDICTED_MEMORY_TIME
 };
 
 typedef struct task_struct_t task_struct_t;
