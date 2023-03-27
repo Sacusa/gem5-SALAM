@@ -751,6 +751,8 @@ m5printstat(ThreadContext *tc, uint32_t stat, uint32_t value)
 {
     enum stat_t {
         DEGREE_OF_PARALLELISM = 0,
+        NUM_FORWARDS,
+        NUM_COLOCATIONS,
         DAG_DEADLINES_MET,
         NODE_DEADLINES_MET,
         PREDICTED_RUNTIME,
@@ -762,6 +764,12 @@ m5printstat(ThreadContext *tc, uint32_t stat, uint32_t value)
     if (stat == DEGREE_OF_PARALLELISM) {
         DPRINTF(SchedulerStats, "Number of accelerators running = %d\n",
                 value);
+    }
+    else if (stat == NUM_FORWARDS) {
+        DPRINTF(SchedulerStats, "Number of forwards = %d\n", value);
+    }
+    else if (stat == NUM_COLOCATIONS) {
+        DPRINTF(SchedulerStats, "Number of colocations = %d\n", value);
     }
     else if (stat == DAG_DEADLINES_MET) {
         DPRINTF(SchedulerStats, "Number of DAG deadlines met = %d\n", value);

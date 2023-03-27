@@ -102,6 +102,8 @@ enum mem_predictor_t {
  */
 enum m5_stat_t {
     DEGREE_OF_PARALLELISM = 0,
+    NUM_FORWARDS,
+    NUM_COLOCATIONS,
     DAG_DEADLINES_MET,
     NODE_DEADLINES_MET,
     PREDICTED_RUNTIME
@@ -146,7 +148,7 @@ struct task_struct_t {
      */
     req_status_t status;
     uint32_t orig_node_deadline;
-    uint32_t laxity;
+    int32_t laxity;
     bool laxity_initialized;
 
     uint16_t completed_parents;

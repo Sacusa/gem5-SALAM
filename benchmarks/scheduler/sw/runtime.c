@@ -67,9 +67,11 @@ volatile mem_predictor_t mem_predictor = MEM_PRED_LAST_VAL;
 volatile uint32_t runtime_start_time;
 
 // Structures for statistics
-volatile uint32_t dag_deadlines_met = 0;
-volatile uint32_t node_deadlines_met = 0;
-volatile float predicted_runtime = 0;
+volatile uint32_t stat_num_forwards = 0;
+volatile uint32_t stat_num_colocations = 0;
+volatile uint32_t stat_dag_deadlines_met = 0;
+volatile uint32_t stat_node_deadlines_met = 0;
+volatile float stat_predicted_runtime = 0;
 
 void init_task_struct(task_struct_t *task_struct)
 {
@@ -181,6 +183,9 @@ inline void run_convolution(int device_id, volatile task_struct_t *req,
     // check if we need to forward the input
     if (req->producer_forward[0]) {
         if (req->producer_acc[0] == acc) {
+#ifdef ENABLE_STATS
+            stat_num_colocations++;
+#endif
             input_spm_addr = acc->spm_part[req->producer_spm_part[0]];
         }
         else {
@@ -281,6 +286,9 @@ inline void run_elem_matrix(int device_id, volatile task_struct_t *req,
     // check if we need to forward arg1
     if (req->producer_forward[0]) {
         if (req->producer_acc[0] == acc) {
+#ifdef ENABLE_STATS
+            stat_num_colocations++;
+#endif
             arg1_spm_addr = acc->spm_part[req->producer_spm_part[0]];
         }
         else {
@@ -296,6 +304,9 @@ inline void run_elem_matrix(int device_id, volatile task_struct_t *req,
     if (has_arg2) {
         if (req->producer_forward[1]) {
             if (req->producer_acc[1] == acc) {
+#ifdef ENABLE_STATS
+                stat_num_colocations++;
+#endif
                 arg2_spm_addr = acc->spm_part[req->producer_spm_part[1]];
             }
             else {
@@ -768,7 +779,7 @@ inline void push_request(task_struct_t *req)
 #ifdef ENABLE_STATS
             float runtime = get_runtime(req);
             req->runtime = runtime;
-            predicted_runtime += runtime;
+            stat_predicted_runtime += runtime;
 #else
             req->runtime = get_runtime(req);
 #endif
@@ -819,7 +830,7 @@ inline void push_request(task_struct_t *req)
 #ifdef ENABLE_STATS
             float runtime = get_runtime(req);
             req->runtime = runtime;
-            predicted_runtime += runtime;
+            stat_predicted_runtime += runtime;
 #else
             req->runtime = get_runtime(req);
 #endif
@@ -837,13 +848,13 @@ inline void push_request(task_struct_t *req)
                                       runtime_start_time - rq_node->runtime;
                     rq_node->laxity_initialized = true;
                 }
-                uint32_t laxity = rq_node->laxity - (m5_get_time() / 1000);
+                int32_t laxity = rq_node->laxity - (m5_get_time() / 1000);
 
                 if (rq_node->orig_node_deadline > req->orig_node_deadline) {
                     break;
                 }
 
-                if (laxity < req->runtime) {
+                if (laxity < ((int32_t)req->runtime)) {
                     can_forward = false;
                 }
             }
@@ -1012,9 +1023,11 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
     }
 
 #ifdef ENABLE_STATS
-    m5_print_stat(DAG_DEADLINES_MET, dag_deadlines_met);
-    m5_print_stat(NODE_DEADLINES_MET, node_deadlines_met);
-    m5_print_stat(PREDICTED_RUNTIME, (uint32_t)predicted_runtime);
+    m5_print_stat(NUM_FORWARDS, stat_num_forwards);
+    m5_print_stat(NUM_COLOCATIONS, stat_num_colocations);
+    m5_print_stat(DAG_DEADLINES_MET, stat_dag_deadlines_met);
+    m5_print_stat(NODE_DEADLINES_MET, stat_node_deadlines_met);
+    m5_print_stat(PREDICTED_RUNTIME, (uint32_t)stat_predicted_runtime);
 #endif
 
     m5_dump_stats();
@@ -1085,6 +1098,10 @@ void isr(int i, int j)  // i = accelerator id, j = device id
             }
         }
 
+#ifdef ENABLE_STATS
+        stat_num_forwards += num_forwards;
+#endif
+
         bool write_out_to_mem = (node->num_children == 0) || \
                                 (num_forwards != node->num_children);
         finish_accelerator(i, j, node, write_out_to_mem);
@@ -1095,7 +1112,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
             uint32_t curr_time = (m5_get_time() / 1000) - runtime_start_time;
 
             if (curr_time <= node->orig_node_deadline) {
-                node_deadlines_met++;
+                stat_node_deadlines_met++;
             }
 #endif
 
@@ -1116,11 +1133,11 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         uint32_t curr_time = (m5_get_time() / 1000) - runtime_start_time;
 
         if ((node->num_children == 0) && (curr_time <= node->dag_deadline)) {
-            dag_deadlines_met++;
+            stat_dag_deadlines_met++;
         }
 
         if (curr_time <= node->orig_node_deadline) {
-            node_deadlines_met++;
+            stat_node_deadlines_met++;
         }
 #endif
 
