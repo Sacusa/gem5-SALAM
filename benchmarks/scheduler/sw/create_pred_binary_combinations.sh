@@ -9,16 +9,16 @@ do
     do
         echo "$predictor"
 
-        ./create_binary.sh ${policy} ${predictor} canny  4 deblur 4 gru    4
-        ./create_binary.sh ${policy} ${predictor} canny  4 deblur 4 harris 4
-        ./create_binary.sh ${policy} ${predictor} canny  4 deblur 4 lstm   4
-        ./create_binary.sh ${policy} ${predictor} canny  4 gru    4 harris 4
-        ./create_binary.sh ${policy} ${predictor} canny  4 gru    4 lstm   4
-        ./create_binary.sh ${policy} ${predictor} canny  4 harris 4 lstm   4
-        ./create_binary.sh ${policy} ${predictor} deblur 4 gru    4 harris 4
-        ./create_binary.sh ${policy} ${predictor} deblur 4 gru    4 lstm   4
-        ./create_binary.sh ${policy} ${predictor} deblur 4 harris 4 lstm   4
-        ./create_binary.sh ${policy} ${predictor} gru    4 harris 4 lstm   4
+        ./create_pred_binary.sh ${policy} ${predictor} canny  4 deblur 4 gru    4
+        ./create_pred_binary.sh ${policy} ${predictor} canny  4 deblur 4 harris 4
+        ./create_pred_binary.sh ${policy} ${predictor} canny  4 deblur 4 lstm   4
+        ./create_pred_binary.sh ${policy} ${predictor} canny  4 gru    4 harris 4
+        ./create_pred_binary.sh ${policy} ${predictor} canny  4 gru    4 lstm   4
+        ./create_pred_binary.sh ${policy} ${predictor} canny  4 harris 4 lstm   4
+        ./create_pred_binary.sh ${policy} ${predictor} deblur 4 gru    4 harris 4
+        ./create_pred_binary.sh ${policy} ${predictor} deblur 4 gru    4 lstm   4
+        ./create_pred_binary.sh ${policy} ${predictor} deblur 4 harris 4 lstm   4
+        ./create_pred_binary.sh ${policy} ${predictor} gru    4 harris 4 lstm   4
     done
 done
 
