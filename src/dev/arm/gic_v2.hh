@@ -251,6 +251,9 @@ class GicV2 : public BaseGic, public BaseGicRegisters
         }
     }
 
+    /** A queue maintaining the pending interrupts in FIFO order */
+    std::vector<uint32_t> pendingIntFifo;
+
     /** GICD_IGROUPR{1..31}
      * interrupt group bits for global interrupts
      * 1b per interrupt, 32 bits per word, 31 words */

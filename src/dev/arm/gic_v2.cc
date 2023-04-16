@@ -778,26 +778,29 @@ GicV2::updateIntState(int hint)
 
         bool mp_sys = sys->numRunningContexts() > 1;
         // Check other ints
-        for (int x = 0; x < (itLines/INT_BITS_MAX); x++) {
+        for (uint32_t int_nm : pendingIntFifo) {
+            int x = intNumToWord(int_nm);
+            int y = intNumToBit(int_nm);
+
             if (getIntEnabled(cpu, x) & getPendingInt(cpu, x)) {
-                for (int y = 0; y < INT_BITS_MAX; y++) {
-                   uint32_t int_nm = x * INT_BITS_MAX + y;
-                   DPRINTF(GIC, "Checking for interrupt# %d \n",int_nm);
-                    /* Set current pending int as highest int for current cpu
-                       if the interrupt's priority higher than current priority
-                       and if current cpu is the target (for mp configs only)
-                     */
-                    if ((bits(getIntEnabled(cpu, x), y)
-                        &bits(getPendingInt(cpu, x), y)) &&
-                        (getIntPriority(cpu, int_nm) < highest_pri))
-                        if ((!mp_sys) ||
-                            (gem5ExtensionsEnabled
-                               ? (getCpuTarget(cpu, int_nm) == cpu)
-                               : (getCpuTarget(cpu, int_nm) & (1 << cpu)))) {
-                            highest_pri = getIntPriority(cpu, int_nm);
-                            highest_int = int_nm;
-                        }
-                }
+               DPRINTF(GIC, "Checking for interrupt# %d \n",int_nm);
+                /* Set current pending int as highest int for current cpu
+                   if the interrupt's priority higher than current priority
+                   and if current cpu is the target (for mp configs only)
+                 */
+                if ((bits(getIntEnabled(cpu, x), y)
+                    &bits(getPendingInt(cpu, x), y)) &&
+                    (getIntPriority(cpu, int_nm) < highest_pri))
+                    if ((!mp_sys) ||
+                        (gem5ExtensionsEnabled
+                           ? (getCpuTarget(cpu, int_nm) == cpu)
+                           : (getCpuTarget(cpu, int_nm) & (1 << cpu)))) {
+                        highest_pri = getIntPriority(cpu, int_nm);
+                        highest_int = int_nm;
+
+                        // Found the first enabled and pending interrupt
+                        //break;
+                    }
             }
         }
 
@@ -872,6 +875,13 @@ GicV2::sendInt(uint32_t num)
     panic_if(num < SGI_MAX + PPI_MAX,
              "sentInt() must only be used for interrupts 32 and higher");
     getPendingInt(target, intNumToWord(num)) |= 1 << intNumToBit(num);
+
+    pendingIntFifo.push_back(num);
+    DPRINTF(Interrupt, "Pending interrupts:\n");
+    for (uint32_t int_nm : pendingIntFifo) {
+        DPRINTF(Interrupt, " %d\n", int_nm);
+    }
+
     updateIntState(intNumToWord(num));
 }
 
@@ -895,6 +905,15 @@ GicV2::clearInt(uint32_t num)
                 num, target);
 
         getPendingInt(target, intNumToWord(num)) &= ~(1 << intNumToBit(num));
+
+        for (auto it = pendingIntFifo.begin(); it < pendingIntFifo.end(); \
+             it++) {
+            if (*it == num) {
+                pendingIntFifo.erase(it);
+                break;
+            }
+        }
+
         updateIntState(intNumToWord(num));
     } else {
         /* Nothing to do :
