@@ -73,7 +73,7 @@ volatile uint32_t stat_node_deadlines_met = 0;
 volatile float stat_predicted_compute_time = 0;
 volatile float stat_predicted_memory_time = 0;
 
-void init_task_struct(task_struct_t *task_struct)
+inline void init_task_struct(task_struct_t *task_struct)
 {
     for (int i = 0; i < MAX_ACC_ARGS; i++) {
         task_struct->producer_forward[i] = 0;
@@ -83,7 +83,7 @@ void init_task_struct(task_struct_t *task_struct)
     task_struct->completed_parents = 0;
 }
 
-void assertf(bool cond, const char * format, ...)
+inline void assertf(bool cond, const char * format, ...)
 {
     if (!cond) {
         va_list args;
@@ -639,7 +639,7 @@ inline void update_average_predictor(uint32_t time, uint32_t size)
         product *= mem_hist[i];
     }
 
-    mem_prediction = pow(product, 1 / mem_hist_size);
+    mem_prediction = pow(product, 1.0 / mem_hist_size);
 }
 
 // EWMA predictor
@@ -699,14 +699,15 @@ inline float get_runtime(volatile task_struct_t *node)
     return (get_compute_time(node) + get_memory_time(node));
 }
 
-inline void push_request(task_struct_t *req)
+inline bool push_request(volatile task_struct_t *req, bool try_forward)
 {
 #ifdef ENABLE_STATS
     m5_timer_start(0);
 #endif
 
     int acc_id = req->acc_id;
-    req->orig_node_deadline = req->node_deadline;
+    bool can_forward = try_forward;
+    req->priority_escalated = false;
 
     if (ready_queue_size[acc_id] == MAX_READY_QUEUE_SIZE) {
         m5_fail_1();
@@ -796,101 +797,96 @@ inline void push_request(task_struct_t *req)
             req->runtime = get_runtime(req);
 #endif
 
-            req->laxity = req->orig_node_deadline + runtime_start_time - \
+            req->laxity = req->node_deadline + runtime_start_time - \
                           req->runtime;
 
             if ((req->laxity - (m5_get_time() / 1000)) <= 0) {
                 // De-prioritize a node if its laxity is negative. That is,
                 // the node is unlikely to finish before its deadline.
-                req->laxity = 0xffffffff;
-            }
+                req->laxity = 0x7fffffff;
 
-            if (ready_queue_size[acc_id] == 0) {
                 ready_queue[acc_id][ready_queue_end[acc_id]] = req;
                 ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
                                           MAX_READY_QUEUE_SIZE;
             }
+
             else {
-                int pos = ready_queue_start[acc_id];
-                while ((pos != ready_queue_end[acc_id]) && \
-                       (ready_queue[acc_id][pos]->laxity <= req->laxity)) {
-                    pos = (pos + 1) % MAX_READY_QUEUE_SIZE;
+                if (ready_queue_size[acc_id] == 0) {
+                    ready_queue[acc_id][ready_queue_end[acc_id]] = req;
+                    ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                                              MAX_READY_QUEUE_SIZE;
                 }
-
-                if (pos != ready_queue_end[acc_id]) {
-                    int i = ready_queue_end[acc_id];
-                    while (i != pos) {
-                        int j = i - 1;
-                        if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
-                        ready_queue[acc_id][i] = ready_queue[acc_id][j];
-                        i = j;
+                else {
+                    int pos = ready_queue_start[acc_id];
+                    while ((pos != ready_queue_end[acc_id]) && \
+                           (ready_queue[acc_id][pos]->laxity <= req->laxity)) {
+                        pos = (pos + 1) % MAX_READY_QUEUE_SIZE;
                     }
-                }
 
-                ready_queue[acc_id][pos] = req;
-                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
-                                          MAX_READY_QUEUE_SIZE;
+                    if (pos != ready_queue_end[acc_id]) {
+                        int i = ready_queue_end[acc_id];
+                        while (i != pos) {
+                            int j = i - 1;
+                            if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
+                            ready_queue[acc_id][i] = ready_queue[acc_id][j];
+                            i = j;
+                        }
+                    }
+
+                    ready_queue[acc_id][pos] = req;
+                    ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                                              MAX_READY_QUEUE_SIZE;
+                }
             }
 
             break;
         }
 
         case ELF: {
-            bool can_forward = true;
-            int pos;
+            int pos = ready_queue_start[acc_id];
+            int fwd_pos = ready_queue_start[acc_id];
 
-#ifdef ENABLE_STATS
-            float compute_time = get_compute_time(req);
-            float memory_time = get_memory_time(req);
-
-            req->runtime = compute_time + memory_time;
-            stat_predicted_compute_time += compute_time;
-            stat_predicted_memory_time += memory_time;
-#else
-            req->runtime = get_runtime(req);
-#endif
-
-            req->laxity_initialized = false;
-
-            for (pos = ready_queue_start[acc_id];
-                 pos != ready_queue_end[acc_id];
+            for (; pos != ready_queue_end[acc_id];
                  pos = (pos + 1) % MAX_READY_QUEUE_SIZE) {
 
                 volatile task_struct_t *rq_node = ready_queue[acc_id][pos];
 
-                if (!rq_node->laxity_initialized) {
-                    rq_node->laxity = rq_node->orig_node_deadline + \
-                                      runtime_start_time - rq_node->runtime;
-                    rq_node->laxity_initialized = true;
+                if (rq_node->priority_escalated) {
+                    fwd_pos = (fwd_pos + 1) % MAX_READY_QUEUE_SIZE;
                 }
-                int32_t laxity = rq_node->laxity - (m5_get_time() / 1000);
-
-                if (rq_node->orig_node_deadline > req->orig_node_deadline) {
-                    break;
+                else {
+                    if (rq_node->node_deadline > req->node_deadline) {
+                        break;
+                    }
                 }
 
-                if (laxity < ((int32_t)req->runtime)) {
-                    can_forward = false;
+                if (try_forward) {
+                    int32_t laxity = rq_node->laxity - (m5_get_time() / 1000);
+
+                    if ((laxity > 0) && (laxity < ((int32_t)req->runtime))) {
+                        can_forward = false;
+                    }
                 }
             }
 
             if (can_forward) {
-                // Reduce node laxities and insert the node at the start of the
-                // queue.
+                // Reduce node laxities
                 for (int i = ready_queue_start[acc_id]; i != pos;
                      i = (i + 1) % MAX_READY_QUEUE_SIZE) {
                     ready_queue[acc_id][i]->laxity -= req->runtime;
                 }
 
+                pos = fwd_pos;
+            }
+
+            // Perform sorted insertion into ready queue
+            if (pos == ready_queue_start[acc_id]) {
                 ready_queue_start[acc_id] = (ready_queue_start[acc_id]==0) ? \
                                             (MAX_READY_QUEUE_SIZE - 1) : \
                                             (ready_queue_start[acc_id] - 1);
                 ready_queue[acc_id][ready_queue_start[acc_id]] = req;
-
-                req->node_deadline = 0;
             }
             else {
-                // Cannot forward, so perform sorted insertion into ready queue
                 if (pos != ready_queue_end[acc_id]) {
                     int i = ready_queue_end[acc_id];
                     while (i != pos) {
@@ -905,6 +901,8 @@ inline void push_request(task_struct_t *req)
                 ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
                                           MAX_READY_QUEUE_SIZE;
             }
+
+            req->priority_escalated = can_forward;
         }
     }
 
@@ -913,16 +911,18 @@ inline void push_request(task_struct_t *req)
 #ifdef ENABLE_STATS
     m5_timer_stop(0);
 #endif
+
+    return can_forward;
 }
 
-volatile task_struct_t *peek_request(int acc_id)
+inline volatile task_struct_t *peek_request(int acc_id)
 {
     if (ready_queue_size[acc_id] == 0) { return NULL; }
 
     return ready_queue[acc_id][ready_queue_start[acc_id]];
 }
 
-volatile task_struct_t *pop_request(int acc_id)
+inline volatile task_struct_t *pop_request(int acc_id)
 {
     volatile task_struct_t *req = peek_request(acc_id);
 
@@ -966,6 +966,10 @@ inline void launch_requests()
 
                     unable_to_launch = false;
 
+                    m5_print_stat(PREDICTED_COMPUTE_TIME, req->dag_id);
+                    m5_print_stat(PREDICTED_MEMORY_TIME, req->node_id);
+                    m5_print_stat(NUM_FORWARDS, i);
+                    m5_print_stat(NUM_COLOCATIONS, j);
                     break;
                 }
             }
@@ -1010,15 +1014,14 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
     runtime_start_time = m5_get_time() / 1000;
 
     for (int i = 0; i < num_dags; i++) {
-#ifdef VERIFY
         for (int j = 0; j < num_nodes[i]; j++) {
+            nodes[i][j]->dag_id = i;
+            nodes[i][j]->node_id = j;
+
             if (nodes[i][j]->num_parents == 0) {
-                push_request(nodes[i][j]);
+                push_request(nodes[i][j], false);
             }
         }
-#else
-        push_request(nodes[i][0]);
-#endif
     }
 
     m5_reset_stats();
@@ -1071,6 +1074,9 @@ void isr(int i, int j)  // i = accelerator id, j = device id
 
         volatile task_struct_t *node = acc_state[i][j].running_req;
 
+        volatile task_struct_t *pipeline_queue[MAX_CHILDREN];
+        int pipeline_queue_size = 0;
+
         for (int c = 0; c < node->num_children; c++) {
             task_struct_t *child = node->children[c];
 
@@ -1078,11 +1084,73 @@ void isr(int i, int j)  // i = accelerator id, j = device id
 
             if (child->completed_parents == child->num_parents) {
                 child->status = REQ_STATUS_READY;
-                push_request(child);
+
+                if (scheduling_policy == ELF) {
+#ifdef ENABLE_STATS
+                    m5_timer_start(2);
+#endif
+                    float compute_time = get_compute_time(child);
+                    float memory_time = get_memory_time(child);
+
+                    child->runtime = compute_time + memory_time;
+                    stat_predicted_compute_time += compute_time;
+                    stat_predicted_memory_time += memory_time;
+
+                    child->laxity = child->node_deadline + \
+                                    runtime_start_time - child->runtime;
+
+                    if (pipeline_queue_size == 0) {
+                        pipeline_queue[0] = child;
+                        pipeline_queue_size = 1;
+                    }
+                    else {
+                        int pos = 0;
+                        while ((pos < pipeline_queue_size) && \
+                               (pipeline_queue[pos]->node_deadline <= \
+                                child->node_deadline)) {
+                            pos = (pos + 1) % MAX_READY_QUEUE_SIZE;
+                        }
+
+                        if (pos != pipeline_queue_size) {
+                            int i = pipeline_queue_size;
+                            while (i != pos) {
+                                int j = i - 1;
+                                pipeline_queue[i] = pipeline_queue[j];
+                                i = j;
+                            }
+                        }
+
+                        pipeline_queue[pos] = child;
+                        pipeline_queue_size++;
+                    }
+
+#ifdef ENABLE_STATS
+                    m5_timer_stop(2);
+#endif
+                }
+
+                else {
+                    push_request(child, false);
+                }
             }
         }
 
         num_available_instances[i]++;
+
+        if (scheduling_policy == ELF) {
+            int num_forwards[NUM_ACCS] = {0, 0, 0, 0, 0, 0, 0};
+
+            for (int n = 0; n < pipeline_queue_size; n++) {
+                uint8_t acc_id = pipeline_queue[n]->acc_id;
+
+                bool is_forwarded = push_request(pipeline_queue[n],
+                        num_forwards[acc_id]<num_available_instances[acc_id]);
+
+                if (is_forwarded) {
+                    num_forwards[acc_id]++;
+                }
+            }
+        }
 
         int node_spm_out_part = acc_state[i][j].curr_spm_out_part;
         int num_forwards = 0;
@@ -1097,7 +1165,8 @@ void isr(int i, int j)  // i = accelerator id, j = device id
             for (int n = 0; (n < num_available_instances[child->acc_id]) && \
                     (ready_queue_index != ready_queue_end[child->acc_id]);
                     n++) {
-                if (ready_queue[child->acc_id][ready_queue_index] == child) {
+                if ((ready_queue[child->acc_id][ready_queue_index] == child) \
+                        || child->priority_escalated) {
                     // The child node is among the next set of nodes to be
                     // scheduled, so update its metadata to receive data
                     // from the producer
@@ -1129,11 +1198,14 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         finish_accelerator(i, j, node, write_out_to_mem);
         acc_state[i][j].spm_pending_reads[node_spm_out_part] = num_forwards;
 
-        if (!write_out_to_mem) {
+        if (write_out_to_mem) {
+            num_available_instances[i]--;
+        }
+        else {
 #ifdef ENABLE_STATS
             uint32_t curr_time = (m5_get_time() / 1000) - runtime_start_time;
 
-            if (curr_time <= node->orig_node_deadline) {
+            if (curr_time <= node->node_deadline) {
                 stat_node_deadlines_met++;
             }
 #endif
@@ -1162,13 +1234,14 @@ void isr(int i, int j)  // i = accelerator id, j = device id
             stat_dag_deadlines_met++;
         }
 
-        if (curr_time <= node->orig_node_deadline) {
+        if (curr_time <= node->node_deadline) {
             stat_node_deadlines_met++;
         }
 #endif
 
         acc_state[i][j].running_req = NULL;
         num_running--;
+        num_available_instances[i]++;
     }
 
     else {

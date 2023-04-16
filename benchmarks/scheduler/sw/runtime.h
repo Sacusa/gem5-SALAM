@@ -146,10 +146,12 @@ struct task_struct_t {
     /**
      * The following fields are for use by the runtime
      */
+    uint16_t dag_id;
+    uint16_t node_id;
+
     req_status_t status;
-    uint32_t orig_node_deadline;
     int32_t laxity;
-    bool laxity_initialized;
+    bool priority_escalated;
 
     uint16_t completed_parents;
     uint8_t producer_spm_part[MAX_ACC_ARGS];    // partition of the producer's

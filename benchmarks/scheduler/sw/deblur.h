@@ -377,7 +377,7 @@ void add_deblur_dag(task_struct_t ***nodes, int *num_nodes, int num_images,
             earliest_start += iter_runtime;
         }
 
-        num_nodes[i] = 2 * (num_iters * 4);
+        num_nodes[i] = 2 + (num_iters * 4);
     }
 }
 
