@@ -183,9 +183,6 @@ inline void run_convolution(int device_id, volatile task_struct_t *req,
     // check if we need to forward the input
     if (req->producer_forward[0]) {
         if (req->producer_acc[0] == acc) {
-#ifdef ENABLE_STATS
-            stat_num_colocations++;
-#endif
             input_spm_addr = acc->spm_part[req->producer_spm_part[0]];
         }
         else {
@@ -221,6 +218,11 @@ inline void run_convolution(int device_id, volatile task_struct_t *req,
     // reduce pending reads for the input producer
     if (acc->status == ACC_STATUS_RUNNING) {
         if (req->producer_forward[0]) {
+#ifdef ENABLE_STATS
+            if (req->producer_acc[0] == acc) {
+                stat_num_colocations++;
+            }
+#endif
             req->producer_acc[0]->spm_pending_reads[
                 req->producer_spm_part[0]]--;
         }
@@ -286,9 +288,6 @@ inline void run_elem_matrix(int device_id, volatile task_struct_t *req,
     // check if we need to forward arg1
     if (req->producer_forward[0]) {
         if (req->producer_acc[0] == acc) {
-#ifdef ENABLE_STATS
-            stat_num_colocations++;
-#endif
             arg1_spm_addr = acc->spm_part[req->producer_spm_part[0]];
         }
         else {
@@ -304,9 +303,6 @@ inline void run_elem_matrix(int device_id, volatile task_struct_t *req,
     if (has_arg2) {
         if (req->producer_forward[1]) {
             if (req->producer_acc[1] == acc) {
-#ifdef ENABLE_STATS
-                stat_num_colocations++;
-#endif
                 arg2_spm_addr = acc->spm_part[req->producer_spm_part[1]];
             }
             else {
@@ -346,12 +342,22 @@ inline void run_elem_matrix(int device_id, volatile task_struct_t *req,
     if (acc->status == ACC_STATUS_RUNNING) {
         // reduce pending reads for the arg1 producer
         if (req->producer_forward[0]) {
+#ifdef ENABLE_STATS
+            if (req->producer_acc[0] == acc) {
+                stat_num_colocations++;
+            }
+#endif
             req->producer_acc[0]->spm_pending_reads[
                 req->producer_spm_part[0]]--;
         }
 
         // reduce pending reads for the arg2 producer
         if (req->producer_forward[1]) {
+#ifdef ENABLE_STATS
+            if (req->producer_acc[1] == acc) {
+                stat_num_colocations++;
+            }
+#endif
             req->producer_acc[1]->spm_pending_reads[
                 req->producer_spm_part[1]]--;
         }
@@ -846,63 +852,75 @@ inline bool push_request(volatile task_struct_t *req, bool try_forward)
             int pos = ready_queue_start[acc_id];
             int fwd_pos = ready_queue_start[acc_id];
 
-            for (; pos != ready_queue_end[acc_id];
-                 pos = (pos + 1) % MAX_READY_QUEUE_SIZE) {
+            if ((req->laxity - (m5_get_time() / 1000)) <= 0) {
+                // De-prioritize a node if its laxity is negative. That is,
+                // the node is unlikely to finish before its deadline.
+                req->laxity = 0x7fffffff;
 
-                volatile task_struct_t *rq_node = ready_queue[acc_id][pos];
-
-                if (rq_node->priority_escalated) {
-                    fwd_pos = (fwd_pos + 1) % MAX_READY_QUEUE_SIZE;
-                }
-                else {
-                    if (rq_node->node_deadline > req->node_deadline) {
-                        break;
-                    }
-                }
-
-                if (try_forward) {
-                    int32_t laxity = rq_node->laxity - (m5_get_time() / 1000);
-
-                    if ((laxity > 0) && (laxity < ((int32_t)req->runtime))) {
-                        can_forward = false;
-                    }
-                }
-            }
-
-            if (can_forward) {
-                // Reduce node laxities
-                for (int i = ready_queue_start[acc_id]; i != pos;
-                     i = (i + 1) % MAX_READY_QUEUE_SIZE) {
-                    ready_queue[acc_id][i]->laxity -= req->runtime;
-                }
-
-                pos = fwd_pos;
-            }
-
-            // Perform sorted insertion into ready queue
-            if (pos == ready_queue_start[acc_id]) {
-                ready_queue_start[acc_id] = (ready_queue_start[acc_id]==0) ? \
-                                            (MAX_READY_QUEUE_SIZE - 1) : \
-                                            (ready_queue_start[acc_id] - 1);
-                ready_queue[acc_id][ready_queue_start[acc_id]] = req;
-            }
-            else {
-                if (pos != ready_queue_end[acc_id]) {
-                    int i = ready_queue_end[acc_id];
-                    while (i != pos) {
-                        int j = i - 1;
-                        if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
-                        ready_queue[acc_id][i] = ready_queue[acc_id][j];
-                        i = j;
-                    }
-                }
-
-                ready_queue[acc_id][pos] = req;
+                ready_queue[acc_id][ready_queue_end[acc_id]] = req;
                 ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
                                           MAX_READY_QUEUE_SIZE;
             }
 
-            req->priority_escalated = can_forward;
+            else {
+                for (; pos != ready_queue_end[acc_id];
+                     pos = (pos + 1) % MAX_READY_QUEUE_SIZE) {
+
+                    volatile task_struct_t *rq_node = ready_queue[acc_id][pos];
+
+                    if (rq_node->priority_escalated) {
+                        fwd_pos = (fwd_pos + 1) % MAX_READY_QUEUE_SIZE;
+                    }
+                    else {
+                        if (rq_node->laxity > req->laxity) {
+                            break;
+                        }
+                    }
+
+                    if (try_forward) {
+                        int32_t laxity = rq_node->laxity - (m5_get_time() / 1000);
+
+                        if ((laxity > 0) && (laxity < ((int32_t)req->runtime))) {
+                            can_forward = false;
+                        }
+                    }
+                }
+
+                if (can_forward) {
+                    // Reduce node laxities
+                    for (int i = ready_queue_start[acc_id]; i != pos;
+                         i = (i + 1) % MAX_READY_QUEUE_SIZE) {
+                        ready_queue[acc_id][i]->laxity -= req->runtime;
+                    }
+
+                    pos = fwd_pos;
+                }
+
+                // Perform sorted insertion into ready queue
+                if (pos == ready_queue_start[acc_id]) {
+                    ready_queue_start[acc_id] = (ready_queue_start[acc_id]==0) ? \
+                                                (MAX_READY_QUEUE_SIZE - 1) : \
+                                                (ready_queue_start[acc_id] - 1);
+                    ready_queue[acc_id][ready_queue_start[acc_id]] = req;
+                }
+                else {
+                    if (pos != ready_queue_end[acc_id]) {
+                        int i = ready_queue_end[acc_id];
+                        while (i != pos) {
+                            int j = i - 1;
+                            if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
+                            ready_queue[acc_id][i] = ready_queue[acc_id][j];
+                            i = j;
+                        }
+                    }
+
+                    ready_queue[acc_id][pos] = req;
+                    ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                                              MAX_READY_QUEUE_SIZE;
+                }
+
+                req->priority_escalated = can_forward;
+            }
         }
     }
 
@@ -966,10 +984,6 @@ inline void launch_requests()
 
                     unable_to_launch = false;
 
-                    m5_print_stat(PREDICTED_COMPUTE_TIME, req->dag_id);
-                    m5_print_stat(PREDICTED_MEMORY_TIME, req->node_id);
-                    m5_print_stat(NUM_FORWARDS, i);
-                    m5_print_stat(NUM_COLOCATIONS, j);
                     break;
                 }
             }
@@ -1106,8 +1120,8 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                     else {
                         int pos = 0;
                         while ((pos < pipeline_queue_size) && \
-                               (pipeline_queue[pos]->node_deadline <= \
-                                child->node_deadline)) {
+                               (pipeline_queue[pos]->laxity <= \
+                                child->laxity)) {
                             pos = (pos + 1) % MAX_READY_QUEUE_SIZE;
                         }
 
