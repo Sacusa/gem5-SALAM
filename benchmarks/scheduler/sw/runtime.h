@@ -119,7 +119,8 @@ enum m5_stat_t {
     DAG_DEADLINES_MET,
     NODE_DEADLINES_MET,
     PREDICTED_COMPUTE_TIME,
-    PREDICTED_MEMORY_TIME
+    PREDICTED_MEMORY_TIME,
+    PREDICTED_MEMORY_TIME_PER_BYTE
 };
 
 typedef struct task_struct_t task_struct_t;
@@ -170,6 +171,23 @@ struct task_struct_t {
     uint8_t producer_spm_part[MAX_ACC_ARGS];    // partition of the producer's
                                                 // output SPM to read from
     volatile acc_state_t *producer_acc[MAX_ACC_ARGS];   // producer accelerator
+
+    /**
+     * Fields for statistics
+     */
+#ifdef ENABLE_STATS
+    float stat_mem_time_per_byte_insertion;
+    float stat_mem_time_insertion;
+
+    float stat_mem_time_per_byte_launch;
+    float stat_mem_time_launch;
+
+    float stat_mem_time_per_byte_truth_load;
+    float stat_mem_time_truth_load;
+
+    float stat_mem_time_per_byte_truth_store;
+    float stat_mem_time_truth_store;
+#endif
 };
 
 struct acc_state_t {

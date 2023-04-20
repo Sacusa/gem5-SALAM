@@ -65,13 +65,14 @@ volatile scheduling_policy_t scheduling_policy;
 volatile mem_predictor_t mem_predictor;
 volatile uint32_t runtime_start_time;
 
+float mem_prediction = 0;
+
 // Structures for statistics
 volatile uint32_t stat_num_forwards = 0;
 volatile uint32_t stat_num_colocations = 0;
 volatile uint32_t stat_dag_deadlines_met = 0;
 volatile uint32_t stat_node_deadlines_met = 0;
 volatile float stat_predicted_compute_time = 0;
-volatile float stat_predicted_memory_time = 0;
 
 inline void init_task_struct(task_struct_t *task_struct)
 {
@@ -110,6 +111,95 @@ inline void disable_interrupts()
     __asm__ ("orr r1, r1, #0x80");
     __asm__ ("msr CPSR, r1");
     __asm__ ("pop {r1}");
+}
+
+/**
+ * Predictors
+ */
+
+// Last value predictor
+inline void update_last_val_predictor(uint32_t time, uint32_t size)
+{
+    mem_prediction = ((float)time / 1000) / size;
+}
+
+// Average predictor
+#define MAX_MEM_HIST_SIZE 20
+float mem_hist[MAX_MEM_HIST_SIZE];
+uint8_t mem_hist_size = 0;
+uint8_t mem_hist_pos = 0;
+
+inline void update_average_predictor(uint32_t time, uint32_t size)
+{
+    float mem_time_per_byte = ((float)time / 1000) / size;
+
+    mem_hist[mem_hist_pos] = mem_time_per_byte;
+    mem_hist_size = min(MAX_MEM_HIST_SIZE, mem_hist_size + 1);
+    mem_hist_pos = (mem_hist_pos + 1) % MAX_MEM_HIST_SIZE;
+
+    double product = 1;
+    for (int i = 0; i < mem_hist_size; i++) {
+        product *= mem_hist[i];
+    }
+
+    mem_prediction = pow(product, 1.0 / mem_hist_size);
+}
+
+// EWMA predictor
+const float alpha = 0.25;
+bool is_first_observation = true;
+
+inline void update_ewma_predictor(uint32_t time, uint32_t size)
+{
+    float mem_time_per_byte = ((float)time / 1000) / size;
+
+    if (is_first_observation) {
+        mem_prediction = mem_time_per_byte;
+        is_first_observation = false;
+    }
+    else {
+        mem_prediction = (alpha * mem_time_per_byte) + \
+                         ((1 - alpha) * mem_prediction);
+    }
+}
+
+inline void update_mem_time_predictor(uint32_t time, uint32_t size)
+{
+    // The size here is fairly random. We just want to avoid recording time
+    // for convolution filter DMA transfers because they tend to be skewed.
+    if (size < 512) { return; }
+
+#ifdef ENABLE_STATS
+    m5_timer_start(1);
+#endif
+
+    switch (mem_predictor) {
+        case MEM_PRED_LAST_VAL: update_last_val_predictor(time, size); break;
+        case MEM_PRED_AVERAGE: update_average_predictor(time, size); break;
+        case MEM_PRED_EWMA: update_ewma_predictor(time, size); break;
+        default:
+            printf("Invalid memory time predictor selected.\n");
+            m5_exit(0);
+    }
+
+#ifdef ENABLE_STATS
+    m5_timer_stop(1);
+#endif
+}
+
+inline float get_compute_time(volatile task_struct_t *node)
+{
+    return node->compute_time;
+}
+
+inline float get_memory_time(volatile task_struct_t *node)
+{
+    return ((node->input_size + node->output_size) * mem_prediction);
+}
+
+inline float get_runtime(volatile task_struct_t *node)
+{
+    return (get_compute_time(node) + get_memory_time(node));
 }
 
 /**
@@ -154,6 +244,13 @@ inline void run_canny_non_max(int device_id, volatile task_struct_t *req,
         }
     }
 
+#ifdef ENABLE_STATS
+    if (acc->status == ACC_STATUS_IDLE) {
+        req->stat_mem_time_per_byte_launch = mem_prediction;
+        req->stat_mem_time_launch = get_memory_time(req);
+    }
+#endif
+
     canny_non_max_driver(device_id, IMG_HEIGHT, IMG_WIDTH, hypo_addr,
             theta_addr, 0, acc->spm_part[acc->curr_spm_out_part], acc);
 
@@ -193,6 +290,22 @@ inline void run_convolution(int device_id, volatile task_struct_t *req,
     else {
         input_addr = (uint32_t) args->input;
     }
+
+#ifdef ENABLE_STATS
+    if (acc->status == ACC_STATUS_IDLE) {
+        req->stat_mem_time_per_byte_launch = mem_prediction;
+        req->stat_mem_time_launch = 0;
+
+        if (input_spm_addr == 0) {
+            req->stat_mem_time_launch += (IMG_HEIGHT * IMG_WIDTH * 4) * \
+                                         mem_prediction;
+        }
+
+        req->stat_mem_time_launch += \
+                ((args->kern_height * args->kern_width * 4) + \
+                 req->output_size) * mem_prediction;
+    }
+#endif
 
     // allocate input/output partitions
     for (int i = 0; i < 3; i++) {
@@ -255,6 +368,13 @@ inline void run_edge_tracking(int device_id, volatile task_struct_t *req,
         input_addr = (uint32_t) args->input;
     }
 
+#ifdef ENABLE_STATS
+    if (acc->status == ACC_STATUS_IDLE) {
+        req->stat_mem_time_per_byte_launch = mem_prediction;
+        req->stat_mem_time_launch = get_memory_time(req);
+    }
+#endif
+
     edge_tracking_driver(device_id, IMG_HEIGHT, IMG_WIDTH, input_addr,
             args->thr_weak_ratio, args->thr_strong_ratio, 0,
             acc->spm_part[acc->curr_spm_out_part], acc);
@@ -314,6 +434,29 @@ inline void run_elem_matrix(int device_id, volatile task_struct_t *req,
             arg2_addr = (uint32_t) args->arg2;
         }
     }
+
+#ifdef ENABLE_STATS
+    if (acc->status == ACC_STATUS_IDLE) {
+        req->stat_mem_time_per_byte_launch = mem_prediction;
+        req->stat_mem_time_launch = 0;
+
+        if (arg1_spm_addr == 0) {
+            req->stat_mem_time_launch += (IMG_HEIGHT * IMG_WIDTH * 4) * \
+                                         mem_prediction;
+        }
+
+        if (arg2_spm_addr == 0) {
+            if (args->is_arg2_scalar) {
+                req->stat_mem_time_launch += 4 * mem_prediction;
+            } else {
+                req->stat_mem_time_launch += (IMG_HEIGHT * IMG_WIDTH * 4) * \
+                                             mem_prediction;
+            }
+        }
+
+        req->stat_mem_time_launch += req->output_size * mem_prediction;
+    }
+#endif
 
     // allocate input/output partitions
     for (int i = 0; i < 4; i++) {
@@ -390,6 +533,13 @@ inline void run_grayscale(int device_id, volatile task_struct_t *req,
         input_addr = (uint32_t) args->input;
     }
 
+#ifdef ENABLE_STATS
+    if (acc->status == ACC_STATUS_IDLE) {
+        req->stat_mem_time_per_byte_launch = mem_prediction;
+        req->stat_mem_time_launch = get_memory_time(req);
+    }
+#endif
+
     grayscale_driver(device_id, IMG_HEIGHT, IMG_WIDTH, input_addr, 0,
             acc->spm_part[acc->curr_spm_out_part], acc);
 
@@ -428,6 +578,13 @@ inline void run_harris_non_max(int device_id, volatile task_struct_t *req,
         input_addr = (uint32_t) args->input;
     }
 
+#ifdef ENABLE_STATS
+    if (acc->status == ACC_STATUS_IDLE) {
+        req->stat_mem_time_per_byte_launch = mem_prediction;
+        req->stat_mem_time_launch = get_memory_time(req);
+    }
+#endif
+
     harris_non_max_driver(device_id, IMG_HEIGHT, IMG_WIDTH, input_addr, 0,
             acc->spm_part[acc->curr_spm_out_part], acc);
 
@@ -465,6 +622,13 @@ inline void run_isp(int device_id, volatile task_struct_t *req,
     } else {
         input_addr = (uint32_t) args->input;
     }
+
+#ifdef ENABLE_STATS
+    if (acc->status == ACC_STATUS_IDLE) {
+        req->stat_mem_time_per_byte_launch = mem_prediction;
+        req->stat_mem_time_launch = get_memory_time(req);
+    }
+#endif
 
     isp_driver(device_id, IMG_HEIGHT, IMG_WIDTH, input_addr, 0,
             acc->spm_part[acc->curr_spm_out_part], acc);
@@ -618,93 +782,6 @@ inline void finish_accelerator(int acc_id, int device_id,
  * The actual runtime
  */
 
-float mem_prediction = 0;
-
-// Last value predictor
-inline void update_last_val_predictor(uint32_t time, uint32_t size)
-{
-    mem_prediction = ((float)time / 1000) / size;
-}
-
-// Average predictor
-#define MAX_MEM_HIST_SIZE 20
-float mem_hist[MAX_MEM_HIST_SIZE];
-uint8_t mem_hist_size = 0;
-uint8_t mem_hist_pos = 0;
-
-inline void update_average_predictor(uint32_t time, uint32_t size)
-{
-    float mem_time_per_byte = ((float)time / 1000) / size;
-
-    mem_hist[mem_hist_pos] = mem_time_per_byte;
-    mem_hist_size = min(MAX_MEM_HIST_SIZE, mem_hist_size + 1);
-    mem_hist_pos = (mem_hist_pos + 1) % MAX_MEM_HIST_SIZE;
-
-    double product = 1;
-    for (int i = 0; i < mem_hist_size; i++) {
-        product *= mem_hist[i];
-    }
-
-    mem_prediction = pow(product, 1.0 / mem_hist_size);
-}
-
-// EWMA predictor
-const float alpha = 0.25;
-bool is_first_observation = true;
-
-inline void update_ewma_predictor(uint32_t time, uint32_t size)
-{
-    float mem_time_per_byte = ((float)time / 1000) / size;
-
-    if (is_first_observation) {
-        mem_prediction = mem_time_per_byte;
-        is_first_observation = false;
-    }
-    else {
-        mem_prediction = (alpha * mem_time_per_byte) + \
-                         ((1 - alpha) * mem_prediction);
-    }
-}
-
-inline void update_mem_time_predictor(uint32_t time, uint32_t size)
-{
-    // The size here is fairly random. We just want to avoid recording time
-    // for convolution filter DMA transfers because they tend to be skewed.
-    if (size < 512) { return; }
-
-#ifdef ENABLE_STATS
-    m5_timer_start(1);
-#endif
-
-    switch (mem_predictor) {
-        case MEM_PRED_LAST_VAL: update_last_val_predictor(time, size); break;
-        case MEM_PRED_AVERAGE: update_average_predictor(time, size); break;
-        case MEM_PRED_EWMA: update_ewma_predictor(time, size); break;
-        default:
-            printf("Invalid memory time predictor selected.\n");
-            m5_exit(0);
-    }
-
-#ifdef ENABLE_STATS
-    m5_timer_stop(1);
-#endif
-}
-
-inline float get_compute_time(volatile task_struct_t *node)
-{
-    return node->compute_time;
-}
-
-inline float get_memory_time(volatile task_struct_t *node)
-{
-    return ((node->input_size + node->output_size) * mem_prediction);
-}
-
-inline float get_runtime(volatile task_struct_t *node)
-{
-    return (get_compute_time(node) + get_memory_time(node));
-}
-
 inline bool push_request(volatile task_struct_t *req, bool try_forward)
 {
 #ifdef ENABLE_STATS
@@ -797,8 +874,11 @@ inline bool push_request(volatile task_struct_t *req, bool try_forward)
             float memory_time = get_memory_time(req);
 
             req->runtime = compute_time + memory_time;
+
+            req->stat_mem_time_per_byte_insertion = mem_prediction;
+            req->stat_mem_time_insertion = memory_time;
+
             stat_predicted_compute_time += compute_time;
-            stat_predicted_memory_time += memory_time;
 #else
             req->runtime = get_runtime(req);
 #endif
@@ -1068,7 +1148,6 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
     m5_print_stat(NODE_DEADLINES_MET, stat_node_deadlines_met);
     m5_print_stat(PREDICTED_COMPUTE_TIME,
             (uint32_t)stat_predicted_compute_time);
-    m5_print_stat(PREDICTED_MEMORY_TIME, (uint32_t)stat_predicted_memory_time);
 #endif
 
     m5_dump_stats();
@@ -1080,9 +1159,27 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         (acc_state[i][j].status == ACC_STATUS_DMA_ARG2)) {
         switch (scheduling_policy) {
             case LAX:
-            case ELF:
-                update_mem_time_predictor(m5_get_time() - dma_start_time[i][j],
-                        dma_size[i][j]);
+            case ELF: {
+                uint32_t time = m5_get_time() - dma_start_time[i][j];
+                update_mem_time_predictor(time, dma_size[i][j]);
+
+                if (dma_size[i][j] > 512) {
+                    volatile task_struct_t *req = acc_state[i][j].running_req;
+                    float mem_time_per_byte = ((float)time / 1000) / \
+                                              dma_size[i][j];
+
+                    if (req->stat_mem_time_per_byte_truth_load == 0) {
+                        req->stat_mem_time_per_byte_truth_load = \
+                                mem_time_per_byte;
+                    } else {
+                        req->stat_mem_time_per_byte_truth_load = \
+                                (mem_time_per_byte + \
+                                 req->stat_mem_time_per_byte_truth_load) / 2;
+                    }
+
+                    req->stat_mem_time_truth_load += time / 1000;
+                }
+            }
         }
 
         *acc_state[i][j].dma = 0;
@@ -1105,6 +1202,14 @@ void isr(int i, int j)  // i = accelerator id, j = device id
             if (child->completed_parents == child->num_parents) {
                 child->status = REQ_STATUS_READY;
 
+#ifdef ENABLE_STATS
+                child->stat_mem_time_per_byte_truth_load = 0;
+                child->stat_mem_time_truth_load = 0;
+
+                child->stat_mem_time_per_byte_truth_store = 0;
+                child->stat_mem_time_truth_store = 0;
+#endif
+
                 if (scheduling_policy == ELF) {
 #ifdef ENABLE_STATS
                     m5_timer_start(2);
@@ -1113,8 +1218,13 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                     float memory_time = get_memory_time(child);
 
                     child->runtime = compute_time + memory_time;
+
+#ifdef ENABLE_STATS
+                    child->stat_mem_time_per_byte_insertion = mem_prediction;
+                    child->stat_mem_time_insertion = memory_time;
+
                     stat_predicted_compute_time += compute_time;
-                    stat_predicted_memory_time += memory_time;
+#endif
 
                     child->laxity = child->node_deadline + \
                                     runtime_start_time - child->runtime;
@@ -1228,6 +1338,28 @@ void isr(int i, int j)  // i = accelerator id, j = device id
             if (curr_time <= node->node_deadline) {
                 stat_node_deadlines_met++;
             }
+
+            volatile task_struct_t *req = acc_state[i][j].running_req;
+
+            m5_print_stat(PREDICTED_MEMORY_TIME_PER_BYTE,
+                    *((uint32_t*)(&req->stat_mem_time_per_byte_insertion)));
+            m5_print_stat(PREDICTED_MEMORY_TIME,
+                    *((uint32_t*)(&req->stat_mem_time_insertion)));
+
+            m5_print_stat(PREDICTED_MEMORY_TIME_PER_BYTE,
+                    *((uint32_t*)(&req->stat_mem_time_per_byte_launch)));
+            m5_print_stat(PREDICTED_MEMORY_TIME,
+                    *((uint32_t*)(&req->stat_mem_time_launch)));
+
+            m5_print_stat(PREDICTED_MEMORY_TIME_PER_BYTE,
+                    *((uint32_t*)(&req->stat_mem_time_per_byte_truth_load)));
+            m5_print_stat(PREDICTED_MEMORY_TIME,
+                    *((uint32_t*)(&req->stat_mem_time_truth_load)));
+
+            m5_print_stat(PREDICTED_MEMORY_TIME_PER_BYTE,
+                    *((uint32_t*)(&req->stat_mem_time_per_byte_truth_store)));
+            m5_print_stat(PREDICTED_MEMORY_TIME,
+                    *((uint32_t*)(&req->stat_mem_time_truth_store)));
 #endif
 
             acc_state[i][j].running_req = NULL;
@@ -1243,9 +1375,16 @@ void isr(int i, int j)  // i = accelerator id, j = device id
     else if (acc_state[i][j].status == ACC_STATUS_DMA_OUT) {
         switch (scheduling_policy) {
             case LAX:
-            case ELF:
-                update_mem_time_predictor(m5_get_time() - dma_start_time[i][j],
-                        dma_size[i][j]);
+            case ELF: {
+                uint32_t time = m5_get_time() - dma_start_time[i][j];
+                update_mem_time_predictor(time, dma_size[i][j]);
+
+                volatile task_struct_t *req = acc_state[i][j].running_req;
+
+                req->stat_mem_time_per_byte_truth_store = \
+                        ((float)time / 1000) / dma_size[i][j];
+                req->stat_mem_time_truth_store = time / 1000;
+            }
         }
 
         *acc_state[i][j].dma = 0;
@@ -1262,6 +1401,28 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         if (curr_time <= node->node_deadline) {
             stat_node_deadlines_met++;
         }
+
+        volatile task_struct_t *req = acc_state[i][j].running_req;
+
+        m5_print_stat(PREDICTED_MEMORY_TIME_PER_BYTE,
+                *((uint32_t*)(&req->stat_mem_time_per_byte_insertion)));
+        m5_print_stat(PREDICTED_MEMORY_TIME,
+                *((uint32_t*)(&req->stat_mem_time_insertion)));
+
+        m5_print_stat(PREDICTED_MEMORY_TIME_PER_BYTE,
+                *((uint32_t*)(&req->stat_mem_time_per_byte_launch)));
+        m5_print_stat(PREDICTED_MEMORY_TIME,
+                *((uint32_t*)(&req->stat_mem_time_launch)));
+
+        m5_print_stat(PREDICTED_MEMORY_TIME_PER_BYTE,
+                *((uint32_t*)(&req->stat_mem_time_per_byte_truth_load)));
+        m5_print_stat(PREDICTED_MEMORY_TIME,
+                *((uint32_t*)(&req->stat_mem_time_truth_load)));
+
+        m5_print_stat(PREDICTED_MEMORY_TIME_PER_BYTE,
+                *((uint32_t*)(&req->stat_mem_time_per_byte_truth_store)));
+        m5_print_stat(PREDICTED_MEMORY_TIME,
+                *((uint32_t*)(&req->stat_mem_time_truth_store)));
 #endif
 
         acc_state[i][j].running_req = NULL;
