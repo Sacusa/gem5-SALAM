@@ -49,7 +49,7 @@ int main(void)
     uint8_t *expected = add_harris_non_max();
     add_isp();
 
-    runtime(nodes, num_dags, num_nodes, FCFS);
+    runtime(nodes, num_dags, num_nodes, FCFS, MEM_PRED_LAST_VAL);
 
 #ifdef VERIFY
     // TODO: fix the following

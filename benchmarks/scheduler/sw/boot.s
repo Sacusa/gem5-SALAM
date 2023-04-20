@@ -81,6 +81,23 @@ _Reset:
 .equ GIC_CPU_Int_Ack_reg_offset,    0x0C
 .equ GIC_CPU_End_of_int_offset,     0x10
 
+.align 4
+irq_jump_table:
+    .word cnm0_irq
+    .word convolution0_irq
+    .word convolution1_irq
+    .word edge_tracking0_irq
+    .word elem_matrix0_irq
+    .word elem_matrix1_irq
+    .word elem_matrix2_irq
+    .word elem_matrix3_irq
+    .word grayscale0_irq
+    .word hnm0_irq
+    .word isp0_irq
+
+.align 4
+irq_jump_table_addr: .word irq_jump_table
+
 
 .global Reset_Handler
 Reset_Handler:
@@ -195,89 +212,81 @@ irq_handler:
     ldr r1, =GIC_CPU_BASE + GIC_CPU_Int_Ack_reg_offset
     ldr r4, [r1]
 
-cnm0_irq:
+    // Jump to end of IRQ handler if unrecognized interrupt
     cmp r4, #cnm0_irq_id
-    bne convolution0_irq
+    blt irq_end
+    cmp r4, #isp0_irq_id
+    bgt irq_end
+
+    // Calculate address from the jump table
+    sub r4, r4, #cnm0_irq_id
+    ldr r1, irq_jump_table_addr
+    ldr r1, [r1, +r4, LSL #2]
+
+    // Branch to correct handler
+    mov pc, r1
+
+cnm0_irq:
     mov r0, #0
     mov r1, #0
     bl isr
     b irq_end
 
 convolution0_irq:
-    cmp r4, #convolution0_irq_id
-    bne convolution1_irq
     mov r0, #1
     mov r1, #0
     bl isr
     b irq_end
 
 convolution1_irq:
-    cmp r4, #convolution1_irq_id
-    bne edge_tracking0_irq
     mov r0, #1
     mov r1, #1
     bl isr
     b irq_end
 
 edge_tracking0_irq:
-    cmp r4, #edge_tracking0_irq_id
-    bne elem_matrix0_irq
     mov r0, #2
     mov r1, #0
     bl isr
     b irq_end
 
 elem_matrix0_irq:
-    cmp r4, #elem_matrix0_irq_id
-    bne elem_matrix1_irq
     mov r0, #3
     mov r1, #0
     bl isr
     b irq_end
 
 elem_matrix1_irq:
-    cmp r4, #elem_matrix1_irq_id
-    bne elem_matrix2_irq
     mov r0, #3
     mov r1, #1
     bl isr
     b irq_end
 
 elem_matrix2_irq:
-    cmp r4, #elem_matrix2_irq_id
-    bne elem_matrix3_irq
     mov r0, #3
     mov r1, #2
     bl isr
     b irq_end
 
 elem_matrix3_irq:
-    cmp r4, #elem_matrix3_irq_id
-    bne grayscale0_irq
     mov r0, #3
     mov r1, #3
     bl isr
     b irq_end
 
 grayscale0_irq:
-    cmp r4, #grayscale0_irq_id
-    bne hnm0_irq
     mov r0, #4
     mov r1, #0
     bl isr
     b irq_end
 
 hnm0_irq:
-    cmp r4, #hnm0_irq_id
-    bne isp0_irq
     mov r0, #5
     mov r1, #0
     bl isr
     b irq_end
 
 isp0_irq:
-    cmp r4, #isp0_irq_id
-    bne irq_end
     mov r0, #6
     mov r1, #0
     bl isr
@@ -285,6 +294,7 @@ isp0_irq:
 irq_end:
     // write the IRQ ID to the END_OF_INTERRUPT Register of GIC_CPU_INTERFACE
     ldr r1, =GIC_CPU_BASE + GIC_CPU_End_of_int_offset
+    add r4, r4, #cnm0_irq_id
     str r4, [r1]
 
     // Don't need to enable interrupts again since restoring CPSR after the

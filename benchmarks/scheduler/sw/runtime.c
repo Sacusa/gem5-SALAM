@@ -984,6 +984,12 @@ inline void launch_requests()
 
                     unable_to_launch = false;
 
+#ifdef PRINT_SCHEDULE
+                    m5_print_stat(PREDICTED_COMPUTE_TIME, req->dag_id);
+                    m5_print_stat(PREDICTED_MEMORY_TIME, req->node_id);
+                    m5_print_stat(NUM_FORWARDS, i);
+                    m5_print_stat(NUM_COLOCATIONS, j);
+#endif
                     break;
                 }
             }
@@ -1227,6 +1233,11 @@ void isr(int i, int j)  // i = accelerator id, j = device id
             acc_state[i][j].running_req = NULL;
             num_running--;
         }
+
+#ifdef SCALE_EXPERIMENT
+        num_running = 0;
+        return;
+#endif
     }
 
     else if (acc_state[i][j].status == ACC_STATUS_DMA_OUT) {

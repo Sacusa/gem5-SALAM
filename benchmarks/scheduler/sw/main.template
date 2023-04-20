@@ -12,6 +12,7 @@
 #include "harris.h"
 #include "lstm.h"
 #include "runtime.h"
+#include "scale.h"
 
 #define ENABLE_FORWARDING
 
@@ -32,6 +33,7 @@ int main(int argc, char *argv[])
     int num_gru = 0;
     int num_harris = 0;
     int num_lstm = 0;
+    int num_scale = 0;
 
     int nodes_offset = 0;
 
@@ -54,6 +56,8 @@ int main(int argc, char *argv[])
     if (num_lstm > 0) { init_lstm(); }
     add_lstm_dag(&nodes[nodes_offset], &num_nodes[nodes_offset], num_lstm, 8);
     nodes_offset += num_lstm;
+
+    add_scale_dag(&nodes[nodes_offset], &num_nodes[nodes_offset], num_scale);
 
     runtime_call
 

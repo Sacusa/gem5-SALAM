@@ -14,6 +14,7 @@ num_deblur=0
 num_gru=0
 num_harris=0
 num_lstm=0
+num_scale=0
 
 for (( i=1; i<${#}; )); do
     application=$1
@@ -29,6 +30,8 @@ for (( i=1; i<${#}; )); do
         num_harris=$1
     elif [[ ${application} == "lstm" ]]; then
         num_lstm=$1
+    elif [[ ${application} == "scale" ]]; then
+        num_scale=$1
     else
         echo "Unknown application: ${application}"
         exit -1
@@ -46,11 +49,15 @@ sed -i '/int num_deblur/c\    int num_deblur = '"${num_deblur};" main.c
 sed -i '/int num_gru/c\    int num_gru = '"${num_gru};" main.c
 sed -i '/int num_harris/c\    int num_harris = '"${num_harris};" main.c
 sed -i '/int num_lstm/c\    int num_lstm = '"${num_lstm};" main.c
+sed -i '/int num_scale/c\    int num_scale = '"${num_scale};" main.c
 
 # create the runtime call
 num_dags=$(($num_canny + $num_deblur + $num_gru + $num_harris + $num_lstm))
+if [ "$num_scale" -gt 0 ]; then
+    num_dags=$((num_dags + 1))
+fi
 sed -i '/runtime_call/c\    runtime(nodes, '"${num_dags}"', num_nodes, '"${policy}"', MEM_PRED_LAST_VAL);' main.c
 
 # compile and rename binary
 make main.elf &> /dev/null
-mv main.elf canny_${num_canny}_deblur_${num_deblur}_gru_${num_gru}_harris_${num_harris}_lstm_${num_lstm}_${policy}.elf
+mv main.elf canny_${num_canny}_deblur_${num_deblur}_gru_${num_gru}_harris_${num_harris}_lstm_${num_lstm}_scale_${num_scale}_${policy}.elf

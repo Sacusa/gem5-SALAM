@@ -13,18 +13,31 @@
 
 #include "../defines.h"
 
-#define MAX_ACC_INSTANCES   10
-#define MAX_ACC_ARGS        5
-#define MAX_ACC_SPM_PARTS   5
-#define MAX_CHILDREN        50
-#define MAX_DAGS            50
-#define MAX_NODES           500
-#define MAX_READY_QUEUE_SIZE 500
+//#define SCALE_EXPERIMENT
+#ifdef SCALE_EXPERIMENT
+    #define MAX_ACC_INSTANCES   10
+    #define MAX_ACC_ARGS        5
+    #define MAX_ACC_SPM_PARTS   5
+    #define MAX_CHILDREN        1500
+    #define MAX_DAGS            50
+    #define MAX_NODES           1500
+    #define MAX_READY_QUEUE_SIZE 1500
+#else
+    #define MAX_ACC_INSTANCES   10
+    #define MAX_ACC_ARGS        5
+    #define MAX_ACC_SPM_PARTS   5
+    #define MAX_CHILDREN        50
+    #define MAX_DAGS            50
+    #define MAX_NODES           500
+    #define MAX_READY_QUEUE_SIZE 500
+#endif
 //#define VERIFY
+//#define PRINT_SCHEDULE
 
 /* Enable gem5 timers for the following functions:
  * Timer 0: push_request()
  * Timer 1: update_mem_time_predictor()
+ * Timer 2 (ELF only): sorted insertion into pipeline queue
  *
  * It also enables the collection and printing of other statistics using
  * structures and gem5 pseudo instructions.
