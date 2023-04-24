@@ -3,6 +3,7 @@
 #include "driver.c"
 
 #define min(a,b) ((a) < (b) ? (a) : (b))
+#define max(a,b) ((a) > (b) ? (a) : (b))
 
 int acc_instances[NUM_ACCS] = {
     /* ACC_CANNY_NON_MAX  */ 1,
@@ -51,13 +52,23 @@ int acc_spm_part_offset[NUM_ACCS][MAX_ACC_SPM_PARTS] = {
     {ISP0_OUTPUT0_SPM - ISP0_BASE, ISP0_OUTPUT1_SPM - ISP0_BASE}
 };
 
+struct list_node_t;
+typedef struct list_node_t list_node_t;
+struct list_node_t {
+    volatile task_struct_t *req;
+    volatile list_node_t *above;
+    volatile list_node_t *below;
+    volatile list_node_t *next;
+    volatile list_node_t *prev;
+};
+
+volatile int highest_level[NUM_ACCS];
+volatile list_node_t *ready_queue[NUM_ACCS][MAX_LEVELS];
+volatile list_node_t *ready_queue_tail[NUM_ACCS];  // For FCFS
+volatile int ready_queue_size[NUM_ACCS];
+
 volatile acc_state_t acc_state[NUM_ACCS][MAX_ACC_INSTANCES];
 volatile int num_available_instances[NUM_ACCS];
-
-volatile task_struct_t *ready_queue[NUM_ACCS][MAX_READY_QUEUE_SIZE];
-volatile int ready_queue_size[NUM_ACCS];
-volatile int ready_queue_start[NUM_ACCS];
-volatile int ready_queue_end[NUM_ACCS];
 
 volatile int num_running = 0;
 
@@ -74,14 +85,16 @@ volatile uint32_t stat_dag_deadlines_met = 0;
 volatile uint32_t stat_node_deadlines_met = 0;
 volatile float stat_predicted_compute_time = 0;
 
-inline void init_task_struct(task_struct_t *task_struct)
+inline list_node_t* new_node(volatile task_struct_t *req)
 {
-    for (int i = 0; i < MAX_ACC_ARGS; i++) {
-        task_struct->producer_forward[i] = 0;
-    }
+    list_node_t *node = (list_node_t*) get_memory(sizeof(list_node_t));
+    node->req = req;
+    node->above = NULL;
+    node->below = NULL;
+    node->next = NULL;
+    node->prev = NULL;
 
-    task_struct->status = REQ_STATUS_WAITING;
-    task_struct->completed_parents = 0;
+    return node;
 }
 
 inline void assertf(bool cond, const char * format, ...)
@@ -187,19 +200,19 @@ inline void update_mem_time_predictor(uint32_t time, uint32_t size)
 #endif
 }
 
-inline float get_compute_time(volatile task_struct_t *node)
+inline float get_compute_time(volatile task_struct_t *req)
 {
-    return node->compute_time;
+    return req->compute_time;
 }
 
-inline float get_memory_time(volatile task_struct_t *node)
+inline float get_memory_time(volatile task_struct_t *req)
 {
-    return ((node->input_size + node->output_size) * mem_prediction);
+    return ((req->input_size + req->output_size) * mem_prediction);
 }
 
-inline float get_runtime(volatile task_struct_t *node)
+inline float get_runtime(volatile task_struct_t *req)
 {
-    return (get_compute_time(node) + get_memory_time(node));
+    return (get_compute_time(req) + get_memory_time(req));
 }
 
 /**
@@ -782,87 +795,150 @@ inline void finish_accelerator(int acc_id, int device_id,
  * The actual runtime
  */
 
-inline bool push_request(volatile task_struct_t *req, bool try_forward)
+bool push_request(volatile task_struct_t *req, bool try_forward)
 {
 #ifdef ENABLE_STATS
-    m5_timer_start(0);
+    m5_timer_start(2);
 #endif
 
     int acc_id = req->acc_id;
     bool can_forward = try_forward;
     req->priority_escalated = false;
 
-    if (ready_queue_size[acc_id] == MAX_READY_QUEUE_SIZE) {
-        m5_fail_1();
-    }
+    volatile list_node_t *node = new_node(req);
 
     switch (scheduling_policy) {
         case FCFS: {
-            ready_queue[acc_id][ready_queue_end[acc_id]] = req;
-            ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
-                                      MAX_READY_QUEUE_SIZE;
+            node->prev = ready_queue_tail[acc_id];
+            ready_queue_tail[acc_id]->next = node;
+            ready_queue_tail[acc_id] = node;
+
             break;
         }
 
         case GEDF_D: {
-            if (ready_queue_size[acc_id] == 0) {
-                ready_queue[acc_id][ready_queue_end[acc_id]] = req;
-                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
-                                          MAX_READY_QUEUE_SIZE;
+            volatile list_node_t *root =
+                ready_queue[acc_id][highest_level[acc_id]];
+
+            // Find the insertion position at the bottom level
+            while (root->below != NULL) {
+                root = root->below;
+
+                while ((root->next != NULL) && \
+                       (root->next->req->dag_deadline <= req->dag_deadline)) {
+                    root = root->next;
+                }
             }
-            else {
-                int pos = ready_queue_start[acc_id];
-                while ((pos != ready_queue_end[acc_id]) && \
-                       (ready_queue[acc_id][pos]->dag_deadline <= \
-                        req->dag_deadline)) {
-                    pos = (pos + 1) % MAX_READY_QUEUE_SIZE;
+
+            // Insert at the bottom level
+            if (root->next != NULL) {
+                node->next = root->next;
+                root->next->prev = node;
+            }
+
+            root->next = node;
+            node->prev = root;
+
+            // Build the tower up probabilistically
+            int level = 1;
+            while (((rand() % 2) == 1) && (level < (MAX_LEVELS-1))) {
+                node->above = new_node(req);
+                node->above->below = node;
+
+                root = node->prev;
+                while (root->above == NULL) {
+                    root = root->prev;
                 }
 
-                if (pos != ready_queue_end[acc_id]) {
-                    int i = ready_queue_end[acc_id];
-                    while (i != pos) {
-                        int j = i - 1;
-                        if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
-                        ready_queue[acc_id][i] = ready_queue[acc_id][j];
-                        i = j;
+                root = root->above;
+                node = node->above;
+
+                if (root->next != NULL) {
+                    node->next = root->next;
+                    root->next->prev = node;
+                }
+
+                root->next = node;
+                node->prev = root;
+
+                level++;
+
+                if (level > highest_level[acc_id]) {
+                    if (ready_queue[acc_id][level] == NULL) {
+                        ready_queue[acc_id][level] = new_node(NULL);
                     }
-                }
 
-                ready_queue[acc_id][pos] = req;
-                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
-                                          MAX_READY_QUEUE_SIZE;
+                    ready_queue[acc_id][level]->below =
+                        ready_queue[acc_id][level-1];
+                    ready_queue[acc_id][level-1]->above =
+                        ready_queue[acc_id][level];
+
+                    highest_level[acc_id]++;
+                }
             }
 
             break;
         }
 
         case GEDF_N: {
-            if (ready_queue_size[acc_id] == 0) {
-                ready_queue[acc_id][ready_queue_end[acc_id]] = req;
-                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
-                                          MAX_READY_QUEUE_SIZE;
+            volatile list_node_t *root =
+                ready_queue[acc_id][highest_level[acc_id]];
+
+            // Find the insertion position at the bottom level
+            while (root->below != NULL) {
+                root = root->below;
+
+                while ((root->next != NULL) && \
+                       (root->next->req->node_deadline <= req->node_deadline)) {
+                    root = root->next;
+                }
             }
-            else {
-                int pos = ready_queue_start[acc_id];
-                while ((pos != ready_queue_end[acc_id]) && \
-                       (ready_queue[acc_id][pos]->node_deadline <= \
-                        req->node_deadline)) {
-                    pos = (pos + 1) % MAX_READY_QUEUE_SIZE;
+
+            // Insert at the bottom level
+            if (root->next != NULL) {
+                node->next = root->next;
+                root->next->prev = node;
+            }
+
+            root->next = node;
+            node->prev = root;
+
+            // Build the tower up probabilistically
+            int level = 1;
+            while (((rand() % 2) == 1) && (level < (MAX_LEVELS-1))) {
+                node->above = new_node(req);
+                node->above->below = node;
+
+                root = node->prev;
+                while (root->above == NULL) {
+                    root = root->prev;
                 }
 
-                if (pos != ready_queue_end[acc_id]) {
-                    int i = ready_queue_end[acc_id];
-                    while (i != pos) {
-                        int j = i - 1;
-                        if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
-                        ready_queue[acc_id][i] = ready_queue[acc_id][j];
-                        i = j;
+                root = root->above;
+                node = node->above;
+
+                if (root->next != NULL) {
+                    node->next = root->next;
+                    root->next->prev = node;
+                }
+
+                root->next = node;
+                node->prev = root;
+
+                level++;
+
+                if (level > highest_level[acc_id]) {
+                    if (ready_queue[acc_id][level] == NULL) {
+                        ready_queue[acc_id][level] = new_node(NULL);
                     }
-                }
 
-                ready_queue[acc_id][pos] = req;
-                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
-                                          MAX_READY_QUEUE_SIZE;
+                    ready_queue[acc_id][level]->below =
+                        ready_queue[acc_id][level-1];
+                    ready_queue[acc_id][level-1]->above =
+                        ready_queue[acc_id][level];
+
+                    highest_level[acc_id]++;
+                }
             }
 
             break;
@@ -890,38 +966,65 @@ inline bool push_request(volatile task_struct_t *req, bool try_forward)
                 // De-prioritize a node if its laxity is negative. That is,
                 // the node is unlikely to finish before its deadline.
                 req->laxity = 0x7fffffff;
-
-                ready_queue[acc_id][ready_queue_end[acc_id]] = req;
-                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
-                                          MAX_READY_QUEUE_SIZE;
             }
 
-            else {
-                if (ready_queue_size[acc_id] == 0) {
-                    ready_queue[acc_id][ready_queue_end[acc_id]] = req;
-                    ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
-                                              MAX_READY_QUEUE_SIZE;
+            volatile list_node_t *root =
+                ready_queue[acc_id][highest_level[acc_id]];
+
+            // Find the insertion position at the bottom level
+            while (root->below != NULL) {
+                root = root->below;
+
+                while ((root->next != NULL) && \
+                       (root->next->req->laxity <= req->laxity)) {
+                    root = root->next;
                 }
-                else {
-                    int pos = ready_queue_start[acc_id];
-                    while ((pos != ready_queue_end[acc_id]) && \
-                           (ready_queue[acc_id][pos]->laxity <= req->laxity)) {
-                        pos = (pos + 1) % MAX_READY_QUEUE_SIZE;
+            }
+
+            // Insert at the bottom level
+            if (root->next != NULL) {
+                node->next = root->next;
+                root->next->prev = node;
+            }
+
+            root->next = node;
+            node->prev = root;
+
+            // Build the tower up probabilistically
+            int level = 1;
+            while (((rand() % 2) == 1) && (level < (MAX_LEVELS-1))) {
+                node->above = new_node(req);
+                node->above->below = node;
+
+                root = node->prev;
+                while (root->above == NULL) {
+                    root = root->prev;
+                }
+
+                root = root->above;
+                node = node->above;
+
+                if (root->next != NULL) {
+                    node->next = root->next;
+                    root->next->prev = node;
+                }
+
+                root->next = node;
+                node->prev = root;
+
+                level++;
+
+                if (level > highest_level[acc_id]) {
+                    if (ready_queue[acc_id][level] == NULL) {
+                        ready_queue[acc_id][level] = new_node(NULL);
                     }
 
-                    if (pos != ready_queue_end[acc_id]) {
-                        int i = ready_queue_end[acc_id];
-                        while (i != pos) {
-                            int j = i - 1;
-                            if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
-                            ready_queue[acc_id][i] = ready_queue[acc_id][j];
-                            i = j;
-                        }
-                    }
+                    ready_queue[acc_id][level]->below =
+                        ready_queue[acc_id][level-1];
+                    ready_queue[acc_id][level-1]->above =
+                        ready_queue[acc_id][level];
 
-                    ready_queue[acc_id][pos] = req;
-                    ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
-                                              MAX_READY_QUEUE_SIZE;
+                    highest_level[acc_id]++;
                 }
             }
 
@@ -929,77 +1032,97 @@ inline bool push_request(volatile task_struct_t *req, bool try_forward)
         }
 
         case ELF: {
-            int pos = ready_queue_start[acc_id];
-            int fwd_pos = ready_queue_start[acc_id];
-
             if ((req->laxity - (m5_get_time() / 1000)) <= 0) {
                 // De-prioritize a node if its laxity is negative. That is,
                 // the node is unlikely to finish before its deadline.
                 req->laxity = 0x7fffffff;
-
-                ready_queue[acc_id][ready_queue_end[acc_id]] = req;
-                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
-                                          MAX_READY_QUEUE_SIZE;
             }
 
-            else {
-                for (; pos != ready_queue_end[acc_id];
-                     pos = (pos + 1) % MAX_READY_QUEUE_SIZE) {
+            volatile list_node_t *root =
+                ready_queue[acc_id][highest_level[acc_id]];
 
-                    volatile task_struct_t *rq_node = ready_queue[acc_id][pos];
+            // Find the insertion position at the bottom level
+            while (root->below != NULL) {
+                root = root->below;
 
-                    if (rq_node->priority_escalated) {
-                        fwd_pos = (fwd_pos + 1) % MAX_READY_QUEUE_SIZE;
-                    }
-                    else {
-                        if (rq_node->laxity > req->laxity) {
-                            break;
-                        }
-                    }
+                while ((root->next != NULL) && \
+                       (root->next->req->laxity <= req->laxity)) {
+                    root = root->next;
+                }
+            }
 
-                    if (try_forward) {
-                        int32_t laxity = rq_node->laxity - (m5_get_time() / 1000);
+            // Perform a sequential laxity check
+            if (try_forward) {
+                for (volatile list_node_t *iter = ready_queue[acc_id][0]->next;
+                        iter != root->next; iter = iter->next) {
+                    int32_t laxity = iter->req->laxity - (m5_get_time()/1000);
 
-                        if ((laxity > 0) && (laxity < ((int32_t)req->runtime))) {
-                            can_forward = false;
-                        }
+                    if ((laxity > 0) && (laxity < ((int32_t)req->runtime))) {
+                        can_forward = false;
+                        break;
                     }
                 }
+            }
 
-                if (can_forward) {
-                    // Reduce node laxities
-                    for (int i = ready_queue_start[acc_id]; i != pos;
-                         i = (i + 1) % MAX_READY_QUEUE_SIZE) {
-                        ready_queue[acc_id][i]->laxity -= req->runtime;
+            // Find the new insertion position and reduce laxities
+            if (can_forward) {
+                volatile list_node_t *new_root = ready_queue[acc_id][0];
+
+                for (volatile list_node_t *iter = ready_queue[acc_id][0]->next;
+                        iter != root->next; iter = iter->next) {
+                    iter->req->laxity -= req->runtime;
+
+                    if (iter->req->priority_escalated) { new_root = iter; }
+                }
+
+                root = new_root;
+            }
+
+            // Insert at the bottom level
+            if (root->next != NULL) {
+                node->next = root->next;
+                root->next->prev = node;
+            }
+
+            root->next = node;
+            node->prev = root;
+
+            // Build the tower up probabilistically
+            int level = 1;
+            while (((rand() % 2) == 1) && (level < (MAX_LEVELS-1))) {
+                node->above = new_node(req);
+                node->above->below = node;
+
+                root = node->prev;
+                while (root->above == NULL) {
+                    root = root->prev;
+                }
+
+                root = root->above;
+                node = node->above;
+
+                if (root->next != NULL) {
+                    node->next = root->next;
+                    root->next->prev = node;
+                }
+
+                root->next = node;
+                node->prev = root;
+
+                level++;
+
+                if (level > highest_level[acc_id]) {
+                    if (ready_queue[acc_id][level] == NULL) {
+                        ready_queue[acc_id][level] = new_node(NULL);
                     }
 
-                    pos = fwd_pos;
-                }
+                    ready_queue[acc_id][level]->below =
+                        ready_queue[acc_id][level-1];
+                    ready_queue[acc_id][level-1]->above =
+                        ready_queue[acc_id][level];
 
-                // Perform sorted insertion into ready queue
-                if (pos == ready_queue_start[acc_id]) {
-                    ready_queue_start[acc_id] = (ready_queue_start[acc_id]==0) ? \
-                                                (MAX_READY_QUEUE_SIZE - 1) : \
-                                                (ready_queue_start[acc_id] - 1);
-                    ready_queue[acc_id][ready_queue_start[acc_id]] = req;
+                    highest_level[acc_id]++;
                 }
-                else {
-                    if (pos != ready_queue_end[acc_id]) {
-                        int i = ready_queue_end[acc_id];
-                        while (i != pos) {
-                            int j = i - 1;
-                            if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
-                            ready_queue[acc_id][i] = ready_queue[acc_id][j];
-                            i = j;
-                        }
-                    }
-
-                    ready_queue[acc_id][pos] = req;
-                    ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
-                                              MAX_READY_QUEUE_SIZE;
-                }
-
-                req->priority_escalated = can_forward;
             }
         }
     }
@@ -1007,7 +1130,7 @@ inline bool push_request(volatile task_struct_t *req, bool try_forward)
     ready_queue_size[acc_id]++;
 
 #ifdef ENABLE_STATS
-    m5_timer_stop(0);
+    m5_timer_stop(2);
 #endif
 
     return can_forward;
@@ -1017,7 +1140,7 @@ inline volatile task_struct_t *peek_request(int acc_id)
 {
     if (ready_queue_size[acc_id] == 0) { return NULL; }
 
-    return ready_queue[acc_id][ready_queue_start[acc_id]];
+    return ready_queue[acc_id][0]->next->req;
 }
 
 inline volatile task_struct_t *pop_request(int acc_id)
@@ -1025,9 +1148,24 @@ inline volatile task_struct_t *pop_request(int acc_id)
     volatile task_struct_t *req = peek_request(acc_id);
 
     if (req != NULL) {
-        ready_queue_start[acc_id] = (ready_queue_start[acc_id] + 1) % \
-                                    MAX_READY_QUEUE_SIZE;
+        volatile list_node_t *node = ready_queue[acc_id][0]->next;
+
+        while (node != NULL) {
+            if (node->next == NULL) {
+                node->prev->next = NULL;
+            } else {
+                node->prev->next = node->next;
+                node->next->prev = node->prev;
+            }
+
+            node = node->above;
+        }
+
         ready_queue_size[acc_id]--;
+
+        if ((scheduling_policy == FCFS) && (ready_queue_size[acc_id] == 0)) {
+            ready_queue_tail[acc_id] = ready_queue[acc_id][0];
+        }
     }
 
     return req;
@@ -1102,9 +1240,16 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
             acc_state[i][j].curr_spm_out_part = 0;
         }
 
+        highest_level[i] = 1;
+
+        ready_queue[i][0] = new_node(NULL);
+        ready_queue[i][1] = new_node(NULL);
+        ready_queue[i][0]->above = ready_queue[i][1];
+        ready_queue[i][1]->below = ready_queue[i][0];
+
+        ready_queue_tail[i] = ready_queue[i][0];
+
         ready_queue_size[i] = 0;
-        ready_queue_start[i] = 0;
-        ready_queue_end[i] = 0;
 
         num_available_instances[i] = acc_instances[i];
     }
@@ -1123,6 +1268,8 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
             }
         }
     }
+
+    srand(m5_get_time());
 
     m5_reset_stats();
 
@@ -1155,8 +1302,14 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
 
 void isr(int i, int j)  // i = accelerator id, j = device id
 {
-    if ((acc_state[i][j].status == ACC_STATUS_DMA_ARG1) ||
-        (acc_state[i][j].status == ACC_STATUS_DMA_ARG2)) {
+#ifdef ENABLE_STATS
+    m5_timer_start(0);
+#endif
+
+    volatile acc_state_t *acc = &acc_state[i][j];
+
+    if ((acc->status == ACC_STATUS_DMA_ARG1) ||
+        (acc->status == ACC_STATUS_DMA_ARG2)) {
         switch (scheduling_policy) {
             case LAX:
             case ELF: {
@@ -1164,7 +1317,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                 update_mem_time_predictor(time, dma_size[i][j]);
 
                 if (dma_size[i][j] > 512) {
-                    volatile task_struct_t *req = acc_state[i][j].running_req;
+                    volatile task_struct_t *req = acc->running_req;
                     float mem_time_per_byte = ((float)time / 1000) / \
                                               dma_size[i][j];
 
@@ -1182,20 +1335,20 @@ void isr(int i, int j)  // i = accelerator id, j = device id
             }
         }
 
-        *acc_state[i][j].dma = 0;
-        run_accelerator(i, j, acc_state[i][j].running_req);
+        *(acc->dma) = 0;
+        run_accelerator(i, j, acc->running_req);
     }
 
-    else if (acc_state[i][j].status == ACC_STATUS_RUNNING) {
-        *acc_state[i][j].flags = 0;
+    else if (acc->status == ACC_STATUS_RUNNING) {
+        *(acc->flags) = 0;
 
-        volatile task_struct_t *node = acc_state[i][j].running_req;
+        volatile task_struct_t *req = acc->running_req;
 
         volatile task_struct_t *pipeline_queue[MAX_CHILDREN];
         int pipeline_queue_size = 0;
 
-        for (int c = 0; c < node->num_children; c++) {
-            task_struct_t *child = node->children[c];
+        for (int c = 0; c < req->num_children; c++) {
+            task_struct_t *child = req->children[c];
 
             child->completed_parents++;
 
@@ -1212,7 +1365,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
 
                 if (scheduling_policy == ELF) {
 #ifdef ENABLE_STATS
-                    m5_timer_start(2);
+                    m5_timer_start(3);
 #endif
                     float compute_time = get_compute_time(child);
                     float memory_time = get_memory_time(child);
@@ -1234,20 +1387,12 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                         pipeline_queue_size = 1;
                     }
                     else {
-                        int pos = 0;
-                        while ((pos < pipeline_queue_size) && \
-                               (pipeline_queue[pos]->laxity <= \
-                                child->laxity)) {
-                            pos = (pos + 1) % MAX_READY_QUEUE_SIZE;
-                        }
+                        int pos = pipeline_queue_size;
 
-                        if (pos != pipeline_queue_size) {
-                            int i = pipeline_queue_size;
-                            while (i != pos) {
-                                int j = i - 1;
-                                pipeline_queue[i] = pipeline_queue[j];
-                                i = j;
-                            }
+                        while ((pos > 0) && (pipeline_queue[pos-1]->laxity > \
+                                child->laxity)) {
+                            pipeline_queue[pos] = pipeline_queue[pos-1];
+                            pos--;
                         }
 
                         pipeline_queue[pos] = child;
@@ -1255,7 +1400,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                     }
 
 #ifdef ENABLE_STATS
-                    m5_timer_stop(2);
+                    m5_timer_stop(3);
 #endif
                 }
 
@@ -1282,28 +1427,26 @@ void isr(int i, int j)  // i = accelerator id, j = device id
             }
         }
 
-        int node_spm_out_part = acc_state[i][j].curr_spm_out_part;
+        int node_spm_out_part = acc->curr_spm_out_part;
         int num_forwards = 0;
 
-        for (int c = 0; c < node->num_children; c++) {
-            task_struct_t *child = node->children[c];
+        for (int c = 0; c < req->num_children; c++) {
+            task_struct_t *child = req->children[c];
 
             if (child->status != REQ_STATUS_READY) { continue; }
 
-            int ready_queue_index = ready_queue_start[child->acc_id];
+            volatile list_node_t *node = ready_queue[child->acc_id][0]->next;
 
             for (int n = 0; (n < num_available_instances[child->acc_id]) && \
-                    (ready_queue_index != ready_queue_end[child->acc_id]);
-                    n++) {
-                if ((ready_queue[child->acc_id][ready_queue_index] == child) \
-                        || child->priority_escalated) {
+                    (node != NULL); n++) {
+                if ((node->req == child) || child->priority_escalated) {
                     // The child node is among the next set of nodes to be
                     // scheduled, so update its metadata to receive data
                     // from the producer
                     for (int a = 0; a < MAX_ACC_ARGS; a++) {
-                        if (child->producer[a] == node) {
+                        if (child->producer[a] == req) {
                             child->producer_forward[a] = 1;
-                            child->producer_acc[a] = &acc_state[i][j];
+                            child->producer_acc[a] = acc;
                             child->producer_spm_part[a] = node_spm_out_part;
 
                             break;
@@ -1314,8 +1457,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                     break;
                 }
 
-                ready_queue_index = (ready_queue_index + 1) % \
-                                    MAX_READY_QUEUE_SIZE;
+                node = node->next;
             }
         }
 
@@ -1323,10 +1465,10 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         stat_num_forwards += num_forwards;
 #endif
 
-        bool write_out_to_mem = (node->num_children == 0) || \
-                                (num_forwards != node->num_children);
-        finish_accelerator(i, j, node, write_out_to_mem);
-        acc_state[i][j].spm_pending_reads[node_spm_out_part] = num_forwards;
+        bool write_out_to_mem = (req->num_children == 0) || \
+                                (num_forwards != req->num_children);
+        finish_accelerator(i, j, req, write_out_to_mem);
+        acc->spm_pending_reads[node_spm_out_part] = num_forwards;
 
         if (write_out_to_mem) {
             num_available_instances[i]--;
@@ -1335,11 +1477,11 @@ void isr(int i, int j)  // i = accelerator id, j = device id
 #ifdef ENABLE_STATS
             uint32_t curr_time = (m5_get_time() / 1000) - runtime_start_time;
 
-            if (curr_time <= node->node_deadline) {
+            if (curr_time <= req->node_deadline) {
                 stat_node_deadlines_met++;
             }
 
-            volatile task_struct_t *req = acc_state[i][j].running_req;
+            volatile task_struct_t *req = acc->running_req;
 
             m5_print_stat(PREDICTED_MEMORY_TIME_PER_BYTE,
                     *((uint32_t*)(&req->stat_mem_time_per_byte_insertion)));
@@ -1362,7 +1504,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                     *((uint32_t*)(&req->stat_mem_time_truth_store)));
 #endif
 
-            acc_state[i][j].running_req = NULL;
+            acc->running_req = NULL;
             num_running--;
         }
 
@@ -1372,14 +1514,14 @@ void isr(int i, int j)  // i = accelerator id, j = device id
 #endif
     }
 
-    else if (acc_state[i][j].status == ACC_STATUS_DMA_OUT) {
+    else if (acc->status == ACC_STATUS_DMA_OUT) {
         switch (scheduling_policy) {
             case LAX:
             case ELF: {
                 uint32_t time = m5_get_time() - dma_start_time[i][j];
                 update_mem_time_predictor(time, dma_size[i][j]);
 
-                volatile task_struct_t *req = acc_state[i][j].running_req;
+                volatile task_struct_t *req = acc->running_req;
 
                 req->stat_mem_time_per_byte_truth_store = \
                         ((float)time / 1000) / dma_size[i][j];
@@ -1387,22 +1529,20 @@ void isr(int i, int j)  // i = accelerator id, j = device id
             }
         }
 
-        *acc_state[i][j].dma = 0;
-        acc_state[i][j].status = ACC_STATUS_IDLE;
+        *(acc->dma) = 0;
+        acc->status = ACC_STATUS_IDLE;
 
 #ifdef ENABLE_STATS
-        volatile task_struct_t *node = acc_state[i][j].running_req;
+        volatile task_struct_t *req = acc->running_req;
         uint32_t curr_time = (m5_get_time() / 1000) - runtime_start_time;
 
-        if ((node->num_children == 0) && (curr_time <= node->dag_deadline)) {
+        if ((req->num_children == 0) && (curr_time <= req->dag_deadline)) {
             stat_dag_deadlines_met++;
         }
 
-        if (curr_time <= node->node_deadline) {
+        if (curr_time <= req->node_deadline) {
             stat_node_deadlines_met++;
         }
-
-        volatile task_struct_t *req = acc_state[i][j].running_req;
 
         m5_print_stat(PREDICTED_MEMORY_TIME_PER_BYTE,
                 *((uint32_t*)(&req->stat_mem_time_per_byte_insertion)));
@@ -1425,7 +1565,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                 *((uint32_t*)(&req->stat_mem_time_truth_store)));
 #endif
 
-        acc_state[i][j].running_req = NULL;
+        acc->running_req = NULL;
         num_running--;
         num_available_instances[i]++;
     }
@@ -1439,6 +1579,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
     launch_requests();
 
 #ifdef ENABLE_STATS
+    m5_timer_stop(0);
     m5_print_stat(DEGREE_OF_PARALLELISM, num_running);
 #endif
 }
