@@ -9,7 +9,11 @@ int acc_instances[NUM_ACCS] = {
     /* ACC_CANNY_NON_MAX  */ 1,
     /* ACC_CONVOLUTION    */ 2,
     /* ACC_EDGE_TRACKING  */ 1,
+#ifdef SCALE_EXPERIMENT
+    /* ACC_ELEM_MATRIX    */ 1,
+#else
     /* ACC_ELEM_MATRIX    */ 4,
+#endif
     /* ACC_GRAYSCALE      */ 1,
     /* ACC_HARRIS_NON_MAX */ 1,
     /* ACC_ISP            */ 1
@@ -1046,19 +1050,24 @@ bool push_request(volatile task_struct_t *req, bool try_forward)
                 root = root->below;
 
                 while ((root->next != NULL) && \
-                       (root->next->req->laxity <= req->laxity)) {
+                       ((root->next->req->priority_escalated) || \
+                        (root->next->req->laxity <= req->laxity))) {
                     root = root->next;
                 }
             }
 
-            // Perform a sequential laxity check
+            // Perform laxity check
+            // We just need to check the first node with non-zero laxity since
+            // the queue is already laxity sorted
             if (try_forward) {
                 for (volatile list_node_t *iter = ready_queue[acc_id][0]->next;
                         iter != root->next; iter = iter->next) {
+                    if (iter->req->priority_escalated) { continue; }
+
                     int32_t laxity = iter->req->laxity - (m5_get_time()/1000);
 
-                    if ((laxity > 0) && (laxity < ((int32_t)req->runtime))) {
-                        can_forward = false;
+                    if (laxity > 0) {
+                        can_forward = laxity >= ((int32_t)req->runtime);
                         break;
                     }
                 }
@@ -1070,9 +1079,12 @@ bool push_request(volatile task_struct_t *req, bool try_forward)
 
                 for (volatile list_node_t *iter = ready_queue[acc_id][0]->next;
                         iter != root->next; iter = iter->next) {
-                    iter->req->laxity -= req->runtime;
-
                     if (iter->req->priority_escalated) { new_root = iter; }
+                    else { iter->req->laxity -= req->runtime; }
+
+                    // We don't need to traverse up the tower and reduce laxity
+                    // because all the nodes in a tower point to a single
+                    // request.
                 }
 
                 root = new_root;
@@ -1264,12 +1276,23 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
             nodes[i][j]->node_id = j;
 
             if (nodes[i][j]->num_parents == 0) {
+                float compute_time = get_compute_time(nodes[i][j]);
+                float memory_time = get_memory_time(nodes[i][j]);
+
+                nodes[i][j]->runtime = compute_time + memory_time;
+                nodes[i][j]->laxity = nodes[i][j]->node_deadline + \
+                                      runtime_start_time - \
+                                      nodes[i][j]->runtime;
+
                 push_request(nodes[i][j], false);
             }
         }
     }
 
     srand(m5_get_time());
+
+    // Reset the start time after initialization
+    runtime_start_time = m5_get_time() / 1000;
 
     m5_reset_stats();
 
