@@ -757,10 +757,13 @@ m5printstat(ThreadContext *tc, uint32_t stat, uint32_t value)
         NODE_DEADLINES_MET,
         PREDICTED_COMPUTE_TIME,
         PREDICTED_MEMORY_TIME,
+        PREDICTED_MEMORY_TIME_PER_BYTE,
         NUM_STATS
     };
 
     assert(stat < NUM_STATS);
+
+    float fvalue = *((float*)(&value));
 
     if (stat == DEGREE_OF_PARALLELISM) {
         DPRINTF(SchedulerStats, "Number of accelerators running = %d\n",
@@ -779,10 +782,15 @@ m5printstat(ThreadContext *tc, uint32_t stat, uint32_t value)
         DPRINTF(SchedulerStats, "Number of node deadlines met = %d\n", value);
     }
     else if (stat == PREDICTED_COMPUTE_TIME) {
-        DPRINTF(SchedulerStats, "Total predicted compute time = %d\n", value);
+        DPRINTF(SchedulerStats, "Total predicted compute time = %d us\n",
+                value);
     }
     else if (stat == PREDICTED_MEMORY_TIME) {
-        DPRINTF(SchedulerStats, "Total predicted memory time = %d\n", value);
+        DPRINTF(SchedulerStats, "Predicted memory time = %f us\n", fvalue);
+    }
+    else if (stat == PREDICTED_MEMORY_TIME_PER_BYTE) {
+        DPRINTF(SchedulerStats, "Predicted memory time / byte = %f us/byte\n",
+                fvalue);
     }
 }
 
