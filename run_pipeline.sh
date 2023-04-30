@@ -1,6 +1,6 @@
 #!/bin/bash
 source run_base.sh
 
-KERNEL=$M5_PATH/benchmarks/scheduler/sw/bin_parallel_dma/${BENCH}.elf
-OUTDIR=BM_ARM_OUT/image_4_parallel_dma/${BENCH}_pipeline
+KERNEL=$M5_PATH/benchmarks/scheduler/sw/bin_comb_4/${BENCH}.elf
+OUTDIR=BM_ARM_OUT/comb_4/${BENCH}
 run_gem5 $KERNEL $OUTDIR
