@@ -1,0 +1,2213 @@
+gem5 Simulator System.  http://gem5.org
+gem5 is copyrighted software; use the --copyright option for details.
+
+gem5 compiled Apr 20 2023 17:26:46
+gem5 started Apr 24 2023 00:40:14
+gem5 executing on node4x10a.cs.rochester.edu, pid 11320
+command line: /u/sgupta45/gem5-SALAM/build/ARM/gem5_bus.opt --debug-flags=HWACC,CommInterface,LLVMInterface,StreamDma,NoncoherentDma,TickTimer,SchedulerStats --outdir=BM_ARM_OUT/scale/canny_0_deblur_0_gru_0_harris_0_lstm_0_scale_1024_GEDF_D configs/SALAM/scheduler.py --mem-size=4GB --mem-type=LPDDR5_6400_1x16_BG_BL32 --kernel=/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/bin_scale/canny_0_deblur_0_gru_0_harris_0_lstm_0_scale_1024_GEDF_D.elf --vans-config-path=/u/sgupta45/VANS/config --disk-image=/u/sgupta45/gem5-SALAM/baremetal/common/fake.iso --machine-type=VExpress_GEM5_V1 --dtb-file=none --bare-metal --cpu-type=ex5_LITTLE --cpu-clock=1.6GHz --accpath=/u/sgupta45/gem5-SALAM/benchmarks --caches --cacheline_size=64 --l1d_size=32kB --l1d_assoc=4 --l1i_size=32kB --l1i_assoc=2
+
+info: Standard input is not a terminal, disabling listeners.
+Global frequency set at 1000000000000 ticks per second
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+**** REAL SIMULATION ****
+491690625: global: Timer #2 started at tick 491690625
+492975625: global: Timer #2 stopped at tick 492975625. Duration: 1285000
+727925875: system.acctest.elem_matrix0_dma: SRC:0x000000008205acc0, DST:0x0000000024000020, LEN:65536
+728779375: global: Number of accelerators running = 1
+739992875: system.acctest.elem_matrix0_dma: Transfer completed in 12.067 us
+740513750: global: Timer #0 started at tick 740513750
+755165875: system.acctest.elem_matrix0_dma: SRC:0x000000008206acc0, DST:0x0000000024010020, LEN:65536
+755788750: global: Timer #0 stopped at tick 755788750. Duration: 15275000
+755848125: global: Number of accelerators running = 1
+767100875: system.acctest.elem_matrix0_dma: Transfer completed in 11.935 us
+767191875: global: Timer #0 started at tick 767191875
+768735625: global: Timer #0 stopped at tick 768735625. Duration: 1543750
+768750000: global: Number of accelerators running = 1
+********************************************************************************
+system.acctest.elem_matrix0.compute
+   ========= Performance Analysis =============
+   Setup Time:                      3.1378seconds
+   Simulation Time:                 70.928seconds
+   System Clock:                    1GHz
+   Transistor Latency:              1ns
+   Runtime:                         10932 cycles
+   Runtime:                         10.932 us
+   Stalls:                          0 cycles
+   Executed Nodes:                  10931 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      3.1378e+09ns
+   Simulation Time:                 7.0928e+10ns
+   System Clock:                    1GHz
+   Transistor Latency:              0ns
+   Runtime:                         10932 cycles
+   Runtime:                         1.0932e-06 seconds
+   Stalls:                          0 cycles
+       Load Only:                   0 cycles
+       Store Only:                  0 cycles
+       Compute Only:                0 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  10931 cycles
+       Load Only:                   0 cycles
+       Store Only:                  5 cycles
+       Compute Only:                1 cycles
+       Compute & Store:             21 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              7 cycles
+       Load & Compute & Store:      10897 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                      32 | 0.046838
+   Integer Add/Sub FU's:               0 | 0.000000
+   Integer Mul/Div FU's:               0 | 0.000000
+   Integer Shifter FU's:               0 | 0.000000
+   Integer Bitwise FU's:               1 | 0.000091
+   Floating Point Float Add/Sub:      34 | 0.044252
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:       0 | 0.000000
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:             102 | 0.046974
+   GEP Instruction FU's:              96 | 0.046835
+   Type Conversion FU's:               7 | 0.006782
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       5641
+   Max Register Usage Per Cycle:    138
+   Avg Register Usage Per Cycle:    12.130992
+   Avg Register Size (Bytes):       5.980606
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                256kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                0.519269 mW 
+   FU Dynamic Power:                0.154621 mW 
+   FU Total Power:                  0.673890 mW 
+
+   Registers Leakage Power:          0.005281 mW 
+   Registers Dynamic Power:          0.015326 mW 
+       Register Reads (Bits):        132616
+       Register Writes (Bits):       133658
+   Registers Total Power:            0.020607 mW
+
+   SPM Leakage Power:               0.104100 mW
+   SPM Read Dynamic Power:          1.997266 mW
+   SPM Write Dynamic Power:         0.953321 mW
+   SPM Total Power:                 3.054688 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               0.694497 mW
+   Accelerator Power (SPM):         3.749184 mW
+   Accelerator Power (Cache):       0.694497 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         70212.562500 um^2 (0.070213 mm^2)
+   Register Area:                   429.271088 um^2 (0.000429 mm^2)
+   SPM Area:                        2177.365505 um^2 (0.002177 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                70641.835938 um^2 (0.070642 mm^2)
+   Accelerator Area (SPM):          72819.201442 um^2 (0.072819 mm^2)
+   Accelerator Area (Cache):        70641.835938 um^2 (0.070642 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.004248 mW
+   SPM Opt Area:                    178.524902 um^2
+
+779435625: global: Timer #0 started at tick 779435625
+779961250: global: Timer #2 started at tick 779961250
+781164375: global: Timer #2 stopped at tick 781164375. Duration: 1203125
+781418125: global: Timer #2 started at tick 781418125
+781630625: global: Timer #2 stopped at tick 781630625. Duration: 212500
+781893125: global: Timer #2 started at tick 781893125
+782027500: global: Timer #2 stopped at tick 782027500. Duration: 134375
+782363750: global: Timer #2 started at tick 782363750
+782820000: global: Timer #2 stopped at tick 782820000. Duration: 456250
+783100000: global: Timer #2 started at tick 783100000
+783253750: global: Timer #2 stopped at tick 783253750. Duration: 153750
+783516250: global: Timer #2 started at tick 783516250
+783785625: global: Timer #2 stopped at tick 783785625. Duration: 269375
+784048125: global: Timer #2 started at tick 784048125
+784665625: global: Timer #2 stopped at tick 784665625. Duration: 617500
+784906875: global: Timer #2 started at tick 784906875
+785034375: global: Timer #2 stopped at tick 785034375. Duration: 127500
+785293125: global: Timer #2 started at tick 785293125
+785486250: global: Timer #2 stopped at tick 785486250. Duration: 193125
+785748125: global: Timer #2 started at tick 785748125
+785967500: global: Timer #2 stopped at tick 785967500. Duration: 219375
+786248125: global: Timer #2 started at tick 786248125
+786541250: global: Timer #2 stopped at tick 786541250. Duration: 293125
+786803125: global: Timer #2 started at tick 786803125
+786950625: global: Timer #2 stopped at tick 786950625. Duration: 147500
+787213125: global: Timer #2 started at tick 787213125
+787419375: global: Timer #2 stopped at tick 787419375. Duration: 206250
+787681250: global: Timer #2 started at tick 787681250
+787898125: global: Timer #2 stopped at tick 787898125. Duration: 216875
+788360000: global: Timer #2 started at tick 788360000
+788581250: global: Timer #2 stopped at tick 788581250. Duration: 221250
+788843125: global: Timer #2 started at tick 788843125
+789163750: global: Timer #2 stopped at tick 789163750. Duration: 320625
+789426250: global: Timer #2 started at tick 789426250
+789730625: global: Timer #2 stopped at tick 789730625. Duration: 304375
+789993125: global: Timer #2 started at tick 789993125
+790179375: global: Timer #2 stopped at tick 790179375. Duration: 186250
+790441250: global: Timer #2 started at tick 790441250
+791611875: global: Timer #2 stopped at tick 791611875. Duration: 1170625
+791971250: global: Timer #2 started at tick 791971250
+792192500: global: Timer #2 stopped at tick 792192500. Duration: 221250
+792436875: global: Timer #2 started at tick 792436875
+793305625: global: Timer #2 stopped at tick 793305625. Duration: 868750
+793568125: global: Timer #2 started at tick 793568125
+793763125: global: Timer #2 stopped at tick 793763125. Duration: 195000
+794166250: global: Timer #2 started at tick 794166250
+794375000: global: Timer #2 stopped at tick 794375000. Duration: 208750
+794633750: global: Timer #2 started at tick 794633750
+794919375: global: Timer #2 stopped at tick 794919375. Duration: 285625
+795198750: global: Timer #2 started at tick 795198750
+795554375: global: Timer #2 stopped at tick 795554375. Duration: 355625
+795813125: global: Timer #2 started at tick 795813125
+796241250: global: Timer #2 stopped at tick 796241250. Duration: 428125
+796485000: global: Timer #2 started at tick 796485000
+796681250: global: Timer #2 stopped at tick 796681250. Duration: 196250
+796940000: global: Timer #2 started at tick 796940000
+797395000: global: Timer #2 stopped at tick 797395000. Duration: 455000
+797663750: global: Timer #2 started at tick 797663750
+797853750: global: Timer #2 stopped at tick 797853750. Duration: 190000
+798271250: global: Timer #2 started at tick 798271250
+798546875: global: Timer #2 stopped at tick 798546875. Duration: 275625
+798806250: global: Timer #2 started at tick 798806250
+798991250: global: Timer #2 stopped at tick 798991250. Duration: 185000
+799268125: global: Timer #2 started at tick 799268125
+799784375: global: Timer #2 stopped at tick 799784375. Duration: 516250
+800145000: global: Timer #2 started at tick 800145000
+800312500: global: Timer #2 stopped at tick 800312500. Duration: 167500
+800575000: global: Timer #2 started at tick 800575000
+801216875: global: Timer #2 stopped at tick 801216875. Duration: 641875
+801476250: global: Timer #2 started at tick 801476250
+801650000: global: Timer #2 stopped at tick 801650000. Duration: 173750
+802001250: global: Timer #2 started at tick 802001250
+802346875: global: Timer #2 stopped at tick 802346875. Duration: 345625
+802608750: global: Timer #2 started at tick 802608750
+802813125: global: Timer #2 stopped at tick 802813125. Duration: 204375
+803078750: global: Timer #2 started at tick 803078750
+803391875: global: Timer #2 stopped at tick 803391875. Duration: 313125
+803881250: global: Timer #2 started at tick 803881250
+804043125: global: Timer #2 stopped at tick 804043125. Duration: 161875
+804451250: global: Timer #2 started at tick 804451250
+804963125: global: Timer #2 stopped at tick 804963125. Duration: 511875
+805230625: global: Timer #2 started at tick 805230625
+805761250: global: Timer #2 stopped at tick 805761250. Duration: 530625
+806020000: global: Timer #2 started at tick 806020000
+806371875: global: Timer #2 stopped at tick 806371875. Duration: 351875
+806646250: global: Timer #2 started at tick 806646250
+806835000: global: Timer #2 stopped at tick 806835000. Duration: 188750
+807096875: global: Timer #2 started at tick 807096875
+807378125: global: Timer #2 stopped at tick 807378125. Duration: 281250
+807848125: global: Timer #2 started at tick 807848125
+808042500: global: Timer #2 stopped at tick 808042500. Duration: 194375
+808283750: global: Timer #2 started at tick 808283750
+808567500: global: Timer #2 stopped at tick 808567500. Duration: 283750
+808826875: global: Timer #2 started at tick 808826875
+809129375: global: Timer #2 stopped at tick 809129375. Duration: 302500
+809408750: global: Timer #2 started at tick 809408750
+810034375: global: Timer #2 stopped at tick 810034375. Duration: 625625
+810311250: global: Timer #2 started at tick 810311250
+810505625: global: Timer #2 stopped at tick 810505625. Duration: 194375
+810761875: global: Timer #2 started at tick 810761875
+811036250: global: Timer #2 stopped at tick 811036250. Duration: 274375
+811316250: global: Timer #2 started at tick 811316250
+811528750: global: Timer #2 stopped at tick 811528750. Duration: 212500
+811871250: global: Timer #2 started at tick 811871250
+812438750: global: Timer #2 stopped at tick 812438750. Duration: 567500
+812698125: global: Timer #2 started at tick 812698125
+813022500: global: Timer #2 stopped at tick 813022500. Duration: 324375
+813281875: global: Timer #2 started at tick 813281875
+813655625: global: Timer #2 stopped at tick 813655625. Duration: 373750
+813915000: global: Timer #2 started at tick 813915000
+814315625: global: Timer #2 stopped at tick 814315625. Duration: 400625
+814575000: global: Timer #2 started at tick 814575000
+814828125: global: Timer #2 stopped at tick 814828125. Duration: 253125
+815108125: global: Timer #2 started at tick 815108125
+815590625: global: Timer #2 stopped at tick 815590625. Duration: 482500
+815835000: global: Timer #2 started at tick 815835000
+816192500: global: Timer #2 stopped at tick 816192500. Duration: 357500
+816448750: global: Timer #2 started at tick 816448750
+816775625: global: Timer #2 stopped at tick 816775625. Duration: 326875
+817038125: global: Timer #2 started at tick 817038125
+817305625: global: Timer #2 stopped at tick 817305625. Duration: 267500
+817565000: global: Timer #2 started at tick 817565000
+818001875: global: Timer #2 stopped at tick 818001875. Duration: 436875
+818261250: global: Timer #2 started at tick 818261250
+818544375: global: Timer #2 stopped at tick 818544375. Duration: 283125
+818821250: global: Timer #2 started at tick 818821250
+819147500: global: Timer #2 stopped at tick 819147500. Duration: 326250
+819556250: global: Timer #2 started at tick 819556250
+819938750: global: Timer #2 stopped at tick 819938750. Duration: 382500
+820201250: global: Timer #2 started at tick 820201250
+820435000: global: Timer #2 stopped at tick 820435000. Duration: 233750
+820696875: global: Timer #2 started at tick 820696875
+820933750: global: Timer #2 stopped at tick 820933750. Duration: 236875
+821323125: global: Timer #2 started at tick 821323125
+821570000: global: Timer #2 stopped at tick 821570000. Duration: 246875
+821911250: global: Timer #2 started at tick 821911250
+822165000: global: Timer #2 stopped at tick 822165000. Duration: 253750
+822423750: global: Timer #2 started at tick 822423750
+823058750: global: Timer #2 stopped at tick 823058750. Duration: 635000
+823436875: global: Timer #2 started at tick 823436875
+824072500: global: Timer #2 stopped at tick 824072500. Duration: 635625
+824331875: global: Timer #2 started at tick 824331875
+824667500: global: Timer #2 stopped at tick 824667500. Duration: 335625
+824930000: global: Timer #2 started at tick 824930000
+825300625: global: Timer #2 stopped at tick 825300625. Duration: 370625
+825563125: global: Timer #2 started at tick 825563125
+825772500: global: Timer #2 stopped at tick 825772500. Duration: 209375
+826035000: global: Timer #2 started at tick 826035000
+826413125: global: Timer #2 stopped at tick 826413125. Duration: 378125
+826671875: global: Timer #2 started at tick 826671875
+826964375: global: Timer #2 stopped at tick 826964375. Duration: 292500
+827321875: global: Timer #2 started at tick 827321875
+827523750: global: Timer #2 stopped at tick 827523750. Duration: 201875
+827786250: global: Timer #2 started at tick 827786250
+828067500: global: Timer #2 stopped at tick 828067500. Duration: 281250
+828311875: global: Timer #2 started at tick 828311875
+828510625: global: Timer #2 stopped at tick 828510625. Duration: 198750
+828773125: global: Timer #2 started at tick 828773125
+829120000: global: Timer #2 stopped at tick 829120000. Duration: 346875
+829396875: global: Timer #2 started at tick 829396875
+829600625: global: Timer #2 stopped at tick 829600625. Duration: 203750
+829878125: global: Timer #2 started at tick 829878125
+830179375: global: Timer #2 stopped at tick 830179375. Duration: 301250
+830456250: global: Timer #2 started at tick 830456250
+830675625: global: Timer #2 stopped at tick 830675625. Duration: 219375
+831143750: global: Timer #2 started at tick 831143750
+831435625: global: Timer #2 stopped at tick 831435625. Duration: 291875
+831920000: global: Timer #2 started at tick 831920000
+832260625: global: Timer #2 stopped at tick 832260625. Duration: 340625
+832520000: global: Timer #2 started at tick 832520000
+832798750: global: Timer #2 stopped at tick 832798750. Duration: 278750
+833058125: global: Timer #2 started at tick 833058125
+833913125: global: Timer #2 stopped at tick 833913125. Duration: 855000
+834170000: global: Timer #2 started at tick 834170000
+834414375: global: Timer #2 stopped at tick 834414375. Duration: 244375
+834673125: global: Timer #2 started at tick 834673125
+835000000: global: Timer #2 stopped at tick 835000000. Duration: 326875
+835241250: global: Timer #2 started at tick 835241250
+835401875: global: Timer #2 stopped at tick 835401875. Duration: 160625
+835661250: global: Timer #2 started at tick 835661250
+835984375: global: Timer #2 stopped at tick 835984375. Duration: 323125
+836243125: global: Timer #2 started at tick 836243125
+836435000: global: Timer #2 stopped at tick 836435000. Duration: 191875
+836696875: global: Timer #2 started at tick 836696875
+836883750: global: Timer #2 stopped at tick 836883750. Duration: 186875
+837291250: global: Timer #2 started at tick 837291250
+837799375: global: Timer #2 stopped at tick 837799375. Duration: 508125
+838076250: global: Timer #2 started at tick 838076250
+838663750: global: Timer #2 stopped at tick 838663750. Duration: 587500
+838965000: global: Timer #2 started at tick 838965000
+839280625: global: Timer #2 stopped at tick 839280625. Duration: 315625
+839561250: global: Timer #2 started at tick 839561250
+839851250: global: Timer #2 stopped at tick 839851250. Duration: 290000
+840113125: global: Timer #2 started at tick 840113125
+840277500: global: Timer #2 stopped at tick 840277500. Duration: 164375
+840536875: global: Timer #2 started at tick 840536875
+840942500: global: Timer #2 stopped at tick 840942500. Duration: 405625
+841201875: global: Timer #2 started at tick 841201875
+841370000: global: Timer #2 stopped at tick 841370000. Duration: 168125
+841721250: global: Timer #2 started at tick 841721250
+841904375: global: Timer #2 stopped at tick 841904375. Duration: 183125
+842166250: global: Timer #2 started at tick 842166250
+842358750: global: Timer #2 stopped at tick 842358750. Duration: 192500
+842808750: global: Timer #2 started at tick 842808750
+843390625: global: Timer #2 stopped at tick 843390625. Duration: 581875
+843798125: global: Timer #2 started at tick 843798125
+844104375: global: Timer #2 stopped at tick 844104375. Duration: 306250
+844363125: global: Timer #2 started at tick 844363125
+844600625: global: Timer #2 stopped at tick 844600625. Duration: 237500
+844863125: global: Timer #2 started at tick 844863125
+845228750: global: Timer #2 stopped at tick 845228750. Duration: 365625
+845508750: global: Timer #2 started at tick 845508750
+845671250: global: Timer #2 stopped at tick 845671250. Duration: 162500
+845926875: global: Timer #2 started at tick 845926875
+846108750: global: Timer #2 stopped at tick 846108750. Duration: 181875
+846588750: global: Timer #2 started at tick 846588750
+846785625: global: Timer #2 stopped at tick 846785625. Duration: 196875
+847048125: global: Timer #2 started at tick 847048125
+847396250: global: Timer #2 stopped at tick 847396250. Duration: 348125
+847640000: global: Timer #2 started at tick 847640000
+847983750: global: Timer #2 stopped at tick 847983750. Duration: 343750
+848243125: global: Timer #2 started at tick 848243125
+848538125: global: Timer #2 stopped at tick 848538125. Duration: 295000
+848796875: global: Timer #2 started at tick 848796875
+849005000: global: Timer #2 stopped at tick 849005000. Duration: 208125
+849281875: global: Timer #2 started at tick 849281875
+849680000: global: Timer #2 stopped at tick 849680000. Duration: 398125
+849960000: global: Timer #2 started at tick 849960000
+850156250: global: Timer #2 stopped at tick 850156250. Duration: 196250
+850611250: global: Timer #2 started at tick 850611250
+850894375: global: Timer #2 stopped at tick 850894375. Duration: 283125
+851248750: global: Timer #2 started at tick 851248750
+851633125: global: Timer #2 stopped at tick 851633125. Duration: 384375
+851913125: global: Timer #2 started at tick 851913125
+852275625: global: Timer #2 stopped at tick 852275625. Duration: 362500
+852538125: global: Timer #2 started at tick 852538125
+853050000: global: Timer #2 stopped at tick 853050000. Duration: 511875
+853311875: global: Timer #2 started at tick 853311875
+853553125: global: Timer #2 stopped at tick 853553125. Duration: 241250
+853811875: global: Timer #2 started at tick 853811875
+854033750: global: Timer #2 stopped at tick 854033750. Duration: 221875
+854493125: global: Timer #2 started at tick 854493125
+854831875: global: Timer #2 stopped at tick 854831875. Duration: 338750
+855093750: global: Timer #2 started at tick 855093750
+855428750: global: Timer #2 stopped at tick 855428750. Duration: 335000
+855691250: global: Timer #2 started at tick 855691250
+856300625: global: Timer #2 stopped at tick 856300625. Duration: 609375
+856736250: global: Timer #2 started at tick 856736250
+857295625: global: Timer #2 stopped at tick 857295625. Duration: 559375
+857558125: global: Timer #2 started at tick 857558125
+857878125: global: Timer #2 stopped at tick 857878125. Duration: 320000
+858326875: global: Timer #2 started at tick 858326875
+858523750: global: Timer #2 stopped at tick 858523750. Duration: 196875
+858786250: global: Timer #2 started at tick 858786250
+859174375: global: Timer #2 stopped at tick 859174375. Duration: 388125
+859453750: global: Timer #2 started at tick 859453750
+859710625: global: Timer #2 stopped at tick 859710625. Duration: 256875
+859973125: global: Timer #2 started at tick 859973125
+860146875: global: Timer #2 stopped at tick 860146875. Duration: 173750
+860408750: global: Timer #2 started at tick 860408750
+860688125: global: Timer #2 stopped at tick 860688125. Duration: 279375
+860965000: global: Timer #2 started at tick 860965000
+861391250: global: Timer #2 stopped at tick 861391250. Duration: 426250
+861766250: global: Timer #2 started at tick 861766250
+861947500: global: Timer #2 stopped at tick 861947500. Duration: 181250
+862261250: global: Timer #2 started at tick 862261250
+862456875: global: Timer #2 stopped at tick 862456875. Duration: 195625
+862718750: global: Timer #2 started at tick 862718750
+862978125: global: Timer #2 stopped at tick 862978125. Duration: 259375
+863240000: global: Timer #2 started at tick 863240000
+863548750: global: Timer #2 stopped at tick 863548750. Duration: 308750
+863808125: global: Timer #2 started at tick 863808125
+864385000: global: Timer #2 stopped at tick 864385000. Duration: 576875
+864643750: global: Timer #2 started at tick 864643750
+864960000: global: Timer #2 stopped at tick 864960000. Duration: 316250
+865221875: global: Timer #2 started at tick 865221875
+865600625: global: Timer #2 stopped at tick 865600625. Duration: 378750
+866078125: global: Timer #2 started at tick 866078125
+866279375: global: Timer #2 stopped at tick 866279375. Duration: 201250
+866541250: global: Timer #2 started at tick 866541250
+866991875: global: Timer #2 stopped at tick 866991875. Duration: 450625
+867253750: global: Timer #2 started at tick 867253750
+867456875: global: Timer #2 stopped at tick 867456875. Duration: 203125
+867701250: global: Timer #2 started at tick 867701250
+868147500: global: Timer #2 stopped at tick 868147500. Duration: 446250
+868423750: global: Timer #2 started at tick 868423750
+868703750: global: Timer #2 stopped at tick 868703750. Duration: 280000
+868983750: global: Timer #2 started at tick 868983750
+869261875: global: Timer #2 stopped at tick 869261875. Duration: 278125
+869541875: global: Timer #2 started at tick 869541875
+870125000: global: Timer #2 stopped at tick 870125000. Duration: 583125
+870385000: global: Timer #2 started at tick 870385000
+870614375: global: Timer #2 stopped at tick 870614375. Duration: 229375
+870893750: global: Timer #2 started at tick 870893750
+871168125: global: Timer #2 stopped at tick 871168125. Duration: 274375
+871511250: global: Timer #2 started at tick 871511250
+871833125: global: Timer #2 stopped at tick 871833125. Duration: 321875
+872106875: global: Timer #2 started at tick 872106875
+872966875: global: Timer #2 stopped at tick 872966875. Duration: 860000
+873223125: global: Timer #2 started at tick 873223125
+873419375: global: Timer #2 stopped at tick 873419375. Duration: 196250
+873868750: global: Timer #2 started at tick 873868750
+874181250: global: Timer #2 stopped at tick 874181250. Duration: 312500
+874461250: global: Timer #2 started at tick 874461250
+874735625: global: Timer #2 stopped at tick 874735625. Duration: 274375
+874995000: global: Timer #2 started at tick 874995000
+875213750: global: Timer #2 stopped at tick 875213750. Duration: 218750
+875470000: global: Timer #2 started at tick 875470000
+875853750: global: Timer #2 stopped at tick 875853750. Duration: 383750
+876113125: global: Timer #2 started at tick 876113125
+876403125: global: Timer #2 stopped at tick 876403125. Duration: 290000
+876663125: global: Timer #2 started at tick 876663125
+876843750: global: Timer #2 stopped at tick 876843750. Duration: 180625
+877123750: global: Timer #2 started at tick 877123750
+877310625: global: Timer #2 stopped at tick 877310625. Duration: 186875
+877778125: global: Timer #2 started at tick 877778125
+878105000: global: Timer #2 stopped at tick 878105000. Duration: 326875
+878433750: global: Timer #2 started at tick 878433750
+878829375: global: Timer #2 stopped at tick 878829375. Duration: 395625
+879108750: global: Timer #2 started at tick 879108750
+879295625: global: Timer #2 stopped at tick 879295625. Duration: 186875
+879558125: global: Timer #2 started at tick 879558125
+879814375: global: Timer #2 stopped at tick 879814375. Duration: 256250
+880093750: global: Timer #2 started at tick 880093750
+880289375: global: Timer #2 stopped at tick 880289375. Duration: 195625
+880568750: global: Timer #2 started at tick 880568750
+880884375: global: Timer #2 stopped at tick 880884375. Duration: 315625
+881241250: global: Timer #2 started at tick 881241250
+881860625: global: Timer #2 stopped at tick 881860625. Duration: 619375
+882141250: global: Timer #2 started at tick 882141250
+882449375: global: Timer #2 stopped at tick 882449375. Duration: 308125
+882728750: global: Timer #2 started at tick 882728750
+882922500: global: Timer #2 stopped at tick 882922500. Duration: 193750
+883185000: global: Timer #2 started at tick 883185000
+883498125: global: Timer #2 stopped at tick 883498125. Duration: 313125
+883755000: global: Timer #2 started at tick 883755000
+883975000: global: Timer #2 stopped at tick 883975000. Duration: 220000
+884236875: global: Timer #2 started at tick 884236875
+884610625: global: Timer #2 stopped at tick 884610625. Duration: 373750
+884873125: global: Timer #2 started at tick 884873125
+885466875: global: Timer #2 stopped at tick 885466875. Duration: 593750
+885711250: global: Timer #2 started at tick 885711250
+885903125: global: Timer #2 stopped at tick 885903125. Duration: 191875
+886183125: global: Timer #2 started at tick 886183125
+886479375: global: Timer #2 stopped at tick 886479375. Duration: 296250
+886756875: global: Timer #2 started at tick 886756875
+887010000: global: Timer #2 stopped at tick 887010000. Duration: 253125
+887271875: global: Timer #2 started at tick 887271875
+887464375: global: Timer #2 stopped at tick 887464375. Duration: 192500
+887743750: global: Timer #2 started at tick 887743750
+888233125: global: Timer #2 stopped at tick 888233125. Duration: 489375
+888513125: global: Timer #2 started at tick 888513125
+888940000: global: Timer #2 stopped at tick 888940000. Duration: 426875
+889406875: global: Timer #2 started at tick 889406875
+889970625: global: Timer #2 stopped at tick 889970625. Duration: 563750
+890353125: global: Timer #2 started at tick 890353125
+890563750: global: Timer #2 stopped at tick 890563750. Duration: 210625
+890841250: global: Timer #2 started at tick 890841250
+891358125: global: Timer #2 stopped at tick 891358125. Duration: 516875
+891698125: global: Timer #2 started at tick 891698125
+891866250: global: Timer #2 stopped at tick 891866250. Duration: 168125
+892143125: global: Timer #2 started at tick 892143125
+892378750: global: Timer #2 stopped at tick 892378750. Duration: 235625
+892638125: global: Timer #2 started at tick 892638125
+892820000: global: Timer #2 stopped at tick 892820000. Duration: 181875
+893266250: global: Timer #2 started at tick 893266250
+893534375: global: Timer #2 stopped at tick 893534375. Duration: 268125
+893941875: global: Timer #2 started at tick 893941875
+894410000: global: Timer #2 stopped at tick 894410000. Duration: 468125
+894671875: global: Timer #2 started at tick 894671875
+895073125: global: Timer #2 stopped at tick 895073125. Duration: 401250
+895350000: global: Timer #2 started at tick 895350000
+895551875: global: Timer #2 stopped at tick 895551875. Duration: 201875
+895831875: global: Timer #2 started at tick 895831875
+896140625: global: Timer #2 stopped at tick 896140625. Duration: 308750
+896421250: global: Timer #2 started at tick 896421250
+896714375: global: Timer #2 stopped at tick 896714375. Duration: 293125
+897163750: global: Timer #2 started at tick 897163750
+897379375: global: Timer #2 stopped at tick 897379375. Duration: 215625
+897768750: global: Timer #2 started at tick 897768750
+898202500: global: Timer #2 stopped at tick 898202500. Duration: 433750
+898465000: global: Timer #2 started at tick 898465000
+898931875: global: Timer #2 stopped at tick 898931875. Duration: 466875
+899211875: global: Timer #2 started at tick 899211875
+899437500: global: Timer #2 stopped at tick 899437500. Duration: 225625
+899700000: global: Timer #2 started at tick 899700000
+900392500: global: Timer #2 stopped at tick 900392500. Duration: 692500
+900668750: global: Timer #2 started at tick 900668750
+901248125: global: Timer #2 stopped at tick 901248125. Duration: 579375
+901510000: global: Timer #2 started at tick 901510000
+901971875: global: Timer #2 stopped at tick 901971875. Duration: 461875
+902313750: global: Timer #2 started at tick 902313750
+902791250: global: Timer #2 stopped at tick 902791250. Duration: 477500
+903068750: global: Timer #2 started at tick 903068750
+903328125: global: Timer #2 stopped at tick 903328125. Duration: 259375
+903608125: global: Timer #2 started at tick 903608125
+903805000: global: Timer #2 stopped at tick 903805000. Duration: 196875
+904066875: global: Timer #2 started at tick 904066875
+904288750: global: Timer #2 stopped at tick 904288750. Duration: 221875
+904548125: global: Timer #2 started at tick 904548125
+904948125: global: Timer #2 stopped at tick 904948125. Duration: 400000
+905270000: global: Timer #2 started at tick 905270000
+905482500: global: Timer #2 stopped at tick 905482500. Duration: 212500
+905763125: global: Timer #2 started at tick 905763125
+905954375: global: Timer #2 stopped at tick 905954375. Duration: 191250
+906233750: global: Timer #2 started at tick 906233750
+906562500: global: Timer #2 stopped at tick 906562500. Duration: 328750
+906825000: global: Timer #2 started at tick 906825000
+907026875: global: Timer #2 stopped at tick 907026875. Duration: 201875
+907286250: global: Timer #2 started at tick 907286250
+907506250: global: Timer #2 stopped at tick 907506250. Duration: 220000
+907768125: global: Timer #2 started at tick 907768125
+907983750: global: Timer #2 stopped at tick 907983750. Duration: 215625
+908300000: global: Timer #2 started at tick 908300000
+908579375: global: Timer #2 stopped at tick 908579375. Duration: 279375
+908983750: global: Timer #2 started at tick 908983750
+909216250: global: Timer #2 stopped at tick 909216250. Duration: 232500
+909496250: global: Timer #2 started at tick 909496250
+909925625: global: Timer #2 stopped at tick 909925625. Duration: 429375
+910188125: global: Timer #2 started at tick 910188125
+910498125: global: Timer #2 stopped at tick 910498125. Duration: 310000
+910760000: global: Timer #2 started at tick 910760000
+911300000: global: Timer #2 stopped at tick 911300000. Duration: 540000
+911640000: global: Timer #2 started at tick 911640000
+911960625: global: Timer #2 stopped at tick 911960625. Duration: 320625
+912201875: global: Timer #2 started at tick 912201875
+912520000: global: Timer #2 stopped at tick 912520000. Duration: 318125
+912758125: global: Timer #2 started at tick 912758125
+913086875: global: Timer #2 stopped at tick 913086875. Duration: 328750
+913348750: global: Timer #2 started at tick 913348750
+913567500: global: Timer #2 stopped at tick 913567500. Duration: 218750
+913830000: global: Timer #2 started at tick 913830000
+914231875: global: Timer #2 stopped at tick 914231875. Duration: 401875
+914491250: global: Timer #2 started at tick 914491250
+914761875: global: Timer #2 stopped at tick 914761875. Duration: 270625
+915018125: global: Timer #2 started at tick 915018125
+915353125: global: Timer #2 stopped at tick 915353125. Duration: 335000
+915615000: global: Timer #2 started at tick 915615000
+915841875: global: Timer #2 stopped at tick 915841875. Duration: 226875
+916103750: global: Timer #2 started at tick 916103750
+916334375: global: Timer #2 stopped at tick 916334375. Duration: 230625
+916608125: global: Timer #2 started at tick 916608125
+916943750: global: Timer #2 stopped at tick 916943750. Duration: 335625
+917203125: global: Timer #2 started at tick 917203125
+917466250: global: Timer #2 stopped at tick 917466250. Duration: 263125
+917728125: global: Timer #2 started at tick 917728125
+918068750: global: Timer #2 stopped at tick 918068750. Duration: 340625
+918331250: global: Timer #2 started at tick 918331250
+918575000: global: Timer #2 stopped at tick 918575000. Duration: 243750
+918836875: global: Timer #2 started at tick 918836875
+919393750: global: Timer #2 stopped at tick 919393750. Duration: 556875
+919650000: global: Timer #2 started at tick 919650000
+919983125: global: Timer #2 stopped at tick 919983125. Duration: 333125
+920446875: global: Timer #2 started at tick 920446875
+920928125: global: Timer #2 stopped at tick 920928125. Duration: 481250
+921268750: global: Timer #2 started at tick 921268750
+922044375: global: Timer #2 stopped at tick 922044375. Duration: 775625
+922321875: global: Timer #2 started at tick 922321875
+922580000: global: Timer #2 stopped at tick 922580000. Duration: 258125
+922841875: global: Timer #2 started at tick 922841875
+923311875: global: Timer #2 stopped at tick 923311875. Duration: 470000
+923573750: global: Timer #2 started at tick 923573750
+923980000: global: Timer #2 stopped at tick 923980000. Duration: 406250
+924548750: global: Timer #2 started at tick 924548750
+924729375: global: Timer #2 stopped at tick 924729375. Duration: 180625
+924991250: global: Timer #2 started at tick 924991250
+925303750: global: Timer #2 stopped at tick 925303750. Duration: 312500
+925581250: global: Timer #2 started at tick 925581250
+925803125: global: Timer #2 stopped at tick 925803125. Duration: 221875
+926080000: global: Timer #2 started at tick 926080000
+926257500: global: Timer #2 stopped at tick 926257500. Duration: 177500
+926516250: global: Timer #2 started at tick 926516250
+926770625: global: Timer #2 stopped at tick 926770625. Duration: 254375
+927033125: global: Timer #2 started at tick 927033125
+927249375: global: Timer #2 stopped at tick 927249375. Duration: 216250
+927526250: global: Timer #2 started at tick 927526250
+927736875: global: Timer #2 stopped at tick 927736875. Duration: 210625
+928238750: global: Timer #2 started at tick 928238750
+928731250: global: Timer #2 stopped at tick 928731250. Duration: 492500
+929008125: global: Timer #2 started at tick 929008125
+929267500: global: Timer #2 stopped at tick 929267500. Duration: 259375
+929530000: global: Timer #2 started at tick 929530000
+929835000: global: Timer #2 stopped at tick 929835000. Duration: 305000
+930115000: global: Timer #2 started at tick 930115000
+930431875: global: Timer #2 stopped at tick 930431875. Duration: 316875
+930711875: global: Timer #2 started at tick 930711875
+930905625: global: Timer #2 stopped at tick 930905625. Duration: 193750
+931278750: global: Timer #2 started at tick 931278750
+931491875: global: Timer #2 stopped at tick 931491875. Duration: 213125
+931733125: global: Timer #2 started at tick 931733125
+932012500: global: Timer #2 stopped at tick 932012500. Duration: 279375
+932253125: global: Timer #2 started at tick 932253125
+932565625: global: Timer #2 stopped at tick 932565625. Duration: 312500
+932828125: global: Timer #2 started at tick 932828125
+933050625: global: Timer #2 stopped at tick 933050625. Duration: 222500
+933313125: global: Timer #2 started at tick 933313125
+933753125: global: Timer #2 stopped at tick 933753125. Duration: 440000
+934015000: global: Timer #2 started at tick 934015000
+934213750: global: Timer #2 stopped at tick 934213750. Duration: 198750
+934476250: global: Timer #2 started at tick 934476250
+934860000: global: Timer #2 stopped at tick 934860000. Duration: 383750
+935118750: global: Timer #2 started at tick 935118750
+935315000: global: Timer #2 stopped at tick 935315000. Duration: 196250
+935995000: global: Timer #2 started at tick 935995000
+936334375: global: Timer #2 stopped at tick 936334375. Duration: 339375
+936596250: global: Timer #2 started at tick 936596250
+936799375: global: Timer #2 stopped at tick 936799375. Duration: 203125
+937078750: global: Timer #2 started at tick 937078750
+937358125: global: Timer #2 stopped at tick 937358125. Duration: 279375
+937616875: global: Timer #2 started at tick 937616875
+937825000: global: Timer #2 stopped at tick 937825000. Duration: 208125
+938086875: global: Timer #2 started at tick 938086875
+938490625: global: Timer #2 stopped at tick 938490625. Duration: 403750
+938750000: global: Timer #2 started at tick 938750000
+939176250: global: Timer #2 stopped at tick 939176250. Duration: 426250
+939488750: global: Timer #2 started at tick 939488750
+939999375: global: Timer #2 stopped at tick 939999375. Duration: 510625
+940241250: global: Timer #2 started at tick 940241250
+940436875: global: Timer #2 stopped at tick 940436875. Duration: 195625
+940793750: global: Timer #2 started at tick 940793750
+941801250: global: Timer #2 stopped at tick 941801250. Duration: 1007500
+942081250: global: Timer #2 started at tick 942081250
+942340625: global: Timer #2 stopped at tick 942340625. Duration: 259375
+942603125: global: Timer #2 started at tick 942603125
+943171250: global: Timer #2 stopped at tick 943171250. Duration: 568125
+943653750: global: Timer #2 started at tick 943653750
+944020000: global: Timer #2 stopped at tick 944020000. Duration: 366250
+944281875: global: Timer #2 started at tick 944281875
+944494375: global: Timer #2 stopped at tick 944494375. Duration: 212500
+944753125: global: Timer #2 started at tick 944753125
+945241875: global: Timer #2 stopped at tick 945241875. Duration: 488750
+945501250: global: Timer #2 started at tick 945501250
+945766250: global: Timer #2 stopped at tick 945766250. Duration: 265000
+946021875: global: Timer #2 started at tick 946021875
+946214375: global: Timer #2 stopped at tick 946214375. Duration: 192500
+946476250: global: Timer #2 started at tick 946476250
+946674375: global: Timer #2 stopped at tick 946674375. Duration: 198125
+947113750: global: Timer #2 started at tick 947113750
+947632500: global: Timer #2 stopped at tick 947632500. Duration: 518750
+947876875: global: Timer #2 started at tick 947876875
+948050625: global: Timer #2 stopped at tick 948050625. Duration: 173750
+948310000: global: Timer #2 started at tick 948310000
+948697500: global: Timer #2 stopped at tick 948697500. Duration: 387500
+948956875: global: Timer #2 started at tick 948956875
+949145625: global: Timer #2 stopped at tick 949145625. Duration: 188750
+949405000: global: Timer #2 started at tick 949405000
+949598750: global: Timer #2 stopped at tick 949598750. Duration: 193750
+949861250: global: Timer #2 started at tick 949861250
+950355625: global: Timer #2 stopped at tick 950355625. Duration: 494375
+950633125: global: Timer #2 started at tick 950633125
+951016250: global: Timer #2 stopped at tick 951016250. Duration: 383125
+951546250: global: Timer #2 started at tick 951546250
+951898750: global: Timer #2 stopped at tick 951898750. Duration: 352500
+952178750: global: Timer #2 started at tick 952178750
+952785000: global: Timer #2 stopped at tick 952785000. Duration: 606250
+953046875: global: Timer #2 started at tick 953046875
+953676250: global: Timer #2 stopped at tick 953676250. Duration: 629375
+953936250: global: Timer #2 started at tick 953936250
+954146250: global: Timer #2 stopped at tick 954146250. Duration: 210000
+954426250: global: Timer #2 started at tick 954426250
+954716875: global: Timer #2 stopped at tick 954716875. Duration: 290625
+954978750: global: Timer #2 started at tick 954978750
+955152500: global: Timer #2 stopped at tick 955152500. Duration: 173750
+955425000: global: Timer #2 started at tick 955425000
+955762500: global: Timer #2 stopped at tick 955762500. Duration: 337500
+956021875: global: Timer #2 started at tick 956021875
+956581875: global: Timer #2 stopped at tick 956581875. Duration: 560000
+956843750: global: Timer #2 started at tick 956843750
+957125000: global: Timer #2 stopped at tick 957125000. Duration: 281250
+957386875: global: Timer #2 started at tick 957386875
+957566250: global: Timer #2 stopped at tick 957566250. Duration: 179375
+957948125: global: Timer #2 started at tick 957948125
+958433750: global: Timer #2 stopped at tick 958433750. Duration: 485625
+958696250: global: Timer #2 started at tick 958696250
+959269375: global: Timer #2 stopped at tick 959269375. Duration: 573125
+959511250: global: Timer #2 started at tick 959511250
+959695625: global: Timer #2 stopped at tick 959695625. Duration: 184375
+959955000: global: Timer #2 started at tick 959955000
+960151875: global: Timer #2 stopped at tick 960151875. Duration: 196875
+960411250: global: Timer #2 started at tick 960411250
+960735000: global: Timer #2 stopped at tick 960735000. Duration: 323750
+960996875: global: Timer #2 started at tick 960996875
+961814375: global: Timer #2 stopped at tick 961814375. Duration: 817500
+962175000: global: Timer #2 started at tick 962175000
+962438125: global: Timer #2 stopped at tick 962438125. Duration: 263125
+962716250: global: Timer #2 started at tick 962716250
+963006250: global: Timer #2 stopped at tick 963006250. Duration: 290000
+963250000: global: Timer #2 started at tick 963250000
+963428750: global: Timer #2 stopped at tick 963428750. Duration: 178750
+963691250: global: Timer #2 started at tick 963691250
+963881875: global: Timer #2 stopped at tick 963881875. Duration: 190625
+964143750: global: Timer #2 started at tick 964143750
+964386875: global: Timer #2 stopped at tick 964386875. Duration: 243125
+964648750: global: Timer #2 started at tick 964648750
+964896875: global: Timer #2 stopped at tick 964896875. Duration: 248125
+965158750: global: Timer #2 started at tick 965158750
+965342500: global: Timer #2 stopped at tick 965342500. Duration: 183750
+965623125: global: Timer #2 started at tick 965623125
+965811875: global: Timer #2 stopped at tick 965811875. Duration: 188750
+966088750: global: Timer #2 started at tick 966088750
+966535625: global: Timer #2 stopped at tick 966535625. Duration: 446875
+967010000: global: Timer #2 started at tick 967010000
+967173125: global: Timer #2 stopped at tick 967173125. Duration: 163125
+967413750: global: Timer #2 started at tick 967413750
+967588125: global: Timer #2 stopped at tick 967588125. Duration: 174375
+967846875: global: Timer #2 started at tick 967846875
+968155625: global: Timer #2 stopped at tick 968155625. Duration: 308750
+968415000: global: Timer #2 started at tick 968415000
+968581875: global: Timer #2 stopped at tick 968581875. Duration: 166875
+968858750: global: Timer #2 started at tick 968858750
+969122500: global: Timer #2 stopped at tick 969122500. Duration: 263750
+969398750: global: Timer #2 started at tick 969398750
+969587500: global: Timer #2 stopped at tick 969587500. Duration: 188750
+969861250: global: Timer #2 started at tick 969861250
+970045625: global: Timer #2 stopped at tick 970045625. Duration: 184375
+970385000: global: Timer #2 started at tick 970385000
+970878125: global: Timer #2 stopped at tick 970878125. Duration: 493125
+971140000: global: Timer #2 started at tick 971140000
+971513125: global: Timer #2 stopped at tick 971513125. Duration: 373125
+971928125: global: Timer #2 started at tick 971928125
+972387500: global: Timer #2 stopped at tick 972387500. Duration: 459375
+972665000: global: Timer #2 started at tick 972665000
+972947500: global: Timer #2 stopped at tick 972947500. Duration: 282500
+973228125: global: Timer #2 started at tick 973228125
+973525000: global: Timer #2 stopped at tick 973525000. Duration: 296875
+973805000: global: Timer #2 started at tick 973805000
+974059375: global: Timer #2 stopped at tick 974059375. Duration: 254375
+974318125: global: Timer #2 started at tick 974318125
+974775625: global: Timer #2 stopped at tick 974775625. Duration: 457500
+975161250: global: Timer #2 started at tick 975161250
+975336875: global: Timer #2 stopped at tick 975336875. Duration: 175625
+975598750: global: Timer #2 started at tick 975598750
+976021875: global: Timer #2 stopped at tick 976021875. Duration: 423125
+976283750: global: Timer #2 started at tick 976283750
+976546250: global: Timer #2 stopped at tick 976546250. Duration: 262500
+976808125: global: Timer #2 started at tick 976808125
+977005625: global: Timer #2 stopped at tick 977005625. Duration: 197500
+977268125: global: Timer #2 started at tick 977268125
+977518750: global: Timer #2 stopped at tick 977518750. Duration: 250625
+977781250: global: Timer #2 started at tick 977781250
+978046875: global: Timer #2 stopped at tick 978046875. Duration: 265625
+978306250: global: Timer #2 started at tick 978306250
+978733125: global: Timer #2 stopped at tick 978733125. Duration: 426875
+978971250: global: Timer #2 started at tick 978971250
+979166250: global: Timer #2 stopped at tick 979166250. Duration: 195000
+979446250: global: Timer #2 started at tick 979446250
+980329375: global: Timer #2 stopped at tick 980329375. Duration: 883125
+980690000: global: Timer #2 started at tick 980690000
+980883750: global: Timer #2 stopped at tick 980883750. Duration: 193750
+981163750: global: Timer #2 started at tick 981163750
+981592500: global: Timer #2 stopped at tick 981592500. Duration: 428750
+981855000: global: Timer #2 started at tick 981855000
+982069375: global: Timer #2 stopped at tick 982069375. Duration: 214375
+982641875: global: Timer #2 started at tick 982641875
+982979375: global: Timer #2 stopped at tick 982979375. Duration: 337500
+983241250: global: Timer #2 started at tick 983241250
+983468750: global: Timer #2 stopped at tick 983468750. Duration: 227500
+983731250: global: Timer #2 started at tick 983731250
+983899375: global: Timer #2 stopped at tick 983899375. Duration: 168125
+984158125: global: Timer #2 started at tick 984158125
+984460000: global: Timer #2 stopped at tick 984460000. Duration: 301875
+984718750: global: Timer #2 started at tick 984718750
+984910625: global: Timer #2 stopped at tick 984910625. Duration: 191875
+985173125: global: Timer #2 started at tick 985173125
+985587500: global: Timer #2 stopped at tick 985587500. Duration: 414375
+985850000: global: Timer #2 started at tick 985850000
+986038750: global: Timer #2 stopped at tick 986038750. Duration: 188750
+986623750: global: Timer #2 started at tick 986623750
+986798750: global: Timer #2 stopped at tick 986798750. Duration: 175000
+987078750: global: Timer #2 started at tick 987078750
+987427500: global: Timer #2 stopped at tick 987427500. Duration: 348750
+987686875: global: Timer #2 started at tick 987686875
+987873125: global: Timer #2 stopped at tick 987873125. Duration: 186250
+988153125: global: Timer #2 started at tick 988153125
+988408125: global: Timer #2 stopped at tick 988408125. Duration: 255000
+988670000: global: Timer #2 started at tick 988670000
+989108125: global: Timer #2 stopped at tick 989108125. Duration: 438125
+989388125: global: Timer #2 started at tick 989388125
+989627500: global: Timer #2 stopped at tick 989627500. Duration: 239375
+990396875: global: Timer #2 started at tick 990396875
+990798125: global: Timer #2 stopped at tick 990798125. Duration: 401250
+991060000: global: Timer #2 started at tick 991060000
+991326250: global: Timer #2 stopped at tick 991326250. Duration: 266250
+991581875: global: Timer #2 started at tick 991581875
+991775625: global: Timer #2 stopped at tick 991775625. Duration: 193750
+992038125: global: Timer #2 started at tick 992038125
+992238125: global: Timer #2 stopped at tick 992238125. Duration: 200000
+992500000: global: Timer #2 started at tick 992500000
+992803750: global: Timer #2 stopped at tick 992803750. Duration: 303750
+993063125: global: Timer #2 started at tick 993063125
+993456250: global: Timer #2 stopped at tick 993456250. Duration: 393125
+993733125: global: Timer #2 started at tick 993733125
+994450625: global: Timer #2 stopped at tick 994450625. Duration: 717500
+994710000: global: Timer #2 started at tick 994710000
+994936250: global: Timer #2 stopped at tick 994936250. Duration: 226250
+995193125: global: Timer #2 started at tick 995193125
+995473125: global: Timer #2 stopped at tick 995473125. Duration: 280000
+995735000: global: Timer #2 started at tick 995735000
+996024375: global: Timer #2 stopped at tick 996024375. Duration: 289375
+996283125: global: Timer #2 started at tick 996283125
+996530625: global: Timer #2 stopped at tick 996530625. Duration: 247500
+996793125: global: Timer #2 started at tick 996793125
+997043750: global: Timer #2 stopped at tick 997043750. Duration: 250625
+997303125: global: Timer #2 started at tick 997303125
+997505000: global: Timer #2 stopped at tick 997505000. Duration: 201875
+998113125: global: Timer #2 started at tick 998113125
+998556250: global: Timer #2 stopped at tick 998556250. Duration: 443125
+998813125: global: Timer #2 started at tick 998813125
+998999375: global: Timer #2 stopped at tick 998999375. Duration: 186250
+999261250: global: Timer #2 started at tick 999261250
+999453750: global: Timer #2 stopped at tick 999453750. Duration: 192500
+999811250: global: Timer #2 started at tick 999811250
+1000005625: global: Timer #2 stopped at tick 1000005625. Duration: 194375
+1000286250: global: Timer #2 started at tick 1000286250
+1000715000: global: Timer #2 stopped at tick 1000715000. Duration: 428750
+1000976875: global: Timer #2 started at tick 1000976875
+1001488125: global: Timer #2 stopped at tick 1001488125. Duration: 511250
+1001948125: global: Timer #2 started at tick 1001948125
+1002139375: global: Timer #2 stopped at tick 1002139375. Duration: 191250
+1002500000: global: Timer #2 started at tick 1002500000
+1003167500: global: Timer #2 stopped at tick 1003167500. Duration: 667500
+1003443750: global: Timer #2 started at tick 1003443750
+1003959375: global: Timer #2 stopped at tick 1003959375. Duration: 515625
+1004221250: global: Timer #2 started at tick 1004221250
+1004677500: global: Timer #2 stopped at tick 1004677500. Duration: 456250
+1004936875: global: Timer #2 started at tick 1004936875
+1005120625: global: Timer #2 stopped at tick 1005120625. Duration: 183750
+1005383125: global: Timer #2 started at tick 1005383125
+1005763750: global: Timer #2 stopped at tick 1005763750. Duration: 380625
+1006008125: global: Timer #2 started at tick 1006008125
+1006453125: global: Timer #2 stopped at tick 1006453125. Duration: 445000
+1006696875: global: Timer #2 started at tick 1006696875
+1006888750: global: Timer #2 stopped at tick 1006888750. Duration: 191875
+1007183750: global: Timer #2 started at tick 1007183750
+1007498750: global: Timer #2 stopped at tick 1007498750. Duration: 315000
+1007776250: global: Timer #2 started at tick 1007776250
+1007976250: global: Timer #2 stopped at tick 1007976250. Duration: 200000
+1008256250: global: Timer #2 started at tick 1008256250
+1008469375: global: Timer #2 stopped at tick 1008469375. Duration: 213125
+1008728125: global: Timer #2 started at tick 1008728125
+1009009375: global: Timer #2 stopped at tick 1009009375. Duration: 281250
+1009288750: global: Timer #2 started at tick 1009288750
+1009665000: global: Timer #2 stopped at tick 1009665000. Duration: 376250
+1010105000: global: Timer #2 started at tick 1010105000
+1010328750: global: Timer #2 stopped at tick 1010328750. Duration: 223750
+1010591250: global: Timer #2 started at tick 1010591250
+1010816875: global: Timer #2 stopped at tick 1010816875. Duration: 225625
+1011076250: global: Timer #2 started at tick 1011076250
+1011382500: global: Timer #2 stopped at tick 1011382500. Duration: 306250
+1011645000: global: Timer #2 started at tick 1011645000
+1011881875: global: Timer #2 stopped at tick 1011881875. Duration: 236875
+1012143750: global: Timer #2 started at tick 1012143750
+1012395000: global: Timer #2 stopped at tick 1012395000. Duration: 251250
+1012675000: global: Timer #2 started at tick 1012675000
+1012981250: global: Timer #2 stopped at tick 1012981250. Duration: 306250
+1013736875: global: Timer #2 started at tick 1013736875
+1014134375: global: Timer #2 stopped at tick 1014134375. Duration: 397500
+1014393125: global: Timer #2 started at tick 1014393125
+1014605000: global: Timer #2 stopped at tick 1014605000. Duration: 211875
+1014866875: global: Timer #2 started at tick 1014866875
+1015228750: global: Timer #2 stopped at tick 1015228750. Duration: 361875
+1015491250: global: Timer #2 started at tick 1015491250
+1015732500: global: Timer #2 stopped at tick 1015732500. Duration: 241250
+1015995000: global: Timer #2 started at tick 1015995000
+1016221875: global: Timer #2 stopped at tick 1016221875. Duration: 226875
+1016483750: global: Timer #2 started at tick 1016483750
+1016788750: global: Timer #2 stopped at tick 1016788750. Duration: 305000
+1017128750: global: Timer #2 started at tick 1017128750
+1017575000: global: Timer #2 stopped at tick 1017575000. Duration: 446250
+1017818750: global: Timer #2 started at tick 1017818750
+1018135625: global: Timer #2 stopped at tick 1018135625. Duration: 316875
+1018398125: global: Timer #2 started at tick 1018398125
+1018660000: global: Timer #2 stopped at tick 1018660000. Duration: 261875
+1018920000: global: Timer #2 started at tick 1018920000
+1019376250: global: Timer #2 stopped at tick 1019376250. Duration: 456250
+1019711250: global: Timer #2 started at tick 1019711250
+1019918750: global: Timer #2 stopped at tick 1019918750. Duration: 207500
+1020181250: global: Timer #2 started at tick 1020181250
+1020398750: global: Timer #2 stopped at tick 1020398750. Duration: 217500
+1020826250: global: Timer #2 started at tick 1020826250
+1021202500: global: Timer #2 stopped at tick 1021202500. Duration: 376250
+1021443125: global: Timer #2 started at tick 1021443125
+1021657500: global: Timer #2 stopped at tick 1021657500. Duration: 214375
+1021920000: global: Timer #2 started at tick 1021920000
+1022435000: global: Timer #2 stopped at tick 1022435000. Duration: 515000
+1022696875: global: Timer #2 started at tick 1022696875
+1022901250: global: Timer #2 stopped at tick 1022901250. Duration: 204375
+1023181250: global: Timer #2 started at tick 1023181250
+1023590625: global: Timer #2 stopped at tick 1023590625. Duration: 409375
+1023853125: global: Timer #2 started at tick 1023853125
+1024290625: global: Timer #2 stopped at tick 1024290625. Duration: 437500
+1024571250: global: Timer #2 started at tick 1024571250
+1024776250: global: Timer #2 stopped at tick 1024776250. Duration: 205000
+1025240000: global: Timer #2 started at tick 1025240000
+1025643750: global: Timer #2 stopped at tick 1025643750. Duration: 403750
+1025888125: global: Timer #2 started at tick 1025888125
+1026098750: global: Timer #2 stopped at tick 1026098750. Duration: 210625
+1026361250: global: Timer #2 started at tick 1026361250
+1026832500: global: Timer #2 stopped at tick 1026832500. Duration: 471250
+1027091250: global: Timer #2 started at tick 1027091250
+1027356250: global: Timer #2 stopped at tick 1027356250. Duration: 265000
+1027633750: global: Timer #2 started at tick 1027633750
+1028014375: global: Timer #2 stopped at tick 1028014375. Duration: 380625
+1028293750: global: Timer #2 started at tick 1028293750
+1028578750: global: Timer #2 stopped at tick 1028578750. Duration: 285000
+1029040000: global: Timer #2 started at tick 1029040000
+1029373750: global: Timer #2 stopped at tick 1029373750. Duration: 333750
+1029713750: global: Timer #2 started at tick 1029713750
+1029916875: global: Timer #2 stopped at tick 1029916875. Duration: 203125
+1030176250: global: Timer #2 started at tick 1030176250
+1030641875: global: Timer #2 stopped at tick 1030641875. Duration: 465625
+1030898125: global: Timer #2 started at tick 1030898125
+1031299375: global: Timer #2 stopped at tick 1031299375. Duration: 401250
+1031558125: global: Timer #2 started at tick 1031558125
+1031788125: global: Timer #2 stopped at tick 1031788125. Duration: 230000
+1032196250: global: Timer #2 started at tick 1032196250
+1032403750: global: Timer #2 stopped at tick 1032403750. Duration: 207500
+1032666250: global: Timer #2 started at tick 1032666250
+1033041250: global: Timer #2 stopped at tick 1033041250. Duration: 375000
+1033300000: global: Timer #2 started at tick 1033300000
+1033510625: global: Timer #2 stopped at tick 1033510625. Duration: 210625
+1033773125: global: Timer #2 started at tick 1033773125
+1033990000: global: Timer #2 stopped at tick 1033990000. Duration: 216875
+1034248750: global: Timer #2 started at tick 1034248750
+1034736250: global: Timer #2 stopped at tick 1034736250. Duration: 487500
+1034998125: global: Timer #2 started at tick 1034998125
+1035216250: global: Timer #2 stopped at tick 1035216250. Duration: 218125
+1035478125: global: Timer #2 started at tick 1035478125
+1035686250: global: Timer #2 stopped at tick 1035686250. Duration: 208125
+1035926875: global: Timer #2 started at tick 1035926875
+1036224375: global: Timer #2 stopped at tick 1036224375. Duration: 297500
+1036483125: global: Timer #2 started at tick 1036483125
+1036730000: global: Timer #2 stopped at tick 1036730000. Duration: 246875
+1036973750: global: Timer #2 started at tick 1036973750
+1037448750: global: Timer #2 stopped at tick 1037448750. Duration: 475000
+1037711250: global: Timer #2 started at tick 1037711250
+1038037500: global: Timer #2 stopped at tick 1038037500. Duration: 326250
+1038293750: global: Timer #2 started at tick 1038293750
+1038585000: global: Timer #2 stopped at tick 1038585000. Duration: 291250
+1038923750: global: Timer #2 started at tick 1038923750
+1039160000: global: Timer #2 stopped at tick 1039160000. Duration: 236250
+1039418750: global: Timer #2 started at tick 1039418750
+1039650000: global: Timer #2 stopped at tick 1039650000. Duration: 231250
+1039926875: global: Timer #2 started at tick 1039926875
+1040433125: global: Timer #2 stopped at tick 1040433125. Duration: 506250
+1040831875: global: Timer #2 started at tick 1040831875
+1041347500: global: Timer #2 stopped at tick 1041347500. Duration: 515625
+1041606875: global: Timer #2 started at tick 1041606875
+1041816250: global: Timer #2 stopped at tick 1041816250. Duration: 209375
+1042075000: global: Timer #2 started at tick 1042075000
+1042347500: global: Timer #2 stopped at tick 1042347500. Duration: 272500
+1042623750: global: Timer #2 started at tick 1042623750
+1043374375: global: Timer #2 stopped at tick 1043374375. Duration: 750625
+1043636250: global: Timer #2 started at tick 1043636250
+1044171250: global: Timer #2 stopped at tick 1044171250. Duration: 535000
+1044650000: global: Timer #2 started at tick 1044650000
+1045030625: global: Timer #2 stopped at tick 1045030625. Duration: 380625
+1045293125: global: Timer #2 started at tick 1045293125
+1045479375: global: Timer #2 stopped at tick 1045479375. Duration: 186250
+1045723125: global: Timer #2 started at tick 1045723125
+1045927500: global: Timer #2 stopped at tick 1045927500. Duration: 204375
+1046208125: global: Timer #2 started at tick 1046208125
+1046686250: global: Timer #2 stopped at tick 1046686250. Duration: 478125
+1046966250: global: Timer #2 started at tick 1046966250
+1047207500: global: Timer #2 stopped at tick 1047207500. Duration: 241250
+1047485000: global: Timer #2 started at tick 1047485000
+1047821875: global: Timer #2 stopped at tick 1047821875. Duration: 336875
+1048101875: global: Timer #2 started at tick 1048101875
+1048311250: global: Timer #2 stopped at tick 1048311250. Duration: 209375
+1048593125: global: Timer #2 started at tick 1048593125
+1048885625: global: Timer #2 stopped at tick 1048885625. Duration: 292500
+1049221250: global: Timer #2 started at tick 1049221250
+1049555000: global: Timer #2 stopped at tick 1049555000. Duration: 333750
+1049816875: global: Timer #2 started at tick 1049816875
+1050272500: global: Timer #2 stopped at tick 1050272500. Duration: 455625
+1050535000: global: Timer #2 started at tick 1050535000
+1050780000: global: Timer #2 stopped at tick 1050780000. Duration: 245000
+1051178750: global: Timer #2 started at tick 1051178750
+1051461875: global: Timer #2 stopped at tick 1051461875. Duration: 283125
+1051721250: global: Timer #2 started at tick 1051721250
+1051935625: global: Timer #2 stopped at tick 1051935625. Duration: 214375
+1052413750: global: Timer #2 started at tick 1052413750
+1052618750: global: Timer #2 stopped at tick 1052618750. Duration: 205000
+1052896250: global: Timer #2 started at tick 1052896250
+1053176875: global: Timer #2 stopped at tick 1053176875. Duration: 280625
+1053438750: global: Timer #2 started at tick 1053438750
+1053856875: global: Timer #2 stopped at tick 1053856875. Duration: 418125
+1054113125: global: Timer #2 started at tick 1054113125
+1054636250: global: Timer #2 stopped at tick 1054636250. Duration: 523125
+1054916250: global: Timer #2 started at tick 1054916250
+1055131250: global: Timer #2 stopped at tick 1055131250. Duration: 215000
+1055393125: global: Timer #2 started at tick 1055393125
+1055606875: global: Timer #2 stopped at tick 1055606875. Duration: 213750
+1055868750: global: Timer #2 started at tick 1055868750
+1056167500: global: Timer #2 stopped at tick 1056167500. Duration: 298750
+1056411875: global: Timer #2 started at tick 1056411875
+1056936250: global: Timer #2 stopped at tick 1056936250. Duration: 524375
+1057198125: global: Timer #2 started at tick 1057198125
+1057464375: global: Timer #2 stopped at tick 1057464375. Duration: 266250
+1057726250: global: Timer #2 started at tick 1057726250
+1058026875: global: Timer #2 stopped at tick 1058026875. Duration: 300625
+1058286250: global: Timer #2 started at tick 1058286250
+1058456875: global: Timer #2 stopped at tick 1058456875. Duration: 170625
+1058813750: global: Timer #2 started at tick 1058813750
+1058992500: global: Timer #2 stopped at tick 1058992500. Duration: 178750
+1059251250: global: Timer #2 started at tick 1059251250
+1059743750: global: Timer #2 stopped at tick 1059743750. Duration: 492500
+1060193125: global: Timer #2 started at tick 1060193125
+1060374375: global: Timer #2 stopped at tick 1060374375. Duration: 181250
+1060633125: global: Timer #2 started at tick 1060633125
+1061130000: global: Timer #2 stopped at tick 1061130000. Duration: 496875
+1061390000: global: Timer #2 started at tick 1061390000
+1061572500: global: Timer #2 stopped at tick 1061572500. Duration: 182500
+1061831250: global: Timer #2 started at tick 1061831250
+1062079375: global: Timer #2 stopped at tick 1062079375. Duration: 248125
+1062358750: global: Timer #2 started at tick 1062358750
+1062706875: global: Timer #2 stopped at tick 1062706875. Duration: 348125
+1062968750: global: Timer #2 started at tick 1062968750
+1063238750: global: Timer #2 stopped at tick 1063238750. Duration: 270000
+1063516250: global: Timer #2 started at tick 1063516250
+1063881875: global: Timer #2 stopped at tick 1063881875. Duration: 365625
+1064123750: global: Timer #2 started at tick 1064123750
+1064386250: global: Timer #2 stopped at tick 1064386250. Duration: 262500
+1064628125: global: Timer #2 started at tick 1064628125
+1064880625: global: Timer #2 stopped at tick 1064880625. Duration: 252500
+1065178750: global: Timer #2 started at tick 1065178750
+1065525625: global: Timer #2 stopped at tick 1065525625. Duration: 346875
+1065803125: global: Timer #2 started at tick 1065803125
+1066095625: global: Timer #2 stopped at tick 1066095625. Duration: 292500
+1066373125: global: Timer #2 started at tick 1066373125
+1066710000: global: Timer #2 stopped at tick 1066710000. Duration: 336875
+1066990000: global: Timer #2 started at tick 1066990000
+1067324375: global: Timer #2 stopped at tick 1067324375. Duration: 334375
+1067586250: global: Timer #2 started at tick 1067586250
+1068139375: global: Timer #2 stopped at tick 1068139375. Duration: 553125
+1068643750: global: Timer #2 started at tick 1068643750
+1069039375: global: Timer #2 stopped at tick 1069039375. Duration: 395625
+1069298750: global: Timer #2 started at tick 1069298750
+1069589375: global: Timer #2 stopped at tick 1069589375. Duration: 290625
+1069868750: global: Timer #2 started at tick 1069868750
+1070251875: global: Timer #2 stopped at tick 1070251875. Duration: 383125
+1070513750: global: Timer #2 started at tick 1070513750
+1071798750: global: Timer #2 stopped at tick 1071798750. Duration: 1285000
+1072136875: global: Timer #2 started at tick 1072136875
+1072823125: global: Timer #2 stopped at tick 1072823125. Duration: 686250
+1073081875: global: Timer #2 started at tick 1073081875
+1073356875: global: Timer #2 stopped at tick 1073356875. Duration: 275000
+1073618750: global: Timer #2 started at tick 1073618750
+1074014375: global: Timer #2 stopped at tick 1074014375. Duration: 395625
+1074276250: global: Timer #2 started at tick 1074276250
+1074623750: global: Timer #2 stopped at tick 1074623750. Duration: 347500
+1074901250: global: Timer #2 started at tick 1074901250
+1075115625: global: Timer #2 stopped at tick 1075115625. Duration: 214375
+1075375000: global: Timer #2 started at tick 1075375000
+1075568750: global: Timer #2 stopped at tick 1075568750. Duration: 193750
+1075810000: global: Timer #2 started at tick 1075810000
+1076237500: global: Timer #2 stopped at tick 1076237500. Duration: 427500
+1076578125: global: Timer #2 started at tick 1076578125
+1076935000: global: Timer #2 stopped at tick 1076935000. Duration: 356875
+1077191250: global: Timer #2 started at tick 1077191250
+1077408750: global: Timer #2 stopped at tick 1077408750. Duration: 217500
+1077688750: global: Timer #2 started at tick 1077688750
+1078063125: global: Timer #2 stopped at tick 1078063125. Duration: 374375
+1078341250: global: Timer #2 started at tick 1078341250
+1078531875: global: Timer #2 stopped at tick 1078531875. Duration: 190625
+1078791250: global: Timer #2 started at tick 1078791250
+1079015625: global: Timer #2 stopped at tick 1079015625. Duration: 224375
+1079588750: global: Timer #2 started at tick 1079588750
+1079810625: global: Timer #2 stopped at tick 1079810625. Duration: 221875
+1080073125: global: Timer #2 started at tick 1080073125
+1080443125: global: Timer #2 stopped at tick 1080443125. Duration: 370000
+1080723125: global: Timer #2 started at tick 1080723125
+1081148750: global: Timer #2 stopped at tick 1081148750. Duration: 425625
+1081411250: global: Timer #2 started at tick 1081411250
+1081623125: global: Timer #2 stopped at tick 1081623125. Duration: 211875
+1081881875: global: Timer #2 started at tick 1081881875
+1082100000: global: Timer #2 stopped at tick 1082100000. Duration: 218125
+1082358750: global: Timer #2 started at tick 1082358750
+1082709375: global: Timer #2 stopped at tick 1082709375. Duration: 350625
+1082988750: global: Timer #2 started at tick 1082988750
+1083207500: global: Timer #2 stopped at tick 1083207500. Duration: 218750
+1083531875: global: Timer #2 started at tick 1083531875
+1083768750: global: Timer #2 stopped at tick 1083768750. Duration: 236875
+1084048750: global: Timer #2 started at tick 1084048750
+1084417500: global: Timer #2 stopped at tick 1084417500. Duration: 368750
+1084680000: global: Timer #2 started at tick 1084680000
+1085018125: global: Timer #2 stopped at tick 1085018125. Duration: 338125
+1085280000: global: Timer #2 started at tick 1085280000
+1085689375: global: Timer #2 stopped at tick 1085689375. Duration: 409375
+1085968750: global: Timer #2 started at tick 1085968750
+1086293750: global: Timer #2 stopped at tick 1086293750. Duration: 325000
+1086571250: global: Timer #2 started at tick 1086571250
+1086941250: global: Timer #2 stopped at tick 1086941250. Duration: 370000
+1087446250: global: Timer #2 started at tick 1087446250
+1087688750: global: Timer #2 stopped at tick 1087688750. Duration: 242500
+1087968750: global: Timer #2 started at tick 1087968750
+1088408750: global: Timer #2 stopped at tick 1088408750. Duration: 440000
+1088668125: global: Timer #2 started at tick 1088668125
+1089493750: global: Timer #2 stopped at tick 1089493750. Duration: 825625
+1089836250: global: Timer #2 started at tick 1089836250
+1090048125: global: Timer #2 stopped at tick 1090048125. Duration: 211875
+1090328125: global: Timer #2 started at tick 1090328125
+1090577500: global: Timer #2 stopped at tick 1090577500. Duration: 249375
+1090858125: global: Timer #2 started at tick 1090858125
+1091038750: global: Timer #2 stopped at tick 1091038750. Duration: 180625
+1091298125: global: Timer #2 started at tick 1091298125
+1091515000: global: Timer #2 stopped at tick 1091515000. Duration: 216875
+1091758750: global: Timer #2 started at tick 1091758750
+1092035625: global: Timer #2 stopped at tick 1092035625. Duration: 276875
+1092298125: global: Timer #2 started at tick 1092298125
+1092597500: global: Timer #2 stopped at tick 1092597500. Duration: 299375
+1092856875: global: Timer #2 started at tick 1092856875
+1093063750: global: Timer #2 stopped at tick 1093063750. Duration: 206875
+1093323125: global: Timer #2 started at tick 1093323125
+1093652500: global: Timer #2 stopped at tick 1093652500. Duration: 329375
+1093915000: global: Timer #2 started at tick 1093915000
+1094160000: global: Timer #2 stopped at tick 1094160000. Duration: 245000
+1094421875: global: Timer #2 started at tick 1094421875
+1095251250: global: Timer #2 stopped at tick 1095251250. Duration: 829375
+1095691875: global: Timer #2 started at tick 1095691875
+1096068125: global: Timer #2 stopped at tick 1096068125. Duration: 376250
+1096348125: global: Timer #2 started at tick 1096348125
+1096565625: global: Timer #2 stopped at tick 1096565625. Duration: 217500
+1096828125: global: Timer #2 started at tick 1096828125
+1097040000: global: Timer #2 stopped at tick 1097040000. Duration: 211875
+1097301875: global: Timer #2 started at tick 1097301875
+1097651250: global: Timer #2 stopped at tick 1097651250. Duration: 349375
+1097913125: global: Timer #2 started at tick 1097913125
+1098101250: global: Timer #2 stopped at tick 1098101250. Duration: 188125
+1098538750: global: Timer #2 started at tick 1098538750
+1098725625: global: Timer #2 stopped at tick 1098725625. Duration: 186875
+1099141250: global: Timer #2 started at tick 1099141250
+1099345000: global: Timer #2 stopped at tick 1099345000. Duration: 203750
+1099606875: global: Timer #2 started at tick 1099606875
+1099896250: global: Timer #2 stopped at tick 1099896250. Duration: 289375
+1100158125: global: Timer #2 started at tick 1100158125
+1100445625: global: Timer #2 stopped at tick 1100445625. Duration: 287500
+1100708125: global: Timer #2 started at tick 1100708125
+1100990000: global: Timer #2 stopped at tick 1100990000. Duration: 281875
+1101246250: global: Timer #2 started at tick 1101246250
+1101436875: global: Timer #2 stopped at tick 1101436875. Duration: 190625
+1101693125: global: Timer #2 started at tick 1101693125
+1101911875: global: Timer #2 stopped at tick 1101911875. Duration: 218750
+1102173750: global: Timer #2 started at tick 1102173750
+1102459375: global: Timer #2 stopped at tick 1102459375. Duration: 285625
+1102908750: global: Timer #2 started at tick 1102908750
+1103200625: global: Timer #2 stopped at tick 1103200625. Duration: 291875
+1103463125: global: Timer #2 started at tick 1103463125
+1103734375: global: Timer #2 stopped at tick 1103734375. Duration: 271250
+1103996250: global: Timer #2 started at tick 1103996250
+1104480625: global: Timer #2 stopped at tick 1104480625. Duration: 484375
+1104721875: global: Timer #2 started at tick 1104721875
+1104903750: global: Timer #2 stopped at tick 1104903750. Duration: 181875
+1105181250: global: Timer #2 started at tick 1105181250
+1105527500: global: Timer #2 stopped at tick 1105527500. Duration: 346250
+1105910000: global: Timer #2 started at tick 1105910000
+1106073750: global: Timer #2 stopped at tick 1106073750. Duration: 163750
+1106351250: global: Timer #2 started at tick 1106351250
+1106632500: global: Timer #2 stopped at tick 1106632500. Duration: 281250
+1106883125: global: Timer #2 started at tick 1106883125
+1107076250: global: Timer #2 stopped at tick 1107076250. Duration: 193125
+1107331875: global: Timer #2 started at tick 1107331875
+1107603125: global: Timer #2 stopped at tick 1107603125. Duration: 271250
+1107963750: global: Timer #2 started at tick 1107963750
+1108157500: global: Timer #2 stopped at tick 1108157500. Duration: 193750
+1108420000: global: Timer #2 started at tick 1108420000
+1108703125: global: Timer #2 stopped at tick 1108703125. Duration: 283125
+1108961875: global: Timer #2 started at tick 1108961875
+1109178125: global: Timer #2 stopped at tick 1109178125. Duration: 216250
+1109440000: global: Timer #2 started at tick 1109440000
+1109656875: global: Timer #2 stopped at tick 1109656875. Duration: 216875
+1109918750: global: Timer #2 started at tick 1109918750
+1110646250: global: Timer #2 stopped at tick 1110646250. Duration: 727500
+1110890000: global: Timer #2 started at tick 1110890000
+1111082500: global: Timer #2 stopped at tick 1111082500. Duration: 192500
+1111345000: global: Timer #2 started at tick 1111345000
+1111611250: global: Timer #2 stopped at tick 1111611250. Duration: 266250
+1111870000: global: Timer #2 started at tick 1111870000
+1112063750: global: Timer #2 stopped at tick 1112063750. Duration: 193750
+1112320000: global: Timer #2 started at tick 1112320000
+1112712500: global: Timer #2 stopped at tick 1112712500. Duration: 392500
+1112971875: global: Timer #2 started at tick 1112971875
+1113251875: global: Timer #2 stopped at tick 1113251875. Duration: 280000
+1113511250: global: Timer #2 started at tick 1113511250
+1114195625: global: Timer #2 stopped at tick 1114195625. Duration: 684375
+1114586875: global: Timer #2 started at tick 1114586875
+1114820000: global: Timer #2 stopped at tick 1114820000. Duration: 233125
+1115081875: global: Timer #2 started at tick 1115081875
+1115272500: global: Timer #2 stopped at tick 1115272500. Duration: 190625
+1115535000: global: Timer #2 started at tick 1115535000
+1115818125: global: Timer #2 stopped at tick 1115818125. Duration: 283125
+1116080000: global: Timer #2 started at tick 1116080000
+1116294375: global: Timer #2 stopped at tick 1116294375. Duration: 214375
+1116556250: global: Timer #2 started at tick 1116556250
+1116949375: global: Timer #2 stopped at tick 1116949375. Duration: 393125
+1117428750: global: Timer #2 started at tick 1117428750
+1117706875: global: Timer #2 stopped at tick 1117706875. Duration: 278125
+1117966250: global: Timer #2 started at tick 1117966250
+1118226875: global: Timer #2 stopped at tick 1118226875. Duration: 260625
+1118471875: global: Timer #2 started at tick 1118471875
+1118674375: global: Timer #2 stopped at tick 1118674375. Duration: 202500
+1118933125: global: Timer #2 started at tick 1118933125
+1119367500: global: Timer #2 stopped at tick 1119367500. Duration: 434375
+1119626875: global: Timer #2 started at tick 1119626875
+1120076875: global: Timer #2 stopped at tick 1120076875. Duration: 450000
+1120496250: global: Timer #2 started at tick 1120496250
+1120881250: global: Timer #2 stopped at tick 1120881250. Duration: 385000
+1121158125: global: Timer #2 started at tick 1121158125
+1121374375: global: Timer #2 stopped at tick 1121374375. Duration: 216250
+1121636250: global: Timer #2 started at tick 1121636250
+1121835000: global: Timer #2 stopped at tick 1121835000. Duration: 198750
+1122290000: global: Timer #2 started at tick 1122290000
+1122548750: global: Timer #2 stopped at tick 1122548750. Duration: 258750
+1122811250: global: Timer #2 started at tick 1122811250
+1123210625: global: Timer #2 stopped at tick 1123210625. Duration: 399375
+1123451875: global: Timer #2 started at tick 1123451875
+1123770625: global: Timer #2 stopped at tick 1123770625. Duration: 318750
+1124151875: global: Timer #2 started at tick 1124151875
+1124375625: global: Timer #2 stopped at tick 1124375625. Duration: 223750
+1124656250: global: Timer #2 started at tick 1124656250
+1125211250: global: Timer #2 stopped at tick 1125211250. Duration: 555000
+1125488750: global: Timer #2 started at tick 1125488750
+1125756875: global: Timer #2 stopped at tick 1125756875. Duration: 268125
+1126223750: global: Timer #2 started at tick 1126223750
+1126898750: global: Timer #2 stopped at tick 1126898750. Duration: 675000
+1127158125: global: Timer #2 started at tick 1127158125
+1127422500: global: Timer #2 stopped at tick 1127422500. Duration: 264375
+1127776250: global: Timer #2 started at tick 1127776250
+1127988750: global: Timer #2 stopped at tick 1127988750. Duration: 212500
+1128251250: global: Timer #2 started at tick 1128251250
+1128744375: global: Timer #2 stopped at tick 1128744375. Duration: 493125
+1129006250: global: Timer #2 started at tick 1129006250
+1129205625: global: Timer #2 stopped at tick 1129205625. Duration: 199375
+1129468125: global: Timer #2 started at tick 1129468125
+1130056250: global: Timer #2 stopped at tick 1130056250. Duration: 588125
+1130296875: global: Timer #2 started at tick 1130296875
+1130490625: global: Timer #2 stopped at tick 1130490625. Duration: 193750
+1130750000: global: Timer #2 started at tick 1130750000
+1131066875: global: Timer #2 stopped at tick 1131066875. Duration: 316875
+1131328750: global: Timer #2 started at tick 1131328750
+1131918750: global: Timer #2 stopped at tick 1131918750. Duration: 590000
+1132178125: global: Timer #2 started at tick 1132178125
+1132485000: global: Timer #2 stopped at tick 1132485000. Duration: 306875
+1132746875: global: Timer #2 started at tick 1132746875
+1132965625: global: Timer #2 stopped at tick 1132965625. Duration: 218750
+1133243125: global: Timer #2 started at tick 1133243125
+1133564375: global: Timer #2 stopped at tick 1133564375. Duration: 321250
+1134000000: global: Timer #2 started at tick 1134000000
+1134394375: global: Timer #2 stopped at tick 1134394375. Duration: 394375
+1134671250: global: Timer #2 started at tick 1134671250
+1134880000: global: Timer #2 stopped at tick 1134880000. Duration: 208750
+1135138750: global: Timer #2 started at tick 1135138750
+1135556250: global: Timer #2 stopped at tick 1135556250. Duration: 417500
+1135933125: global: Timer #2 started at tick 1135933125
+1136211250: global: Timer #2 stopped at tick 1136211250. Duration: 278125
+1136491250: global: Timer #2 started at tick 1136491250
+1137180000: global: Timer #2 stopped at tick 1137180000. Duration: 688750
+1137441875: global: Timer #2 started at tick 1137441875
+1137925000: global: Timer #2 stopped at tick 1137925000. Duration: 483125
+1138258125: global: Timer #2 started at tick 1138258125
+1138472500: global: Timer #2 stopped at tick 1138472500. Duration: 214375
+1138735000: global: Timer #2 started at tick 1138735000
+1139001250: global: Timer #2 stopped at tick 1139001250. Duration: 266250
+1139263125: global: Timer #2 started at tick 1139263125
+1139470000: global: Timer #2 stopped at tick 1139470000. Duration: 206875
+1139876250: global: Timer #2 started at tick 1139876250
+1140262500: global: Timer #2 stopped at tick 1140262500. Duration: 386250
+1140540000: global: Timer #2 started at tick 1140540000
+1141181875: global: Timer #2 stopped at tick 1141181875. Duration: 641875
+1141646875: global: Timer #2 started at tick 1141646875
+1141843125: global: Timer #2 stopped at tick 1141843125. Duration: 196250
+1142101875: global: Timer #2 started at tick 1142101875
+1142310000: global: Timer #2 stopped at tick 1142310000. Duration: 208125
+1142568750: global: Timer #2 started at tick 1142568750
+1143255000: global: Timer #2 stopped at tick 1143255000. Duration: 686250
+1143680000: global: Timer #2 started at tick 1143680000
+1143963125: global: Timer #2 stopped at tick 1143963125. Duration: 283125
+1144243125: global: Timer #2 started at tick 1144243125
+1144541875: global: Timer #2 stopped at tick 1144541875. Duration: 298750
+1144783125: global: Timer #2 started at tick 1144783125
+1145025000: global: Timer #2 stopped at tick 1145025000. Duration: 241875
+1145508125: global: Timer #2 started at tick 1145508125
+1145743750: global: Timer #2 stopped at tick 1145743750. Duration: 235625
+1146003125: global: Timer #2 started at tick 1146003125
+1146407500: global: Timer #2 stopped at tick 1146407500. Duration: 404375
+1146666875: global: Timer #2 started at tick 1146666875
+1147236250: global: Timer #2 stopped at tick 1147236250. Duration: 569375
+1147498125: global: Timer #2 started at tick 1147498125
+1147954375: global: Timer #2 stopped at tick 1147954375. Duration: 456250
+1148233750: global: Timer #2 started at tick 1148233750
+1148468750: global: Timer #2 stopped at tick 1148468750. Duration: 235000
+1148826250: global: Timer #2 started at tick 1148826250
+1149156875: global: Timer #2 stopped at tick 1149156875. Duration: 330625
+1149528125: global: Timer #2 started at tick 1149528125
+1149777500: global: Timer #2 stopped at tick 1149777500. Duration: 249375
+1150040000: global: Timer #2 started at tick 1150040000
+1150293125: global: Timer #2 stopped at tick 1150293125. Duration: 253125
+1150688125: global: Timer #2 started at tick 1150688125
+1150987500: global: Timer #2 stopped at tick 1150987500. Duration: 299375
+1151246875: global: Timer #2 started at tick 1151246875
+1151988750: global: Timer #2 stopped at tick 1151988750. Duration: 741875
+1152268750: global: Timer #2 started at tick 1152268750
+1152502500: global: Timer #2 stopped at tick 1152502500. Duration: 233750
+1152778750: global: Timer #2 started at tick 1152778750
+1153056875: global: Timer #2 stopped at tick 1153056875. Duration: 278125
+1153410000: global: Timer #2 started at tick 1153410000
+1153617500: global: Timer #2 stopped at tick 1153617500. Duration: 207500
+1153876875: global: Timer #2 started at tick 1153876875
+1154105625: global: Timer #2 stopped at tick 1154105625. Duration: 228750
+1154488125: global: Timer #2 started at tick 1154488125
+1154883750: global: Timer #2 stopped at tick 1154883750. Duration: 395625
+1155163750: global: Timer #2 started at tick 1155163750
+1155371250: global: Timer #2 stopped at tick 1155371250. Duration: 207500
+1155651250: global: Timer #2 started at tick 1155651250
+1155926875: global: Timer #2 stopped at tick 1155926875. Duration: 275625
+1156186250: global: Timer #2 started at tick 1156186250
+1156504375: global: Timer #2 stopped at tick 1156504375. Duration: 318125
+1156766250: global: Timer #2 started at tick 1156766250
+1157465000: global: Timer #2 stopped at tick 1157465000. Duration: 698750
+1157708750: global: Timer #2 started at tick 1157708750
+1158005000: global: Timer #2 stopped at tick 1158005000. Duration: 296250
+1158263750: global: Timer #2 started at tick 1158263750
+1158557500: global: Timer #2 stopped at tick 1158557500. Duration: 293750
+1158900000: global: Timer #2 started at tick 1158900000
+1159568125: global: Timer #2 stopped at tick 1159568125. Duration: 668125
+1159845000: global: Timer #2 started at tick 1159845000
+1160240000: global: Timer #2 stopped at tick 1160240000. Duration: 395000
+1160501875: global: Timer #2 started at tick 1160501875
+1160722500: global: Timer #2 stopped at tick 1160722500. Duration: 220625
+1161175000: global: Timer #2 started at tick 1161175000
+1161477500: global: Timer #2 stopped at tick 1161477500. Duration: 302500
+1161740000: global: Timer #2 started at tick 1161740000
+1162110000: global: Timer #2 stopped at tick 1162110000. Duration: 370000
+1162398125: global: Timer #2 started at tick 1162398125
+1162668750: global: Timer #2 stopped at tick 1162668750. Duration: 270625
+1162948750: global: Timer #2 started at tick 1162948750
+1163251250: global: Timer #2 stopped at tick 1163251250. Duration: 302500
+1163510000: global: Timer #2 started at tick 1163510000
+1163768750: global: Timer #2 stopped at tick 1163768750. Duration: 258750
+1164031250: global: Timer #2 started at tick 1164031250
+1165120000: global: Timer #2 stopped at tick 1165120000. Duration: 1088750
+1165361250: global: Timer #2 started at tick 1165361250
+1165858125: global: Timer #2 stopped at tick 1165858125. Duration: 496875
+1166120000: global: Timer #2 started at tick 1166120000
+1166667500: global: Timer #2 stopped at tick 1166667500. Duration: 547500
+1167050000: global: Timer #2 started at tick 1167050000
+1167469375: global: Timer #2 stopped at tick 1167469375. Duration: 419375
+1167731250: global: Timer #2 started at tick 1167731250
+1167958750: global: Timer #2 stopped at tick 1167958750. Duration: 227500
+1168238750: global: Timer #2 started at tick 1168238750
+1168573125: global: Timer #2 stopped at tick 1168573125. Duration: 334375
+1168938125: global: Timer #2 started at tick 1168938125
+1169141250: global: Timer #2 stopped at tick 1169141250. Duration: 203125
+1169403125: global: Timer #2 started at tick 1169403125
+1169669375: global: Timer #2 stopped at tick 1169669375. Duration: 266250
+1170026250: global: Timer #2 started at tick 1170026250
+1170469375: global: Timer #2 stopped at tick 1170469375. Duration: 443125
+1170731250: global: Timer #2 started at tick 1170731250
+1171088750: global: Timer #2 stopped at tick 1171088750. Duration: 357500
+1171351250: global: Timer #2 started at tick 1171351250
+1171841250: global: Timer #2 stopped at tick 1171841250. Duration: 490000
+1172103125: global: Timer #2 started at tick 1172103125
+1172485625: global: Timer #2 stopped at tick 1172485625. Duration: 382500
+1172820000: global: Timer #2 started at tick 1172820000
+1173113750: global: Timer #2 stopped at tick 1173113750. Duration: 293750
+1173508750: global: Timer #2 started at tick 1173508750
+1174073750: global: Timer #2 stopped at tick 1174073750. Duration: 565000
+1174351250: global: Timer #2 started at tick 1174351250
+1174549375: global: Timer #2 stopped at tick 1174549375. Duration: 198125
+1174811250: global: Timer #2 started at tick 1174811250
+1175196875: global: Timer #2 stopped at tick 1175196875. Duration: 385625
+1175458750: global: Timer #2 started at tick 1175458750
+1175664375: global: Timer #2 stopped at tick 1175664375. Duration: 205625
+1175920000: global: Timer #2 started at tick 1175920000
+1176203125: global: Timer #2 stopped at tick 1176203125. Duration: 283125
+1176651875: global: Timer #2 started at tick 1176651875
+1176998125: global: Timer #2 stopped at tick 1176998125. Duration: 346250
+1177278125: global: Timer #2 started at tick 1177278125
+1177478750: global: Timer #2 stopped at tick 1177478750. Duration: 200625
+1177738125: global: Timer #2 started at tick 1177738125
+1178055000: global: Timer #2 stopped at tick 1178055000. Duration: 316875
+1178331875: global: Timer #2 started at tick 1178331875
+1178709375: global: Timer #2 stopped at tick 1178709375. Duration: 377500
+1178971250: global: Timer #2 started at tick 1178971250
+1179171875: global: Timer #2 stopped at tick 1179171875. Duration: 200625
+1179433750: global: Timer #2 started at tick 1179433750
+1179752500: global: Timer #2 stopped at tick 1179752500. Duration: 318750
+1180125000: global: Timer #2 started at tick 1180125000
+1180338750: global: Timer #2 stopped at tick 1180338750. Duration: 213750
+1180583750: global: Timer #2 started at tick 1180583750
+1180977500: global: Timer #2 stopped at tick 1180977500. Duration: 393750
+1181218750: global: Timer #2 started at tick 1181218750
+1181552500: global: Timer #2 stopped at tick 1181552500. Duration: 333750
+1181811250: global: Timer #2 started at tick 1181811250
+1182041875: global: Timer #2 stopped at tick 1182041875. Duration: 230625
+1182303750: global: Timer #2 started at tick 1182303750
+1182523125: global: Timer #2 stopped at tick 1182523125. Duration: 219375
+1182778750: global: Timer #2 started at tick 1182778750
+1183118125: global: Timer #2 stopped at tick 1183118125. Duration: 339375
+1183373750: global: Timer #2 started at tick 1183373750
+1183601875: global: Timer #2 stopped at tick 1183601875. Duration: 228125
+1183863750: global: Timer #2 started at tick 1183863750
+1184203750: global: Timer #2 stopped at tick 1184203750. Duration: 340000
+1184463125: global: Timer #2 started at tick 1184463125
+1184699375: global: Timer #2 stopped at tick 1184699375. Duration: 236250
+1184961250: global: Timer #2 started at tick 1184961250
+1185213125: global: Timer #2 stopped at tick 1185213125. Duration: 251875
+1185456875: global: Timer #2 started at tick 1185456875
+1185998125: global: Timer #2 stopped at tick 1185998125. Duration: 541250
+1186278125: global: Timer #2 started at tick 1186278125
+1186650000: global: Timer #2 stopped at tick 1186650000. Duration: 371875
+1186911875: global: Timer #2 started at tick 1186911875
+1187255000: global: Timer #2 stopped at tick 1187255000. Duration: 343125
+1187535000: global: Timer #2 started at tick 1187535000
+1187805000: global: Timer #2 stopped at tick 1187805000. Duration: 270000
+1188283750: global: Timer #2 started at tick 1188283750
+1188501250: global: Timer #2 stopped at tick 1188501250. Duration: 217500
+1188745000: global: Timer #2 started at tick 1188745000
+1189099375: global: Timer #2 stopped at tick 1189099375. Duration: 354375
+1189478125: global: Timer #2 started at tick 1189478125
+1189853125: global: Timer #2 stopped at tick 1189853125. Duration: 375000
+1190115000: global: Timer #2 started at tick 1190115000
+1190619375: global: Timer #2 stopped at tick 1190619375. Duration: 504375
+1190876250: global: Timer #2 started at tick 1190876250
+1191086250: global: Timer #2 stopped at tick 1191086250. Duration: 210000
+1191363125: global: Timer #2 started at tick 1191363125
+1191941250: global: Timer #2 stopped at tick 1191941250. Duration: 578125
+1192230000: global: Timer #2 started at tick 1192230000
+1192521875: global: Timer #2 stopped at tick 1192521875. Duration: 291875
+1192901250: global: Timer #2 started at tick 1192901250
+1193111875: global: Timer #2 stopped at tick 1193111875. Duration: 210625
+1193371250: global: Timer #2 started at tick 1193371250
+1193905625: global: Timer #2 stopped at tick 1193905625. Duration: 534375
+1194165000: global: Timer #2 started at tick 1194165000
+1194429375: global: Timer #2 stopped at tick 1194429375. Duration: 264375
+1194688125: global: Timer #2 started at tick 1194688125
+1195014375: global: Timer #2 stopped at tick 1195014375. Duration: 326250
+1195276250: global: Timer #2 started at tick 1195276250
+1195491250: global: Timer #2 stopped at tick 1195491250. Duration: 215000
+1195963125: global: Timer #2 started at tick 1195963125
+1196335625: global: Timer #2 stopped at tick 1196335625. Duration: 372500
+1196595000: global: Timer #2 started at tick 1196595000
+1196904375: global: Timer #2 stopped at tick 1196904375. Duration: 309375
+1197281250: global: Timer #2 started at tick 1197281250
+1197812500: global: Timer #2 stopped at tick 1197812500. Duration: 531250
+1198075000: global: Timer #2 started at tick 1198075000
+1198346875: global: Timer #2 stopped at tick 1198346875. Duration: 271875
+1198603125: global: Timer #2 started at tick 1198603125
+1198833125: global: Timer #2 stopped at tick 1198833125. Duration: 230000
+1199095000: global: Timer #2 started at tick 1199095000
+1199433750: global: Timer #2 stopped at tick 1199433750. Duration: 338750
+1199995000: global: Timer #2 started at tick 1199995000
+1200399375: global: Timer #2 stopped at tick 1200399375. Duration: 404375
+1200836875: global: Timer #2 started at tick 1200836875
+1201221250: global: Timer #2 stopped at tick 1201221250. Duration: 384375
+1201481250: global: Timer #2 started at tick 1201481250
+1201718750: global: Timer #2 stopped at tick 1201718750. Duration: 237500
+1201978125: global: Timer #2 started at tick 1201978125
+1202567500: global: Timer #2 stopped at tick 1202567500. Duration: 589375
+1202826875: global: Timer #2 started at tick 1202826875
+1203376250: global: Timer #2 stopped at tick 1203376250. Duration: 549375
+1203823125: global: Timer #2 started at tick 1203823125
+1204191875: global: Timer #2 stopped at tick 1204191875. Duration: 368750
+1204543750: global: Timer #2 started at tick 1204543750
+1205101875: global: Timer #2 stopped at tick 1205101875. Duration: 558125
+1205363750: global: Timer #2 started at tick 1205363750
+1205596250: global: Timer #2 stopped at tick 1205596250. Duration: 232500
+1205858125: global: Timer #2 started at tick 1205858125
+1206278750: global: Timer #2 stopped at tick 1206278750. Duration: 420625
+1206538125: global: Timer #2 started at tick 1206538125
+1206756250: global: Timer #2 stopped at tick 1206756250. Duration: 218125
+1207015000: global: Timer #2 started at tick 1207015000
+1207370625: global: Timer #2 stopped at tick 1207370625. Duration: 355625
+1207876875: global: Timer #2 started at tick 1207876875
+1208217500: global: Timer #2 stopped at tick 1208217500. Duration: 340625
+1208480000: global: Timer #2 started at tick 1208480000
+1208770000: global: Timer #2 stopped at tick 1208770000. Duration: 290000
+1209046875: global: Timer #2 started at tick 1209046875
+1209285625: global: Timer #2 stopped at tick 1209285625. Duration: 238750
+1209563125: global: Timer #2 started at tick 1209563125
+1209808750: global: Timer #2 stopped at tick 1209808750. Duration: 245625
+1210088750: global: Timer #2 started at tick 1210088750
+1210459375: global: Timer #2 stopped at tick 1210459375. Duration: 370625
+1210813750: global: Timer #2 started at tick 1210813750
+1211044375: global: Timer #2 stopped at tick 1211044375. Duration: 230625
+1211790000: global: Timer #2 started at tick 1211790000
+1212036875: global: Timer #2 stopped at tick 1212036875. Duration: 246875
+1212316875: global: Timer #2 started at tick 1212316875
+1212572500: global: Timer #2 stopped at tick 1212572500. Duration: 255625
+1212835000: global: Timer #2 started at tick 1212835000
+1213260000: global: Timer #2 stopped at tick 1213260000. Duration: 425000
+1213518750: global: Timer #2 started at tick 1213518750
+1214086875: global: Timer #2 stopped at tick 1214086875. Duration: 568125
+1214346250: global: Timer #2 started at tick 1214346250
+1214818125: global: Timer #2 stopped at tick 1214818125. Duration: 471875
+1215468750: global: Timer #2 started at tick 1215468750
+1215793750: global: Timer #2 stopped at tick 1215793750. Duration: 325000
+1216056250: global: Timer #2 started at tick 1216056250
+1216916250: global: Timer #2 stopped at tick 1216916250. Duration: 860000
+1217175000: global: Timer #2 started at tick 1217175000
+1217385000: global: Timer #2 stopped at tick 1217385000. Duration: 210000
+1217646875: global: Timer #2 started at tick 1217646875
+1218065000: global: Timer #2 stopped at tick 1218065000. Duration: 418125
+1218325000: global: Timer #2 started at tick 1218325000
+1218518750: global: Timer #2 stopped at tick 1218518750. Duration: 193750
+1218781250: global: Timer #2 started at tick 1218781250
+1219310625: global: Timer #2 stopped at tick 1219310625. Duration: 529375
+1219701250: global: Timer #2 started at tick 1219701250
+1220001250: global: Timer #2 stopped at tick 1220001250. Duration: 300000
+1220260000: global: Timer #2 started at tick 1220260000
+1220462500: global: Timer #2 stopped at tick 1220462500. Duration: 202500
+1220718125: global: Timer #2 started at tick 1220718125
+1221051875: global: Timer #2 stopped at tick 1221051875. Duration: 333750
+1221331875: global: Timer #2 started at tick 1221331875
+1221533750: global: Timer #2 stopped at tick 1221533750. Duration: 201875
+1221911250: global: Timer #2 started at tick 1221911250
+1222280000: global: Timer #2 stopped at tick 1222280000. Duration: 368750
+1222558125: global: Timer #2 started at tick 1222558125
+1222775625: global: Timer #2 stopped at tick 1222775625. Duration: 217500
+1223225000: global: Timer #2 started at tick 1223225000
+1223572500: global: Timer #2 stopped at tick 1223572500. Duration: 347500
+1223850000: global: Timer #2 started at tick 1223850000
+1224243125: global: Timer #2 stopped at tick 1224243125. Duration: 393125
+1224500000: global: Timer #2 started at tick 1224500000
+1224773750: global: Timer #2 stopped at tick 1224773750. Duration: 273750
+1225051250: global: Timer #2 started at tick 1225051250
+1225443125: global: Timer #2 stopped at tick 1225443125. Duration: 391875
+1225721250: global: Timer #2 started at tick 1225721250
+1226163750: global: Timer #2 stopped at tick 1226163750. Duration: 442500
+1226423125: global: Timer #2 started at tick 1226423125
+1226673750: global: Timer #2 stopped at tick 1226673750. Duration: 250625
+1227120000: global: Timer #2 started at tick 1227120000
+1227477500: global: Timer #2 stopped at tick 1227477500. Duration: 357500
+1227736875: global: Timer #2 started at tick 1227736875
+1228100000: global: Timer #2 stopped at tick 1228100000. Duration: 363125
+1228341875: global: Timer #2 started at tick 1228341875
+1228673750: global: Timer #2 stopped at tick 1228673750. Duration: 331875
+1228971875: global: Timer #2 started at tick 1228971875
+1229403750: global: Timer #2 stopped at tick 1229403750. Duration: 431875
+1229678125: global: Timer #2 started at tick 1229678125
+1230015000: global: Timer #2 stopped at tick 1230015000. Duration: 336875
+1230276875: global: Timer #2 started at tick 1230276875
+1230571875: global: Timer #2 stopped at tick 1230571875. Duration: 295000
+1231038750: global: Timer #2 started at tick 1231038750
+1231355000: global: Timer #2 stopped at tick 1231355000. Duration: 316250
+1231616875: global: Timer #2 started at tick 1231616875
+1232117500: global: Timer #2 stopped at tick 1232117500. Duration: 500625
+1232460000: global: Timer #2 started at tick 1232460000
+1232773750: global: Timer #2 stopped at tick 1232773750. Duration: 313750
+1233053750: global: Timer #2 started at tick 1233053750
+1233273125: global: Timer #2 stopped at tick 1233273125. Duration: 219375
+1233535000: global: Timer #2 started at tick 1233535000
+1233756875: global: Timer #2 stopped at tick 1233756875. Duration: 221875
+1234018750: global: Timer #2 started at tick 1234018750
+1234400000: global: Timer #2 stopped at tick 1234400000. Duration: 381250
+1234868125: global: Timer #2 started at tick 1234868125
+1235083125: global: Timer #2 stopped at tick 1235083125. Duration: 215000
+1235345000: global: Timer #2 started at tick 1235345000
+1235614375: global: Timer #2 stopped at tick 1235614375. Duration: 269375
+1235876250: global: Timer #2 started at tick 1235876250
+1236188750: global: Timer #2 stopped at tick 1236188750. Duration: 312500
+1236468750: global: Timer #2 started at tick 1236468750
+1236688750: global: Timer #2 stopped at tick 1236688750. Duration: 220000
+1236966250: global: Timer #2 started at tick 1236966250
+1237580000: global: Timer #2 stopped at tick 1237580000. Duration: 613750
+1237840000: global: Timer #2 started at tick 1237840000
+1238039375: global: Timer #2 stopped at tick 1238039375. Duration: 199375
+1238298125: global: Timer #2 started at tick 1238298125
+1238674375: global: Timer #2 stopped at tick 1238674375. Duration: 376250
+1238916250: global: Timer #2 started at tick 1238916250
+1239185000: global: Timer #2 stopped at tick 1239185000. Duration: 268750
+1239441250: global: Timer #2 started at tick 1239441250
+1239666875: global: Timer #2 stopped at tick 1239666875. Duration: 225625
+1239928750: global: Timer #2 started at tick 1239928750
+1240466875: global: Timer #2 stopped at tick 1240466875. Duration: 538125
+1240743750: global: Timer #2 started at tick 1240743750
+1241121875: global: Timer #2 stopped at tick 1241121875. Duration: 378125
+1241381250: global: Timer #2 started at tick 1241381250
+1241674375: global: Timer #2 stopped at tick 1241674375. Duration: 293125
+1242035000: global: Timer #2 started at tick 1242035000
+1242267500: global: Timer #2 stopped at tick 1242267500. Duration: 232500
+1242696875: global: Timer #2 started at tick 1242696875
+1243245000: global: Timer #2 stopped at tick 1243245000. Duration: 548125
+1243506875: global: Timer #2 started at tick 1243506875
+1243955625: global: Timer #2 stopped at tick 1243955625. Duration: 448750
+1244233125: global: Timer #2 started at tick 1244233125
+1244613125: global: Timer #2 stopped at tick 1244613125. Duration: 380000
+1244873125: global: Timer #2 started at tick 1244873125
+1245165000: global: Timer #2 stopped at tick 1245165000. Duration: 291875
+1245441875: global: Timer #2 started at tick 1245441875
+1245663750: global: Timer #2 stopped at tick 1245663750. Duration: 221875
+1245943750: global: Timer #2 started at tick 1245943750
+1246171250: global: Timer #2 stopped at tick 1246171250. Duration: 227500
+1246575000: global: Timer #2 started at tick 1246575000
+1247075625: global: Timer #2 stopped at tick 1247075625. Duration: 500625
+1247331875: global: Timer #2 started at tick 1247331875
+1247548750: global: Timer #2 stopped at tick 1247548750. Duration: 216875
+1247805000: global: Timer #2 started at tick 1247805000
+1248152500: global: Timer #2 stopped at tick 1248152500. Duration: 347500
+1248393750: global: Timer #2 started at tick 1248393750
+1248896250: global: Timer #2 stopped at tick 1248896250. Duration: 502500
+1249173125: global: Timer #2 started at tick 1249173125
+1249403125: global: Timer #2 stopped at tick 1249403125. Duration: 230000
+1249680000: global: Timer #2 started at tick 1249680000
+1249919375: global: Timer #2 stopped at tick 1249919375. Duration: 239375
+1250396250: global: Timer #2 started at tick 1250396250
+1250707500: global: Timer #2 stopped at tick 1250707500. Duration: 311250
+1250970000: global: Timer #2 started at tick 1250970000
+1251314375: global: Timer #2 stopped at tick 1251314375. Duration: 344375
+1251573125: global: Timer #2 started at tick 1251573125
+1251811875: global: Timer #2 stopped at tick 1251811875. Duration: 238750
+1252171250: global: Timer #2 started at tick 1252171250
+1252565625: global: Timer #2 stopped at tick 1252565625. Duration: 394375
+1252828125: global: Timer #2 started at tick 1252828125
+1253131250: global: Timer #2 stopped at tick 1253131250. Duration: 303125
+1253408750: global: Timer #2 started at tick 1253408750
+1253742500: global: Timer #2 stopped at tick 1253742500. Duration: 333750
+1254221875: global: Timer #2 started at tick 1254221875
+1254599375: global: Timer #2 stopped at tick 1254599375. Duration: 377500
+1254861250: global: Timer #2 started at tick 1254861250
+1255108750: global: Timer #2 stopped at tick 1255108750. Duration: 247500
+1255368125: global: Timer #2 started at tick 1255368125
+1255629375: global: Timer #2 stopped at tick 1255629375. Duration: 261250
+1255891250: global: Timer #2 started at tick 1255891250
+1256344375: global: Timer #2 stopped at tick 1256344375. Duration: 453125
+1256603750: global: Timer #2 started at tick 1256603750
+1257048125: global: Timer #2 stopped at tick 1257048125. Duration: 444375
+1257308125: global: Timer #2 started at tick 1257308125
+1257550000: global: Timer #2 stopped at tick 1257550000. Duration: 241875
+1257808750: global: Timer #2 started at tick 1257808750
+1258053125: global: Timer #2 stopped at tick 1258053125. Duration: 244375
+1258296875: global: Timer #2 started at tick 1258296875
+1258690000: global: Timer #2 stopped at tick 1258690000. Duration: 393125
+1258951875: global: Timer #2 started at tick 1258951875
+1259199375: global: Timer #2 stopped at tick 1259199375. Duration: 247500
+1259596250: global: Timer #2 started at tick 1259596250
+1259959375: global: Timer #2 stopped at tick 1259959375. Duration: 363125
+1260236875: global: Timer #2 started at tick 1260236875
+1260588125: global: Timer #2 stopped at tick 1260588125. Duration: 351250
+1260865000: global: Timer #2 started at tick 1260865000
+1261134375: global: Timer #2 stopped at tick 1261134375. Duration: 269375
+1261393125: global: Timer #2 started at tick 1261393125
+1261653125: global: Timer #2 stopped at tick 1261653125. Duration: 260000
+1262186250: global: Timer #2 started at tick 1262186250
+1262568750: global: Timer #2 stopped at tick 1262568750. Duration: 382500
+1262831250: global: Timer #2 started at tick 1262831250
+1263431250: global: Timer #2 stopped at tick 1263431250. Duration: 600000
+1263818125: global: Timer #2 started at tick 1263818125
+1264056250: global: Timer #2 stopped at tick 1264056250. Duration: 238125
+1264315000: global: Timer #2 started at tick 1264315000
+1264556875: global: Timer #2 stopped at tick 1264556875. Duration: 241875
+1264836875: global: Timer #2 started at tick 1264836875
+1265072500: global: Timer #2 stopped at tick 1265072500. Duration: 235625
+1265328125: global: Timer #2 started at tick 1265328125
+1265642500: global: Timer #2 stopped at tick 1265642500. Duration: 314375
+1265988750: global: Timer #2 started at tick 1265988750
+1266257500: global: Timer #2 stopped at tick 1266257500. Duration: 268750
+1266520000: global: Timer #2 started at tick 1266520000
+1266965625: global: Timer #2 stopped at tick 1266965625. Duration: 445625
+1267401250: global: Timer #2 started at tick 1267401250
+1267641875: global: Timer #2 stopped at tick 1267641875. Duration: 240625
+1267903750: global: Timer #2 started at tick 1267903750
+1268853750: global: Timer #2 stopped at tick 1268853750. Duration: 950000
+1269110000: global: Timer #2 started at tick 1269110000
+1269487500: global: Timer #2 stopped at tick 1269487500. Duration: 377500
+1269888125: global: Timer #2 started at tick 1269888125
+1270131875: global: Timer #2 stopped at tick 1270131875. Duration: 243750
+1270391250: global: Timer #2 started at tick 1270391250
+1270686250: global: Timer #2 stopped at tick 1270686250. Duration: 295000
+1270966250: global: Timer #2 started at tick 1270966250
+1271161875: global: Timer #2 stopped at tick 1271161875. Duration: 195625
+1271438750: global: Timer #2 started at tick 1271438750
+1271701875: global: Timer #2 stopped at tick 1271701875. Duration: 263125
+1271961250: global: Timer #2 started at tick 1271961250
+1272360000: global: Timer #2 stopped at tick 1272360000. Duration: 398750
+1272721250: global: Timer #2 started at tick 1272721250
+1272907500: global: Timer #2 stopped at tick 1272907500. Duration: 186250
+1273166250: global: Timer #2 started at tick 1273166250
+1273641250: global: Timer #2 stopped at tick 1273641250. Duration: 475000
+1273881875: global: Timer #2 started at tick 1273881875
+1274068750: global: Timer #2 stopped at tick 1274068750. Duration: 186875
+1274325000: global: Timer #2 started at tick 1274325000
+1274522500: global: Timer #2 stopped at tick 1274522500. Duration: 197500
+1274781250: global: Timer #2 started at tick 1274781250
+1275048125: global: Timer #2 stopped at tick 1275048125. Duration: 266875
+1275453125: global: Timer #2 started at tick 1275453125
+1275665000: global: Timer #2 stopped at tick 1275665000. Duration: 211875
+1275923750: global: Timer #2 started at tick 1275923750
+1276299375: global: Timer #2 stopped at tick 1276299375. Duration: 375625
+1276558750: global: Timer #2 started at tick 1276558750
+1276773750: global: Timer #2 stopped at tick 1276773750. Duration: 215000
+1277036250: global: Timer #2 started at tick 1277036250
+1277250625: global: Timer #2 stopped at tick 1277250625. Duration: 214375
+1277633750: global: Timer #2 started at tick 1277633750
+1277861875: global: Timer #2 stopped at tick 1277861875. Duration: 228125
+1278123750: global: Timer #2 started at tick 1278123750
+1278477500: global: Timer #2 stopped at tick 1278477500. Duration: 353750
+1278736250: global: Timer #2 started at tick 1278736250
+1278937500: global: Timer #2 stopped at tick 1278937500. Duration: 201250
+1279196250: global: Timer #2 started at tick 1279196250
+1279413125: global: Timer #2 stopped at tick 1279413125. Duration: 216875
+1279758750: global: Timer #2 started at tick 1279758750
+1280121250: global: Timer #2 stopped at tick 1280121250. Duration: 362500
+1280376875: global: Timer #2 started at tick 1280376875
+1280593750: global: Timer #2 stopped at tick 1280593750. Duration: 216875
+1280856250: global: Timer #2 started at tick 1280856250
+1281080000: global: Timer #2 stopped at tick 1281080000. Duration: 223750
+1281600000: global: Timer #2 started at tick 1281600000
+1282139375: global: Timer #2 stopped at tick 1282139375. Duration: 539375
+1282398750: global: Timer #2 started at tick 1282398750
+1282678125: global: Timer #2 stopped at tick 1282678125. Duration: 279375
+1283108125: global: Timer #2 started at tick 1283108125
+1283311250: global: Timer #2 stopped at tick 1283311250. Duration: 203125
+1283591250: global: Timer #2 started at tick 1283591250
+1283796250: global: Timer #2 stopped at tick 1283796250. Duration: 205000
+1284073125: global: Timer #2 started at tick 1284073125
+1284459375: global: Timer #2 stopped at tick 1284459375. Duration: 386250
+1284718750: global: Timer #2 started at tick 1284718750
+1285303125: global: Timer #2 stopped at tick 1285303125. Duration: 584375
+1285545000: global: Timer #2 started at tick 1285545000
+1285824375: global: Timer #2 stopped at tick 1285824375. Duration: 279375
+1286196250: global: Timer #2 started at tick 1286196250
+1286398125: global: Timer #2 stopped at tick 1286398125. Duration: 201875
+1286656875: global: Timer #2 started at tick 1286656875
+1287316875: global: Timer #2 stopped at tick 1287316875. Duration: 660000
+1287578750: global: Timer #2 started at tick 1287578750
+1287903750: global: Timer #2 stopped at tick 1287903750. Duration: 325000
+1288145000: global: Timer #2 started at tick 1288145000
+1288392500: global: Timer #2 stopped at tick 1288392500. Duration: 247500
+1288668750: global: Timer #2 started at tick 1288668750
+1289195000: global: Timer #2 stopped at tick 1289195000. Duration: 526250
+1289576875: global: Timer #2 started at tick 1289576875
+1289763750: global: Timer #2 stopped at tick 1289763750. Duration: 186875
+1290023125: global: Timer #2 started at tick 1290023125
+1290225625: global: Timer #2 stopped at tick 1290225625. Duration: 202500
+1290488125: global: Timer #2 started at tick 1290488125
+1291145625: global: Timer #2 stopped at tick 1291145625. Duration: 657500
+1291423125: global: Timer #2 started at tick 1291423125
+1291999375: global: Timer #2 stopped at tick 1291999375. Duration: 576250
+1292360000: global: Timer #2 started at tick 1292360000
+1292586250: global: Timer #2 stopped at tick 1292586250. Duration: 226250
+1293068750: global: Timer #2 started at tick 1293068750
+1293343750: global: Timer #2 stopped at tick 1293343750. Duration: 275000
+1293603125: global: Timer #2 started at tick 1293603125
+1293928125: global: Timer #2 stopped at tick 1293928125. Duration: 325000
+1294190000: global: Timer #2 started at tick 1294190000
+1294402500: global: Timer #2 stopped at tick 1294402500. Duration: 212500
+1294665000: global: Timer #2 started at tick 1294665000
+1294996875: global: Timer #2 stopped at tick 1294996875. Duration: 331875
+1295276875: global: Timer #2 started at tick 1295276875
+1295525625: global: Timer #2 stopped at tick 1295525625. Duration: 248750
+1295785000: global: Timer #2 started at tick 1295785000
+1296192500: global: Timer #2 stopped at tick 1296192500. Duration: 407500
+1296448125: global: Timer #2 started at tick 1296448125
+1296933125: global: Timer #2 stopped at tick 1296933125. Duration: 485000
+1297176875: global: Timer #2 started at tick 1297176875
+1297693125: global: Timer #2 stopped at tick 1297693125. Duration: 516250
+1297951875: global: Timer #2 started at tick 1297951875
+1298267500: global: Timer #2 stopped at tick 1298267500. Duration: 315625
+1298530000: global: Timer #2 started at tick 1298530000
+1298976250: global: Timer #2 stopped at tick 1298976250. Duration: 446250
+1299238125: global: Timer #2 started at tick 1299238125
+1299500000: global: Timer #2 stopped at tick 1299500000. Duration: 261875
+1299876250: global: Timer #2 started at tick 1299876250
+1300141875: global: Timer #2 stopped at tick 1300141875. Duration: 265625
+1300401250: global: Timer #2 started at tick 1300401250
+1300689375: global: Timer #2 stopped at tick 1300689375. Duration: 288125
+1300933125: global: Timer #2 started at tick 1300933125
+1301148125: global: Timer #2 stopped at tick 1301148125. Duration: 215000
+1301410000: global: Timer #2 started at tick 1301410000
+1301620625: global: Timer #2 stopped at tick 1301620625. Duration: 210625
+1301960000: global: Timer #2 started at tick 1301960000
+1302243125: global: Timer #2 stopped at tick 1302243125. Duration: 283125
+1302503125: global: Timer #2 started at tick 1302503125
+1302779375: global: Timer #2 stopped at tick 1302779375. Duration: 276250
+1303153125: global: Timer #2 started at tick 1303153125
+1303395625: global: Timer #2 stopped at tick 1303395625. Duration: 242500
+1303673125: global: Timer #2 started at tick 1303673125
+1304028750: global: Timer #2 stopped at tick 1304028750. Duration: 355625
+1304288125: global: Timer #2 started at tick 1304288125
+1304688125: global: Timer #2 stopped at tick 1304688125. Duration: 400000
+1304946875: global: Timer #2 started at tick 1304946875
+1305246250: global: Timer #2 stopped at tick 1305246250. Duration: 299375
+1305508125: global: Timer #2 started at tick 1305508125
+1305902500: global: Timer #2 stopped at tick 1305902500. Duration: 394375
+1306161875: global: Timer #2 started at tick 1306161875
+1306425625: global: Timer #2 stopped at tick 1306425625. Duration: 263750
+1306688125: global: Timer #2 started at tick 1306688125
+1307227500: global: Timer #2 stopped at tick 1307227500. Duration: 539375
+1307486250: global: Timer #2 started at tick 1307486250
+1307741875: global: Timer #2 stopped at tick 1307741875. Duration: 255625
+1307986250: global: Timer #2 started at tick 1307986250
+1308629375: global: Timer #2 stopped at tick 1308629375. Duration: 643125
+1308888750: global: Timer #2 started at tick 1308888750
+1309275000: global: Timer #2 stopped at tick 1309275000. Duration: 386250
+1309533750: global: Timer #2 started at tick 1309533750
+1310118125: global: Timer #2 stopped at tick 1310118125. Duration: 584375
+1310380000: global: Timer #2 started at tick 1310380000
+1310629375: global: Timer #2 stopped at tick 1310629375. Duration: 249375
+1311035000: global: Timer #2 started at tick 1311035000
+1311326875: global: Timer #2 stopped at tick 1311326875. Duration: 291875
+1311586250: global: Timer #2 started at tick 1311586250
+1311800625: global: Timer #2 stopped at tick 1311800625. Duration: 214375
+1312161250: global: Timer #2 started at tick 1312161250
+1312573750: global: Timer #2 stopped at tick 1312573750. Duration: 412500
+1312818125: global: Timer #2 started at tick 1312818125
+1313090625: global: Timer #2 stopped at tick 1313090625. Duration: 272500
+1313353125: global: Timer #2 started at tick 1313353125
+1313565000: global: Timer #2 stopped at tick 1313565000. Duration: 211875
+1313823750: global: Timer #2 started at tick 1313823750
+1314233750: global: Timer #2 stopped at tick 1314233750. Duration: 410000
+1314611250: global: Timer #2 started at tick 1314611250
+1314824375: global: Timer #2 stopped at tick 1314824375. Duration: 213125
+1315101250: global: Timer #2 started at tick 1315101250
+1315313750: global: Timer #2 stopped at tick 1315313750. Duration: 212500
+1315593750: global: Timer #2 started at tick 1315593750
+1316031875: global: Timer #2 stopped at tick 1316031875. Duration: 438125
+1316453750: global: Timer #2 started at tick 1316453750
+1316661875: global: Timer #2 stopped at tick 1316661875. Duration: 208125
+1316918125: global: Timer #2 started at tick 1316918125
+1317213125: global: Timer #2 stopped at tick 1317213125. Duration: 295000
+1317608125: global: Timer #2 started at tick 1317608125
+1317826250: global: Timer #2 stopped at tick 1317826250. Duration: 218125
+1318103125: global: Timer #2 started at tick 1318103125
+1318464375: global: Timer #2 stopped at tick 1318464375. Duration: 361250
+1318726250: global: Timer #2 started at tick 1318726250
+1319013125: global: Timer #2 stopped at tick 1319013125. Duration: 286875
+1319271875: global: Timer #2 started at tick 1319271875
+1319512500: global: Timer #2 stopped at tick 1319512500. Duration: 240625
+1319788750: global: Timer #2 started at tick 1319788750
+1320308125: global: Timer #2 stopped at tick 1320308125. Duration: 519375
+1320546875: global: Timer #2 started at tick 1320546875
+1320783125: global: Timer #2 stopped at tick 1320783125. Duration: 236250
+1321041875: global: Timer #2 started at tick 1321041875
+1321280625: global: Timer #2 stopped at tick 1321280625. Duration: 238750
+1321766250: global: Timer #2 started at tick 1321766250
+1322013750: global: Timer #2 stopped at tick 1322013750. Duration: 247500
+1322291250: global: Timer #2 started at tick 1322291250
+1322607500: global: Timer #2 stopped at tick 1322607500. Duration: 316250
+1322866875: global: Timer #2 started at tick 1322866875
+1323125625: global: Timer #2 stopped at tick 1323125625. Duration: 258750
+1323388125: global: Timer #2 started at tick 1323388125
+1323661250: global: Timer #2 stopped at tick 1323661250. Duration: 273125
+1324126250: global: Timer #2 started at tick 1324126250
+1324683125: global: Timer #2 stopped at tick 1324683125. Duration: 556875
+1324963125: global: Timer #2 started at tick 1324963125
+1325210000: global: Timer #2 stopped at tick 1325210000. Duration: 246875
+1325471875: global: Timer #2 started at tick 1325471875
+1325883750: global: Timer #2 stopped at tick 1325883750. Duration: 411875
+1326306875: global: Timer #2 started at tick 1326306875
+1326546875: global: Timer #2 stopped at tick 1326546875. Duration: 240000
+1326821250: global: Timer #2 started at tick 1326821250
+1327423125: global: Timer #2 stopped at tick 1327423125. Duration: 601875
+1327683125: global: Timer #2 started at tick 1327683125
+1327967500: global: Timer #2 stopped at tick 1327967500. Duration: 284375
+1328208750: global: Timer #2 started at tick 1328208750
+1328496875: global: Timer #2 stopped at tick 1328496875. Duration: 288125
+1328773750: global: Timer #2 started at tick 1328773750
+1329042500: global: Timer #2 stopped at tick 1329042500. Duration: 268750
+1329301875: global: Timer #2 started at tick 1329301875
+1329598125: global: Timer #2 stopped at tick 1329598125. Duration: 296250
+1329856875: global: Timer #2 started at tick 1329856875
+1330185625: global: Timer #2 stopped at tick 1330185625. Duration: 328750
+1330565000: global: Timer #2 started at tick 1330565000
+1330792500: global: Timer #2 stopped at tick 1330792500. Duration: 227500
+1331055000: global: Timer #2 started at tick 1331055000
+1331502500: global: Timer #2 stopped at tick 1331502500. Duration: 447500
+1332030000: global: Timer #2 started at tick 1332030000
+1332240625: global: Timer #2 stopped at tick 1332240625. Duration: 210625
+1332500000: global: Timer #2 started at tick 1332500000
+1332945625: global: Timer #2 stopped at tick 1332945625. Duration: 445625
+1333205000: global: Timer #2 started at tick 1333205000
+1333412500: global: Timer #2 stopped at tick 1333412500. Duration: 207500
+1333671250: global: Timer #2 started at tick 1333671250
+1334260000: global: Timer #2 stopped at tick 1334260000. Duration: 588750
+1334558750: global: Timer #2 started at tick 1334558750
+1334784375: global: Timer #2 stopped at tick 1334784375. Duration: 225625
+1335063750: global: Timer #2 started at tick 1335063750
+1335388750: global: Timer #2 stopped at tick 1335388750. Duration: 325000
+1335836250: global: Timer #2 started at tick 1335836250
+1336136875: global: Timer #2 stopped at tick 1336136875. Duration: 300625
+1336393125: global: Timer #2 started at tick 1336393125
+1336628750: global: Timer #2 stopped at tick 1336628750. Duration: 235625
+1336891250: global: Timer #2 started at tick 1336891250
+1337119375: global: Timer #2 stopped at tick 1337119375. Duration: 228125
+1337381250: global: Timer #2 started at tick 1337381250
+1337710000: global: Timer #2 stopped at tick 1337710000. Duration: 328750
+1337990000: global: Timer #2 started at tick 1337990000
+1338230000: global: Timer #2 stopped at tick 1338230000. Duration: 240000
+1338633750: global: Timer #2 started at tick 1338633750
+1338960625: global: Timer #2 stopped at tick 1338960625. Duration: 326875
+1339220000: global: Timer #2 started at tick 1339220000
+1339438125: global: Timer #2 stopped at tick 1339438125. Duration: 218125
+1339746250: global: Timer #2 started at tick 1339746250
+1340101875: global: Timer #2 stopped at tick 1340101875. Duration: 355625
+1340363750: global: Timer #2 started at tick 1340363750
+1340579375: global: Timer #2 stopped at tick 1340579375. Duration: 215625
+1340838125: global: Timer #2 started at tick 1340838125
+1341181875: global: Timer #2 stopped at tick 1341181875. Duration: 343750
+1341538750: global: Timer #2 started at tick 1341538750
+1341919375: global: Timer #2 stopped at tick 1341919375. Duration: 380625
+1342178750: global: Timer #2 started at tick 1342178750
+1342590625: global: Timer #2 stopped at tick 1342590625. Duration: 411875
+1342850000: global: Timer #2 started at tick 1342850000
+1343655625: global: Timer #2 stopped at tick 1343655625. Duration: 805625
+1343896875: global: Timer #2 started at tick 1343896875
+1344232500: global: Timer #2 stopped at tick 1344232500. Duration: 335625
+1344491875: global: Timer #2 started at tick 1344491875
+1344712500: global: Timer #2 stopped at tick 1344712500. Duration: 220625
+1344988750: global: Timer #2 started at tick 1344988750
+1345493125: global: Timer #2 stopped at tick 1345493125. Duration: 504375
+1345755000: global: Timer #2 started at tick 1345755000
+1346037500: global: Timer #2 stopped at tick 1346037500. Duration: 282500
+1346278750: global: Timer #2 started at tick 1346278750
+1346586250: global: Timer #2 stopped at tick 1346586250. Duration: 307500
+1346845000: global: Timer #2 started at tick 1346845000
+1347121875: global: Timer #2 stopped at tick 1347121875. Duration: 276875
+1347510000: global: Timer #2 started at tick 1347510000
+1347867500: global: Timer #2 stopped at tick 1347867500. Duration: 357500
+1348108750: global: Timer #2 started at tick 1348108750
+1348466875: global: Timer #2 stopped at tick 1348466875. Duration: 358125
+1348743750: global: Timer #2 started at tick 1348743750
+1349074375: global: Timer #2 stopped at tick 1349074375. Duration: 330625
+1349336250: global: Timer #2 started at tick 1349336250
+1349625000: global: Timer #2 stopped at tick 1349625000. Duration: 288750
+1349901875: global: Timer #2 started at tick 1349901875
+1350379375: global: Timer #2 stopped at tick 1350379375. Duration: 477500
+1350641250: global: Timer #2 started at tick 1350641250
+1350876250: global: Timer #2 stopped at tick 1350876250. Duration: 235000
+1351328125: global: Timer #2 started at tick 1351328125
+1352033750: global: Timer #2 stopped at tick 1352033750. Duration: 705625
+1352373750: global: Timer #2 started at tick 1352373750
+1352599375: global: Timer #2 stopped at tick 1352599375. Duration: 225625
+1352861250: global: Timer #2 started at tick 1352861250
+1353076250: global: Timer #2 stopped at tick 1353076250. Duration: 215000
+1353353125: global: Timer #2 started at tick 1353353125
+1353570625: global: Timer #2 stopped at tick 1353570625. Duration: 217500
+1353988750: global: Timer #2 started at tick 1353988750
+1354283125: global: Timer #2 stopped at tick 1354283125. Duration: 294375
+1354541875: global: Timer #2 started at tick 1354541875
+1354765000: global: Timer #2 stopped at tick 1354765000. Duration: 223125
+1355211250: global: Timer #2 started at tick 1355211250
+1355448750: global: Timer #2 stopped at tick 1355448750. Duration: 237500
+1355708125: global: Timer #2 started at tick 1355708125
+1356026875: global: Timer #2 stopped at tick 1356026875. Duration: 318750
+1356283125: global: Timer #2 started at tick 1356283125
+1356633750: global: Timer #2 stopped at tick 1356633750. Duration: 350625
+1356896250: global: Timer #2 started at tick 1356896250
+1357173125: global: Timer #2 stopped at tick 1357173125. Duration: 276875
+1357613750: global: Timer #2 started at tick 1357613750
+1358045000: global: Timer #2 stopped at tick 1358045000. Duration: 431250
+1358325000: global: Timer #2 started at tick 1358325000
+1358628125: global: Timer #2 stopped at tick 1358628125. Duration: 303125
+1359091875: global: Timer #2 started at tick 1359091875
+1359432500: global: Timer #2 stopped at tick 1359432500. Duration: 340625
+1359691250: global: Timer #2 started at tick 1359691250
+1359904375: global: Timer #2 stopped at tick 1359904375. Duration: 213125
+1360163125: global: Timer #2 started at tick 1360163125
+1360554375: global: Timer #2 stopped at tick 1360554375. Duration: 391250
+1360811250: global: Timer #2 started at tick 1360811250
+1361021250: global: Timer #2 stopped at tick 1361021250. Duration: 210000
+1361280000: global: Timer #2 started at tick 1361280000
+1361739375: global: Timer #2 stopped at tick 1361739375. Duration: 459375
+1362078750: global: Timer #2 started at tick 1362078750
+1362492500: global: Timer #2 stopped at tick 1362492500. Duration: 413750
+1362973750: global: Timer #2 started at tick 1362973750
+1363391250: global: Timer #2 stopped at tick 1363391250. Duration: 417500
+1363651250: global: Timer #2 started at tick 1363651250
+1363888750: global: Timer #2 stopped at tick 1363888750. Duration: 237500
+1364148125: global: Timer #2 started at tick 1364148125
+1364406250: global: Timer #2 stopped at tick 1364406250. Duration: 258125
+1364668125: global: Timer #2 started at tick 1364668125
+1364962500: global: Timer #2 stopped at tick 1364962500. Duration: 294375
+1365221250: global: Timer #2 started at tick 1365221250
+1365675000: global: Timer #2 stopped at tick 1365675000. Duration: 453750
+1365955000: global: Timer #2 started at tick 1365955000
+1366203125: global: Timer #2 stopped at tick 1366203125. Duration: 248125
+1366465000: global: Timer #2 started at tick 1366465000
+1367016250: global: Timer #2 stopped at tick 1367016250. Duration: 551250
+1367256875: global: Timer #2 started at tick 1367256875
+1367521875: global: Timer #2 stopped at tick 1367521875. Duration: 265000
+1367783750: global: Timer #2 started at tick 1367783750
+1368198750: global: Timer #2 stopped at tick 1368198750. Duration: 415000
+1368443125: global: Timer #2 started at tick 1368443125
+1368739375: global: Timer #2 stopped at tick 1368739375. Duration: 296250
+1369016250: global: Timer #2 started at tick 1369016250
+1369263125: global: Timer #2 stopped at tick 1369263125. Duration: 246875
+1369660000: global: Timer #2 started at tick 1369660000
+1370117500: global: Timer #2 stopped at tick 1370117500. Duration: 457500
+1370395000: global: Timer #2 started at tick 1370395000
+1370677500: global: Timer #2 stopped at tick 1370677500. Duration: 282500
+1370915000: global: Timer #2 started at tick 1370915000
+1371163750: global: Timer #2 stopped at tick 1371163750. Duration: 248750
+1371423125: global: Timer #2 started at tick 1371423125
+1371674375: global: Timer #2 stopped at tick 1371674375. Duration: 251250
+1372008125: global: Timer #2 started at tick 1372008125
+1372338125: global: Timer #2 stopped at tick 1372338125. Duration: 330000
+1372600000: global: Timer #2 started at tick 1372600000
+1372881250: global: Timer #2 stopped at tick 1372881250. Duration: 281250
+1373256875: global: Timer #2 started at tick 1373256875
+1373546875: global: Timer #2 stopped at tick 1373546875. Duration: 290000
+1373803125: global: Timer #2 started at tick 1373803125
+1374160000: global: Timer #2 stopped at tick 1374160000. Duration: 356875
+1374620000: global: Timer #2 started at tick 1374620000
+1375208125: global: Timer #2 stopped at tick 1375208125. Duration: 588125
+1375470000: global: Timer #2 started at tick 1375470000
+1375846875: global: Timer #2 stopped at tick 1375846875. Duration: 376875
+1376106250: global: Timer #2 started at tick 1376106250
+1376395000: global: Timer #2 stopped at tick 1376395000. Duration: 288750
+1376651250: global: Timer #2 started at tick 1376651250
+1376983125: global: Timer #2 stopped at tick 1376983125. Duration: 331875
+1377245000: global: Timer #2 started at tick 1377245000
+1377520000: global: Timer #2 stopped at tick 1377520000. Duration: 275000
+1377781875: global: Timer #2 started at tick 1377781875
+1378540000: global: Timer #2 stopped at tick 1378540000. Duration: 758125
+1378800000: global: Timer #2 started at tick 1378800000
+1379010000: global: Timer #2 stopped at tick 1379010000. Duration: 210000
+1379268750: global: Timer #2 started at tick 1379268750
+1379493750: global: Timer #2 stopped at tick 1379493750. Duration: 225000
+1379756250: global: Timer #2 started at tick 1379756250
+1380260000: global: Timer #2 stopped at tick 1380260000. Duration: 503750
+1380520000: global: Timer #2 started at tick 1380520000
+1380805000: global: Timer #2 stopped at tick 1380805000. Duration: 285000
+1381066875: global: Timer #2 started at tick 1381066875
+1381426875: global: Timer #2 stopped at tick 1381426875. Duration: 360000
+1381688750: global: Timer #2 started at tick 1381688750
+1381919375: global: Timer #2 stopped at tick 1381919375. Duration: 230625
+1382448750: global: Timer #2 started at tick 1382448750
+1382657500: global: Timer #2 stopped at tick 1382657500. Duration: 208750
+1382916250: global: Timer #2 started at tick 1382916250
+1383530625: global: Timer #2 stopped at tick 1383530625. Duration: 614375
+1383790000: global: Timer #2 started at tick 1383790000
+1384013750: global: Timer #2 stopped at tick 1384013750. Duration: 223750
+1384273125: global: Timer #2 started at tick 1384273125
+1384561875: global: Timer #2 stopped at tick 1384561875. Duration: 288750
+1384823750: global: Timer #2 started at tick 1384823750
+1385090000: global: Timer #2 stopped at tick 1385090000. Duration: 266250
+1385496250: global: Timer #2 started at tick 1385496250
+1385902500: global: Timer #2 stopped at tick 1385902500. Duration: 406250
+1386331250: global: Timer #2 started at tick 1386331250
+1386723750: global: Timer #2 stopped at tick 1386723750. Duration: 392500
+1386983125: global: Timer #2 started at tick 1386983125
+1387211875: global: Timer #2 stopped at tick 1387211875. Duration: 228750
+1387471250: global: Timer #2 started at tick 1387471250
+1387757500: global: Timer #2 stopped at tick 1387757500. Duration: 286250
+1388020000: global: Timer #2 started at tick 1388020000
+1388262500: global: Timer #2 stopped at tick 1388262500. Duration: 242500
+1388525000: global: Timer #2 started at tick 1388525000
+1389377500: global: Timer #2 stopped at tick 1389377500. Duration: 852500
+1389673125: global: Timer #2 started at tick 1389673125
+1389958750: global: Timer #2 stopped at tick 1389958750. Duration: 285625
+1390211875: global: Timer #2 started at tick 1390211875
+1390653125: global: Timer #2 stopped at tick 1390653125. Duration: 441250
+1390915000: global: Timer #2 started at tick 1390915000
+1391163750: global: Timer #2 stopped at tick 1391163750. Duration: 248750
+1391426250: global: Timer #2 started at tick 1391426250
+1392001875: global: Timer #2 stopped at tick 1392001875. Duration: 575625
+1392281875: global: Timer #2 started at tick 1392281875
+1392499375: global: Timer #2 stopped at tick 1392499375. Duration: 217500
+1392856250: global: Timer #2 started at tick 1392856250
+1393051250: global: Timer #2 stopped at tick 1393051250. Duration: 195000
+1393313125: global: Timer #2 started at tick 1393313125
+1393515000: global: Timer #2 stopped at tick 1393515000. Duration: 201875
+1393995000: global: Timer #2 started at tick 1393995000
+1394289375: global: Timer #2 stopped at tick 1394289375. Duration: 294375
+1394548125: global: Timer #2 started at tick 1394548125
+1394966875: global: Timer #2 stopped at tick 1394966875. Duration: 418750
+1395226250: global: Timer #2 started at tick 1395226250
+1395514375: global: Timer #2 stopped at tick 1395514375. Duration: 288125
+1395776250: global: Timer #2 started at tick 1395776250
+1396154375: global: Timer #2 stopped at tick 1396154375. Duration: 378125
+1396416250: global: Timer #2 started at tick 1396416250
+1396685625: global: Timer #2 stopped at tick 1396685625. Duration: 269375
+1396945000: global: Timer #2 started at tick 1396945000
+1397373125: global: Timer #2 stopped at tick 1397373125. Duration: 428125
+1397835000: global: Timer #2 started at tick 1397835000
+1398053750: global: Timer #2 stopped at tick 1398053750. Duration: 218750
+1398316250: global: Timer #2 started at tick 1398316250
+1398516250: global: Timer #2 stopped at tick 1398516250. Duration: 200000
+1398771875: global: Timer #2 started at tick 1398771875
+1399153750: global: Timer #2 stopped at tick 1399153750. Duration: 381875
+1399416250: global: Timer #2 started at tick 1399416250
+1399648750: global: Timer #2 stopped at tick 1399648750. Duration: 232500
+1399908125: global: Timer #2 started at tick 1399908125
+1400374375: global: Timer #2 stopped at tick 1400374375. Duration: 466250
+1400633125: global: Timer #2 started at tick 1400633125
+1401091250: global: Timer #2 stopped at tick 1401091250. Duration: 458125
+1401368750: global: Timer #2 started at tick 1401368750
+1401578750: global: Timer #2 stopped at tick 1401578750. Duration: 210000
+1401858125: global: Timer #2 started at tick 1401858125
+1402088125: global: Timer #2 stopped at tick 1402088125. Duration: 230000
+1402428125: global: Timer #2 started at tick 1402428125
+1402803750: global: Timer #2 stopped at tick 1402803750. Duration: 375625
+1403066250: global: Timer #2 started at tick 1403066250
+1403304375: global: Timer #2 stopped at tick 1403304375. Duration: 238125
+1403566250: global: Timer #2 started at tick 1403566250
+1403793125: global: Timer #2 stopped at tick 1403793125. Duration: 226875
+1404191250: global: Timer #2 started at tick 1404191250
+1404590625: global: Timer #2 stopped at tick 1404590625. Duration: 399375
+1404850000: global: Timer #2 started at tick 1404850000
+1405140625: global: Timer #2 stopped at tick 1405140625. Duration: 290625
+1405603125: global: Timer #2 started at tick 1405603125
+1405933750: global: Timer #2 stopped at tick 1405933750. Duration: 330625
+1406193125: global: Timer #2 started at tick 1406193125
+1406451875: global: Timer #2 stopped at tick 1406451875. Duration: 258750
+1406713750: global: Timer #2 started at tick 1406713750
+1407028125: global: Timer #2 stopped at tick 1407028125. Duration: 314375
+1407286875: global: Timer #2 started at tick 1407286875
+1407545625: global: Timer #2 stopped at tick 1407545625. Duration: 258750
+1407891875: global: Timer #2 started at tick 1407891875
+1408201250: global: Timer #2 stopped at tick 1408201250. Duration: 309375
+1408460000: global: Timer #2 started at tick 1408460000
+1409053125: global: Timer #2 stopped at tick 1409053125. Duration: 593125
+1409516250: global: Timer #2 started at tick 1409516250
+1409705625: global: Timer #2 stopped at tick 1409705625. Duration: 189375
+1409965000: global: Timer #2 started at tick 1409965000
+1410168750: global: Timer #2 stopped at tick 1410168750. Duration: 203750
+1410431250: global: Timer #2 started at tick 1410431250
+1410832500: global: Timer #2 stopped at tick 1410832500. Duration: 401250
+1411095000: global: Timer #2 started at tick 1411095000
+1411281875: global: Timer #2 stopped at tick 1411281875. Duration: 186875
+1411725000: global: Timer #2 started at tick 1411725000
+1412015000: global: Timer #2 stopped at tick 1412015000. Duration: 290000
+1412358125: global: Timer #2 started at tick 1412358125
+1412701875: global: Timer #2 stopped at tick 1412701875. Duration: 343750
+1412981875: global: Timer #2 started at tick 1412981875
+1413180625: global: Timer #2 stopped at tick 1413180625. Duration: 198750
+1413505000: global: Timer #2 started at tick 1413505000
+1413892500: global: Timer #2 stopped at tick 1413892500. Duration: 387500
+1414148750: global: Timer #2 started at tick 1414148750
+1414476250: global: Timer #2 stopped at tick 1414476250. Duration: 327500
+1414735000: global: Timer #2 started at tick 1414735000
+1414942500: global: Timer #2 stopped at tick 1414942500. Duration: 207500
+1415343750: global: Timer #2 started at tick 1415343750
+1415542500: global: Timer #2 stopped at tick 1415542500. Duration: 198750
+1415818750: global: Timer #2 started at tick 1415818750
+1416041875: global: Timer #2 stopped at tick 1416041875. Duration: 223125
+1416301250: global: Timer #2 started at tick 1416301250
+1416930625: global: Timer #2 stopped at tick 1416930625. Duration: 629375
+1417386250: global: Timer #2 started at tick 1417386250
+1417693125: global: Timer #2 stopped at tick 1417693125. Duration: 306875
+1417951875: global: Timer #2 started at tick 1417951875
+1418153125: global: Timer #2 stopped at tick 1418153125. Duration: 201250
+1418411875: global: Timer #2 started at tick 1418411875
+1418606250: global: Timer #2 stopped at tick 1418606250. Duration: 194375
+1418880000: global: Timer #2 started at tick 1418880000
+1419149375: global: Timer #2 stopped at tick 1419149375. Duration: 269375
+1419408125: global: Timer #2 started at tick 1419408125
+1419803125: global: Timer #2 stopped at tick 1419803125. Duration: 395000
+1664430875: system.acctest.elem_matrix0_dma: SRC:0x0000000024020020, DST:0x000000008204acc0, LEN:65536
+1665880000: global: Number of forwards = 4
+1666182500: global: Number of colocations = 0
+1666201250: global: Number of DAG deadlines met = 0
+1666219375: global: Number of node deadlines met = 0
+1666386250: global: Total predicted compute time = 0 us
+Exiting @ tick 1666612500 because m5_exit instruction encountered
