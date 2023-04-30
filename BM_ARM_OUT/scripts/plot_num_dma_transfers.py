@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-hatch = {'FCFS': '*', 'LEDF': '.', 'GLAX': 'xx', 'APRX3': '/'}
+hatch = {'FCFS': '*', 'GEDF_D': '.', 'LAX': 'xx', 'ELF': '/'}
 
 def geo_mean(iterable):
     a = np.array(iterable)
@@ -21,7 +21,8 @@ def add_plot(offset, policy, label):
                 width=width, label=label, fc='k')
 
 applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
-policies = ['FCFS', 'LEDF', 'GEDF', 'GLAX', 'APRX3', 'xbar']
+#policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'ELF', 'xbar']
+policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'ELF']
 
 app_mixes = sorted([c for c in itertools.combinations(applications, 3)])
 
@@ -38,23 +39,25 @@ for app_mix in app_mixes:
         num_transfers[policy].append(0)
 
         if policy == 'xbar':
-            dir_name = '../image_4_parallel_dma_xbar/' + app_mix_str + 'APRX3'
+            dir_name = '../comb_4_xbar/' + app_mix_str + 'ELF'
         else:
-            dir_name = '../image_4_parallel_dma_bus/' + app_mix_str + policy
-        dir_name += '_pipeline/debug-trace.txt'
+            dir_name = '../comb_4/' + app_mix_str + policy
+        dir_name += '/debug-trace.txt'
 
         for line in open(dir_name):
             if 'SRC:' in line:
                 num_transfers[policy][-1] += 1
 
-for policy in policies:
-    if policy == 'GEDF': continue
-
     # normalize the values
-    for i in range(len(num_transfers[policy])):
-        num_transfers[policy][i] /= num_transfers['GEDF'][i]
+    norm_value = num_transfers['GEDF_N'][-1]
+    for policy in policies:
+        if norm_value == 0:
+            num_transfers[policy][-1] = 0
+        else:
+            num_transfers[policy][-1] /= norm_value
 
-    # calculate geomean
+# calculate geomean
+for policy in policies:
     num_transfers[policy].append(geo_mean(num_transfers[policy]))
 
 x = [i for i in range(len(app_mixes) + 1)]
@@ -64,11 +67,14 @@ plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
 
 width = 0.16
-add_plot(-(width*2), 'FCFS',  'FCFS')
-add_plot(-width,     'LEDF',  'GEDF-D')
-add_plot(0,          'GLAX',  'LAX')
-add_plot(width,      'APRX3', 'ELF')
-add_plot((width*2),  'xbar',  'ELF-xbar')
+#add_plot(-(width*2), 'FCFS',  'FCFS')
+#add_plot(-width,     'GEDF_D',  'GEDF_N-D')
+#add_plot(0,          'LAX',  'LAX')
+#add_plot(width,      'ELF', 'ELF')
+#add_plot((width*2),  'xbar',  'ELF-xbar')
+add_plot(-width,     'FCFS',   'FCFS')
+add_plot(0,          'GEDF_D', 'GEDF-D')
+add_plot(width,      'ELF',    'ELF')
 
 plt.xlabel('Application mix', fontsize=35)
 plt.xticks(x, x_labels, fontsize=35, rotation='vertical')

@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-hatch = {'FCFS': '*', 'LEDF': '.', 'GLAX': 'xx', 'APRX3': '/'}
+hatch = {'FCFS': '*', 'GEDF_D': '.', 'ELF': 'xx', 'xbar': '/'}
 
 def geo_mean(iterable):
     a = np.array(iterable)
@@ -21,7 +21,8 @@ def add_plot(offset, policy, label):
                 width=width, label=label, fc='k')
 
 applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
-policies = ['FCFS', 'LEDF', 'GEDF', 'GLAX', 'APRX3', 'xbar']
+#policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'ELF', 'xbar']
+policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'ELF']
 
 app_mixes = sorted([c for c in itertools.combinations(applications, 3)])
 
@@ -38,10 +39,12 @@ for app_mix in app_mixes:
         latencies = []
 
         if policy == 'xbar':
-            dir_name = '../image_4_parallel_dma_xbar/' + app_mix_str + 'APRX3'
+            dir_name = '../comb_4_xbar/' + app_mix_str + 'ELF'
+        elif policy in ['FCFS', 'GEDF_D']:
+            dir_name = '../comb_4_scheds/' + app_mix_str + policy
         else:
-            dir_name = '../image_4_parallel_dma_bus/' + app_mix_str + policy
-        dir_name += '_pipeline/debug-trace.txt'
+            dir_name = '../comb_4/' + app_mix_str + policy
+        dir_name += '/debug-trace.txt'
 
         for line in open(dir_name):
             if 'Transfer completed' in line:
@@ -49,13 +52,13 @@ for app_mix in app_mixes:
 
         stat_value[policy].append(sum(latencies) / 1000)
 
-# Normalize and calculate geomean
+    # normalize the values
+    norm_value = stat_value['LAX'][-1]
+    for policy in policies:
+        stat_value[policy][-1] /= norm_value
+
+# calculate geomean
 for policy in policies:
-    if policy == 'GEDF': continue
-
-    for i in range(len(stat_value[policy])):
-        stat_value[policy][i] /= stat_value['GEDF'][i]
-
     stat_value[policy].append(geo_mean(stat_value[policy]))
 
 x = [i for i in range(len(app_mixes) + 1)]
@@ -64,19 +67,24 @@ x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))] + ['Gmean']
 plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
 
-width = 0.16
-add_plot(-(width*2), 'FCFS',  'FCFS')
-add_plot(-width,     'LEDF',  'GEDF-D')
-add_plot(0,          'GLAX',  'LAX')
-add_plot(width,      'APRX3', 'ELF')
-add_plot((width*2),  'xbar',  'ELF-xbar')
+#width = 0.16
+#add_plot(-(width*2), 'FCFS',  'FCFS')
+#add_plot(-width,     'GEDF_D',  'GEDF-D')
+#add_plot(0,          'LAX',  'LAX')
+#add_plot(width,      'ELF', 'ELF')
+#add_plot((width*2),  'xbar',  'ELF-xbar')
+width = 0.20
+add_plot(-((3*width)/2), 'FCFS',   'FCFS')
+add_plot(-(width/2),     'GEDF_D', 'GEDF-D')
+add_plot((width/2),      'GEDF_N', 'GEDF-N')
+add_plot((3*width)/2,    'ELF',    'ELF')
 
 plt.xlabel('Application mix', fontsize=35)
 plt.xticks(x, x_labels, fontsize=35, rotation='vertical')
 
-plt.ylabel('Total DMA latency\n(norm. to GEDF-N)', fontsize=35)
+plt.ylabel('Total DMA latency\n(norm. to LAX)', fontsize=35)
 plt.yticks(fontsize=35)
-plt.ylim([0, 1.7])
+plt.ylim([0, 1.4])
 plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.2))
 
 plt.legend(loc="upper left", ncol=5, fontsize=35)
