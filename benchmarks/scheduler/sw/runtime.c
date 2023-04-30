@@ -811,20 +811,19 @@ inline bool push_request(volatile task_struct_t *req, bool try_forward)
                                           MAX_READY_QUEUE_SIZE;
             }
             else {
-                int pos = ready_queue_start[acc_id];
-                while ((pos != ready_queue_end[acc_id]) && \
-                       (ready_queue[acc_id][pos]->dag_deadline <= \
-                        req->dag_deadline)) {
-                    pos = (pos + 1) % MAX_READY_QUEUE_SIZE;
-                }
+                int pos = ready_queue_end[acc_id];
+                int pos_minus_1 = pos - 1;
+                if (pos_minus_1 == -1) {pos_minus_1 = MAX_READY_QUEUE_SIZE-1;}
 
-                if (pos != ready_queue_end[acc_id]) {
-                    int i = ready_queue_end[acc_id];
-                    while (i != pos) {
-                        int j = i - 1;
-                        if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
-                        ready_queue[acc_id][i] = ready_queue[acc_id][j];
-                        i = j;
+                while ((pos != ready_queue_start[acc_id]) && \
+                       (ready_queue[acc_id][pos_minus_1]->dag_deadline > \
+                        req->dag_deadline)) {
+                    ready_queue[acc_id][pos] =
+                        ready_queue[acc_id][pos_minus_1];
+                    pos = pos_minus_1;
+                    pos_minus_1 = pos - 1;
+                    if (pos_minus_1 == -1) {
+                        pos_minus_1 = MAX_READY_QUEUE_SIZE - 1;
                     }
                 }
 
@@ -843,20 +842,19 @@ inline bool push_request(volatile task_struct_t *req, bool try_forward)
                                           MAX_READY_QUEUE_SIZE;
             }
             else {
-                int pos = ready_queue_start[acc_id];
-                while ((pos != ready_queue_end[acc_id]) && \
-                       (ready_queue[acc_id][pos]->node_deadline <= \
-                        req->node_deadline)) {
-                    pos = (pos + 1) % MAX_READY_QUEUE_SIZE;
-                }
+                int pos = ready_queue_end[acc_id];
+                int pos_minus_1 = pos - 1;
+                if (pos_minus_1 == -1) {pos_minus_1 = MAX_READY_QUEUE_SIZE-1;}
 
-                if (pos != ready_queue_end[acc_id]) {
-                    int i = ready_queue_end[acc_id];
-                    while (i != pos) {
-                        int j = i - 1;
-                        if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
-                        ready_queue[acc_id][i] = ready_queue[acc_id][j];
-                        i = j;
+                while ((pos != ready_queue_start[acc_id]) && \
+                       (ready_queue[acc_id][pos_minus_1]->node_deadline > \
+                        req->node_deadline)) {
+                    ready_queue[acc_id][pos] =
+                        ready_queue[acc_id][pos_minus_1];
+                    pos = pos_minus_1;
+                    pos_minus_1 = pos - 1;
+                    if (pos_minus_1 == -1) {
+                        pos_minus_1 = MAX_READY_QUEUE_SIZE - 1;
                     }
                 }
 
@@ -903,19 +901,21 @@ inline bool push_request(volatile task_struct_t *req, bool try_forward)
                                               MAX_READY_QUEUE_SIZE;
                 }
                 else {
-                    int pos = ready_queue_start[acc_id];
-                    while ((pos != ready_queue_end[acc_id]) && \
-                           (ready_queue[acc_id][pos]->laxity <= req->laxity)) {
-                        pos = (pos + 1) % MAX_READY_QUEUE_SIZE;
+                    int pos = ready_queue_end[acc_id];
+                    int pos_minus_1 = pos - 1;
+                    if (pos_minus_1 == -1) {
+                        pos_minus_1 = MAX_READY_QUEUE_SIZE - 1;
                     }
 
-                    if (pos != ready_queue_end[acc_id]) {
-                        int i = ready_queue_end[acc_id];
-                        while (i != pos) {
-                            int j = i - 1;
-                            if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
-                            ready_queue[acc_id][i] = ready_queue[acc_id][j];
-                            i = j;
+                    while ((pos != ready_queue_start[acc_id]) && \
+                           (ready_queue[acc_id][pos_minus_1]->laxity > \
+                            req->laxity)) {
+                        ready_queue[acc_id][pos] =
+                            ready_queue[acc_id][pos_minus_1];
+                        pos = pos_minus_1;
+                        pos_minus_1 = pos - 1;
+                        if (pos_minus_1 == -1) {
+                            pos_minus_1 = MAX_READY_QUEUE_SIZE - 1;
                         }
                     }
 
@@ -929,9 +929,6 @@ inline bool push_request(volatile task_struct_t *req, bool try_forward)
         }
 
         case ELF: {
-            int pos = ready_queue_start[acc_id];
-            int fwd_pos = ready_queue_start[acc_id];
-
             if ((req->laxity - (m5_get_time() / 1000)) <= 0) {
                 // De-prioritize a node if its laxity is negative. That is,
                 // the node is unlikely to finish before its deadline.
@@ -943,34 +940,48 @@ inline bool push_request(volatile task_struct_t *req, bool try_forward)
             }
 
             else {
-                for (; pos != ready_queue_end[acc_id];
-                     pos = (pos + 1) % MAX_READY_QUEUE_SIZE) {
+                int pos = ready_queue_end[acc_id];
+                int pos_minus_1 = pos - 1;
 
-                    volatile task_struct_t *rq_node = ready_queue[acc_id][pos];
+                if (pos_minus_1 == -1) {
+                    pos_minus_1 = MAX_READY_QUEUE_SIZE - 1;
+                }
 
-                    if (rq_node->priority_escalated) {
-                        fwd_pos = (fwd_pos + 1) % MAX_READY_QUEUE_SIZE;
+                // Find the regular insertion position
+                while ((pos != ready_queue_start[acc_id]) && \
+                       (ready_queue[acc_id][pos_minus_1]->laxity > \
+                        req->laxity)) {
+                    pos = pos_minus_1;
+                    pos_minus_1 = pos - 1;
+                    if (pos_minus_1 == -1) {
+                        pos_minus_1 = MAX_READY_QUEUE_SIZE - 1;
                     }
-                    else {
-                        if (rq_node->laxity > req->laxity) {
+                }
+
+                if (try_forward) {
+                    for (int i = ready_queue_start[acc_id]; i != pos;
+                            i = (i + 1) % MAX_READY_QUEUE_SIZE) {
+                        int32_t laxity = ready_queue[acc_id][i]->laxity - \
+                                         (m5_get_time() / 1000);
+
+                        if (laxity > 0) {
+                            can_forward = laxity >= ((int32_t)req->runtime);
                             break;
-                        }
-                    }
-
-                    if (try_forward) {
-                        int32_t laxity = rq_node->laxity - (m5_get_time() / 1000);
-
-                        if ((laxity > 0) && (laxity < ((int32_t)req->runtime))) {
-                            can_forward = false;
                         }
                     }
                 }
 
                 if (can_forward) {
+                    int fwd_pos = ready_queue_start[acc_id];
+
                     // Reduce node laxities
                     for (int i = ready_queue_start[acc_id]; i != pos;
                          i = (i + 1) % MAX_READY_QUEUE_SIZE) {
                         ready_queue[acc_id][i]->laxity -= req->runtime;
+
+                        if (ready_queue[acc_id][i]->priority_escalated) {
+                            fwd_pos = (fwd_pos + 1) % MAX_READY_QUEUE_SIZE;
+                        }
                     }
 
                     pos = fwd_pos;
@@ -980,7 +991,7 @@ inline bool push_request(volatile task_struct_t *req, bool try_forward)
                 if (pos == ready_queue_start[acc_id]) {
                     ready_queue_start[acc_id] = (ready_queue_start[acc_id]==0) ? \
                                                 (MAX_READY_QUEUE_SIZE - 1) : \
-                                                (ready_queue_start[acc_id] - 1);
+                                                (ready_queue_start[acc_id]-1);
                     ready_queue[acc_id][ready_queue_start[acc_id]] = req;
                 }
                 else {
@@ -1124,6 +1135,7 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
         }
     }
 
+    runtime_start_time = m5_get_time() / 1000;
     m5_reset_stats();
 
     // launch ready requests
@@ -1234,20 +1246,12 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                         pipeline_queue_size = 1;
                     }
                     else {
-                        int pos = 0;
-                        while ((pos < pipeline_queue_size) && \
-                               (pipeline_queue[pos]->laxity <= \
-                                child->laxity)) {
-                            pos = (pos + 1) % MAX_READY_QUEUE_SIZE;
-                        }
+                        int pos = pipeline_queue_size;
 
-                        if (pos != pipeline_queue_size) {
-                            int i = pipeline_queue_size;
-                            while (i != pos) {
-                                int j = i - 1;
-                                pipeline_queue[i] = pipeline_queue[j];
-                                i = j;
-                            }
+                        while ((pos > 0) && (pipeline_queue[pos-1]->laxity > \
+                                    child->laxity)) {
+                            pipeline_queue[pos] = pipeline_queue[pos-1];
+                            pos--;
                         }
 
                         pipeline_queue[pos] = child;

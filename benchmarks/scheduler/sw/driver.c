@@ -4,7 +4,7 @@
 volatile uint32_t dma_start_time[NUM_ACCS][MAX_ACC_INSTANCES];
 volatile uint32_t dma_size[NUM_ACCS][MAX_ACC_INSTANCES];
 
-void dcache_flush(uint32_t addr, uint32_t num_bytes)
+inline void dcache_flush(uint32_t addr, uint32_t num_bytes)
 {
     // only flush lines in the cacheable region
     // we assume here that the data would NOT be spread across cacheable and
