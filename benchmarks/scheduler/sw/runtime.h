@@ -119,6 +119,11 @@ enum m5_stat_t {
     NUM_COLOCATIONS,
     DAG_DEADLINES_MET,
     NODE_DEADLINES_MET,
+    DAG_ID,
+    NODE_ID,
+    DAG_EXEC_TIME,
+    DAG_DEADLINE_DIFF,
+    NODE_DEADLINE_DIFF,
     PREDICTED_COMPUTE_TIME,
     PREDICTED_MEMORY_TIME,
     PREDICTED_MEMORY_TIME_PER_BYTE
@@ -163,6 +168,7 @@ struct task_struct_t {
      */
     uint16_t dag_id;
     uint16_t node_id;
+    uint16_t req_id;        // A unique request ID assigned by ELF at insertion
 
     req_status_t status;
     int32_t laxity;
@@ -172,6 +178,8 @@ struct task_struct_t {
     uint8_t producer_spm_part[MAX_ACC_ARGS];    // partition of the producer's
                                                 // output SPM to read from
     volatile acc_state_t *producer_acc[MAX_ACC_ARGS];   // producer accelerator
+
+    uint16_t last_patch_applied;
 
     /**
      * Fields for statistics

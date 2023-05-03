@@ -10,6 +10,6 @@ do
     done
 done
 
-OUTDIR=bin_solo_app_gem5_sched
+OUTDIR=bin_solo_app
 mkdir -p ${OUTDIR}
 mv *.elf ${OUTDIR}

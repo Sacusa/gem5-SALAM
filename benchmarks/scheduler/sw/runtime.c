@@ -66,10 +66,24 @@ struct list_node_t {
     volatile list_node_t *prev;
 };
 
+struct laxity_patch_t;
+typedef struct laxity_patch_t laxity_patch_t;
+struct laxity_patch_t {
+    uint16_t req_id;
+    uint16_t patch_id;
+    int32_t laxity_change;
+    volatile laxity_patch_t *next;
+};
+
 volatile int highest_level[NUM_ACCS];
 volatile list_node_t *ready_queue[NUM_ACCS][MAX_LEVELS];
 volatile list_node_t *ready_queue_tail[NUM_ACCS];  // For FCFS
 volatile int ready_queue_size[NUM_ACCS];
+
+// ELF structures for lazy laxity update
+volatile uint16_t req_id_counter[NUM_ACCS];
+volatile laxity_patch_t *laxity_patch_head[NUM_ACCS];
+volatile uint16_t latest_laxity_patch_id[NUM_ACCS];
 
 volatile acc_state_t acc_state[NUM_ACCS][MAX_ACC_INSTANCES];
 volatile int num_available_instances[NUM_ACCS];
@@ -88,18 +102,6 @@ volatile uint32_t stat_num_colocations = 0;
 volatile uint32_t stat_dag_deadlines_met = 0;
 volatile uint32_t stat_node_deadlines_met = 0;
 volatile float stat_predicted_compute_time = 0;
-
-inline list_node_t* new_node(volatile task_struct_t *req)
-{
-    list_node_t *node = (list_node_t*) get_memory(sizeof(list_node_t));
-    node->req = req;
-    node->above = NULL;
-    node->below = NULL;
-    node->next = NULL;
-    node->prev = NULL;
-
-    return node;
-}
 
 inline void assertf(bool cond, const char * format, ...)
 {
@@ -128,6 +130,72 @@ inline void disable_interrupts()
     __asm__ ("orr r1, r1, #0x80");
     __asm__ ("msr CPSR, r1");
     __asm__ ("pop {r1}");
+}
+
+inline list_node_t* new_node(volatile task_struct_t *req)
+{
+    list_node_t *node = (list_node_t*) get_memory(sizeof(list_node_t));
+    node->req = req;
+    node->above = NULL;
+    node->below = NULL;
+    node->next = NULL;
+    node->prev = NULL;
+
+    return node;
+}
+
+inline void create_patch(uint8_t acc_id, uint16_t req_id,
+        int32_t laxity_change)
+{
+    laxity_patch_t *patch = (laxity_patch_t*)
+        get_memory(sizeof(laxity_patch_t));
+
+    latest_laxity_patch_id[acc_id]++;
+
+    patch->req_id = req_id;
+    patch->patch_id = latest_laxity_patch_id[acc_id];
+    patch->laxity_change = laxity_change;
+
+    patch->next = laxity_patch_head[acc_id];
+    laxity_patch_head[acc_id] = patch;
+
+    // Remove stale patches
+    /*
+    while ((laxity_patch_head[acc_id] != NULL) && \
+           (laxity_patch_head[acc_id]->req_id < \
+            ready_queue[acc_id][0]->req_id)) {
+        laxity_patch_head[acc_id] = laxity_patch_head[acc_id]->next;
+    }
+    */
+}
+
+int32_t get_laxity(volatile task_struct_t *req)
+{
+    uint8_t acc_id = req->acc_id;
+
+    if (req->last_patch_applied < latest_laxity_patch_id[acc_id]) {
+#ifdef ENABLE_STATS
+        m5_timer_start(4);
+#endif
+
+        volatile laxity_patch_t *patch = laxity_patch_head[acc_id];
+
+        while ((patch!=NULL) && (patch->patch_id > req->last_patch_applied)) {
+            if (req->req_id <= patch->req_id) {
+                req->laxity -= patch->laxity_change;
+            }
+
+            patch = patch->next;
+        }
+
+        req->last_patch_applied = latest_laxity_patch_id[acc_id];
+
+#ifdef ENABLE_STATS
+        m5_timer_stop(4);
+#endif
+    }
+
+    return req->laxity;
 }
 
 /**
@@ -1036,6 +1104,8 @@ bool push_request(volatile task_struct_t *req, bool try_forward)
         }
 
         case ELF: {
+            req->last_patch_applied = latest_laxity_patch_id[acc_id];
+
             if ((req->laxity - (m5_get_time() / 1000)) <= 0) {
                 // De-prioritize a node if its laxity is negative. That is,
                 // the node is unlikely to finish before its deadline.
@@ -1051,7 +1121,7 @@ bool push_request(volatile task_struct_t *req, bool try_forward)
 
                 while ((root->next != NULL) && \
                        ((root->next->req->priority_escalated) || \
-                        (root->next->req->laxity <= req->laxity))) {
+                        (get_laxity(root->next->req) <= req->laxity))) {
                     root = root->next;
                 }
             }
@@ -1059,39 +1129,63 @@ bool push_request(volatile task_struct_t *req, bool try_forward)
             // Perform laxity check
             // We just need to check the first node with non-zero laxity since
             // the queue is already laxity sorted
-            if (try_forward) {
-                for (volatile list_node_t *iter = ready_queue[acc_id][0]->next;
-                        iter != root->next; iter = iter->next) {
-                    if (iter->req->priority_escalated) { continue; }
+            if (ready_queue_size[acc_id] == 0) {
+                can_forward = try_forward;
+            }
+            else {
+                if (try_forward) {
+                    // Setting the default value to true here because the queue
+                    // might be full of priority escalated nodes, in which case
+                    // we can forward this one too.
+                    can_forward = true;
 
-                    int32_t laxity = iter->req->laxity - (m5_get_time()/1000);
+                    for (volatile list_node_t *iter =
+                            ready_queue[acc_id][0]->next; iter != root->next;
+                            iter = iter->next) {
+                        if (iter->req->priority_escalated) { continue; }
 
-                    if (laxity > 0) {
-                        can_forward = laxity >= ((int32_t)req->runtime);
-                        break;
+                        int32_t laxity = get_laxity(iter->req) - \
+                                         (m5_get_time() / 1000);
+
+                        if (laxity > 0) {
+                            can_forward = laxity >= ((int32_t)req->runtime);
+                            break;
+                        }
                     }
                 }
-            }
 
-            // Find the new insertion position and reduce laxities
-            if (can_forward) {
-                volatile list_node_t *new_root = ready_queue[acc_id][0];
+                // Create a laxity reduction patch and find the new insertion
+                // position
+                if (can_forward) {
+                    create_patch(acc_id, root->req->req_id, req->runtime);
 
-                for (volatile list_node_t *iter = ready_queue[acc_id][0]->next;
-                        iter != root->next; iter = iter->next) {
-                    if (iter->req->priority_escalated) { new_root = iter; }
-                    else { iter->req->laxity -= req->runtime; }
+                    volatile list_node_t *new_root = ready_queue[acc_id][0];
 
-                    // We don't need to traverse up the tower and reduce laxity
-                    // because all the nodes in a tower point to a single
-                    // request.
+                    while (new_root->next && \
+                           new_root->next->req->priority_escalated) {
+                        new_root = new_root->next;
+                    }
+
+                    root = new_root;
                 }
-
-                root = new_root;
             }
 
             // Insert at the bottom level
-            if (root->next != NULL) {
+            if (root->next == NULL) {
+                // If inserting at the end of the queue, the request ID counter
+                // should be incremented
+                req_id_counter[acc_id]++;
+                req->req_id = req_id_counter[acc_id];
+            }
+            else {
+                // If inserting in the middle of the queue, setting the counter
+                // to the same value as the next request ensure that:
+                // 1. all patches that apply to the next request apply to this
+                //    one also, and
+                // 2. no patch that applies to the previous one apply to this
+                //    request.
+                req->req_id = root->next->req->req_id;
+
                 node->next = root->next;
                 root->next->prev = node;
             }
@@ -1264,6 +1358,10 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
         ready_queue_size[i] = 0;
 
         num_available_instances[i] = acc_instances[i];
+
+        req_id_counter[i] = 0;
+        laxity_patch_head[i] = NULL;
+        latest_laxity_patch_id[i] = 0;
     }
 
     scheduling_policy = policy;
@@ -1504,7 +1602,12 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                 stat_node_deadlines_met++;
             }
 
-            volatile task_struct_t *req = acc->running_req;
+            m5_print_stat(DAG_ID, req->dag_id);
+            m5_print_stat(NODE_ID, req->node_id);
+
+            int32_t deadline_diff = (int32_t)curr_time - \
+                                    (int32_t)req->node_deadline;
+            m5_print_stat(NODE_DEADLINE_DIFF, *((uint32_t*)(&deadline_diff)));
 
             m5_print_stat(PREDICTED_MEMORY_TIME_PER_BYTE,
                     *((uint32_t*)(&req->stat_mem_time_per_byte_insertion)));
@@ -1559,13 +1662,28 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         volatile task_struct_t *req = acc->running_req;
         uint32_t curr_time = (m5_get_time() / 1000) - runtime_start_time;
 
-        if ((req->num_children == 0) && (curr_time <= req->dag_deadline)) {
-            stat_dag_deadlines_met++;
+        m5_print_stat(DAG_ID, req->dag_id);
+        m5_print_stat(NODE_ID, req->node_id);
+
+        if (req->num_children == 0) {
+            if (curr_time <= req->dag_deadline) {
+                stat_dag_deadlines_met++;
+            }
+
+            m5_print_stat(DAG_EXEC_TIME, curr_time);
+
+            int32_t deadline_diff = (int32_t)curr_time - \
+                                    (int32_t)req->dag_deadline;
+            m5_print_stat(DAG_DEADLINE_DIFF, *((uint32_t*)(&deadline_diff)));
         }
 
         if (curr_time <= req->node_deadline) {
             stat_node_deadlines_met++;
         }
+
+        int32_t deadline_diff = (int32_t)curr_time - \
+                                (int32_t)req->dag_deadline;
+        m5_print_stat(NODE_DEADLINE_DIFF, *((uint32_t*)(&deadline_diff)));
 
         m5_print_stat(PREDICTED_MEMORY_TIME_PER_BYTE,
                 *((uint32_t*)(&req->stat_mem_time_per_byte_insertion)));
