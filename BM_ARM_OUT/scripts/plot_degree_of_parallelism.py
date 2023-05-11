@@ -6,7 +6,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-hatch = {'FCFS': '*', 'GEDF_D': '.', 'LAX': 'xx', 'ELF': '/'}
+hatch = {'FCFS': '*', 'GEDF_D': '.', 'ELF': 'xx', 'xbar': '/'}
+
+def geo_mean(iterable):
+    a = np.array(iterable)
+    return a.prod()**(1.0/len(a))
 
 def add_plot(offset, policy, label):
     if policy in hatch:
@@ -37,11 +41,7 @@ for app_mix in app_mixes:
         last_tick = 0
         last_parallelism = 0
 
-        if policy in ['FCFS', 'GEDF_D']:
-            dir_name = '../comb_4_scheds/'
-        else:
-            dir_name = '../comb_4/'
-        dir_name += app_mix_str + policy + '/debug-trace.txt'
+        dir_name = '../comb_4/' + app_mix_str + policy + '/debug-trace.txt'
 
         for line in open(dir_name):
             if 'Number of accelerators running' in line:
@@ -62,29 +62,39 @@ for app_mix in app_mixes:
                             (tick - first_tick))
                     break
 
-        if last_parallelism != 0:
-            avg_parallelism[policy].append(0)
+    # Normalize values
+    norm_value = avg_parallelism['LAX'][-1]
+    for policy in policies:
+        avg_parallelism[policy][-1] /= norm_value
 
-x = [i for i in range(len(app_mixes))]
-x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))]
+for policy in policies:
+    avg_parallelism[policy].append(geo_mean(avg_parallelism[policy]))
+
+x = [i for i in range(len(app_mixes) + 1)]
+x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))] + ['Gmean']
 
 plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
 
-width = 0.16
-add_plot(-(width*2), 'FCFS',   'FCFS')
-add_plot(-width,     'GEDF_D', 'GEDF-D')
-add_plot(0,          'GEDF_N', 'GEDF-N')
-add_plot(width,      'LAX',    'LAX')
-add_plot((width*2),  'ELF',    'ELF')
+#width = 0.16
+#add_plot(-(width*2), 'FCFS',   'FCFS')
+#add_plot(-width,     'GEDF_D', 'GEDF-D')
+#add_plot(0,          'GEDF_N', 'GEDF-N')
+#add_plot(width,      'LAX',    'LAX')
+#add_plot((width*2),  'ELF',    'ELF')
+width = 0.20
+add_plot(-((3*width)/2), 'FCFS',   'FCFS')
+add_plot(-(width/2),     'GEDF_D', 'GEDF-D')
+add_plot((width/2),      'GEDF_N', 'GEDF-N')
+add_plot((3*width)/2,    'ELF',    'ELF')
 
 plt.xlabel('Application mix', fontsize=35)
 plt.xticks(x, x_labels, fontsize=35, rotation='vertical')
 
-plt.ylabel('Average degree of\nparallelism', fontsize=35)
+plt.ylabel('Degree of parallelism\n(norm. to LAX)', fontsize=35)
 plt.yticks(fontsize=35)
-#plt.ylim([0, 9])
-#plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.2))
+plt.ylim([0, 1.8])
+plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.2))
 
 plt.legend(loc="upper left", ncol=5, fontsize=35)
 plt.grid(color='silver', linestyle='-', linewidth=1)

@@ -163,6 +163,12 @@ inline void update_ewma_predictor(uint32_t time, uint32_t size)
     }
 }
 
+// No predictor
+inline void update_non_predictor()
+{
+    mem_prediction = 0.00007275957;
+}
+
 inline void update_mem_time_predictor(uint32_t time, uint32_t size)
 {
     // The size here is fairly random. We just want to avoid recording time
@@ -177,6 +183,7 @@ inline void update_mem_time_predictor(uint32_t time, uint32_t size)
         case MEM_PRED_LAST_VAL: update_last_val_predictor(time, size); break;
         case MEM_PRED_AVERAGE: update_average_predictor(time, size); break;
         case MEM_PRED_EWMA: update_ewma_predictor(time, size); break;
+        case MEM_PRED_NO_PRED: update_non_predictor(); break;
         default:
             printf("Invalid memory time predictor selected.\n");
             m5_exit(0);
@@ -187,19 +194,19 @@ inline void update_mem_time_predictor(uint32_t time, uint32_t size)
 #endif
 }
 
-inline float get_compute_time(volatile task_struct_t *node)
+inline float get_compute_time(volatile task_struct_t *req)
 {
-    return node->compute_time;
+    return req->compute_time;
 }
 
-inline float get_memory_time(volatile task_struct_t *node)
+inline float get_memory_time(volatile task_struct_t *req)
 {
-    return ((node->input_size + node->output_size) * mem_prediction);
+    return ((req->input_size + req->output_size) * mem_prediction);
 }
 
-inline float get_runtime(volatile task_struct_t *node)
+inline float get_runtime(volatile task_struct_t *req)
 {
-    return (get_compute_time(node) + get_memory_time(node));
+    return (get_compute_time(req) + get_memory_time(req));
 }
 
 /**
@@ -785,7 +792,7 @@ inline void finish_accelerator(int acc_id, int device_id,
 inline bool push_request(volatile task_struct_t *req, bool try_forward)
 {
 #ifdef ENABLE_STATS
-    m5_timer_start(0);
+    m5_timer_start(2);
 #endif
 
     int acc_id = req->acc_id;
@@ -1018,7 +1025,7 @@ inline bool push_request(volatile task_struct_t *req, bool try_forward)
     ready_queue_size[acc_id]++;
 
 #ifdef ENABLE_STATS
-    m5_timer_stop(0);
+    m5_timer_stop(2);
 #endif
 
     return can_forward;
@@ -1130,12 +1137,22 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
             nodes[i][j]->node_id = j;
 
             if (nodes[i][j]->num_parents == 0) {
+                float compute_time = get_compute_time(nodes[i][j]);
+                float memory_time = get_memory_time(nodes[i][j]);
+
+                nodes[i][j]->runtime = compute_time + memory_time;
+                nodes[i][j]->laxity = nodes[i][j]->node_deadline + \
+                                      runtime_start_time - \
+                                      nodes[i][j]->runtime;
+
                 push_request(nodes[i][j], false);
             }
         }
     }
 
+    // Reset the start time after initialization
     runtime_start_time = m5_get_time() / 1000;
+
     m5_reset_stats();
 
     // launch ready requests
@@ -1167,8 +1184,14 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
 
 void isr(int i, int j)  // i = accelerator id, j = device id
 {
-    if ((acc_state[i][j].status == ACC_STATUS_DMA_ARG1) ||
-        (acc_state[i][j].status == ACC_STATUS_DMA_ARG2)) {
+#ifdef ENABLE_STATS
+    m5_timer_start(0);
+#endif
+
+    volatile acc_state_t *acc = &acc_state[i][j];
+
+    if ((acc->status == ACC_STATUS_DMA_ARG1) ||
+        (acc->status == ACC_STATUS_DMA_ARG2)) {
         switch (scheduling_policy) {
             case LAX:
             case ELF: {
@@ -1176,7 +1199,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                 update_mem_time_predictor(time, dma_size[i][j]);
 
                 if (dma_size[i][j] > 512) {
-                    volatile task_struct_t *req = acc_state[i][j].running_req;
+                    volatile task_struct_t *req = acc->running_req;
                     float mem_time_per_byte = ((float)time / 1000) / \
                                               dma_size[i][j];
 
@@ -1194,20 +1217,20 @@ void isr(int i, int j)  // i = accelerator id, j = device id
             }
         }
 
-        *acc_state[i][j].dma = 0;
-        run_accelerator(i, j, acc_state[i][j].running_req);
+        *(acc->dma) = 0;
+        run_accelerator(i, j, acc->running_req);
     }
 
-    else if (acc_state[i][j].status == ACC_STATUS_RUNNING) {
-        *acc_state[i][j].flags = 0;
+    else if (acc->status == ACC_STATUS_RUNNING) {
+        *(acc->flags) = 0;
 
-        volatile task_struct_t *node = acc_state[i][j].running_req;
+        volatile task_struct_t *req = acc->running_req;
 
         volatile task_struct_t *pipeline_queue[MAX_CHILDREN];
         int pipeline_queue_size = 0;
 
-        for (int c = 0; c < node->num_children; c++) {
-            task_struct_t *child = node->children[c];
+        for (int c = 0; c < req->num_children; c++) {
+            task_struct_t *child = req->children[c];
 
             child->completed_parents++;
 
@@ -1224,7 +1247,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
 
                 if (scheduling_policy == ELF) {
 #ifdef ENABLE_STATS
-                    m5_timer_start(2);
+                    m5_timer_start(3);
 #endif
                     float compute_time = get_compute_time(child);
                     float memory_time = get_memory_time(child);
@@ -1249,7 +1272,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                         int pos = pipeline_queue_size;
 
                         while ((pos > 0) && (pipeline_queue[pos-1]->laxity > \
-                                    child->laxity)) {
+                                child->laxity)) {
                             pipeline_queue[pos] = pipeline_queue[pos-1];
                             pos--;
                         }
@@ -1259,7 +1282,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                     }
 
 #ifdef ENABLE_STATS
-                    m5_timer_stop(2);
+                    m5_timer_stop(3);
 #endif
                 }
 
@@ -1286,11 +1309,11 @@ void isr(int i, int j)  // i = accelerator id, j = device id
             }
         }
 
-        int node_spm_out_part = acc_state[i][j].curr_spm_out_part;
+        int node_spm_out_part = acc->curr_spm_out_part;
         int num_forwards = 0;
 
-        for (int c = 0; c < node->num_children; c++) {
-            task_struct_t *child = node->children[c];
+        for (int c = 0; c < req->num_children; c++) {
+            task_struct_t *child = req->children[c];
 
             if (child->status != REQ_STATUS_READY) { continue; }
 
@@ -1305,9 +1328,9 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                     // scheduled, so update its metadata to receive data
                     // from the producer
                     for (int a = 0; a < MAX_ACC_ARGS; a++) {
-                        if (child->producer[a] == node) {
+                        if (child->producer[a] == req) {
                             child->producer_forward[a] = 1;
-                            child->producer_acc[a] = &acc_state[i][j];
+                            child->producer_acc[a] = acc;
                             child->producer_spm_part[a] = node_spm_out_part;
 
                             break;
@@ -1327,10 +1350,10 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         stat_num_forwards += num_forwards;
 #endif
 
-        bool write_out_to_mem = (node->num_children == 0) || \
-                                (num_forwards != node->num_children);
-        finish_accelerator(i, j, node, write_out_to_mem);
-        acc_state[i][j].spm_pending_reads[node_spm_out_part] = num_forwards;
+        bool write_out_to_mem = (req->num_children == 0) || \
+                                (num_forwards != req->num_children);
+        finish_accelerator(i, j, req, write_out_to_mem);
+        acc->spm_pending_reads[node_spm_out_part] = num_forwards;
 
         if (write_out_to_mem) {
             num_available_instances[i]--;
@@ -1339,11 +1362,16 @@ void isr(int i, int j)  // i = accelerator id, j = device id
 #ifdef ENABLE_STATS
             uint32_t curr_time = (m5_get_time() / 1000) - runtime_start_time;
 
-            if (curr_time <= node->node_deadline) {
+            if (curr_time <= req->node_deadline) {
                 stat_node_deadlines_met++;
             }
 
-            volatile task_struct_t *req = acc_state[i][j].running_req;
+            m5_print_stat(DAG_ID, req->dag_id);
+            m5_print_stat(NODE_ID, req->node_id);
+
+            int32_t deadline_diff = (int32_t)curr_time - \
+                                    (int32_t)req->node_deadline;
+            m5_print_stat(NODE_DEADLINE_DIFF, *((uint32_t*)(&deadline_diff)));
 
             m5_print_stat(PREDICTED_MEMORY_TIME_PER_BYTE,
                     *((uint32_t*)(&req->stat_mem_time_per_byte_insertion)));
@@ -1366,7 +1394,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                     *((uint32_t*)(&req->stat_mem_time_truth_store)));
 #endif
 
-            acc_state[i][j].running_req = NULL;
+            acc->running_req = NULL;
             num_running--;
         }
 
@@ -1376,14 +1404,14 @@ void isr(int i, int j)  // i = accelerator id, j = device id
 #endif
     }
 
-    else if (acc_state[i][j].status == ACC_STATUS_DMA_OUT) {
+    else if (acc->status == ACC_STATUS_DMA_OUT) {
         switch (scheduling_policy) {
             case LAX:
             case ELF: {
                 uint32_t time = m5_get_time() - dma_start_time[i][j];
                 update_mem_time_predictor(time, dma_size[i][j]);
 
-                volatile task_struct_t *req = acc_state[i][j].running_req;
+                volatile task_struct_t *req = acc->running_req;
 
                 req->stat_mem_time_per_byte_truth_store = \
                         ((float)time / 1000) / dma_size[i][j];
@@ -1391,22 +1419,35 @@ void isr(int i, int j)  // i = accelerator id, j = device id
             }
         }
 
-        *acc_state[i][j].dma = 0;
-        acc_state[i][j].status = ACC_STATUS_IDLE;
+        *(acc->dma) = 0;
+        acc->status = ACC_STATUS_IDLE;
 
 #ifdef ENABLE_STATS
-        volatile task_struct_t *node = acc_state[i][j].running_req;
+        volatile task_struct_t *req = acc->running_req;
         uint32_t curr_time = (m5_get_time() / 1000) - runtime_start_time;
 
-        if ((node->num_children == 0) && (curr_time <= node->dag_deadline)) {
-            stat_dag_deadlines_met++;
+        m5_print_stat(DAG_ID, req->dag_id);
+        m5_print_stat(NODE_ID, req->node_id);
+
+        if (req->num_children == 0) {
+            if (curr_time <= req->dag_deadline) {
+                stat_dag_deadlines_met++;
+            }
+
+            m5_print_stat(DAG_EXEC_TIME, curr_time);
+
+            int32_t deadline_diff = (int32_t)curr_time - \
+                                    (int32_t)req->dag_deadline;
+            m5_print_stat(DAG_DEADLINE_DIFF, *((uint32_t*)(&deadline_diff)));
         }
 
-        if (curr_time <= node->node_deadline) {
+        if (curr_time <= req->node_deadline) {
             stat_node_deadlines_met++;
         }
 
-        volatile task_struct_t *req = acc_state[i][j].running_req;
+        int32_t deadline_diff = (int32_t)curr_time - \
+                                (int32_t)req->dag_deadline;
+        m5_print_stat(NODE_DEADLINE_DIFF, *((uint32_t*)(&deadline_diff)));
 
         m5_print_stat(PREDICTED_MEMORY_TIME_PER_BYTE,
                 *((uint32_t*)(&req->stat_mem_time_per_byte_insertion)));
@@ -1429,7 +1470,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                 *((uint32_t*)(&req->stat_mem_time_truth_store)));
 #endif
 
-        acc_state[i][j].running_req = NULL;
+        acc->running_req = NULL;
         num_running--;
         num_available_instances[i]++;
     }
@@ -1443,6 +1484,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
     launch_requests();
 
 #ifdef ENABLE_STATS
+    m5_timer_stop(0);
     m5_print_stat(DEGREE_OF_PARALLELISM, num_running);
 #endif
 }

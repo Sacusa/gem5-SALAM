@@ -1,5 +1,6 @@
-declare -a policies=("LAX" "ELF")
-declare -a predictors=("MEM_PRED_AVERAGE" "MEM_PRED_EWMA")
+#declare -a policies=("LAX" "ELF")
+declare -a policies=("ELF")
+declare -a predictors=("MEM_PRED_AVERAGE" "MEM_PRED_EWMA" "MEM_PRED_NO_PRED")
 
 for policy in "${policies[@]}"
 do

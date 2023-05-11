@@ -38,11 +38,7 @@ for app_mix in app_mixes:
         else:              app_mix_str += '0_'
 
     for policy in policies:
-        if policy in ['FCFS', 'GEDF_D']:
-            dir_name = '../comb_4_scheds/'
-        else:
-            dir_name = '../comb_4/'
-        dir_name += app_mix_str + policy + '/debug-trace.txt'
+        dir_name = '../comb_4/' + app_mix_str + policy + '/debug-trace.txt'
         num_forwards[policy].append(0)
 
         for line in open(dir_name):

@@ -37,13 +37,10 @@ for app_mix in app_mixes:
         app_mix_str += app + '_'
         if app in app_mix: app_mix_str += '4_'
         else:              app_mix_str += '0_'
+    app_mix_str += 'scale_0_'
 
     for policy in policies:
-        if policy in ['FCFS', 'GEDF_D']:
-            dir_name = '../comb_4_scheds/'
-        else:
-            dir_name = '../comb_4/'
-        dir_name += app_mix_str + policy + '/debug-trace.txt'
+        dir_name = '../comb_4/' + app_mix_str + policy + '/debug-trace.txt'
 
         value_found = False
 

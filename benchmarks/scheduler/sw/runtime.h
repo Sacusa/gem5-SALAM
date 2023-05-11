@@ -35,9 +35,10 @@
 //#define PRINT_SCHEDULE
 
 /* Enable gem5 timers for the following functions:
- * Timer 0: push_request()
+ * Timer 0: isr()
  * Timer 1: update_mem_time_predictor()
- * Timer 2 (ELF only): sorted insertion into pipeline queue
+ * Timer 2: push_request()
+ * Timer 3 (ELF only): sorted insertion into pipeline queue
  *
  * It also enables the collection and printing of other statistics using
  * structures and gem5 pseudo instructions.
@@ -106,7 +107,8 @@ enum scheduling_policy_t {
 enum mem_predictor_t {
     MEM_PRED_LAST_VAL = 0,
     MEM_PRED_AVERAGE,
-    MEM_PRED_EWMA
+    MEM_PRED_EWMA,
+    MEM_PRED_NO_PRED
 };
 
 /**
@@ -118,6 +120,11 @@ enum m5_stat_t {
     NUM_COLOCATIONS,
     DAG_DEADLINES_MET,
     NODE_DEADLINES_MET,
+    DAG_ID,
+    NODE_ID,
+    DAG_EXEC_TIME,
+    DAG_DEADLINE_DIFF,
+    NODE_DEADLINE_DIFF,
     PREDICTED_COMPUTE_TIME,
     PREDICTED_MEMORY_TIME,
     PREDICTED_MEMORY_TIME_PER_BYTE

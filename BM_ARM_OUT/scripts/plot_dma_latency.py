@@ -40,8 +40,6 @@ for app_mix in app_mixes:
 
         if policy == 'xbar':
             dir_name = '../comb_4_xbar/' + app_mix_str + 'ELF'
-        elif policy in ['FCFS', 'GEDF_D']:
-            dir_name = '../comb_4_scheds/' + app_mix_str + policy
         else:
             dir_name = '../comb_4/' + app_mix_str + policy
         dir_name += '/debug-trace.txt'
@@ -84,7 +82,7 @@ plt.xticks(x, x_labels, fontsize=35, rotation='vertical')
 
 plt.ylabel('Total DMA latency\n(norm. to LAX)', fontsize=35)
 plt.yticks(fontsize=35)
-plt.ylim([0, 1.4])
+plt.ylim([0, 1.8])
 plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.2))
 
 plt.legend(loc="upper left", ncol=5, fontsize=35)

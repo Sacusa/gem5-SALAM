@@ -6,14 +6,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-linestyle = {'last_val': 'bo--', 'average': 'g*--', 'ewma': 'ys--'}
+linestyle = {'LAST_VAL': 'bo--', 'NO_PRED': 'rP--', 'AVERAGE': 'g*--',
+             'EWMA': 'ys--'}
 
 def geo_mean(iterable):
     a = np.array([abs(i) for i in iterable])
     return a.prod()**(1.0/len(a))
 
 def add_plot(policy, label):
-    if policy == 'last_val':
+    if policy == 'LAST_VAL':
         plt.plot(x, compute_accuracy, 'kX-', linewidth=2,
                 markersize=18, markeredgecolor='k', label='Compute', zorder=3)
 
@@ -21,7 +22,7 @@ def add_plot(policy, label):
             markersize=18, markeredgecolor='k', label=label, zorder=3)
 
 applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
-policies = ['last_val', 'average', 'ewma']
+policies = ['LAST_VAL', 'NO_PRED', 'AVERAGE', 'EWMA']
 
 app_mixes = sorted([c for c in itertools.combinations(applications, 3)])
 
@@ -35,16 +36,18 @@ for policy in policies:
             app_mix_str += app + '_'
             if app in app_mix: app_mix_str += '4_'
             else:              app_mix_str += '0_'
+        app_mix_str += 'scale_0_'
 
         actual_compute_time = 0
         predicted_compute_time = 0
         actual_memory_time = 0
         predicted_memory_time = 0
 
-        if policy == 'last_val':
-            dir_name = '../comb_4/' + app_mix_str + 'ELF_laxity/debug-trace.txt'
+        if policy == 'LAST_VAL':
+            dir_name = '../comb_4/' + app_mix_str + 'ELF/debug-trace.txt'
         else:
-            dir_name = '../comb_pred_4/' + app_mix_str + 'ELF_laxity_' + policy + '/debug-trace.txt'
+            dir_name = '../comb_pred_4/' + app_mix_str + 'ELF_MEM_PRED_' + \
+                       policy + '/debug-trace.txt'
 
         for line in open(dir_name):
             if 'Runtime' in line and 'us' in line:
@@ -56,7 +59,7 @@ for policy in policies:
             elif 'Total predicted memory time' in line:
                 predicted_memory_time = float(line.split()[7])
 
-        if policy == 'last_val':
+        if policy == 'LAST_VAL':
             if predicted_compute_time < 1000:
                 compute_accuracy.append(1)
             else:
@@ -79,9 +82,9 @@ x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))] + ['Gmean']
 plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
 
-add_plot('last_val', 'Last value')
-add_plot('average', 'Average')
-add_plot('ewma', 'EWMA')
+add_plot('LAST_VAL', 'Last value')
+add_plot('AVERAGE', 'Average')
+add_plot('EWMA', 'EWMA')
 
 plt.xlabel('Application mix', fontsize=35)
 plt.xticks(x, x_labels, fontsize=35, rotation='vertical')

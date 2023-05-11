@@ -755,6 +755,11 @@ m5printstat(ThreadContext *tc, uint32_t stat, uint32_t value)
         NUM_COLOCATIONS,
         DAG_DEADLINES_MET,
         NODE_DEADLINES_MET,
+        DAG_ID,
+        NODE_ID,
+        DAG_EXEC_TIME,
+        DAG_DEADLINE_DIFF,
+        NODE_DEADLINE_DIFF,
         PREDICTED_COMPUTE_TIME,
         PREDICTED_MEMORY_TIME,
         PREDICTED_MEMORY_TIME_PER_BYTE,
@@ -764,33 +769,66 @@ m5printstat(ThreadContext *tc, uint32_t stat, uint32_t value)
     assert(stat < NUM_STATS);
 
     float fvalue = *((float*)(&value));
+    int32_t ivalue = *((int32_t*)(&value));
 
-    if (stat == DEGREE_OF_PARALLELISM) {
-        DPRINTF(SchedulerStats, "Number of accelerators running = %d\n",
-                value);
-    }
-    else if (stat == NUM_FORWARDS) {
-        DPRINTF(SchedulerStats, "Number of forwards = %d\n", value);
-    }
-    else if (stat == NUM_COLOCATIONS) {
-        DPRINTF(SchedulerStats, "Number of colocations = %d\n", value);
-    }
-    else if (stat == DAG_DEADLINES_MET) {
-        DPRINTF(SchedulerStats, "Number of DAG deadlines met = %d\n", value);
-    }
-    else if (stat == NODE_DEADLINES_MET) {
-        DPRINTF(SchedulerStats, "Number of node deadlines met = %d\n", value);
-    }
-    else if (stat == PREDICTED_COMPUTE_TIME) {
-        DPRINTF(SchedulerStats, "Total predicted compute time = %d us\n",
-                value);
-    }
-    else if (stat == PREDICTED_MEMORY_TIME) {
-        DPRINTF(SchedulerStats, "Predicted memory time = %f us\n", fvalue);
-    }
-    else if (stat == PREDICTED_MEMORY_TIME_PER_BYTE) {
-        DPRINTF(SchedulerStats, "Predicted memory time / byte = %f us/byte\n",
-                fvalue);
+    switch (stat) {
+        case DEGREE_OF_PARALLELISM:
+            DPRINTF(SchedulerStats, "Number of accelerators running = %d\n",
+                    value);
+            break;
+
+        case NUM_FORWARDS:
+            DPRINTF(SchedulerStats, "Number of forwards = %d\n", value);
+            break;
+
+        case NUM_COLOCATIONS:
+            DPRINTF(SchedulerStats, "Number of colocations = %d\n", value);
+            break;
+
+        case DAG_DEADLINES_MET:
+            DPRINTF(SchedulerStats, "Number of DAG deadlines met = %d\n",
+                    value);
+            break;
+
+        case NODE_DEADLINES_MET:
+            DPRINTF(SchedulerStats, "Number of node deadlines met = %d\n",
+                    value);
+            break;
+
+        case DAG_ID:
+            DPRINTF(SchedulerStats, "DAG ID = %d\n", value);
+            break;
+
+        case NODE_ID:
+            DPRINTF(SchedulerStats, "Node ID = %d\n", value);
+            break;
+
+        case DAG_EXEC_TIME:
+            DPRINTF(SchedulerStats, "DAG execution time = %d\n", value);
+            break;
+
+        case DAG_DEADLINE_DIFF:
+            DPRINTF(SchedulerStats, "DAG deadline difference = %d\n", ivalue);
+            break;
+
+        case NODE_DEADLINE_DIFF:
+            DPRINTF(SchedulerStats, "Node deadline difference = %d\n", ivalue);
+            break;
+
+        case PREDICTED_COMPUTE_TIME:
+            DPRINTF(SchedulerStats, "Total predicted compute time = %d us\n",
+                    value);
+            break;
+
+        case PREDICTED_MEMORY_TIME:
+            DPRINTF(SchedulerStats, "Predicted memory time = %f us\n", fvalue);
+            break;
+
+        case PREDICTED_MEMORY_TIME_PER_BYTE:
+            DPRINTF(SchedulerStats,
+                    "Predicted memory time / byte = %f us/byte\n",
+                    fvalue);
+            break;
     }
 }
 
