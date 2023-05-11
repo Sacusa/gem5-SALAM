@@ -169,7 +169,7 @@ inline void create_patch(uint8_t acc_id, uint16_t req_id,
     */
 }
 
-int32_t get_laxity(volatile task_struct_t *req)
+inline int32_t get_laxity(volatile task_struct_t *req)
 {
     uint8_t acc_id = req->acc_id;
 
@@ -248,6 +248,12 @@ inline void update_ewma_predictor(uint32_t time, uint32_t size)
     }
 }
 
+// No predictor
+inline void update_non_predictor()
+{
+    mem_prediction = 0.00007275957;
+}
+
 inline void update_mem_time_predictor(uint32_t time, uint32_t size)
 {
     // The size here is fairly random. We just want to avoid recording time
@@ -262,6 +268,7 @@ inline void update_mem_time_predictor(uint32_t time, uint32_t size)
         case MEM_PRED_LAST_VAL: update_last_val_predictor(time, size); break;
         case MEM_PRED_AVERAGE: update_average_predictor(time, size); break;
         case MEM_PRED_EWMA: update_ewma_predictor(time, size); break;
+        case MEM_PRED_NO_PRED: update_non_predictor(); break;
         default:
             printf("Invalid memory time predictor selected.\n");
             m5_exit(0);
