@@ -6,14 +6,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-linestyle = {'last_val': 'bo--', 'average': 'g*--', 'ewma': 'ys--'}
+linestyle = {'LAST_VAL': 'bo--', 'NO_PRED': 'rP--', 'AVERAGE': 'g*--',
+             'EWMA': 'ys--'}
 
 def geo_mean(iterable):
     a = np.array([abs(i) for i in iterable])
     return a.prod()**(1.0/len(a))
 
 def add_plot(policy, label):
-    if policy == 'last_val':
+    if policy == 'NO_PRED':
         plt.plot(x, compute_accuracy, 'kX-', linewidth=2,
                 markersize=18, markeredgecolor='k', label='Compute', zorder=3)
 
@@ -21,8 +22,7 @@ def add_plot(policy, label):
             markersize=18, markeredgecolor='k', label=label, zorder=3)
 
 applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
-#policies = ['last_val', 'average', 'ewma']
-policies = ['last_val']
+policies = ['LAST_VAL', 'NO_PRED', 'AVERAGE', 'EWMA']
 
 app_mixes = sorted([c for c in itertools.combinations(applications, 3)])
 
@@ -38,6 +38,7 @@ for app_mix in app_mixes:
         app_mix_str += app + '_'
         if app in app_mix: app_mix_str += '4_'
         else:              app_mix_str += '0_'
+    app_mix_str += 'scale_0_'
 
     actual_compute_time = 0
     predicted_compute_time = 0
@@ -53,7 +54,7 @@ for app_mix in app_mixes:
     compute_accuracy.append(((predicted_compute_time - \
             actual_compute_time) / actual_compute_time) * 100)
 
-compute_accuracy.append(geo_mean(compute_accuracy))
+#compute_accuracy.append(geo_mean(compute_accuracy))
 
 #########################################
 ############ MEMORY ACCURACY ############
@@ -65,11 +66,13 @@ for policy in policies:
             app_mix_str += app + '_'
             if app in app_mix: app_mix_str += '4_'
             else:              app_mix_str += '0_'
+        app_mix_str += 'scale_0_'
 
-        if policy == 'last_val':
+        if policy == 'LAST_VAL':
             dir_name = '../comb_4/' + app_mix_str + 'ELF/debug-trace.txt'
         else:
-            dir_name = '../comb_pred_4/' + app_mix_str + 'ELF_' + policy + '/debug-trace.txt'
+            dir_name = '../comb_pred_4/' + app_mix_str + 'ELF_MEM_PRED_' + \
+                       policy + '/debug-trace.txt'
 
         predicted_bw_insertion = 0
         predicted_bw_launch = 0
@@ -112,25 +115,28 @@ for policy in policies:
 
         memory_accuracy[policy].append(((error[0] - error[1]) / error[1]) * 100)
 
-    memory_accuracy[policy].append(geo_mean(memory_accuracy[policy]))
+    #memory_accuracy[policy].append(geo_mean(memory_accuracy[policy]))
 
-x = [i for i in range(len(app_mixes) + 1)]
-x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))] + ['Gmean']
+#x = [i for i in range(len(app_mixes) + 1)]
+#x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))] + ['Gmean']
+x = [i for i in range(len(app_mixes))]
+x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))]
 
 plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
 
-add_plot('last_val', 'Last value')
-#add_plot('average', 'Average')
-#add_plot('ewma', 'EWMA')
+add_plot('NO_PRED', 'No')
+add_plot('LAST_VAL', 'Last')
+add_plot('AVERAGE', 'Avg')
+add_plot('EWMA', 'EWMA')
 
 plt.xlabel('Application mix', fontsize=35)
 plt.xticks(x, x_labels, fontsize=35, rotation='vertical')
 
 plt.ylabel('Error (%)', fontsize=35)
 plt.yticks(fontsize=35)
-#plt.ylim([-25, 700])
-#plt.gca().yaxis.set_major_locator(plt.MultipleLocator(100))
+plt.ylim([-90, 30])
+plt.gca().yaxis.set_major_locator(plt.MultipleLocator(15))
 
 plt.legend(loc="upper left", ncol=5, fontsize=35)
 plt.grid(color='silver', linestyle='-', linewidth=1)

@@ -34,16 +34,13 @@ def get_stat(app_mix, stat):
         app_mix_str += app + '_'
         if app in app_mix: app_mix_str += '4_'
         else:              app_mix_str += '0_'
+    app_mix_str += 'scale_0_'
 
     for policy in policies:
         value = 0
 
         # Get the stat for all policies
-        if policy in ['FCFS', 'GEDF_D']:
-            dir_name = '../comb_4_scheds/'
-        else:
-            dir_name = '../comb_4/'
-        dir_name += app_mix_str
+        dir_name = '../comb_4/' + app_mix_str
 
         for line in open(dir_name + policy + '/stats.txt'):
             if stat in line:
@@ -127,8 +124,8 @@ plt.xticks(x, x_labels, fontsize=35, rotation='vertical')
 
 plt.ylabel(y_label + '\n(norm. to LAX)', fontsize=35)
 plt.yticks(fontsize=35)
-plt.ylim([0, 2.25])
-plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.25))
+plt.ylim([0, 1.8])
+plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.2))
 
 plt.legend(loc="upper left", ncol=5, fontsize=35)
 plt.grid(color='silver', linestyle='-', linewidth=1)

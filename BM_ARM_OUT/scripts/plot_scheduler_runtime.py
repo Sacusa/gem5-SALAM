@@ -39,46 +39,48 @@ for app_mix in app_mixes:
         app_mix_str += app + '_'
         if app in app_mix: app_mix_str += '4_'
         else:              app_mix_str += '0_'
+    app_mix_str += 'scale_0_'
 
     for policy in policies:
-        if policy in ['FCFS', 'GEDF_D']:
-            dir_name = '../comb_4_scheds/'
-        else:
-            dir_name = '../comb_4/'
-        dir_name += app_mix_str + policy + '/debug-trace.txt'
+        dir_name = '../comb_4/' + app_mix_str + policy + '/debug-trace.txt'
 
-        avg_latency[policy].append([])
-        tail_latency[policy].append(0)
+        warmup_finished = False
 
         if policy == 'ELF':
             latency = []
             index = 0
 
             for line in open(dir_name):
-                if 'Timer #0 stopped' in line:
+                if 'compute' in line: warmup_finished = True
+                if not warmup_finished: continue
+
+                if 'Timer #3 stopped' in line:
                     latency.append(float(line.split()[9]) / 1000_000)
                 if 'Timer #2 stopped' in line:
                     latency[index] += float(line.split()[9]) / 1000_000
-                    avg_latency[policy][-1].append(latency[index])
-                    tail_latency[policy][-1] = max(tail_latency[policy][-1],
-                            latency[index])
                     index += 1
 
-            avg_latency[policy][-1] = avg(avg_latency[policy][-1])
+            avg_latency[policy].append(avg(latency))
+            #tail_latency[policy].append(max(latency))
+            tail_latency[policy].append(np.percentile(latency, 99))
         else:
-            for line in open(dir_name):
-                if 'Timer #0 stopped' in line:
-                    latency = float(line.split()[9]) / 1000_000
-                    avg_latency[policy][-1].append(latency)
-                    tail_latency[policy][-1] = max(tail_latency[policy][-1],
-                            latency)
+            latency = []
 
-            avg_latency[policy][-1] = avg(avg_latency[policy][-1])
+            for line in open(dir_name):
+                if 'compute' in line: warmup_finished = True
+                if not warmup_finished: continue
+
+                if 'Timer #2 stopped' in line:
+                    latency.append(float(line.split()[9]) / 1000_000)
+
+            avg_latency[policy].append(avg(latency))
+            #tail_latency[policy].append(max(latency))
+            tail_latency[policy].append(np.percentile(latency, 99))
 
 x = [i for i in range(len(app_mixes))]
 x_labels = ['Mix ' + str(i) for i in range(len(app_mixes))]
 
-fig, ax1 = plt.subplots(figsize=(24, 12), dpi=600)
+fig, ax1 = plt.subplots(figsize=(24, 15), dpi=600)
 ax2 = ax1.twinx()
 plt.rc('axes', axisbelow=False)
 
@@ -99,13 +101,13 @@ ax1.set_xlabel('Application mix', size=35)
 ax1.set_xticks(x)
 ax1.set_xticklabels(x_labels, size=35, rotation='vertical')
 ax1.set_ylabel('Average latency (us)', size=35)
-ax1.set_ylim([0, 1.2])
-ax1.yaxis.set_major_locator(plt.MultipleLocator(0.2))
+ax1.set_ylim([0, 3.2])
+ax1.yaxis.set_major_locator(plt.MultipleLocator(0.4))
 ax1.yaxis.set_tick_params(labelsize=35)
 
-ax2.set_ylabel('Tail latency (us)', size=35)
-ax2.set_ylim([-3, 3])
-ax2.yaxis.set_major_locator(plt.MultipleLocator(1))
+ax2.set_ylabel('99%ile latency (us)', size=35)
+ax2.set_ylim([-8, 8])
+ax2.yaxis.set_major_locator(plt.MultipleLocator(2))
 ax2.yaxis.set_tick_params(labelsize=35)
 
 ax1.grid(zorder=0, color='silver', linestyle='-', linewidth=1)
@@ -114,4 +116,4 @@ h2, l2 = ax2.get_legend_handles_labels()
 h = [x for z in zip(h1, h2) for x in z]
 l = [x for z in zip(l1, l2) for x in z]
 ax1.legend(h, l, loc="upper left", ncol=5, fontsize=35)
-plt.savefig('plots/scheduler_latency.pdf', bbox_inches='tight')
+plt.savefig('plots/scheduler_latency_skip_list.pdf', bbox_inches='tight')
