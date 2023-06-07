@@ -1,0 +1,2754 @@
+gem5 Simulator System.  http://gem5.org
+gem5 is copyrighted software; use the --copyright option for details.
+
+gem5 compiled May 11 2023 13:12:28
+gem5 started May 21 2023 23:56:27
+gem5 executing on node4x10a.cs.rochester.edu, pid 5732
+command line: /u/sgupta45/gem5-SALAM/build/ARM/gem5_bus.opt --debug-flags=HWACC,CommInterface,LLVMInterface,StreamDma,NoncoherentDma,TickTimer,SchedulerStats --outdir=BM_ARM_OUT/solo_app/canny_0_deblur_0_gru_0_harris_1_lstm_0_ELF configs/SALAM/scheduler.py --mem-size=4GB --mem-type=LPDDR5_6400_1x16_BG_BL32 --kernel=/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/bin_solo_app/canny_0_deblur_0_gru_0_harris_1_lstm_0_ELF.elf --vans-config-path=/u/sgupta45/VANS/config --disk-image=/u/sgupta45/gem5-SALAM/baremetal/common/fake.iso --machine-type=VExpress_GEM5_V1 --dtb-file=none --bare-metal --cpu-type=ex5_LITTLE --cpu-clock=1.6GHz --accpath=/u/sgupta45/gem5-SALAM/benchmarks --caches --cacheline_size=64 --l1d_size=32kB --l1d_assoc=4 --l1i_size=32kB --l1i_assoc=2
+
+info: Standard input is not a terminal, disabling listeners.
+Global frequency set at 1000000000000 ticks per second
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+**** REAL SIMULATION ****
+14900625: global: Timer #2 started at tick 14900625
+15532500: global: Timer #2 stopped at tick 15532500. Duration: 631875
+20523750: system.acctest.isp0_dma: SRC:0x0000000082018940, DST:0x0000000027000020, LEN:16900
+21107500: global: Number of accelerators running = 1
+23803750: system.acctest.isp0_dma: Transfer completed in 3.28 us
+24270625: global: Timer #0 started at tick 24270625
+24693750: global: Timer #1 started at tick 24693750
+25469375: global: Timer #1 stopped at tick 25469375. Duration: 775625
+27590000: global: Timer #0 stopped at tick 27590000. Duration: 3319375
+27649375: global: Number of accelerators running = 1
+********************************************************************************
+system.acctest.isp0.compute
+   ========= Performance Analysis =============
+   Setup Time:                      0.214774seconds
+   Simulation Time:                 599.312seconds
+   System Clock:                    1GHz
+   Transistor Latency:              1ns
+   Runtime:                         34882 cycles
+   Runtime:                         34.882 us
+   Stalls:                          1 cycles
+   Executed Nodes:                  34880 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      2.14774e+08ns
+   Simulation Time:                 5.99312e+11ns
+   System Clock:                    1GHz
+   Transistor Latency:              0ns
+   Runtime:                         34882 cycles
+   Runtime:                         3.4882e-06 seconds
+   Stalls:                          1 cycles
+       Load Only:                   0 cycles
+       Store Only:                  1 cycles
+       Compute Only:                0 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  34880 cycles
+       Load Only:                   0 cycles
+       Store Only:                  1 cycles
+       Compute Only:                3453 cycles
+       Compute & Store:             19014 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              2467 cycles
+       Load & Compute & Store:      9945 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                      10 | 0.118075
+   Integer Add/Sub FU's:              76 | 0.082082
+   Integer Mul/Div FU's:              11 | 0.043888
+   Integer Shifter FU's:              42 | 0.055974
+   Integer Bitwise FU's:               4 | 0.059443
+   Floating Point Float Add/Sub:      53 | 0.116839
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:      76 | 0.625626
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:              85 | 0.664984
+   GEP Instruction FU's:              33 | 0.117424
+   Type Conversion FU's:             110 | 0.379700
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       1620
+   Max Register Usage Per Cycle:    151
+   Avg Register Usage Per Cycle:    58.744711
+   Avg Register Size (Bytes):       5.073357
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                112kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                1.637787 mW 
+   FU Dynamic Power:                9.655087 mW 
+   FU Total Power:                  11.292874 mW 
+
+   Registers Leakage Power:          0.021654 mW 
+   Registers Dynamic Power:          3.085961 mW 
+       Register Reads (Bits):        2049133
+       Register Writes (Bits):       2049168
+   Registers Total Power:            3.107615 mW
+
+   SPM Leakage Power:               0.061081 mW
+   SPM Read Dynamic Power:          11.103730 mW
+   SPM Write Dynamic Power:         7.385230 mW
+   SPM Total Power:                 18.550041 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               14.400490 mW
+   Accelerator Power (SPM):         32.950531 mW
+   Accelerator Power (Cache):       14.400490 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         176023.796875 um^2 (0.176024 mm^2)
+   Register Area:                   1760.064941 um^2 (0.001760 mm^2)
+   SPM Area:                        2165.394891 um^2 (0.002165 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                177783.859375 um^2 (0.177784 mm^2)
+   Accelerator Area (SPM):          179949.254266 um^2 (0.179949 mm^2)
+   Accelerator Area (Cache):        177783.859375 um^2 (0.177784 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.005964 mW
+   SPM Opt Area:                    422.108128 um^2
+
+62047500: global: Timer #0 started at tick 62047500
+62368125: global: Timer #3 started at tick 62368125
+62857500: global: Timer #3 stopped at tick 62857500. Duration: 489375
+63195625: global: Timer #2 started at tick 63195625
+63992500: global: Timer #2 stopped at tick 63992500. Duration: 796875
+64700000: global: DAG ID = 0
+64719375: global: Node ID = 0
+64737500: global: Node deadline difference = -13977
+64799375: global: Predicted memory time / byte = 0 us/byte
+64817500: global: Predicted memory time = 0 us
+64835625: global: Predicted memory time / byte = 0 us/byte
+64853750: global: Predicted memory time = 0 us
+64871875: global: Predicted memory time / byte = 0.00023071 us/byte
+64933125: global: Predicted memory time = 3 us
+64951250: global: Predicted memory time / byte = 0 us/byte
+64969375: global: Predicted memory time = 0 us
+66268750: system.acctest.grayscale0_dma: SRC:0x0000000027004224, DST:0x0000000025000020, LEN:49152
+66695000: global: Timer #0 stopped at tick 66695000. Duration: 4647500
+66709375: global: Number of accelerators running = 1
+73969750: system.acctest.grayscale0_dma: Transfer completed in 7.701 us
+74064375: global: Timer #0 started at tick 74064375
+74206250: global: Timer #1 started at tick 74206250
+74504375: global: Timer #1 stopped at tick 74504375. Duration: 298125
+76110625: global: Timer #0 stopped at tick 76110625. Duration: 2046250
+76167500: global: Number of accelerators running = 1
+********************************************************************************
+system.acctest.grayscale0.compute
+   ========= Performance Analysis =============
+   Setup Time:                      0.009006seconds
+   Simulation Time:                 177.917213seconds
+   System Clock:                    1.000000GHz
+   Transistor Latency:              1ns
+   Runtime:                         10263 cycles
+   Runtime:                         10.263000 us
+   Stalls:                          1 cycles
+   Executed Nodes:                  10261 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      9006093.000000ns
+   Simulation Time:                 177917212953.000000ns
+   System Clock:                    1.000000GHz
+   Transistor Latency:              0ns
+   Runtime:                         10263 cycles
+   Runtime:                         0.000001 seconds
+   Stalls:                          1 cycles
+       Load Only:                   0 cycles
+       Store Only:                  1 cycles
+       Compute Only:                0 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  10261 cycles
+       Load Only:                   0 cycles
+       Store Only:                  1 cycles
+       Compute Only:                88 cycles
+       Compute & Store:             344 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              1981 cycles
+       Load & Compute & Store:      7847 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                      24 | 0.199556
+   Integer Add/Sub FU's:               0 | 0.000000
+   Integer Mul/Div FU's:               8 | 0.199552
+   Integer Shifter FU's:               0 | 0.000000
+   Integer Bitwise FU's:               1 | 0.000097
+   Floating Point Float Add/Sub:      49 | 0.114264
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:      42 | 0.114129
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:               9 | 0.066626
+   GEP Instruction FU's:              36 | 0.177452
+   Type Conversion FU's:              76 | 0.401969
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       235
+   Max Register Usage Per Cycle:    90
+   Avg Register Usage Per Cycle:    33.924291
+   Avg Register Size (Bytes):       5.841147
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                176kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                1.178269 mW 
+   FU Dynamic Power:                0.617392 mW 
+   FU Total Power:                  1.795662 mW 
+
+   Registers Leakage Power:          0.014185 mW 
+   Registers Dynamic Power:          0.101057 mW 
+       Register Reads (Bits):        348165
+       Register Writes (Bits):       348168
+   Registers Total Power:            0.115242 mW
+
+   SPM Leakage Power:               0.089881 mW
+   SPM Read Dynamic Power:          6.997296 mW
+   SPM Write Dynamic Power:         2.062375 mW
+   SPM Total Power:                 9.149552 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               1.910904 mW
+   Accelerator Power (SPM):         11.060456 mW
+   Accelerator Power (Cache):       1.910904 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         143348.187500 um^2 (0.143348 mm^2)
+   Register Area:                   1152.968140 um^2 (0.001153 mm^2)
+   SPM Area:                        3573.642862 um^2 (0.003574 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                144501.156250 um^2 (0.144501 mm^2)
+   Accelerator Area (SPM):          148074.799112 um^2 (0.148075 mm^2)
+   Accelerator Area (Cache):        144501.156250 um^2 (0.144501 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.003633 mW
+   SPM Opt Area:                    364.024374 um^2
+
+85899375: global: Timer #0 started at tick 85899375
+86071875: global: Timer #3 started at tick 86071875
+86301875: global: Timer #3 stopped at tick 86301875. Duration: 230000
+86340000: global: Timer #3 started at tick 86340000
+86644375: global: Timer #3 stopped at tick 86644375. Duration: 304375
+86698750: global: Timer #2 started at tick 86698750
+86852500: global: Timer #2 stopped at tick 86852500. Duration: 153750
+86886875: global: Timer #2 started at tick 86886875
+87104375: global: Timer #2 stopped at tick 87104375. Duration: 217500
+87398125: global: DAG ID = 0
+87453125: global: Node ID = 1
+87466250: global: Node deadline difference = -13991
+87478750: global: Predicted memory time / byte = 0.00023071 us/byte
+87491250: global: Predicted memory time = 26.4597 us
+87503750: global: Predicted memory time / byte = 0.00023071 us/byte
+87516250: global: Predicted memory time = 26.4597 us
+87528750: global: Predicted memory time / byte = 0.000157796 us/byte
+87541250: global: Predicted memory time = 7 us
+87553750: global: Predicted memory time / byte = 0 us/byte
+87566250: global: Predicted memory time = 0 us
+89118750: system.acctest.convolution0_dma: SRC:0x000000002500c020, DST:0x0000000022000020, LEN:65536
+90678000: system.acctest.convolution1_dma: SRC:0x000000002500c020, DST:0x0000000022100020, LEN:65536
+90929375: global: Timer #0 stopped at tick 90929375. Duration: 5030000
+90943750: global: Number of accelerators running = 2
+108862750: system.acctest.convolution0_dma: Transfer completed in 19.744 us
+109089375: global: Timer #0 started at tick 109089375
+109266250: global: Timer #1 started at tick 109266250
+109771875: global: Timer #1 stopped at tick 109771875. Duration: 505625
+110430000: system.acctest.convolution1_dma: Transfer completed in 19.752 us
+111369500: system.acctest.convolution0_dma: SRC:0x0000000082039000, DST:0x0000000022030020, LEN:36
+111402500: system.acctest.convolution0_dma: Transfer completed in 0.033 us
+111666250: global: Timer #0 stopped at tick 111666250. Duration: 2576875
+111680625: global: Number of accelerators running = 2
+111870625: global: Timer #0 started at tick 111870625
+112008125: global: Timer #1 started at tick 112008125
+112249375: global: Timer #1 stopped at tick 112249375. Duration: 241250
+113320875: system.acctest.convolution1_dma: SRC:0x0000000082039040, DST:0x0000000022130020, LEN:36
+113353875: system.acctest.convolution1_dma: Transfer completed in 0.033 us
+113535625: global: Timer #0 stopped at tick 113535625. Duration: 1665000
+113550000: global: Number of accelerators running = 2
+113741250: global: Timer #0 started at tick 113741250
+115283125: global: Timer #0 stopped at tick 115283125. Duration: 1541875
+115297500: global: Number of accelerators running = 2
+115420000: global: Timer #0 started at tick 115420000
+116784375: global: Timer #0 stopped at tick 116784375. Duration: 1364375
+116798750: global: Number of accelerators running = 2
+********************************************************************************
+system.acctest.convolution0.compute
+   ========= Performance Analysis =============
+   Setup Time:                      0.836178seconds
+   Simulation Time:                 261.268095seconds
+   System Clock:                    1.000000GHz
+   Transistor Latency:              1ns
+   Runtime:                         637329 cycles
+   Runtime:                         637.329000 us
+   Stalls:                          7 cycles
+   Executed Nodes:                  637321 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      836177860.000000ns
+   Simulation Time:                 261268094928.999969ns
+   System Clock:                    1.000000GHz
+   Transistor Latency:              0ns
+   Runtime:                         637329 cycles
+   Runtime:                         0.000064 seconds
+   Stalls:                          7 cycles
+       Load Only:                   0 cycles
+       Store Only:                  1 cycles
+       Compute Only:                6 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  637321 cycles
+       Load Only:                   0 cycles
+       Store Only:                  1 cycles
+       Compute Only:                475397 cycles
+       Compute & Store:             15999 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              145540 cycles
+       Load & Compute & Store:      384 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                       3 | 0.119701
+   Integer Add/Sub FU's:               4 | 0.197730
+   Integer Mul/Div FU's:               1 | 0.076720
+   Integer Shifter FU's:              10 | 0.007714
+   Integer Bitwise FU's:               2 | 0.192204
+   Floating Point Float Add/Sub:       4 | 0.202424
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:       2 | 0.114482
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:              40 | 0.135811
+   GEP Instruction FU's:               2 | 0.241815
+   Type Conversion FU's:               9 | 0.181785
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       1702
+   Max Register Usage Per Cycle:    17
+   Avg Register Usage Per Cycle:    6.079275
+   Avg Register Size (Bytes):       5.490795
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                192kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                0.181658 mW 
+   FU Dynamic Power:                392.771942 mW 
+   FU Total Power:                  392.953613 mW 
+
+   Registers Leakage Power:          0.002424 mW 
+   Registers Dynamic Power:          12.192513 mW 
+       Register Reads (Bits):        3874498
+       Register Writes (Bits):       4041055
+   Registers Total Power:            12.194937 mW
+
+   SPM Leakage Power:               0.078311 mW
+   SPM Read Dynamic Power:          7.281672 mW
+   SPM Write Dynamic Power:         0.953321 mW
+   SPM Total Power:                 8.313304 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               405.148560 mW
+   Accelerator Power (SPM):         413.461864 mW
+   Accelerator Power (Cache):       405.148560 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         20868.273438 um^2 (0.020868 mm^2)
+   Register Area:                   197.056931 um^2 (0.000197 mm^2)
+   SPM Area:                        1748.188735 um^2 (0.001748 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                21065.330078 um^2 (0.021065 mm^2)
+   Accelerator Area (SPM):          22813.518813 um^2 (0.022814 mm^2)
+   Accelerator Area (Cache):        21065.330078 um^2 (0.021065 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.002053 mW
+   SPM Opt Area:                    145.024971 um^2
+
+752428750: global: Timer #0 started at tick 752428750
+752606875: global: Timer #3 started at tick 752606875
+753001250: global: Timer #3 stopped at tick 753001250. Duration: 394375
+753072500: global: Timer #2 started at tick 753072500
+753446250: global: Timer #2 stopped at tick 753446250. Duration: 373750
+********************************************************************************
+system.acctest.convolution1.compute
+   ========= Performance Analysis =============
+   Setup Time:                      0.799884seconds
+   Simulation Time:                 268.586273seconds
+   System Clock:                    1.000000GHz
+   Transistor Latency:              1ns
+   Runtime:                         637329 cycles
+   Runtime:                         637.329000 us
+   Stalls:                          7 cycles
+   Executed Nodes:                  637321 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      799883532.000000ns
+   Simulation Time:                 268586272538.000000ns
+   System Clock:                    1.000000GHz
+   Transistor Latency:              0ns
+   Runtime:                         637329 cycles
+   Runtime:                         0.000064 seconds
+   Stalls:                          7 cycles
+       Load Only:                   0 cycles
+       Store Only:                  1 cycles
+       Compute Only:                6 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  637321 cycles
+       Load Only:                   0 cycles
+       Store Only:                  1 cycles
+       Compute Only:                475397 cycles
+       Compute & Store:             15999 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              145540 cycles
+       Load & Compute & Store:      384 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                       3 | 0.119701
+   Integer Add/Sub FU's:               4 | 0.197730
+   Integer Mul/Div FU's:               1 | 0.076720
+   Integer Shifter FU's:              10 | 0.007714
+   Integer Bitwise FU's:               2 | 0.192204
+   Floating Point Float Add/Sub:       4 | 0.202424
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:       2 | 0.114482
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:              40 | 0.135811
+   GEP Instruction FU's:               2 | 0.241815
+   Type Conversion FU's:               9 | 0.181785
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       1702
+   Max Register Usage Per Cycle:    17
+   Avg Register Usage Per Cycle:    6.079275
+   Avg Register Size (Bytes):       5.490795
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                192kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                0.181658 mW 
+   FU Dynamic Power:                392.771942 mW 
+   FU Total Power:                  392.953613 mW 
+
+   Registers Leakage Power:          0.002424 mW 
+   Registers Dynamic Power:          12.192513 mW 
+       Register Reads (Bits):        3874498
+       Register Writes (Bits):       4041055
+   Registers Total Power:            12.194937 mW
+
+   SPM Leakage Power:               0.078311 mW
+   SPM Read Dynamic Power:          7.281672 mW
+   SPM Write Dynamic Power:         0.953321 mW
+   SPM Total Power:                 8.313304 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               405.148560 mW
+   Accelerator Power (SPM):         413.461864 mW
+   Accelerator Power (Cache):       405.148560 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         20868.273438 um^2 (0.020868 mm^2)
+   Register Area:                   197.056931 um^2 (0.000197 mm^2)
+   SPM Area:                        1748.188735 um^2 (0.001748 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                21065.330078 um^2 (0.021065 mm^2)
+   Accelerator Area (SPM):          22813.518813 um^2 (0.022814 mm^2)
+   Accelerator Area (Cache):        21065.330078 um^2 (0.021065 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.002053 mW
+   SPM Opt Area:                    145.024971 um^2
+
+766883750: system.acctest.convolution0_dma: SRC:0x0000000022010020, DST:0x0000000082039080, LEN:65536
+769092000: system.acctest.elem_matrix0_dma: SRC:0x0000000022010020, DST:0x0000000024000020, LEN:65536
+769540625: global: Timer #0 stopped at tick 769540625. Duration: 17111875
+769555000: global: Number of accelerators running = 3
+769850000: global: Timer #0 started at tick 769850000
+770048750: global: Timer #3 started at tick 770048750
+770391250: global: Timer #3 stopped at tick 770391250. Duration: 342500
+770429375: global: Timer #3 started at tick 770429375
+770620625: global: Timer #3 stopped at tick 770620625. Duration: 191250
+770670000: global: Timer #2 started at tick 770670000
+770746250: global: Timer #2 stopped at tick 770746250. Duration: 76250
+770780625: global: Timer #2 started at tick 770780625
+770939375: global: Timer #2 stopped at tick 770939375. Duration: 158750
+771266875: global: DAG ID = 0
+771280625: global: Node ID = 3
+771293750: global: Node deadline difference = -13975
+771306250: global: Predicted memory time / byte = 0.000157796 us/byte
+771318750: global: Predicted memory time = 20.6883 us
+771331250: global: Predicted memory time / byte = 0.000157796 us/byte
+771343750: global: Predicted memory time = 20.6883 us
+771356250: global: Predicted memory time / byte = 0.00032341 us/byte
+771368750: global: Predicted memory time = 21 us
+771381250: global: Predicted memory time / byte = 0 us/byte
+771393750: global: Predicted memory time = 0 us
+772662000: system.acctest.elem_matrix1_dma: SRC:0x0000000022110020, DST:0x0000000024100020, LEN:65536
+784071750: system.acctest.convolution0_dma: Transfer completed in 17.188 us
+787133000: system.acctest.elem_matrix2_dma: SRC:0x0000000082039080, DST:0x0000000024200020, LEN:65536
+787357500: global: Timer #0 stopped at tick 787357500. Duration: 17507500
+787371875: global: Number of accelerators running = 4
+787668125: global: Timer #0 started at tick 787668125
+787985625: global: Timer #1 started at tick 787985625
+788348125: global: Timer #1 stopped at tick 788348125. Duration: 362500
+788760625: global: DAG ID = 0
+788823125: global: Node ID = 2
+788894375: global: Node deadline difference = -15894
+788914375: global: Predicted memory time / byte = 0.000157796 us/byte
+788932500: global: Predicted memory time = 20.6883 us
+788950625: global: Predicted memory time / byte = 0.000157796 us/byte
+788968750: global: Predicted memory time = 20.6883 us
+788986875: global: Predicted memory time / byte = 0.000304077 us/byte
+789005000: global: Predicted memory time = 19 us
+789023125: global: Predicted memory time / byte = 0.000317871 us/byte
+789041250: global: Predicted memory time = 20 us
+789074000: system.acctest.elem_matrix1_dma: Transfer completed in 16.412 us
+789168750: global: Timer #0 stopped at tick 789168750. Duration: 1500625
+789183125: global: Number of accelerators running = 3
+789315625: global: Timer #0 started at tick 789315625
+789502500: global: Timer #1 started at tick 789502500
+789746250: global: Timer #1 stopped at tick 789746250. Duration: 243750
+791873000: system.acctest.elem_matrix0_dma: Transfer completed in 22.781 us
+791886875: global: Timer #0 stopped at tick 791886875. Duration: 2571250
+791901250: global: Number of accelerators running = 3
+792082500: global: Timer #0 started at tick 792082500
+792227500: global: Timer #1 started at tick 792227500
+792460625: global: Timer #1 stopped at tick 792460625. Duration: 233125
+794081875: global: Timer #0 stopped at tick 794081875. Duration: 1999375
+794096250: global: Number of accelerators running = 3
+798977000: system.acctest.elem_matrix2_dma: Transfer completed in 11.844 us
+799073125: global: Timer #0 started at tick 799073125
+799164375: global: Timer #1 started at tick 799164375
+799355000: global: Timer #1 stopped at tick 799355000. Duration: 190625
+********************************************************************************
+system.acctest.elem_matrix1.compute
+   ========= Performance Analysis =============
+   Setup Time:                      5.130532seconds
+   Simulation Time:                 217.081190seconds
+   System Clock:                    1.000000GHz
+   Transistor Latency:              1ns
+   Runtime:                         8199 cycles
+   Runtime:                         8.199000 us
+   Stalls:                          2729 cycles
+   Executed Nodes:                  5469 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      5130531854.000000ns
+   Simulation Time:                 217081190125.000000ns
+   System Clock:                    1.000000GHz
+   Transistor Latency:              0ns
+   Runtime:                         8199 cycles
+   Runtime:                         0.000001 seconds
+   Stalls:                          2729 cycles
+       Load Only:                   0 cycles
+       Store Only:                  2729 cycles
+       Compute Only:                0 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  5469 cycles
+       Load Only:                   0 cycles
+       Store Only:                  4 cycles
+       Compute Only:                1 cycles
+       Compute & Store:             11 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              6 cycles
+       Load & Compute & Store:      5447 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                      32 | 0.062450
+   Integer Add/Sub FU's:               0 | 0.000000
+   Integer Mul/Div FU's:               0 | 0.000000
+   Integer Shifter FU's:               0 | 0.000000
+   Integer Bitwise FU's:               1 | 0.000122
+   Floating Point Float Add/Sub:       0 | 0.000000
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:      35 | 0.057652
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:              15 | 0.025182
+   GEP Instruction FU's:              64 | 0.062447
+   Type Conversion FU's:               7 | 0.009043
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       5641
+   Max Register Usage Per Cycle:    104
+   Avg Register Usage Per Cycle:    10.117331
+   Avg Register Size (Bytes):       6.376398
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                256kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                0.045377 mW 
+   FU Dynamic Power:                0.051978 mW 
+   FU Total Power:                  0.097355 mW 
+
+   Registers Leakage Power:          0.004692 mW 
+   Registers Dynamic Power:          0.006422 mW 
+       Register Reads (Bits):        82952
+       Register Writes (Bits):       84505
+   Registers Total Power:            0.011115 mW
+
+   SPM Leakage Power:               0.104100 mW
+   SPM Read Dynamic Power:          0.905625 mW
+   SPM Write Dynamic Power:         0.953321 mW
+   SPM Total Power:                 1.963046 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               0.108470 mW
+   Accelerator Power (SPM):         2.071516 mW
+   Accelerator Power (Cache):       0.108470 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         5472.068359 um^2 (0.005472 mm^2)
+   Register Area:                   381.399994 um^2 (0.000381 mm^2)
+   SPM Area:                        2177.365505 um^2 (0.002177 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                5853.468262 um^2 (0.005853 mm^2)
+   Accelerator Area (SPM):          8030.833767 um^2 (0.008031 mm^2)
+   Accelerator Area (Cache):        5853.468262 um^2 (0.005853 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.003237 mW
+   SPM Opt Area:                    162.973445 um^2
+
+800517375: system.acctest.elem_matrix2_dma: SRC:0x0000000022110020, DST:0x0000000024210020, LEN:65536
+800756875: global: Timer #0 stopped at tick 800756875. Duration: 1683750
+800771250: global: Number of accelerators running = 3
+800953125: global: Timer #0 started at tick 800953125
+801141250: global: Timer #3 started at tick 801141250
+801387500: global: Timer #3 stopped at tick 801387500. Duration: 246250
+801436875: global: Timer #2 started at tick 801436875
+801514375: global: Timer #2 stopped at tick 801514375. Duration: 77500
+801768750: global: DAG ID = 0
+801782500: global: Node ID = 6
+801795625: global: Node deadline difference = -13985
+801808125: global: Predicted memory time / byte = 0.00032341 us/byte
+801820625: global: Predicted memory time = 42.39 us
+801833125: global: Predicted memory time / byte = 0.00032341 us/byte
+801845625: global: Predicted memory time = 63.585 us
+801858125: global: Predicted memory time / byte = 0.000254135 us/byte
+801870625: global: Predicted memory time = 16 us
+801883125: global: Predicted memory time / byte = 0 us/byte
+801895625: global: Predicted memory time = 0 us
+********************************************************************************
+system.acctest.elem_matrix0.compute
+   ========= Performance Analysis =============
+   Setup Time:                      4.207740seconds
+   Simulation Time:                 193.205406seconds
+   System Clock:                    1.000000GHz
+   Transistor Latency:              1ns
+   Runtime:                         8199 cycles
+   Runtime:                         8.199000 us
+   Stalls:                          2729 cycles
+   Executed Nodes:                  5469 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      4207739952.000000ns
+   Simulation Time:                 193205406126.000000ns
+   System Clock:                    1.000000GHz
+   Transistor Latency:              0ns
+   Runtime:                         8199 cycles
+   Runtime:                         0.000001 seconds
+   Stalls:                          2729 cycles
+       Load Only:                   0 cycles
+       Store Only:                  2729 cycles
+       Compute Only:                0 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  5469 cycles
+       Load Only:                   0 cycles
+       Store Only:                  4 cycles
+       Compute Only:                1 cycles
+       Compute & Store:             11 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              6 cycles
+       Load & Compute & Store:      5447 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                      32 | 0.062450
+   Integer Add/Sub FU's:               0 | 0.000000
+   Integer Mul/Div FU's:               0 | 0.000000
+   Integer Shifter FU's:               0 | 0.000000
+   Integer Bitwise FU's:               1 | 0.000122
+   Floating Point Float Add/Sub:       0 | 0.000000
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:      35 | 0.057652
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:              15 | 0.025182
+   GEP Instruction FU's:              64 | 0.062447
+   Type Conversion FU's:               7 | 0.009043
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       5641
+   Max Register Usage Per Cycle:    104
+   Avg Register Usage Per Cycle:    10.117331
+   Avg Register Size (Bytes):       6.376398
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                256kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                0.045377 mW 
+   FU Dynamic Power:                0.051978 mW 
+   FU Total Power:                  0.097355 mW 
+
+   Registers Leakage Power:          0.004692 mW 
+   Registers Dynamic Power:          0.006422 mW 
+       Register Reads (Bits):        82952
+       Register Writes (Bits):       84505
+   Registers Total Power:            0.011115 mW
+
+   SPM Leakage Power:               0.104100 mW
+   SPM Read Dynamic Power:          0.905625 mW
+   SPM Write Dynamic Power:         0.953321 mW
+   SPM Total Power:                 1.963046 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               0.108470 mW
+   Accelerator Power (SPM):         2.071516 mW
+   Accelerator Power (Cache):       0.108470 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         5472.068359 um^2 (0.005472 mm^2)
+   Register Area:                   381.399994 um^2 (0.000381 mm^2)
+   SPM Area:                        2177.365505 um^2 (0.002177 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                5853.468262 um^2 (0.005853 mm^2)
+   Accelerator Area (SPM):          8030.833767 um^2 (0.008031 mm^2)
+   Accelerator Area (Cache):        5853.468262 um^2 (0.005853 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.003237 mW
+   SPM Opt Area:                    162.973445 um^2
+
+802871000: system.acctest.convolution0_dma: SRC:0x0000000024110020, DST:0x0000000022000020, LEN:65536
+803153750: global: Timer #0 stopped at tick 803153750. Duration: 2200625
+803168125: global: Number of accelerators running = 3
+803456250: global: Timer #0 started at tick 803456250
+803650000: global: Timer #3 started at tick 803650000
+803929375: global: Timer #3 stopped at tick 803929375. Duration: 279375
+803986250: global: Timer #2 started at tick 803986250
+804076875: global: Timer #2 stopped at tick 804076875. Duration: 90625
+804340000: global: DAG ID = 0
+804353750: global: Node ID = 4
+804366875: global: Node deadline difference = -13982
+804379375: global: Predicted memory time / byte = 0.00032341 us/byte
+804391875: global: Predicted memory time = 42.39 us
+804404375: global: Predicted memory time / byte = 0.00032341 us/byte
+804416875: global: Predicted memory time = 63.585 us
+804429375: global: Predicted memory time / byte = 0.000350098 us/byte
+804441875: global: Predicted memory time = 22 us
+804454375: global: Predicted memory time / byte = 0 us/byte
+804466875: global: Predicted memory time = 0 us
+805559000: system.acctest.convolution1_dma: SRC:0x0000000024010020, DST:0x0000000022100020, LEN:65536
+805837500: global: Timer #0 stopped at tick 805837500. Duration: 2381250
+805851875: global: Number of accelerators running = 3
+820561375: system.acctest.elem_matrix2_dma: Transfer completed in 20.044 us
+820742500: global: Timer #0 started at tick 820742500
+820921250: global: Timer #1 started at tick 820921250
+821108750: global: Timer #1 stopped at tick 821108750. Duration: 187500
+823025000: global: Timer #0 stopped at tick 823025000. Duration: 2282500
+823039375: global: Number of accelerators running = 3
+824358000: system.acctest.convolution0_dma: Transfer completed in 21.487 us
+824450000: global: Timer #0 started at tick 824450000
+824541250: global: Timer #1 started at tick 824541250
+824730625: global: Timer #1 stopped at tick 824730625. Duration: 189375
+825819000: system.acctest.convolution0_dma: SRC:0x00000000820b9900, DST:0x0000000022030020, LEN:100
+825867000: system.acctest.convolution0_dma: Transfer completed in 0.048 us
+826040625: global: Timer #0 stopped at tick 826040625. Duration: 1590625
+826055000: global: Number of accelerators running = 3
+826059000: system.acctest.convolution1_dma: Transfer completed in 20.5 us
+826166250: global: Timer #0 started at tick 826166250
+827541250: global: Timer #0 stopped at tick 827541250. Duration: 1375000
+827555625: global: Number of accelerators running = 3
+827696875: global: Timer #0 started at tick 827696875
+827745000: global: Timer #1 started at tick 827745000
+827972500: global: Timer #1 stopped at tick 827972500. Duration: 227500
+829045875: system.acctest.convolution1_dma: SRC:0x00000000820b9900, DST:0x0000000022130020, LEN:100
+829086875: system.acctest.convolution1_dma: Transfer completed in 0.041 us
+829264375: global: Timer #0 stopped at tick 829264375. Duration: 1567500
+829278750: global: Number of accelerators running = 3
+829390625: global: Timer #0 started at tick 829390625
+830806250: global: Timer #0 stopped at tick 830806250. Duration: 1415625
+830820625: global: Number of accelerators running = 3
+********************************************************************************
+system.acctest.elem_matrix2.compute
+   ========= Performance Analysis =============
+   Setup Time:                      7.973618seconds
+   Simulation Time:                 219.294948seconds
+   System Clock:                    1.000000GHz
+   Transistor Latency:              1ns
+   Runtime:                         10932 cycles
+   Runtime:                         10.932000 us
+   Stalls:                          1 cycles
+   Executed Nodes:                  10930 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      7973617758.000000ns
+   Simulation Time:                 219294947980.000000ns
+   System Clock:                    1.000000GHz
+   Transistor Latency:              0ns
+   Runtime:                         10932 cycles
+   Runtime:                         0.000001 seconds
+   Stalls:                          1 cycles
+       Load Only:                   0 cycles
+       Store Only:                  1 cycles
+       Compute Only:                0 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  10930 cycles
+       Load Only:                   0 cycles
+       Store Only:                  4 cycles
+       Compute Only:                1 cycles
+       Compute & Store:             21 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              6 cycles
+       Load & Compute & Store:      10898 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                      32 | 0.046838
+   Integer Add/Sub FU's:               0 | 0.000000
+   Integer Mul/Div FU's:               0 | 0.000000
+   Integer Shifter FU's:               0 | 0.000000
+   Integer Bitwise FU's:               1 | 0.000091
+   Floating Point Float Add/Sub:       0 | 0.000000
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:      34 | 0.044252
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:             102 | 0.046945
+   GEP Instruction FU's:              96 | 0.046835
+   Type Conversion FU's:               7 | 0.006782
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       5641
+   Max Register Usage Per Cycle:    137
+   Avg Register Usage Per Cycle:    12.130992
+   Avg Register Size (Bytes):       5.980606
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                256kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                0.045377 mW 
+   FU Dynamic Power:                0.142576 mW 
+   FU Total Power:                  0.187953 mW 
+
+   Registers Leakage Power:          0.005281 mW 
+   Registers Dynamic Power:          0.015326 mW 
+       Register Reads (Bits):        132616
+       Register Writes (Bits):       133658
+   Registers Total Power:            0.020607 mW
+
+   SPM Leakage Power:               0.104100 mW
+   SPM Read Dynamic Power:          1.997266 mW
+   SPM Write Dynamic Power:         0.953321 mW
+   SPM Total Power:                 3.054688 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               0.208559 mW
+   Accelerator Power (SPM):         3.263247 mW
+   Accelerator Power (Cache):       0.208559 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         5472.068359 um^2 (0.005472 mm^2)
+   Register Area:                   429.271088 um^2 (0.000429 mm^2)
+   SPM Area:                        2177.365505 um^2 (0.002177 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                5901.339355 um^2 (0.005901 mm^2)
+   Accelerator Area (SPM):          8078.704860 um^2 (0.008079 mm^2)
+   Accelerator Area (Cache):        5901.339355 um^2 (0.005901 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.004248 mW
+   SPM Opt Area:                    178.524902 um^2
+
+833698125: global: Timer #0 started at tick 833698125
+833927500: global: Timer #3 started at tick 833927500
+834175625: global: Timer #3 stopped at tick 834175625. Duration: 248125
+834225000: global: Timer #2 started at tick 834225000
+834308750: global: Timer #2 stopped at tick 834308750. Duration: 83750
+847635875: system.acctest.elem_matrix2_dma: SRC:0x0000000024220020, DST:0x0000000082069900, LEN:65536
+848014375: global: Timer #0 stopped at tick 848014375. Duration: 14316250
+848028750: global: Number of accelerators running = 3
+853923875: system.acctest.elem_matrix2_dma: Transfer completed in 6.288 us
+854008750: global: Timer #0 started at tick 854008750
+854055000: global: Timer #1 started at tick 854055000
+854214375: global: Timer #1 stopped at tick 854214375. Duration: 159375
+854540625: global: DAG ID = 0
+854554375: global: Node ID = 5
+854573750: global: Node deadline difference = -15828
+854586250: global: Predicted memory time / byte = 0.00032341 us/byte
+854598750: global: Predicted memory time = 63.585 us
+854611250: global: Predicted memory time / byte = 0.00032341 us/byte
+854623750: global: Predicted memory time = 63.585 us
+854636250: global: Predicted memory time / byte = 0.000244949 us/byte
+854648750: global: Predicted memory time = 31 us
+854661250: global: Predicted memory time / byte = 9.57794e-05 us/byte
+854673750: global: Predicted memory time = 6 us
+854782500: global: Timer #0 stopped at tick 854782500. Duration: 773750
+854796875: global: Number of accelerators running = 2
+********************************************************************************
+system.acctest.convolution0.compute
+   ========= Performance Analysis =============
+   Setup Time:                      0.503670seconds
+   Simulation Time:                 594.091565seconds
+   System Clock:                    1.000000GHz
+   Transistor Latency:              1ns
+   Runtime:                         1545612 cycles
+   Runtime:                         1545.612000 us
+   Stalls:                          3 cycles
+   Executed Nodes:                  1545608 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      503669975.000000ns
+   Simulation Time:                 594091564837.000000ns
+   System Clock:                    1.000000GHz
+   Transistor Latency:              0ns
+   Runtime:                         1545612 cycles
+   Runtime:                         0.000155 seconds
+   Stalls:                          3 cycles
+       Load Only:                   0 cycles
+       Store Only:                  1 cycles
+       Compute Only:                2 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  1545608 cycles
+       Load Only:                   0 cycles
+       Store Only:                  1 cycles
+       Compute Only:                1142524 cycles
+       Compute & Store:             1127 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              386700 cycles
+       Load & Compute & Store:      15256 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                       3 | 0.112298
+   Integer Add/Sub FU's:               4 | 0.211563
+   Integer Mul/Div FU's:               1 | 0.052505
+   Integer Shifter FU's:              10 | 0.005268
+   Integer Bitwise FU's:               2 | 0.184265
+   Floating Point Float Add/Sub:       5 | 0.195738
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:       2 | 0.130033
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:              40 | 0.144068
+   GEP Instruction FU's:               2 | 0.265363
+   Type Conversion FU's:              11 | 0.138856
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       1702
+   Max Register Usage Per Cycle:    20
+   Avg Register Usage Per Cycle:    6.401172
+   Avg Register Size (Bytes):       5.569403
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                192kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                0.196912 mW 
+   FU Dynamic Power:                2658.054443 mW 
+   FU Total Power:                  2658.251465 mW 
+
+   Registers Leakage Power:          0.002459 mW 
+   Registers Dynamic Power:          75.875725 mW 
+       Register Reads (Bits):        9893728
+       Register Writes (Bits):       10131647
+   Registers Total Power:            75.878181 mW
+
+   SPM Leakage Power:               0.078311 mW
+   SPM Read Dynamic Power:          13.301967 mW
+   SPM Write Dynamic Power:         2.044305 mW
+   SPM Total Power:                 15.424582 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               2734.129639 mW
+   Accelerator Power (SPM):         2749.554221 mW
+   Accelerator Power (Cache):       2734.129639 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         22931.867188 um^2 (0.022932 mm^2)
+   Register Area:                   199.878082 um^2 (0.000200 mm^2)
+   SPM Area:                        1748.188735 um^2 (0.001748 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                23131.746094 um^2 (0.023132 mm^2)
+   Accelerator Area (SPM):          24879.934829 um^2 (0.024880 mm^2)
+   Accelerator Area (Cache):        23131.746094 um^2 (0.023132 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.002053 mW
+   SPM Opt Area:                    145.024971 um^2
+
+2373036875: global: Timer #0 started at tick 2373036875
+********************************************************************************
+system.acctest.convolution1.compute
+   ========= Performance Analysis =============
+   Setup Time:                      0.494387seconds
+   Simulation Time:                 552.994747seconds
+   System Clock:                    1.000000GHz
+   Transistor Latency:              1ns
+   Runtime:                         1545612 cycles
+   Runtime:                         1545.612000 us
+   Stalls:                          3 cycles
+   Executed Nodes:                  1545608 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      494387232.000000ns
+   Simulation Time:                 552994746746.000000ns
+   System Clock:                    1.000000GHz
+   Transistor Latency:              0ns
+   Runtime:                         1545612 cycles
+   Runtime:                         0.000155 seconds
+   Stalls:                          3 cycles
+       Load Only:                   0 cycles
+       Store Only:                  1 cycles
+       Compute Only:                2 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  1545608 cycles
+       Load Only:                   0 cycles
+       Store Only:                  1 cycles
+       Compute Only:                1142524 cycles
+       Compute & Store:             1127 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              386700 cycles
+       Load & Compute & Store:      15256 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                       3 | 0.112298
+   Integer Add/Sub FU's:               4 | 0.211563
+   Integer Mul/Div FU's:               1 | 0.052505
+   Integer Shifter FU's:              10 | 0.005268
+   Integer Bitwise FU's:               2 | 0.184265
+   Floating Point Float Add/Sub:       5 | 0.195738
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:       2 | 0.130033
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:              40 | 0.144068
+   GEP Instruction FU's:               2 | 0.265363
+   Type Conversion FU's:              11 | 0.138856
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       1702
+   Max Register Usage Per Cycle:    20
+   Avg Register Usage Per Cycle:    6.401172
+   Avg Register Size (Bytes):       5.569403
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                192kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                0.196912 mW 
+   FU Dynamic Power:                2658.054443 mW 
+   FU Total Power:                  2658.251465 mW 
+
+   Registers Leakage Power:          0.002459 mW 
+   Registers Dynamic Power:          75.875725 mW 
+       Register Reads (Bits):        9893728
+       Register Writes (Bits):       10131647
+   Registers Total Power:            75.878181 mW
+
+   SPM Leakage Power:               0.078311 mW
+   SPM Read Dynamic Power:          13.301967 mW
+   SPM Write Dynamic Power:         2.044305 mW
+   SPM Total Power:                 15.424582 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               2734.129639 mW
+   Accelerator Power (SPM):         2749.554221 mW
+   Accelerator Power (Cache):       2734.129639 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         22931.867188 um^2 (0.022932 mm^2)
+   Register Area:                   199.878082 um^2 (0.000200 mm^2)
+   SPM Area:                        1748.188735 um^2 (0.001748 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                23131.746094 um^2 (0.023132 mm^2)
+   Accelerator Area (SPM):          24879.934829 um^2 (0.024880 mm^2)
+   Accelerator Area (Cache):        23131.746094 um^2 (0.023132 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.002053 mW
+   SPM Opt Area:                    145.024971 um^2
+
+2386435875: system.acctest.convolution0_dma: SRC:0x0000000022010020, DST:0x00000000820a9900, LEN:65536
+2386781875: global: Timer #0 stopped at tick 2386781875. Duration: 13745000
+2386796250: global: Number of accelerators running = 2
+2386953125: global: Timer #0 started at tick 2386953125
+2387181875: global: Timer #3 started at tick 2387181875
+2387384375: global: Timer #3 stopped at tick 2387384375. Duration: 202500
+2387411875: global: Timer #3 started at tick 2387411875
+2387605000: global: Timer #3 stopped at tick 2387605000. Duration: 193125
+2387668750: global: Timer #2 started at tick 2387668750
+2387753750: global: Timer #2 stopped at tick 2387753750. Duration: 85000
+2387788125: global: Timer #2 started at tick 2387788125
+2387945000: global: Timer #2 stopped at tick 2387945000. Duration: 156875
+2388250000: global: DAG ID = 0
+2388263750: global: Node ID = 7
+2388283750: global: Node deadline difference = -13974
+2388296250: global: Predicted memory time / byte = 0.000181442 us/byte
+2388308750: global: Predicted memory time = 23.8001 us
+2388321250: global: Predicted memory time / byte = 0.000181442 us/byte
+2388333750: global: Predicted memory time = 23.8001 us
+2388346250: global: Predicted memory time / byte = 0.000336334 us/byte
+2388358750: global: Predicted memory time = 22 us
+2388371250: global: Predicted memory time / byte = 0 us/byte
+2388383750: global: Predicted memory time = 0 us
+2393097875: system.acctest.convolution0_dma: Transfer completed in 6.662 us
+2402239500: system.acctest.convolution1_dma: SRC:0x0000000082069900, DST:0x0000000022100020, LEN:65536
+2403549500: system.acctest.elem_matrix0_dma: SRC:0x0000000022110020, DST:0x0000000024000020, LEN:65536
+2404743000: system.acctest.elem_matrix1_dma: SRC:0x0000000022110020, DST:0x0000000024100020, LEN:65536
+2404974375: global: Timer #0 stopped at tick 2404974375. Duration: 18021250
+2404988750: global: Number of accelerators running = 4
+2405352500: global: Timer #0 started at tick 2405352500
+2405460000: global: Timer #1 started at tick 2405460000
+2405613125: global: Timer #1 stopped at tick 2405613125. Duration: 153125
+2405937500: global: DAG ID = 0
+2405951250: global: Node ID = 9
+2405970625: global: Node deadline difference = -14277
+2405983125: global: Predicted memory time / byte = 0.000181442 us/byte
+2405995625: global: Predicted memory time = 23.8001 us
+2406008125: global: Predicted memory time / byte = 0.000181442 us/byte
+2406020625: global: Predicted memory time = 23.8001 us
+2406033125: global: Predicted memory time / byte = 0.000328491 us/byte
+2406045625: global: Predicted memory time = 21 us
+2406058125: global: Predicted memory time / byte = 0.000287415 us/byte
+2406070625: global: Predicted memory time = 18 us
+2406192500: global: Timer #0 stopped at tick 2406192500. Duration: 840000
+2406206875: global: Number of accelerators running = 3
+2418926500: system.acctest.convolution1_dma: Transfer completed in 16.687 us
+2419011875: global: Timer #0 started at tick 2419011875
+2419184375: global: Timer #1 started at tick 2419184375
+2419418125: global: Timer #1 stopped at tick 2419418125. Duration: 233750
+2420635000: system.acctest.convolution1_dma: SRC:0x00000000820b9900, DST:0x0000000022130020, LEN:100
+2420771000: system.acctest.convolution1_dma: Transfer completed in 0.136 us
+2420898125: global: Timer #0 stopped at tick 2420898125. Duration: 1886250
+2420912500: global: Number of accelerators running = 3
+2421035000: global: Timer #0 started at tick 2421035000
+2422551250: global: Timer #0 stopped at tick 2422551250. Duration: 1516250
+2422565625: global: Number of accelerators running = 3
+2430636500: system.acctest.elem_matrix0_dma: Transfer completed in 27.087 us
+2430721250: global: Timer #0 started at tick 2430721250
+2430806250: global: Timer #1 started at tick 2430806250
+2430990625: global: Timer #1 stopped at tick 2430990625. Duration: 184375
+2431154000: system.acctest.elem_matrix1_dma: Transfer completed in 26.411 us
+2444542375: system.acctest.elem_matrix0_dma: SRC:0x00000000820a9900, DST:0x0000000024010020, LEN:65536
+2444766875: global: Timer #0 stopped at tick 2444766875. Duration: 14045625
+2444781250: global: Number of accelerators running = 3
+2444910000: global: Timer #0 started at tick 2444910000
+2444995000: global: Timer #1 started at tick 2444995000
+2445179375: global: Timer #1 stopped at tick 2445179375. Duration: 184375
+2456418375: system.acctest.elem_matrix0_dma: Transfer completed in 11.876 us
+2458788750: system.acctest.elem_matrix1_dma: SRC:0x00000000820a9900, DST:0x0000000024110020, LEN:65536
+2459013125: global: Timer #0 stopped at tick 2459013125. Duration: 14103125
+2459027500: global: Number of accelerators running = 3
+2459211250: global: Timer #0 started at tick 2459211250
+2459360625: global: Timer #1 started at tick 2459360625
+2459589375: global: Timer #1 stopped at tick 2459589375. Duration: 228750
+2461451875: global: Timer #0 stopped at tick 2461451875. Duration: 2240625
+2461466250: global: Number of accelerators running = 3
+2470636750: system.acctest.elem_matrix1_dma: Transfer completed in 11.848 us
+2470721250: global: Timer #0 started at tick 2470721250
+2470815625: global: Timer #1 started at tick 2470815625
+2471000625: global: Timer #1 stopped at tick 2471000625. Duration: 185000
+********************************************************************************
+system.acctest.elem_matrix0.compute
+   ========= Performance Analysis =============
+   Setup Time:                      5.226160seconds
+   Simulation Time:                 155.643137seconds
+   System Clock:                    1.000000GHz
+   Transistor Latency:              1ns
+   Runtime:                         10932 cycles
+   Runtime:                         10.932000 us
+   Stalls:                          0 cycles
+   Executed Nodes:                  10931 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      5226160092.000000ns
+   Simulation Time:                 155643137280.000000ns
+   System Clock:                    1.000000GHz
+   Transistor Latency:              0ns
+   Runtime:                         10932 cycles
+   Runtime:                         0.000001 seconds
+   Stalls:                          0 cycles
+       Load Only:                   0 cycles
+       Store Only:                  0 cycles
+       Compute Only:                0 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  10931 cycles
+       Load Only:                   0 cycles
+       Store Only:                  5 cycles
+       Compute Only:                1 cycles
+       Compute & Store:             21 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              7 cycles
+       Load & Compute & Store:      10897 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                      32 | 0.046838
+   Integer Add/Sub FU's:               0 | 0.000000
+   Integer Mul/Div FU's:               0 | 0.000000
+   Integer Shifter FU's:               0 | 0.000000
+   Integer Bitwise FU's:               1 | 0.000091
+   Floating Point Float Add/Sub:      34 | 0.044252
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:       0 | 0.000000
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:             102 | 0.046974
+   GEP Instruction FU's:              96 | 0.046835
+   Type Conversion FU's:               7 | 0.006782
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       5641
+   Max Register Usage Per Cycle:    138
+   Avg Register Usage Per Cycle:    12.130992
+   Avg Register Size (Bytes):       5.980606
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                256kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                0.519269 mW 
+   FU Dynamic Power:                0.154621 mW 
+   FU Total Power:                  0.673890 mW 
+
+   Registers Leakage Power:          0.005281 mW 
+   Registers Dynamic Power:          0.015326 mW 
+       Register Reads (Bits):        132616
+       Register Writes (Bits):       133658
+   Registers Total Power:            0.020607 mW
+
+   SPM Leakage Power:               0.104100 mW
+   SPM Read Dynamic Power:          2.386224 mW
+   SPM Write Dynamic Power:         2.044305 mW
+   SPM Total Power:                 4.534629 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               0.694497 mW
+   Accelerator Power (SPM):         5.229126 mW
+   Accelerator Power (Cache):       0.694497 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         70212.562500 um^2 (0.070213 mm^2)
+   Register Area:                   429.271088 um^2 (0.000429 mm^2)
+   SPM Area:                        2177.365505 um^2 (0.002177 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                70641.835938 um^2 (0.070642 mm^2)
+   Accelerator Area (SPM):          72819.201442 um^2 (0.072819 mm^2)
+   Accelerator Area (Cache):        70641.835938 um^2 (0.070642 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.004248 mW
+   SPM Opt Area:                    178.524902 um^2
+
+2472704375: global: Timer #0 stopped at tick 2472704375. Duration: 1983125
+2472718750: global: Number of accelerators running = 3
+2472841250: global: Timer #0 started at tick 2472841250
+2473153125: global: Timer #3 started at tick 2473153125
+2473347500: global: Timer #3 stopped at tick 2473347500. Duration: 194375
+2473396875: global: Timer #2 started at tick 2473396875
+2473464375: global: Timer #2 stopped at tick 2473464375. Duration: 67500
+2473708125: global: DAG ID = 0
+2473721875: global: Node ID = 12
+2473735000: global: Node deadline difference = -13946
+2473747500: global: Predicted memory time / byte = 9.57794e-05 us/byte
+2473760000: global: Predicted memory time = 18.831 us
+2473772500: global: Predicted memory time / byte = 9.57794e-05 us/byte
+2473785000: global: Predicted memory time = 18.831 us
+2473797500: global: Predicted memory time / byte = 0.000318947 us/byte
+2473810000: global: Predicted memory time = 41 us
+2473822500: global: Predicted memory time / byte = 0 us/byte
+2473835000: global: Predicted memory time = 0 us
+2475477500: global: Timer #0 stopped at tick 2475477500. Duration: 2636250
+2475491875: global: Number of accelerators running = 3
+********************************************************************************
+system.acctest.elem_matrix1.compute
+   ========= Performance Analysis =============
+   Setup Time:                      7.988521seconds
+   Simulation Time:                 304.298926seconds
+   System Clock:                    1.000000GHz
+   Transistor Latency:              1ns
+   Runtime:                         10932 cycles
+   Runtime:                         10.932000 us
+   Stalls:                          1 cycles
+   Executed Nodes:                  10930 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      7988520895.000000ns
+   Simulation Time:                 304298926254.000000ns
+   System Clock:                    1.000000GHz
+   Transistor Latency:              0ns
+   Runtime:                         10932 cycles
+   Runtime:                         0.000001 seconds
+   Stalls:                          1 cycles
+       Load Only:                   0 cycles
+       Store Only:                  1 cycles
+       Compute Only:                0 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  10930 cycles
+       Load Only:                   0 cycles
+       Store Only:                  4 cycles
+       Compute Only:                1 cycles
+       Compute & Store:             21 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              6 cycles
+       Load & Compute & Store:      10898 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                      32 | 0.046838
+   Integer Add/Sub FU's:               0 | 0.000000
+   Integer Mul/Div FU's:               0 | 0.000000
+   Integer Shifter FU's:               0 | 0.000000
+   Integer Bitwise FU's:               1 | 0.000091
+   Floating Point Float Add/Sub:       0 | 0.000000
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:      34 | 0.044252
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:             102 | 0.046945
+   GEP Instruction FU's:              96 | 0.046835
+   Type Conversion FU's:               7 | 0.006782
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       5641
+   Max Register Usage Per Cycle:    137
+   Avg Register Usage Per Cycle:    12.130992
+   Avg Register Size (Bytes):       5.980606
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                256kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                0.045377 mW 
+   FU Dynamic Power:                0.142576 mW 
+   FU Total Power:                  0.187953 mW 
+
+   Registers Leakage Power:          0.005281 mW 
+   Registers Dynamic Power:          0.015326 mW 
+       Register Reads (Bits):        132616
+       Register Writes (Bits):       133658
+   Registers Total Power:            0.020607 mW
+
+   SPM Leakage Power:               0.104100 mW
+   SPM Read Dynamic Power:          2.386224 mW
+   SPM Write Dynamic Power:         2.044305 mW
+   SPM Total Power:                 4.534629 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               0.208559 mW
+   Accelerator Power (SPM):         4.743189 mW
+   Accelerator Power (Cache):       0.208559 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         5472.068359 um^2 (0.005472 mm^2)
+   Register Area:                   429.271088 um^2 (0.000429 mm^2)
+   SPM Area:                        2177.365505 um^2 (0.002177 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                5901.339355 um^2 (0.005901 mm^2)
+   Accelerator Area (SPM):          8078.704860 um^2 (0.008079 mm^2)
+   Accelerator Area (Cache):        5901.339355 um^2 (0.005901 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.004248 mW
+   SPM Opt Area:                    178.524902 um^2
+
+********************************************************************************
+system.acctest.elem_matrix0.compute
+   ========= Performance Analysis =============
+   Setup Time:                      4.327831seconds
+   Simulation Time:                 250.053373seconds
+   System Clock:                    1.000000GHz
+   Transistor Latency:              1ns
+   Runtime:                         8199 cycles
+   Runtime:                         8.199000 us
+   Stalls:                          2729 cycles
+   Executed Nodes:                  5469 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      4327830644.000000ns
+   Simulation Time:                 250053372559.000000ns
+   System Clock:                    1.000000GHz
+   Transistor Latency:              0ns
+   Runtime:                         8199 cycles
+   Runtime:                         0.000001 seconds
+   Stalls:                          2729 cycles
+       Load Only:                   0 cycles
+       Store Only:                  2729 cycles
+       Compute Only:                0 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  5469 cycles
+       Load Only:                   0 cycles
+       Store Only:                  4 cycles
+       Compute Only:                1 cycles
+       Compute & Store:             11 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              6 cycles
+       Load & Compute & Store:      5447 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                      32 | 0.062450
+   Integer Add/Sub FU's:               0 | 0.000000
+   Integer Mul/Div FU's:               0 | 0.000000
+   Integer Shifter FU's:               0 | 0.000000
+   Integer Bitwise FU's:               1 | 0.000122
+   Floating Point Float Add/Sub:       0 | 0.000000
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:      35 | 0.057652
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:              15 | 0.025182
+   GEP Instruction FU's:              64 | 0.062447
+   Type Conversion FU's:               7 | 0.009043
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       5641
+   Max Register Usage Per Cycle:    104
+   Avg Register Usage Per Cycle:    10.117331
+   Avg Register Size (Bytes):       6.376398
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                256kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                0.045377 mW 
+   FU Dynamic Power:                0.051978 mW 
+   FU Total Power:                  0.097355 mW 
+
+   Registers Leakage Power:          0.004692 mW 
+   Registers Dynamic Power:          0.006422 mW 
+       Register Reads (Bits):        82952
+       Register Writes (Bits):       84505
+   Registers Total Power:            0.011115 mW
+
+   SPM Leakage Power:               0.104100 mW
+   SPM Read Dynamic Power:          2.785289 mW
+   SPM Write Dynamic Power:         2.457440 mW
+   SPM Total Power:                 5.346829 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               0.108470 mW
+   Accelerator Power (SPM):         5.455299 mW
+   Accelerator Power (Cache):       0.108470 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         5472.068359 um^2 (0.005472 mm^2)
+   Register Area:                   381.399994 um^2 (0.000381 mm^2)
+   SPM Area:                        2177.365505 um^2 (0.002177 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                5853.468262 um^2 (0.005853 mm^2)
+   Accelerator Area (SPM):          8030.833767 um^2 (0.008031 mm^2)
+   Accelerator Area (Cache):        5853.468262 um^2 (0.005853 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.003237 mW
+   SPM Opt Area:                    162.973445 um^2
+
+2483555000: global: Timer #0 started at tick 2483555000
+2496916625: system.acctest.elem_matrix1_dma: SRC:0x0000000024120020, DST:0x00000000820ba340, LEN:65536
+2497281875: global: Timer #0 stopped at tick 2497281875. Duration: 13726875
+2497296250: global: Number of accelerators running = 3
+2497496250: global: Timer #0 started at tick 2497496250
+2497669375: global: Timer #3 started at tick 2497669375
+2498085000: global: Timer #3 stopped at tick 2498085000. Duration: 415625
+2498134375: global: Timer #2 started at tick 2498134375
+2498201875: global: Timer #2 stopped at tick 2498201875. Duration: 67500
+2498431250: global: DAG ID = 0
+2498445000: global: Node ID = 14
+2498465000: global: Node deadline difference = -13960
+2498477500: global: Predicted memory time / byte = 0.000181488 us/byte
+2498490000: global: Predicted memory time = 23.788 us
+2498502500: global: Predicted memory time / byte = 0.000181488 us/byte
+2498515000: global: Predicted memory time = 23.788 us
+2498527500: global: Predicted memory time / byte = 0 us/byte
+2498540000: global: Predicted memory time = 0 us
+2498552500: global: Predicted memory time / byte = 0 us/byte
+2498565000: global: Predicted memory time = 0 us
+2499771000: system.acctest.elem_matrix0_dma: SRC:0x00000000820fa340, DST:0x0000000024010020, LEN:4
+2499913000: system.acctest.elem_matrix0_dma: Transfer completed in 0.142 us
+2500035000: global: Timer #0 stopped at tick 2500035000. Duration: 2538750
+2500049375: global: Number of accelerators running = 3
+2500341250: global: Timer #0 started at tick 2500341250
+2501977500: global: Timer #0 stopped at tick 2501977500. Duration: 1636250
+2501991875: global: Number of accelerators running = 3
+2503223625: system.acctest.elem_matrix1_dma: Transfer completed in 6.307 us
+2503308125: global: Timer #0 started at tick 2503308125
+2503363750: global: Timer #1 started at tick 2503363750
+2503600625: global: Timer #1 stopped at tick 2503600625. Duration: 236875
+2503927500: global: DAG ID = 0
+2503941250: global: Node ID = 10
+2503960625: global: Node deadline difference = -14179
+2503973125: global: Predicted memory time / byte = 9.57794e-05 us/byte
+2503985625: global: Predicted memory time = 18.831 us
+2503998125: global: Predicted memory time / byte = 9.57794e-05 us/byte
+2504010625: global: Predicted memory time = 18.831 us
+2504023125: global: Predicted memory time / byte = 0.000396881 us/byte
+2504035625: global: Predicted memory time = 51 us
+2504048125: global: Predicted memory time / byte = 9.62982e-05 us/byte
+2504060625: global: Predicted memory time = 6 us
+2504156250: global: Timer #0 stopped at tick 2504156250. Duration: 848125
+2504170625: global: Number of accelerators running = 2
+********************************************************************************
+system.acctest.elem_matrix0.compute
+   ========= Performance Analysis =============
+   Setup Time:                      8.318393seconds
+   Simulation Time:                 169.913088seconds
+   System Clock:                    1.000000GHz
+   Transistor Latency:              1ns
+   Runtime:                         8199 cycles
+   Runtime:                         8.199000 us
+   Stalls:                          2729 cycles
+   Executed Nodes:                  5469 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      8318392554.000001ns
+   Simulation Time:                 169913087837.000000ns
+   System Clock:                    1.000000GHz
+   Transistor Latency:              0ns
+   Runtime:                         8199 cycles
+   Runtime:                         0.000001 seconds
+   Stalls:                          2729 cycles
+       Load Only:                   0 cycles
+       Store Only:                  2729 cycles
+       Compute Only:                0 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  5469 cycles
+       Load Only:                   0 cycles
+       Store Only:                  4 cycles
+       Compute Only:                1 cycles
+       Compute & Store:             11 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              6 cycles
+       Load & Compute & Store:      5447 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                      32 | 0.062450
+   Integer Add/Sub FU's:               0 | 0.000000
+   Integer Mul/Div FU's:               0 | 0.000000
+   Integer Shifter FU's:               0 | 0.000000
+   Integer Bitwise FU's:               1 | 0.000122
+   Floating Point Float Add/Sub:       0 | 0.000000
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:      35 | 0.057429
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:             204 | 0.031275
+   GEP Instruction FU's:              64 | 0.062447
+   Type Conversion FU's:               7 | 0.009043
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       5641
+   Max Register Usage Per Cycle:    137
+   Avg Register Usage Per Cycle:    10.122088
+   Avg Register Size (Bytes):       6.375294
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                256kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                0.045377 mW 
+   FU Dynamic Power:                0.063423 mW 
+   FU Total Power:                  0.108800 mW 
+
+   Registers Leakage Power:          0.004692 mW 
+   Registers Dynamic Power:          0.007051 mW 
+       Register Reads (Bits):        82991
+       Register Writes (Bits):       100891
+   Registers Total Power:            0.011743 mW
+
+   SPM Leakage Power:               0.104100 mW
+   SPM Read Dynamic Power:          3.397617 mW
+   SPM Write Dynamic Power:         2.880682 mW
+   SPM Total Power:                 6.382399 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               0.120542 mW
+   Accelerator Power (SPM):         6.502942 mW
+   Accelerator Power (Cache):       0.120542 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         5472.068359 um^2 (0.005472 mm^2)
+   Register Area:                   381.333923 um^2 (0.000381 mm^2)
+   SPM Area:                        2177.365505 um^2 (0.002177 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                5853.402344 um^2 (0.005853 mm^2)
+   Accelerator Area (SPM):          8030.767849 um^2 (0.008031 mm^2)
+   Accelerator Area (Cache):        5853.402344 um^2 (0.005853 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.004248 mW
+   SPM Opt Area:                    178.524902 um^2
+
+2509981250: global: Timer #0 started at tick 2509981250
+2523339500: system.acctest.elem_matrix0_dma: SRC:0x0000000024020020, DST:0x000000008210a380, LEN:65536
+2523683125: global: Timer #0 stopped at tick 2523683125. Duration: 13701875
+2523697500: global: Number of accelerators running = 2
+2529636500: system.acctest.elem_matrix0_dma: Transfer completed in 6.297 us
+2529710625: global: Timer #0 started at tick 2529710625
+2529763125: global: Timer #1 started at tick 2529763125
+2529913125: global: Timer #1 stopped at tick 2529913125. Duration: 150000
+2530239375: global: DAG ID = 0
+2530253125: global: Node ID = 15
+2530272500: global: Node deadline difference = -14152
+2530285000: global: Predicted memory time / byte = 0.000181488 us/byte
+2530297500: global: Predicted memory time = 23.7887 us
+2530310000: global: Predicted memory time / byte = 0.000181488 us/byte
+2530322500: global: Predicted memory time = 11.8947 us
+2530335000: global: Predicted memory time / byte = 0 us/byte
+2530347500: global: Predicted memory time = 0 us
+2530360000: global: Predicted memory time / byte = 9.59167e-05 us/byte
+2530372500: global: Predicted memory time = 6 us
+2530468125: global: Timer #0 stopped at tick 2530468125. Duration: 757500
+2530482500: global: Number of accelerators running = 1
+********************************************************************************
+system.acctest.convolution1.compute
+   ========= Performance Analysis =============
+   Setup Time:                      0.567464seconds
+   Simulation Time:                 875.190703seconds
+   System Clock:                    1.000000GHz
+   Transistor Latency:              1ns
+   Runtime:                         1545612 cycles
+   Runtime:                         1545.612000 us
+   Stalls:                          3 cycles
+   Executed Nodes:                  1545608 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      567463678.000000ns
+   Simulation Time:                 875190703333.000000ns
+   System Clock:                    1.000000GHz
+   Transistor Latency:              0ns
+   Runtime:                         1545612 cycles
+   Runtime:                         0.000155 seconds
+   Stalls:                          3 cycles
+       Load Only:                   0 cycles
+       Store Only:                  1 cycles
+       Compute Only:                2 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  1545608 cycles
+       Load Only:                   0 cycles
+       Store Only:                  1 cycles
+       Compute Only:                1142556 cycles
+       Compute & Store:             1095 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              386668 cycles
+       Load & Compute & Store:      15288 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                       3 | 0.112298
+   Integer Add/Sub FU's:               4 | 0.211563
+   Integer Mul/Div FU's:               1 | 0.052505
+   Integer Shifter FU's:              10 | 0.005268
+   Integer Bitwise FU's:               2 | 0.184265
+   Floating Point Float Add/Sub:       5 | 0.195741
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:       4 | 0.065019
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:              40 | 0.144069
+   GEP Instruction FU's:               2 | 0.265363
+   Type Conversion FU's:              11 | 0.138869
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       1702
+   Max Register Usage Per Cycle:    20
+   Avg Register Usage Per Cycle:    6.401172
+   Avg Register Size (Bytes):       5.569403
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                192kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                0.196912 mW 
+   FU Dynamic Power:                2658.091064 mW 
+   FU Total Power:                  2658.288086 mW 
+
+   Registers Leakage Power:          0.002459 mW 
+   Registers Dynamic Power:          75.875725 mW 
+       Register Reads (Bits):        9893728
+       Register Writes (Bits):       10131647
+   Registers Total Power:            75.878181 mW
+
+   SPM Leakage Power:               0.078311 mW
+   SPM Read Dynamic Power:          17.543744 mW
+   SPM Write Dynamic Power:         2.457440 mW
+   SPM Total Power:                 20.079495 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               2734.166260 mW
+   Accelerator Power (SPM):         2754.245755 mW
+   Accelerator Power (Cache):       2734.166260 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         22931.867188 um^2 (0.022932 mm^2)
+   Register Area:                   199.878082 um^2 (0.000200 mm^2)
+   SPM Area:                        1748.188735 um^2 (0.001748 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                23131.746094 um^2 (0.023132 mm^2)
+   Accelerator Area (SPM):          24879.934829 um^2 (0.024880 mm^2)
+   Accelerator Area (Cache):        23131.746094 um^2 (0.023132 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.002053 mW
+   SPM Opt Area:                    145.024971 um^2
+
+3967993750: global: Timer #0 started at tick 3967993750
+3968158125: global: Timer #3 started at tick 3968158125
+3968481875: global: Timer #3 stopped at tick 3968481875. Duration: 323750
+3968528750: global: Timer #2 started at tick 3968528750
+3968596250: global: Timer #2 stopped at tick 3968596250. Duration: 67500
+3968820000: global: DAG ID = 0
+3968833750: global: Node ID = 8
+3968853750: global: Node deadline difference = -12436
+3968866250: global: Predicted memory time / byte = 0.000336334 us/byte
+3968878750: global: Predicted memory time = 44.1176 us
+3968891250: global: Predicted memory time / byte = 9.57794e-05 us/byte
+3968903750: global: Predicted memory time = 12.5636 us
+3968916250: global: Predicted memory time / byte = 0.000256012 us/byte
+3968928750: global: Predicted memory time = 16 us
+3968941250: global: Predicted memory time / byte = 0 us/byte
+3968953750: global: Predicted memory time = 0 us
+3970126625: system.acctest.elem_matrix0_dma: SRC:0x0000000022120020, DST:0x0000000024000020, LEN:65536
+3970377500: global: Timer #0 stopped at tick 3970377500. Duration: 2383750
+3970391875: global: Number of accelerators running = 1
+3980387625: system.acctest.elem_matrix0_dma: Transfer completed in 10.261 us
+3980506250: global: Timer #0 started at tick 3980506250
+3980633125: global: Timer #1 started at tick 3980633125
+3980820000: global: Timer #1 stopped at tick 3980820000. Duration: 186875
+3982521250: global: Timer #0 stopped at tick 3982521250. Duration: 2015000
+3982535625: global: Number of accelerators running = 1
+********************************************************************************
+system.acctest.elem_matrix0.compute
+   ========= Performance Analysis =============
+   Setup Time:                      5.322355seconds
+   Simulation Time:                 107.397768seconds
+   System Clock:                    1.000000GHz
+   Transistor Latency:              1ns
+   Runtime:                         8199 cycles
+   Runtime:                         8.199000 us
+   Stalls:                          2729 cycles
+   Executed Nodes:                  5469 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      5322355167.000000ns
+   Simulation Time:                 107397768432.000000ns
+   System Clock:                    1.000000GHz
+   Transistor Latency:              0ns
+   Runtime:                         8199 cycles
+   Runtime:                         0.000001 seconds
+   Stalls:                          2729 cycles
+       Load Only:                   0 cycles
+       Store Only:                  2729 cycles
+       Compute Only:                0 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  5469 cycles
+       Load Only:                   0 cycles
+       Store Only:                  4 cycles
+       Compute Only:                1 cycles
+       Compute & Store:             11 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              6 cycles
+       Load & Compute & Store:      5447 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                      32 | 0.062450
+   Integer Add/Sub FU's:               0 | 0.000000
+   Integer Mul/Div FU's:               0 | 0.000000
+   Integer Shifter FU's:               0 | 0.000000
+   Integer Bitwise FU's:               1 | 0.000122
+   Floating Point Float Add/Sub:       0 | 0.000000
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:      35 | 0.057652
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:              15 | 0.025182
+   GEP Instruction FU's:              64 | 0.062447
+   Type Conversion FU's:               7 | 0.009043
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       5641
+   Max Register Usage Per Cycle:    104
+   Avg Register Usage Per Cycle:    10.117331
+   Avg Register Size (Bytes):       6.376398
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                256kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                0.045377 mW 
+   FU Dynamic Power:                0.051978 mW 
+   FU Total Power:                  0.097355 mW 
+
+   Registers Leakage Power:          0.004692 mW 
+   Registers Dynamic Power:          0.006422 mW 
+       Register Reads (Bits):        82952
+       Register Writes (Bits):       84505
+   Registers Total Power:            0.011115 mW
+
+   SPM Leakage Power:               0.104100 mW
+   SPM Read Dynamic Power:          3.782815 mW
+   SPM Write Dynamic Power:         3.448926 mW
+   SPM Total Power:                 7.335841 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               0.108470 mW
+   Accelerator Power (SPM):         7.444311 mW
+   Accelerator Power (Cache):       0.108470 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         5472.068359 um^2 (0.005472 mm^2)
+   Register Area:                   381.399994 um^2 (0.000381 mm^2)
+   SPM Area:                        2177.365505 um^2 (0.002177 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                5853.468262 um^2 (0.005853 mm^2)
+   Accelerator Area (SPM):          8030.833767 um^2 (0.008031 mm^2)
+   Accelerator Area (Cache):        5853.468262 um^2 (0.005853 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.003237 mW
+   SPM Opt Area:                    162.973445 um^2
+
+3990527500: global: Timer #0 started at tick 3990527500
+3990690000: global: Timer #3 started at tick 3990690000
+3990964375: global: Timer #3 stopped at tick 3990964375. Duration: 274375
+3991011250: global: Timer #2 started at tick 3991011250
+3991088125: global: Timer #2 stopped at tick 3991088125. Duration: 76875
+3991346250: global: DAG ID = 0
+3991360000: global: Node ID = 11
+3991373125: global: Node deadline difference = -12452
+3991385625: global: Predicted memory time / byte = 9.59167e-05 us/byte
+3991398125: global: Predicted memory time = 12.572 us
+3991410625: global: Predicted memory time / byte = 9.59167e-05 us/byte
+3991423125: global: Predicted memory time = 18.858 us
+3991435625: global: Predicted memory time / byte = 0.000157669 us/byte
+3991448125: global: Predicted memory time = 10 us
+3991460625: global: Predicted memory time / byte = 0 us/byte
+3991473125: global: Predicted memory time = 0 us
+4005037375: system.acctest.elem_matrix0_dma: SRC:0x00000000820ba340, DST:0x0000000024000020, LEN:65536
+4005282500: global: Timer #0 stopped at tick 4005282500. Duration: 14755000
+4005296875: global: Number of accelerators running = 1
+4017019375: system.acctest.elem_matrix0_dma: Transfer completed in 11.982 us
+4017138125: global: Timer #0 started at tick 4017138125
+4017177500: global: Timer #1 started at tick 4017177500
+4017363750: global: Timer #1 stopped at tick 4017363750. Duration: 186250
+4019146250: global: Timer #0 stopped at tick 4019146250. Duration: 2008125
+4019160625: global: Number of accelerators running = 1
+********************************************************************************
+system.acctest.elem_matrix0.compute
+   ========= Performance Analysis =============
+   Setup Time:                      7.647746seconds
+   Simulation Time:                 160.834778seconds
+   System Clock:                    1.000000GHz
+   Transistor Latency:              1ns
+   Runtime:                         10932 cycles
+   Runtime:                         10.932000 us
+   Stalls:                          0 cycles
+   Executed Nodes:                  10931 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      7647746188.000000ns
+   Simulation Time:                 160834777835.000000ns
+   System Clock:                    1.000000GHz
+   Transistor Latency:              0ns
+   Runtime:                         10932 cycles
+   Runtime:                         0.000001 seconds
+   Stalls:                          0 cycles
+       Load Only:                   0 cycles
+       Store Only:                  0 cycles
+       Compute Only:                0 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  10931 cycles
+       Load Only:                   0 cycles
+       Store Only:                  5 cycles
+       Compute Only:                1 cycles
+       Compute & Store:             21 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              7 cycles
+       Load & Compute & Store:      10897 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                      32 | 0.046838
+   Integer Add/Sub FU's:               0 | 0.000000
+   Integer Mul/Div FU's:               0 | 0.000000
+   Integer Shifter FU's:               0 | 0.000000
+   Integer Bitwise FU's:               1 | 0.000091
+   Floating Point Float Add/Sub:      34 | 0.044252
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:       0 | 0.000000
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:             102 | 0.046974
+   GEP Instruction FU's:              96 | 0.046835
+   Type Conversion FU's:               7 | 0.006782
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       5641
+   Max Register Usage Per Cycle:    138
+   Avg Register Usage Per Cycle:    12.130992
+   Avg Register Size (Bytes):       5.980606
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                256kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                0.519269 mW 
+   FU Dynamic Power:                0.154621 mW 
+   FU Total Power:                  0.673890 mW 
+
+   Registers Leakage Power:          0.005281 mW 
+   Registers Dynamic Power:          0.015326 mW 
+       Register Reads (Bits):        132616
+       Register Writes (Bits):       133658
+   Registers Total Power:            0.020607 mW
+
+   SPM Leakage Power:               0.104100 mW
+   SPM Read Dynamic Power:          4.585743 mW
+   SPM Write Dynamic Power:         3.846212 mW
+   SPM Total Power:                 8.536055 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               0.694497 mW
+   Accelerator Power (SPM):         9.230552 mW
+   Accelerator Power (Cache):       0.694497 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         70212.562500 um^2 (0.070213 mm^2)
+   Register Area:                   429.271088 um^2 (0.000429 mm^2)
+   SPM Area:                        2177.365505 um^2 (0.002177 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                70641.835938 um^2 (0.070642 mm^2)
+   Accelerator Area (SPM):          72819.201442 um^2 (0.072819 mm^2)
+   Accelerator Area (Cache):        70641.835938 um^2 (0.070642 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.004248 mW
+   SPM Opt Area:                    178.524902 um^2
+
+4029851250: global: Timer #0 started at tick 4029851250
+4030023750: global: Timer #3 started at tick 4030023750
+4030313125: global: Timer #3 stopped at tick 4030313125. Duration: 289375
+4030360000: global: Timer #2 started at tick 4030360000
+4030436875: global: Timer #2 stopped at tick 4030436875. Duration: 76875
+4030670000: global: DAG ID = 0
+4030683750: global: Node ID = 13
+4030696875: global: Node deadline difference = -12470
+4030709375: global: Predicted memory time / byte = 0.000157669 us/byte
+4030721875: global: Predicted memory time = 30.999 us
+4030734375: global: Predicted memory time / byte = 0.000157669 us/byte
+4030746875: global: Predicted memory time = 20.666 us
+4030759375: global: Predicted memory time / byte = 0.000183334 us/byte
+4030771875: global: Predicted memory time = 12 us
+4030784375: global: Predicted memory time / byte = 0 us/byte
+4030796875: global: Predicted memory time = 0 us
+4044440875: system.acctest.elem_matrix0_dma: SRC:0x000000008210a380, DST:0x0000000024000020, LEN:65536
+4044673125: global: Timer #0 stopped at tick 4044673125. Duration: 14821875
+4044686875: global: Number of accelerators running = 1
+4056371875: system.acctest.elem_matrix0_dma: Transfer completed in 11.931 us
+4056490625: global: Timer #0 started at tick 4056490625
+4056537500: global: Timer #1 started at tick 4056537500
+4056727500: global: Timer #1 stopped at tick 4056727500. Duration: 190000
+4058436250: global: Timer #0 stopped at tick 4058436250. Duration: 1945625
+4058450625: global: Number of accelerators running = 1
+********************************************************************************
+system.acctest.elem_matrix0.compute
+   ========= Performance Analysis =============
+   Setup Time:                      6.852485seconds
+   Simulation Time:                 143.324597seconds
+   System Clock:                    1.000000GHz
+   Transistor Latency:              1ns
+   Runtime:                         10932 cycles
+   Runtime:                         10.932000 us
+   Stalls:                          0 cycles
+   Executed Nodes:                  10931 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      6852484816.000000ns
+   Simulation Time:                 143324596860.000000ns
+   System Clock:                    1.000000GHz
+   Transistor Latency:              0ns
+   Runtime:                         10932 cycles
+   Runtime:                         0.000001 seconds
+   Stalls:                          0 cycles
+       Load Only:                   0 cycles
+       Store Only:                  0 cycles
+       Compute Only:                0 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  10931 cycles
+       Load Only:                   0 cycles
+       Store Only:                  5 cycles
+       Compute Only:                1 cycles
+       Compute & Store:             21 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              7 cycles
+       Load & Compute & Store:      10897 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                      32 | 0.046838
+   Integer Add/Sub FU's:               0 | 0.000000
+   Integer Mul/Div FU's:               0 | 0.000000
+   Integer Shifter FU's:               0 | 0.000000
+   Integer Bitwise FU's:               1 | 0.000091
+   Floating Point Float Add/Sub:      34 | 0.044252
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:       0 | 0.000000
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:             102 | 0.046974
+   GEP Instruction FU's:              96 | 0.046835
+   Type Conversion FU's:               7 | 0.006782
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       5641
+   Max Register Usage Per Cycle:    138
+   Avg Register Usage Per Cycle:    12.130992
+   Avg Register Size (Bytes):       5.980606
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                256kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                0.519269 mW 
+   FU Dynamic Power:                0.154621 mW 
+   FU Total Power:                  0.673890 mW 
+
+   Registers Leakage Power:          0.005281 mW 
+   Registers Dynamic Power:          0.015326 mW 
+       Register Reads (Bits):        132616
+       Register Writes (Bits):       133658
+   Registers Total Power:            0.020607 mW
+
+   SPM Leakage Power:               0.104100 mW
+   SPM Read Dynamic Power:          4.991601 mW
+   SPM Write Dynamic Power:         4.937352 mW
+   SPM Total Power:                 10.033053 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               0.694497 mW
+   Accelerator Power (SPM):         10.727550 mW
+   Accelerator Power (Cache):       0.694497 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         70212.562500 um^2 (0.070213 mm^2)
+   Register Area:                   429.271088 um^2 (0.000429 mm^2)
+   SPM Area:                        2177.365505 um^2 (0.002177 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                70641.835938 um^2 (0.070642 mm^2)
+   Accelerator Area (SPM):          72819.201442 um^2 (0.072819 mm^2)
+   Accelerator Area (Cache):        70641.835938 um^2 (0.070642 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.004248 mW
+   SPM Opt Area:                    178.524902 um^2
+
+4069175625: global: Timer #0 started at tick 4069175625
+4069338125: global: Timer #3 started at tick 4069338125
+4069612500: global: Timer #3 stopped at tick 4069612500. Duration: 274375
+4069659375: global: Timer #2 started at tick 4069659375
+4069726250: global: Timer #2 stopped at tick 4069726250. Duration: 66875
+4069965000: global: DAG ID = 0
+4069978750: global: Node ID = 16
+4069991875: global: Node deadline difference = -12488
+4070004375: global: Predicted memory time / byte = 0.000183334 us/byte
+4070016875: global: Predicted memory time = 36.045 us
+4070029375: global: Predicted memory time / byte = 0.000183334 us/byte
+4070041875: global: Predicted memory time = 24.03 us
+4070054375: global: Predicted memory time / byte = 0.000182648 us/byte
+4070066875: global: Predicted memory time = 11 us
+4070079375: global: Predicted memory time / byte = 0 us/byte
+4070091875: global: Predicted memory time = 0 us
+4071113750: system.acctest.harris_non_max0_dma: SRC:0x0000000024010020, DST:0x0000000026000020, LEN:65536
+4071363750: global: Timer #0 stopped at tick 4071363750. Duration: 2188125
+4071378125: global: Number of accelerators running = 1
+4081374750: system.acctest.harris_non_max0_dma: Transfer completed in 10.261 us
+4081515000: global: Timer #0 started at tick 4081515000
+4081651250: global: Timer #1 started at tick 4081651250
+4081890625: global: Timer #1 stopped at tick 4081890625. Duration: 239375
+4083332500: global: Timer #0 stopped at tick 4083332500. Duration: 1817500
+4083432500: global: Number of accelerators running = 1
+********************************************************************************
+system.acctest.harris_non_max0.compute
+   ========= Performance Analysis =============
+   Setup Time:                      0.007937seconds
+   Simulation Time:                 3.443983seconds
+   System Clock:                    1.000000GHz
+   Transistor Latency:              1ns
+   Runtime:                         105010 cycles
+   Runtime:                         105.010000 us
+   Stalls:                          0 cycles
+   Executed Nodes:                  105009 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      7937048.000000ns
+   Simulation Time:                 3443983090.000000ns
+   System Clock:                    1.000000GHz
+   Transistor Latency:              0ns
+   Runtime:                         105010 cycles
+   Runtime:                         0.000011 seconds
+   Stalls:                          0 cycles
+       Load Only:                   0 cycles
+       Store Only:                  0 cycles
+       Compute Only:                0 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  105009 cycles
+       Load Only:                   0 cycles
+       Store Only:                  0 cycles
+       Compute Only:                72241 cycles
+       Compute & Store:             16384 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              16384 cycles
+       Load & Compute & Store:      0 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                       2 | 0.167889
+   Integer Add/Sub FU's:               2 | 0.261670
+   Integer Mul/Div FU's:               0 | 0.000000
+   Integer Shifter FU's:               3 | 0.018017
+   Integer Bitwise FU's:               1 | 0.472964
+   Floating Point Float Add/Sub:       0 | 0.000000
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:       0 | 0.000000
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:              26 | 0.199329
+   GEP Instruction FU's:               3 | 0.208571
+   Type Conversion FU's:              14 | 0.062158
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       146
+   Max Register Usage Per Cycle:    20
+   Avg Register Usage Per Cycle:    5.029864
+   Avg Register Size (Bytes):       5.546762
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                192kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                0.010458 mW 
+   FU Dynamic Power:                2.202634 mW 
+   FU Total Power:                  2.213092 mW 
+
+   Registers Leakage Power:          0.002041 mW 
+   Registers Dynamic Power:          0.236415 mW 
+       Register Reads (Bits):        528188
+       Register Writes (Bits):       578368
+   Registers Total Power:            0.238456 mW
+
+   SPM Leakage Power:               0.068382 mW
+   SPM Read Dynamic Power:          0.522209 mW
+   SPM Write Dynamic Power:         0.561696 mW
+   SPM Total Power:                 1.152287 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               2.451548 mW
+   Accelerator Power (SPM):         3.603836 mW
+   Accelerator Power (Cache):       2.451548 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         799.308228 um^2 (0.000799 mm^2)
+   Register Area:                   165.887924 um^2 (0.000166 mm^2)
+   SPM Area:                        1011.904012 um^2 (0.001012 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                965.196167 um^2 (0.000965 mm^2)
+   Accelerator Area (SPM):          1977.100179 um^2 (0.001977 mm^2)
+   Accelerator Area (Cache):        965.196167 um^2 (0.000965 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.001770 mW
+   SPM Opt Area:                    77.453784 um^2
+
+4188050625: global: Timer #0 started at tick 4188050625
+4192049500: system.acctest.harris_non_max0_dma: SRC:0x0000000026010020, DST:0x000000008212a500, LEN:16384
+4192441250: global: Timer #0 stopped at tick 4192441250. Duration: 4390625
+4192455625: global: Number of accelerators running = 1
+4193756500: system.acctest.harris_non_max0_dma: Transfer completed in 1.707 us
+4193830625: global: Timer #0 started at tick 4193830625
+4193883125: global: Timer #1 started at tick 4193883125
+4194205625: global: Timer #1 stopped at tick 4194205625. Duration: 322500
+4194532500: global: DAG ID = 0
+4194586250: global: Node ID = 17
+4194617500: global: DAG execution time = 4179
+4194635625: global: DAG deadline difference = -12488
+4194654375: global: Node deadline difference = -12488
+4194666875: global: Predicted memory time / byte = 0.000182648 us/byte
+4194679375: global: Predicted memory time = 14.9625 us
+4194691875: global: Predicted memory time / byte = 0.000182648 us/byte
+4194704375: global: Predicted memory time = 14.9625 us
+4194716875: global: Predicted memory time / byte = 0.000158051 us/byte
+4194729375: global: Predicted memory time = 10 us
+4194741875: global: Predicted memory time / byte = 0.000100525 us/byte
+4194754375: global: Predicted memory time = 1 us
+4194850000: global: Timer #0 stopped at tick 4194850000. Duration: 1019375
+4194864375: global: Number of accelerators running = 0
+4194941875: global: Number of forwards = 16
+4195000000: global: Number of colocations = 4
+4195019375: global: Number of DAG deadlines met = 1
+4195039375: global: Number of node deadlines met = 18
+4195073750: global: Total predicted compute time = 6125 us
+Exiting @ tick 4195156250 because m5_exit instruction encountered
