@@ -6,9 +6,9 @@
 
 int acc_instances[NUM_ACCS] = {
     /* ACC_CANNY_NON_MAX  */ 1,
-    /* ACC_CONVOLUTION    */ 2,
+    /* ACC_CONVOLUTION    */ 1,
     /* ACC_EDGE_TRACKING  */ 1,
-    /* ACC_ELEM_MATRIX    */ 4,
+    /* ACC_ELEM_MATRIX    */ 1,
     /* ACC_GRAYSCALE      */ 1,
     /* ACC_HARRIS_NON_MAX */ 1,
     /* ACC_ISP            */ 1
@@ -124,25 +124,33 @@ inline void update_last_val_predictor(uint32_t time, uint32_t size)
 }
 
 // Average predictor
-#define MAX_MEM_HIST_SIZE 20
-float mem_hist[MAX_MEM_HIST_SIZE];
-uint8_t mem_hist_size = 0;
+#define MAX_MEM_HIST_LEN 15
+float mem_time_hist[MAX_MEM_HIST_LEN];
+float mem_size_hist[MAX_MEM_HIST_LEN];
+float total_time = 0;
+float total_size = 0;
+uint8_t mem_hist_len = 0;
 uint8_t mem_hist_pos = 0;
 
 inline void update_average_predictor(uint32_t time, uint32_t size)
 {
-    float mem_time_per_byte = ((float)time / 1000) / size;
+    float time_us = (float)time / 1000;
 
-    mem_hist[mem_hist_pos] = mem_time_per_byte;
-    mem_hist_size = min(MAX_MEM_HIST_SIZE, mem_hist_size + 1);
-    mem_hist_pos = (mem_hist_pos + 1) % MAX_MEM_HIST_SIZE;
+    total_time += time_us;
+    total_size += size;
 
-    double product = 1;
-    for (int i = 0; i < mem_hist_size; i++) {
-        product *= mem_hist[i];
+    if (mem_hist_len == MAX_MEM_HIST_LEN) {
+        total_time -= mem_time_hist[mem_hist_pos];
+        total_size -= mem_size_hist[mem_hist_pos];
     }
 
-    mem_prediction = pow(product, 1.0 / mem_hist_size);
+    mem_time_hist[mem_hist_pos] = time_us;
+    mem_size_hist[mem_hist_pos] = size;
+
+    mem_hist_len = min(MAX_MEM_HIST_LEN, mem_hist_len + 1);
+    mem_hist_pos = (mem_hist_pos + 1) % MAX_MEM_HIST_LEN;
+
+    mem_prediction = total_time / total_size;
 }
 
 // EWMA predictor
@@ -1446,7 +1454,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         }
 
         int32_t deadline_diff = (int32_t)curr_time - \
-                                (int32_t)req->dag_deadline;
+                                (int32_t)req->node_deadline;
         m5_print_stat(NODE_DEADLINE_DIFF, *((uint32_t*)(&deadline_diff)));
 
         m5_print_stat(PREDICTED_MEMORY_TIME_PER_BYTE,
