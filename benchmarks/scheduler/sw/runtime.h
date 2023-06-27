@@ -39,6 +39,8 @@
  * Timer 1: update_mem_time_predictor()
  * Timer 2: push_request()
  * Timer 3 (ELF only): sorted insertion into pipeline queue
+ * Timer 4 (ELF only): get_pred_load_size()
+ * Timer 5 (ELF only): get_pred_store_size()
  *
  * It also enables the collection and printing of other statistics using
  * structures and gem5 pseudo instructions.
@@ -127,7 +129,8 @@ enum m5_stat_t {
     NODE_DEADLINE_DIFF,
     PREDICTED_COMPUTE_TIME,
     PREDICTED_MEMORY_TIME,
-    PREDICTED_MEMORY_TIME_PER_BYTE
+    PREDICTED_MEMORY_TIME_PER_BYTE,
+    PREDICTED_MEMORY_SIZE
 };
 
 typedef struct task_struct_t task_struct_t;
@@ -150,7 +153,6 @@ struct task_struct_t {
     task_struct_t *children[MAX_CHILDREN];
     task_struct_t *producer[MAX_ACC_ARGS];
 
-    uint32_t input_size;
     uint32_t output_size;
     uint32_t compute_time;
     uint32_t runtime;
@@ -163,6 +165,7 @@ struct task_struct_t {
     uint8_t producer_forward[MAX_ACC_ARGS]; // bit vector with value set to 1
                                             // if the corresponding entry in
                                             // arg_producer will forward data
+    uint8_t producer_data_ready[MAX_ACC_ARGS];
 
     /**
      * The following fields are for use by the runtime
@@ -179,21 +182,28 @@ struct task_struct_t {
                                                 // output SPM to read from
     volatile acc_state_t *producer_acc[MAX_ACC_ARGS];   // producer accelerator
 
+    // The following two fields don't count as "statistics" because they are
+    // required for ELF's functionality
+    uint32_t pred_load_size;
+    uint32_t pred_store_size;
+
     /**
      * Fields for statistics
      */
 #ifdef ENABLE_STATS
-    float stat_mem_time_per_byte_insertion;
-    float stat_mem_time_insertion;
+    float stat_mem_time_per_byte_pred_load;
+    float stat_mem_time_pred_load;
 
-    float stat_mem_time_per_byte_launch;
-    float stat_mem_time_launch;
+    float stat_mem_time_per_byte_pred_store;
+    float stat_mem_time_pred_store;
 
     float stat_mem_time_per_byte_truth_load;
     float stat_mem_time_truth_load;
+    uint32_t stat_mem_size_truth_load;
 
     float stat_mem_time_per_byte_truth_store;
     float stat_mem_time_truth_store;
+    uint32_t stat_mem_size_truth_store;
 #endif
 };
 
@@ -267,7 +277,7 @@ typedef struct {
  * The actual runtime
  */
 void runtime(task_struct_t ***, int, int [MAX_DAGS], scheduling_policy_t,
-        mem_predictor_t);
+        mem_predictor_t, bool);
 
 // helper methods
 void assertf(bool, const char*, ...);

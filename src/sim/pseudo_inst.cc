@@ -763,6 +763,7 @@ m5printstat(ThreadContext *tc, uint32_t stat, uint32_t value)
         PREDICTED_COMPUTE_TIME,
         PREDICTED_MEMORY_TIME,
         PREDICTED_MEMORY_TIME_PER_BYTE,
+        PREDICTED_MEMORY_SIZE,
         NUM_STATS
     };
 
@@ -826,8 +827,12 @@ m5printstat(ThreadContext *tc, uint32_t stat, uint32_t value)
 
         case PREDICTED_MEMORY_TIME_PER_BYTE:
             DPRINTF(SchedulerStats,
-                    "Predicted memory time / byte = %f us/byte\n",
-                    fvalue);
+                    "Predicted memory time / byte = %f us/byte\n", fvalue);
+            break;
+
+        case PREDICTED_MEMORY_SIZE:
+            DPRINTF(SchedulerStats, "Predicted memory access size = %d\n",
+                    value);
             break;
     }
 }
