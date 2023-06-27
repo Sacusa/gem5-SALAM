@@ -33,7 +33,14 @@ typedef struct {
 float *deblur_psf;
 float *deblur_psf_flip;
 task_struct_t *deblur_retval[6];
+
+// Dummy tasks with output sizes in the name
+task_struct_t *deblur_task_100;
+task_struct_t *deblur_task_16900;
+task_struct_t *deblur_task_65536;
+
 #ifdef VERIFY
+task_struct_t *deblur_task_49152;
 uint8_t *deblur_isp_output;
 #endif
 
@@ -68,13 +75,11 @@ void deblur_process_raw(deblur_data_t *img, task_struct_t **nodes,
     task->acc_id = ACC_ISP;
     task->acc_args = (void*) args;
     task->num_children = 1;
-    task->num_parents = 0;
-    task->producer[0] = NULL;
-    task->producer_forward[0] = 0;
+    task->num_parents = 1;
+    task->producer[0] = deblur_task_16900;
     task->status = REQ_STATUS_READY;
-    task->completed_parents = 0;
+    task->completed_parents = 1;
 
-    task->input_size = 16900;
     task->output_size = 49152;
     task->compute_time = RUNTIME_ISP;
     task->dag_deadline = DEBLUR_DEADLINE;
@@ -100,19 +105,17 @@ void deblur_convert_to_grayscale(deblur_data_t *img, task_struct_t **nodes,
     task->acc_id = ACC_GRAYSCALE;
     task->acc_args = (void*) args;
     task->num_children = num_iters + 1;
-#ifdef VERIFY
-    task->num_parents = 0;
-    task->producer[0] = NULL;
-    task->status = REQ_STATUS_READY;
-#else
     task->num_parents = 1;
+#ifdef VERIFY
+    task->producer[0] = deblur_task_49152;
+    task->status = REQ_STATUS_READY;
+    task->completed_parents = 1;
+#else
     task->producer[0] = deblur_retval[0];
     task->status = REQ_STATUS_WAITING;
-#endif
-    task->producer_forward[0] = 0;
     task->completed_parents = 0;
+#endif
 
-    task->input_size = 49152;
     task->output_size = 65536;
     task->compute_time = RUNTIME_GRAYSCALE;
     task->dag_deadline = DEBLUR_DEADLINE;
@@ -147,7 +150,7 @@ void deblur_run_conv_psf(deblur_data_t *img, task_struct_t **nodes,
     task->acc_id = ACC_CONVOLUTION;
     task->acc_args = (void*) args;
     task->num_children = 1;
-    task->num_parents = 1;
+    task->num_parents = 2;
     if (is_first) {
         task->producer[0] = deblur_retval[1];
         deblur_retval[1]->children[0] = task;
@@ -156,11 +159,10 @@ void deblur_run_conv_psf(deblur_data_t *img, task_struct_t **nodes,
         task->producer[0] = deblur_retval[5];
         deblur_retval[5]->children[0] = task;
     }
+    task->producer[1] = deblur_task_100;
     task->status = REQ_STATUS_WAITING;
-    task->producer_forward[0] = 0;
-    task->completed_parents = 0;
+    task->completed_parents = 1;
 
-    task->input_size = 65636;
     task->output_size = 65536;
     task->compute_time = RUNTIME_CONVOLUTION_5;
     task->dag_deadline = DEBLUR_DEADLINE;
@@ -189,12 +191,9 @@ void deblur_run_div_ut_psf(deblur_data_t *img, task_struct_t **nodes,
     task->num_parents = 2;
     task->producer[0] = deblur_retval[1];
     task->producer[1] = deblur_retval[2];
-    task->producer_forward[0] = 0;
-    task->producer_forward[1] = 0;
     task->status = REQ_STATUS_WAITING;
     task->completed_parents = 0;
 
-    task->input_size = 131072;
     task->output_size = 65536;
     task->compute_time = RUNTIME_ELEM_MATRIX_DIV;
     task->dag_deadline = DEBLUR_DEADLINE;
@@ -223,13 +222,12 @@ void deblur_run_conv_psf_flip(deblur_data_t *img, task_struct_t **nodes,
     task->acc_id = ACC_CONVOLUTION;
     task->acc_args = (void*) args;
     task->num_children = 1;
-    task->num_parents = 1;
+    task->num_parents = 2;
     task->producer[0] = deblur_retval[3];
-    task->producer_forward[0] = 0;
+    task->producer[1] = deblur_task_100;
     task->status = REQ_STATUS_WAITING;
-    task->completed_parents = 0;
+    task->completed_parents = 1;
 
-    task->input_size = 65636;
     task->output_size = 65536;
     task->compute_time = RUNTIME_CONVOLUTION_5;
     task->dag_deadline = DEBLUR_DEADLINE;
@@ -255,6 +253,7 @@ void deblur_run_mult_psf_flip(deblur_data_t *img, bool is_first, bool has_child,
 
     task->acc_id = ACC_ELEM_MATRIX;
     task->acc_args = (void*) args;
+
     if (has_child) {
         task->num_children = 2;
     }
@@ -262,23 +261,21 @@ void deblur_run_mult_psf_flip(deblur_data_t *img, bool is_first, bool has_child,
         task->num_children = 0;
     }
 
+    task->num_parents = 2;
+
     if (is_first) {
-        task->num_parents = 1;
-        task->producer[0] = NULL;
+        task->producer[0] = deblur_task_65536;
+        task->completed_parents = 1;
     }
     else {
-        task->num_parents = 2;
         task->producer[0] = deblur_retval[5];
         deblur_retval[5]->children[1] = task;
+        task->completed_parents = 0;
     }
 
     task->producer[1] = deblur_retval[4];
-    task->producer_forward[0] = 0;
-    task->producer_forward[1] = 0;
     task->status = REQ_STATUS_WAITING;
-    task->completed_parents = 0;
 
-    task->input_size = 131072;
     task->output_size = 65536;
     task->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task->dag_deadline = DEBLUR_DEADLINE;
@@ -325,7 +322,23 @@ void init_deblur()
     deblur_psf_flip[22] = 0.02153928; deblur_psf_flip[23] = 0.01306423;
     deblur_psf_flip[24] = 0.00291502;
 
+    deblur_task_100 = (task_struct_t*) get_memory(sizeof(task_struct_t));
+    deblur_task_100->output_size = 100;
+    deblur_task_100->status = REQ_STATUS_COMPLETED;
+
+    deblur_task_16900 = (task_struct_t*) get_memory(sizeof(task_struct_t));
+    deblur_task_16900->output_size = 16900;
+    deblur_task_16900->status = REQ_STATUS_COMPLETED;
+
+    deblur_task_65536 = (task_struct_t*) get_memory(sizeof(task_struct_t));
+    deblur_task_65536->output_size = 65536;
+    deblur_task_65536->status = REQ_STATUS_COMPLETED;
+
 #ifdef VERIFY
+    deblur_task_49152 = (task_struct_t*) get_memory(sizeof(task_struct_t));
+    deblur_task_49152->output_size = 49152;
+    deblur_task_49152->status = REQ_STATUS_COMPLETED;
+
     deblur_isp_output = (uint8_t*) get_memory_aligned(NUM_PIXELS * 3,
             CACHELINE_SIZE);
 
