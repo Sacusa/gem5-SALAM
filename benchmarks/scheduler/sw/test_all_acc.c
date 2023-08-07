@@ -6,50 +6,53 @@
 
 //#define VERBOSE
 
-void add_canny_non_max();
+void add_canny_non_max(int*);
 void canny_non_max_check_output(canny_non_max_args*);
 
-void add_convolution();
+void add_convolution(int*);
 void convolution_check_output(convolution_args*);
 
-void add_edge_tracking();
+void add_edge_tracking(int*);
 void edge_tracking_check_output(edge_tracking_args*);
 
-void add_elem_matrix();
+void add_elem_matrix(int*);
 void elem_matrix_check_output(elem_matrix_args*);
 
-void add_grayscale();
+void add_grayscale(int*);
 void grayscale_check_output(grayscale_args*);
 
-uint8_t *add_harris_non_max();
+uint8_t *add_harris_non_max(int*);
 void harris_non_max_check_output(harris_non_max_args*, uint8_t*);
 
-void add_isp();
+void add_isp(int*);
 void isp_check_output(isp_args*);
 
 task_struct_t ***nodes;
 
 int main(void)
 {
-    int num_dags = NUM_ACCS;
-    int num_nodes[MAX_DAGS];
+    int num_dags = 0;
+    int num_nodes[NUM_ACCS];
 
-    nodes = (task_struct_t***) get_memory(num_dags * sizeof(task_struct_t**));
+    nodes = (task_struct_t***) get_memory(NUM_ACCS * sizeof(task_struct_t**));
 
     for (int i = 0; i < num_dags; i++) {
         nodes[i] = (task_struct_t**) get_memory(sizeof(task_struct_t*));
+    }
+
+    add_canny_non_max(&num_dags);
+    add_convolution(&num_dags);
+    add_edge_tracking(&num_dags);
+    add_elem_matrix(&num_dags);
+    add_grayscale(&num_dags);
+    uint8_t *expected = add_harris_non_max(&num_dags);
+    add_isp(&num_dags);
+
+    for (int i = 0; i < num_dags; i++) {
         num_nodes[i] = 1;
     }
 
-    add_canny_non_max();
-    add_convolution();
-    add_edge_tracking();
-    add_elem_matrix();
-    add_grayscale();
-    uint8_t *expected = add_harris_non_max();
-    add_isp();
-
-    runtime(nodes, num_dags, num_nodes, FCFS, MEM_PRED_LAST_VAL);
+    runtime(nodes, num_dags, num_nodes, ELF, MEM_PRED_NO_PRED, true);
 
 #ifdef VERIFY
     // TODO: fix the following
@@ -72,7 +75,7 @@ int main(void)
     m5_exit();
 }
 
-void add_canny_non_max()
+void add_canny_non_max(int *num_dags)
 {
     canny_non_max_args *args = (canny_non_max_args*)
         get_memory(sizeof(canny_non_max_args));
@@ -90,6 +93,7 @@ void add_canny_non_max()
     req->acc_args = (void*) args;
     req->num_children = 0;
     req->num_parents = 0;
+    req->completed_parents = 0;
 
     for (int i = 0; i < MAX_ACC_ARGS; i++) {
         req->producer[i] = NULL;
@@ -115,7 +119,8 @@ void add_canny_non_max()
         }
     }
 
-    nodes[ACC_CANNY_NON_MAX][0] = req;
+    nodes[*num_dags][0] = req;
+    *num_dags += 1;
 }
 
 void canny_non_max_check_output(canny_non_max_args *args)
@@ -190,7 +195,7 @@ void canny_non_max_check_output(canny_non_max_args *args)
     printf("CNM: number of failures: %d\n", num_failures);
 }
 
-void add_convolution()
+void add_convolution(int *num_dags)
 {
     int kern_height = 5, kern_width = 5;
 
@@ -211,6 +216,7 @@ void add_convolution()
     req->acc_args = (void*) args;
     req->num_children = 0;
     req->num_parents = 0;
+    req->completed_parents = 0;
 
     for (int i = 0; i < MAX_ACC_ARGS; i++) {
         req->producer[i] = NULL;
@@ -231,7 +237,8 @@ void add_convolution()
         }
     }
 
-    nodes[ACC_CONVOLUTION][0] = req;
+    nodes[*num_dags][0] = req;
+    *num_dags += 1;
 }
 
 void convolution_check_output(convolution_args *args)
@@ -284,7 +291,7 @@ void convolution_check_output(convolution_args *args)
     printf("CONVOLUTION: number of failures = %d\n", num_failures);
 }
 
-void add_edge_tracking()
+void add_edge_tracking(int *num_dags)
 {
     edge_tracking_args *args = (edge_tracking_args*)
         get_memory(sizeof(edge_tracking_args));
@@ -301,6 +308,7 @@ void add_edge_tracking()
     req->acc_args = (void*) args;
     req->num_children = 0;
     req->num_parents = 0;
+    req->completed_parents = 0;
 
     for (int i = 0; i < MAX_ACC_ARGS; i++) {
         req->producer[i] = NULL;
@@ -318,7 +326,8 @@ void add_edge_tracking()
         }
     }
 
-    nodes[ACC_EDGE_TRACKING][0] = req;
+    nodes[*num_dags][0] = req;
+    *num_dags += 1;
 }
 
 void edge_tracking_check_output(edge_tracking_args* args)
@@ -355,7 +364,7 @@ void edge_tracking_check_output(edge_tracking_args* args)
     printf("ET: number of failures = %d\n", num_failures);
 }
 
-void add_elem_matrix()
+void add_elem_matrix(int *num_dags)
 {
     elem_matrix_args *args = (elem_matrix_args*)
         get_memory(sizeof(elem_matrix_args));
@@ -373,6 +382,7 @@ void add_elem_matrix()
     req->acc_args = (void*) args;
     req->num_children = 0;
     req->num_parents = 0;
+    req->completed_parents = 0;
 
     for (int i = 0; i < MAX_ACC_ARGS; i++) {
         req->producer[i] = NULL;
@@ -387,7 +397,8 @@ void add_elem_matrix()
         args->output[i] = -1;
     }
 
-    nodes[ACC_ELEM_MATRIX][0] = req;
+    nodes[*num_dags][0] = req;
+    *num_dags += 1;
 }
 
 void elem_matrix_check_output(elem_matrix_args* args)
@@ -410,7 +421,7 @@ void elem_matrix_check_output(elem_matrix_args* args)
     printf("EM: number of failures = %d\n", num_failures);
 }
 
-void add_grayscale()
+void add_grayscale(int *num_dags)
 {
     grayscale_args *args = (grayscale_args*)
         get_memory(sizeof(grayscale_args));
@@ -426,6 +437,7 @@ void add_grayscale()
     req->acc_args = (void*) args;
     req->num_children = 0;
     req->num_parents = 0;
+    req->completed_parents = 0;
 
     for (int i = 0; i < MAX_ACC_ARGS; i++) {
         req->producer[i] = NULL;
@@ -442,7 +454,8 @@ void add_grayscale()
         args->output[i] = -1;
     }
 
-    nodes[ACC_GRAYSCALE][0] = req;
+    nodes[*num_dags][0] = req;
+    *num_dags += 1;
 }
 
 void grayscale_check_output(grayscale_args *args)
@@ -472,7 +485,7 @@ void grayscale_check_output(grayscale_args *args)
     printf("GRAYSCALE: number of failures = %d\n", num_failures);
 }
 
-uint8_t *add_harris_non_max()
+uint8_t *add_harris_non_max(int *num_dags)
 {
     harris_non_max_args *args = (harris_non_max_args*)
         get_memory(sizeof(harris_non_max_args));
@@ -490,6 +503,7 @@ uint8_t *add_harris_non_max()
     req->acc_args = (void*) args;
     req->num_children = 0;
     req->num_parents = 0;
+    req->completed_parents = 0;
 
     for (int i = 0; i < MAX_ACC_ARGS; i++) {
         req->producer[i] = NULL;
@@ -536,7 +550,8 @@ uint8_t *add_harris_non_max()
         }
     }
 
-    nodes[ACC_HARRIS_NON_MAX][0] = req;
+    nodes[*num_dags][0] = req;
+    *num_dags += 1;
 
     return expected;
 }
@@ -565,7 +580,7 @@ void harris_non_max_check_output(harris_non_max_args *args, uint8_t *expected)
     printf("HARRIS_NON_MAX: number of failures = %d\n", num_failures);
 }
 
-void add_isp()
+void add_isp(int *num_dags)
 {
     isp_args *args = (isp_args*) get_memory(sizeof(isp_args));
     task_struct_t * volatile req = (task_struct_t*)
@@ -580,6 +595,7 @@ void add_isp()
     req->acc_args = (void*) args;
     req->num_children = 0;
     req->num_parents = 0;
+    req->completed_parents = 0;
 
     for (int i = 0; i < MAX_ACC_ARGS; i++) {
         req->producer[i] = NULL;
@@ -590,7 +606,8 @@ void add_isp()
 
     memset(args->input, 128, (IMG_HEIGHT+2) * (IMG_WIDTH+2));
 
-    nodes[ACC_ISP][0] = req;
+    nodes[*num_dags][0] = req;
+    *num_dags += 1;
 }
 
 void isp_check_output(isp_args *args)

@@ -116,6 +116,7 @@ inline void disable_interrupts()
     __asm__ ("pop {r1}");
 }
 
+#ifdef ENABLE_STATS
 inline void print_pred_statistics(volatile task_struct_t *req)
 {
     m5_print_stat(PREDICTED_MEMORY_TIME_PER_BYTE,
@@ -144,6 +145,7 @@ inline void print_pred_statistics(volatile task_struct_t *req)
     m5_print_stat(PREDICTED_MEMORY_SIZE, req->pred_store_size);
     m5_print_stat(PREDICTED_MEMORY_SIZE, req->stat_mem_size_truth_store);
 }
+#endif
 
 /**
  * Predictors
@@ -1063,7 +1065,7 @@ inline bool push_request(volatile task_struct_t *req, bool try_forward)
             req->laxity = req->node_deadline + runtime_start_time - \
                           req->runtime;
 
-            if ((req->laxity - (m5_get_time() / 1000)) <= 0) {
+            if ((req->laxity - ((int32_t)m5_get_time() / 1000)) <= 0) {
                 // De-prioritize a node if its laxity is negative. That is,
                 // the node is unlikely to finish before its deadline.
                 req->laxity = 0x7fffffff;
@@ -1108,89 +1110,77 @@ inline bool push_request(volatile task_struct_t *req, bool try_forward)
         }
 
         case ELF: {
-            if ((req->laxity - (m5_get_time() / 1000)) <= 0) {
-                // De-prioritize a node if its laxity is negative. That is,
-                // the node is unlikely to finish before its deadline.
-                req->laxity = 0x7fffffff;
+            int pos = ready_queue_end[acc_id];
+            int pos_minus_1 = pos - 1;
 
-                ready_queue[acc_id][ready_queue_end[acc_id]] = req;
+            if (pos_minus_1 == -1) {
+                pos_minus_1 = MAX_READY_QUEUE_SIZE - 1;
+            }
+
+            // Find the regular insertion position
+            while ((pos != ready_queue_start[acc_id]) && \
+                   (ready_queue[acc_id][pos_minus_1]->laxity > \
+                    req->laxity)) {
+                pos = pos_minus_1;
+                pos_minus_1 = pos - 1;
+                if (pos_minus_1 == -1) {
+                    pos_minus_1 = MAX_READY_QUEUE_SIZE - 1;
+                }
+            }
+
+            if (try_forward) {
+                for (int i = ready_queue_start[acc_id]; i != pos;
+                        i = (i + 1) % MAX_READY_QUEUE_SIZE) {
+                    int32_t laxity = ready_queue[acc_id][i]->laxity - \
+                                     (m5_get_time() / 1000);
+
+                    if (laxity > 0) {
+                        can_forward = laxity >= ((int32_t)req->runtime);
+                        break;
+                    }
+                }
+            }
+
+            if (can_forward) {
+                int fwd_pos = ready_queue_start[acc_id];
+
+                // Reduce node laxities
+                for (int i = ready_queue_start[acc_id]; i != pos;
+                     i = (i + 1) % MAX_READY_QUEUE_SIZE) {
+                    ready_queue[acc_id][i]->laxity -= req->runtime;
+
+                    if (ready_queue[acc_id][i]->priority_escalated) {
+                        fwd_pos = (fwd_pos + 1) % MAX_READY_QUEUE_SIZE;
+                    }
+                }
+
+                pos = fwd_pos;
+            }
+
+            // Perform sorted insertion into ready queue
+            if (pos == ready_queue_start[acc_id]) {
+                ready_queue_start[acc_id] = (ready_queue_start[acc_id]==0) ? \
+                                            (MAX_READY_QUEUE_SIZE - 1) : \
+                                            (ready_queue_start[acc_id]-1);
+                ready_queue[acc_id][ready_queue_start[acc_id]] = req;
+            }
+            else {
+                if (pos != ready_queue_end[acc_id]) {
+                    int i = ready_queue_end[acc_id];
+                    while (i != pos) {
+                        int j = i - 1;
+                        if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
+                        ready_queue[acc_id][i] = ready_queue[acc_id][j];
+                        i = j;
+                    }
+                }
+
+                ready_queue[acc_id][pos] = req;
                 ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
                                           MAX_READY_QUEUE_SIZE;
             }
 
-            else {
-                int pos = ready_queue_end[acc_id];
-                int pos_minus_1 = pos - 1;
-
-                if (pos_minus_1 == -1) {
-                    pos_minus_1 = MAX_READY_QUEUE_SIZE - 1;
-                }
-
-                // Find the regular insertion position
-                while ((pos != ready_queue_start[acc_id]) && \
-                       (ready_queue[acc_id][pos_minus_1]->laxity > \
-                        req->laxity)) {
-                    pos = pos_minus_1;
-                    pos_minus_1 = pos - 1;
-                    if (pos_minus_1 == -1) {
-                        pos_minus_1 = MAX_READY_QUEUE_SIZE - 1;
-                    }
-                }
-
-                if (try_forward) {
-                    for (int i = ready_queue_start[acc_id]; i != pos;
-                            i = (i + 1) % MAX_READY_QUEUE_SIZE) {
-                        int32_t laxity = ready_queue[acc_id][i]->laxity - \
-                                         (m5_get_time() / 1000);
-
-                        if (laxity > 0) {
-                            can_forward = laxity >= ((int32_t)req->runtime);
-                            break;
-                        }
-                    }
-                }
-
-                if (can_forward) {
-                    int fwd_pos = ready_queue_start[acc_id];
-
-                    // Reduce node laxities
-                    for (int i = ready_queue_start[acc_id]; i != pos;
-                         i = (i + 1) % MAX_READY_QUEUE_SIZE) {
-                        ready_queue[acc_id][i]->laxity -= req->runtime;
-
-                        if (ready_queue[acc_id][i]->priority_escalated) {
-                            fwd_pos = (fwd_pos + 1) % MAX_READY_QUEUE_SIZE;
-                        }
-                    }
-
-                    pos = fwd_pos;
-                }
-
-                // Perform sorted insertion into ready queue
-                if (pos == ready_queue_start[acc_id]) {
-                    ready_queue_start[acc_id] = (ready_queue_start[acc_id]==0) ? \
-                                                (MAX_READY_QUEUE_SIZE - 1) : \
-                                                (ready_queue_start[acc_id]-1);
-                    ready_queue[acc_id][ready_queue_start[acc_id]] = req;
-                }
-                else {
-                    if (pos != ready_queue_end[acc_id]) {
-                        int i = ready_queue_end[acc_id];
-                        while (i != pos) {
-                            int j = i - 1;
-                            if (j == -1) { j = MAX_READY_QUEUE_SIZE - 1; }
-                            ready_queue[acc_id][i] = ready_queue[acc_id][j];
-                            i = j;
-                        }
-                    }
-
-                    ready_queue[acc_id][pos] = req;
-                    ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
-                                              MAX_READY_QUEUE_SIZE;
-                }
-
-                req->priority_escalated = can_forward;
-            }
+            req->priority_escalated = can_forward;
         }
     }
 
@@ -1420,6 +1410,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                 float time = (m5_get_time() - dma_start_time[i][j]) / 1000.0;
                 update_mem_time_predictor(time, dma_size[i][j]);
 
+#ifdef ENABLE_STATS
                 if (dma_size[i][j] > 512) {
                     float mem_time_per_byte = time / dma_size[i][j];
 
@@ -1434,6 +1425,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
 
                     req->stat_mem_time_truth_load += time;
                 }
+#endif
             }
         }
 
@@ -1463,10 +1455,11 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                 child->stat_mem_time_truth_store = 0;
 #endif
 
+#ifdef ENABLE_FORWARDING
                 if (scheduling_policy == ELF) {
-#ifdef ENABLE_STATS
+    #ifdef ENABLE_STATS
                     m5_timer_start(3);
-#endif
+    #endif
                     float compute_time = get_compute_time(child);
 
                     child->pred_load_size = get_pred_load_size(child, req);
@@ -1480,14 +1473,14 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                     child->runtime = compute_time + pred_load_time + \
                                      pred_store_time;
 
-#ifdef ENABLE_STATS
+    #ifdef ENABLE_STATS
                     child->stat_mem_time_per_byte_pred_load = mem_prediction;
                     child->stat_mem_time_per_byte_pred_store = mem_prediction;
                     child->stat_mem_time_pred_load = pred_load_time;
                     child->stat_mem_time_pred_store = pred_store_time;
 
                     stat_predicted_compute_time += compute_time;
-#endif
+    #endif
 
                     child->laxity = child->node_deadline + \
                                     runtime_start_time - child->runtime;
@@ -1509,19 +1502,23 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                         pipeline_queue_size++;
                     }
 
-#ifdef ENABLE_STATS
+    #ifdef ENABLE_STATS
                     m5_timer_stop(3);
-#endif
+    #endif
                 }
 
                 else {
                     push_request(child, false);
                 }
+#else
+                push_request(child, false);
+#endif
             }
         }
 
         num_available_instances[i]++;
 
+#ifdef ENABLE_FORWARDING
         if (scheduling_policy == ELF) {
             int num_forwards[NUM_ACCS] = {0, 0, 0, 0, 0, 0, 0};
 
@@ -1543,17 +1540,19 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                     child->laxity = child->node_deadline + \
                                     runtime_start_time - child->runtime;
 
-#ifdef ENABLE_STATS
+    #ifdef ENABLE_STATS
                     child->stat_mem_time_pred_load = child->pred_load_size * \
                                                      mem_prediction;
-#endif
+    #endif
                 }
             }
         }
+#endif
 
         int node_spm_out_part = acc->curr_spm_out_part;
         int num_forwards = 0;
 
+#ifdef ENABLE_FORWARDING
         for (int c = 0; c < req->num_children; c++) {
             task_struct_t *child = req->children[c];
 
@@ -1588,6 +1587,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                                     MAX_READY_QUEUE_SIZE;
             }
         }
+#endif
 
 #ifdef ENABLE_STATS
         stat_num_forwards += num_forwards;
@@ -1636,9 +1636,11 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                 float time = (m5_get_time() - dma_start_time[i][j]) / 1000.0;
                 update_mem_time_predictor(time, dma_size[i][j]);
 
+#ifdef ENABLE_STATS
                 req->stat_mem_time_per_byte_truth_store = \
                         time / dma_size[i][j];
                 req->stat_mem_time_truth_store = time;
+#endif
             }
         }
 

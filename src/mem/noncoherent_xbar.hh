@@ -80,6 +80,16 @@ class NoncoherentXBar : public BaseXBar
     Stats::Scalar occupancy;
     Stats::Formula utilization;
 
+    /**
+     * Stats for queuing delays. These stats capture the mean and tail queuing
+     * delay for transactions.
+     */
+    std::map<PacketPtr, Tick> packetRequestTime;
+    uint32_t numRequests;
+    Tick totalQueuingDelay;
+    Stats::Scalar averageQueuingDelay;
+    Stats::Scalar tailQueuingDelay;
+
   protected:
 
     /**

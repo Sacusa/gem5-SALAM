@@ -7,19 +7,24 @@ import numpy as np
 import re
 import sys
 
-hatch = {'FCFS': '*', 'GEDF_D': '.', 'ELF': '/'}
+hatch = {'FCFS': '*', 'GEDF_D': '/', 'GEDF_N': '.' , 'LAX': '\\', 'ELF': '++'}
+
+colormap = matplotlib.cm.get_cmap("tab20").colors
+colors = {'FCFS': colormap[1], 'GEDF_D': colormap[3], 'GEDF_N': colormap[5],
+        'LAX': colormap[9], 'ELF':  colormap[7]}
+edgecolors = {'FCFS': colormap[0], 'GEDF_D': colormap[2],
+        'GEDF_N': colormap[4], 'LAX': colormap[8], 'ELF':  colormap[6]}
 
 def geo_mean(iterable):
     a = np.array([v if v > 0 else 1 for v in iterable])
     return a.prod()**(1.0/len(a))
 
 def add_plot(offset, policy, label):
-    if policy in hatch:
-        plt.bar([i+offset for i in x], stat_values[policy], edgecolor='k',
-                width=width, label=label, fc='w', hatch=hatch[policy])
-    else:
-        plt.bar([i+offset for i in x], stat_values[policy], edgecolor='k',
-                width=width, label=label, fc='k')
+    plt.bar([i+offset for i in x], stat_values[policy],
+            edgecolor=edgecolors[policy], width=width, label=label,
+            fc=colors[policy], hatch=hatch[policy], zorder=1)
+    plt.bar([i+offset for i in x], stat_values[policy], fc='none',
+            edgecolor='k', width=width, zorder=2)
 
 policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'ELF']
 applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
@@ -37,9 +42,12 @@ def get_stat(app_mix, stat):
         value = 0
 
         # Get the stat for all policies
-        if policy in ['LAX', 'ELF']:
+        if policy == 'ELF':
             dir_name = '../../comb_pred_3/' + app_mix_str + policy + \
-                    '_MEM_PRED_AVERAGE_15'
+                    '_MEM_PRED_NO_PRED_dm_false'
+        elif policy == 'LAX':
+            dir_name = '../../comb_pred_3/' + app_mix_str + policy + \
+                    '_MEM_PRED_EWMA_0.25_dm_false'
         else:
             dir_name = '../../comb_3/' + app_mix_str + policy
 
@@ -97,18 +105,18 @@ width = 0.20
 add_plot(-((3*width)/2), 'FCFS',   'FCFS')
 add_plot(-(width/2),     'GEDF_D', 'GEDF-D')
 add_plot((width/2),      'GEDF_N', 'GEDF-N')
-add_plot((3*width)/2,    'ELF',    'ELF')
+add_plot((3*width)/2,    'ELF',    'RELIEF')
 
 x_labels = ["".join([a[0].upper() for a in app_mix])
         for app_mix in app_mixes] + ['Gmean']
-plt.xticks(x, x_labels, fontsize=35)
+plt.xticks(x, x_labels, fontsize=30)
 
-plt.ylabel(y_label + '\n(norm. to LAX)', fontsize=35)
-plt.yticks(fontsize=35)
+plt.ylabel(y_label + '\n(norm. to LAX)', fontsize=30)
+plt.yticks(fontsize=30)
 plt.ylim([0, 1.8])
 plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.2))
 
-plt.legend(loc="upper left", ncol=5, fontsize=35)
+plt.legend(loc="upper left", ncol=2, fontsize=30)
 plt.grid(color='silver', linestyle='-', linewidth=1)
 
 # save the image

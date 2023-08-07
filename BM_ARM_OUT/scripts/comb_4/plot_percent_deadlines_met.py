@@ -6,15 +6,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-hatch = {'FCFS': '*', 'GEDF_D': '.', 'LAX': 'xx', 'ELF': '/'}
+hatch = {'FCFS': '*', 'GEDF_D': '/', 'GEDF_N': '.' , 'LAX': '\\', 'ELF': '++'}
+
+colormap = matplotlib.cm.get_cmap("tab20").colors
+colors = {'FCFS': colormap[1], 'GEDF_D': colormap[3], 'GEDF_N': colormap[5],
+        'LAX': colormap[9], 'ELF':  colormap[7]}
+edgecolors = {'FCFS': colormap[0], 'GEDF_D': colormap[2],
+        'GEDF_N': colormap[4], 'LAX': colormap[8], 'ELF':  colormap[6]}
 
 def add_plot(offset, stat_value, policy, label):
-    if policy in hatch:
-        plt.bar([i+offset for i in x], stat_value, edgecolor='k',
-                width=width, label=label, fc='w', hatch=hatch[policy])
-    else:
-        plt.bar([i+offset for i in x], stat_value, edgecolor='k',
-                width=width, label=label, fc='k')
+    plt.bar([i+offset for i in x], stat_value,
+            edgecolor=edgecolors[policy], width=width, label=label,
+            fc=colors[policy], hatch=hatch[policy], zorder=1)
+    plt.bar([i+offset for i in x], stat_value, fc='none',
+            edgecolor='k', width=width, zorder=2)
 
 applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
 policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'ELF']
@@ -35,7 +40,15 @@ for app_mix in app_mixes:
         else:              app_mix_str += '0_'
 
     for policy in policies:
-        dir_name = '../../comb_4/' + app_mix_str + policy + '/debug-trace.txt'
+        if policy == 'ELF':
+            dir_name = '../../comb_pred_4/' + app_mix_str + policy + \
+                    '_MEM_PRED_NO_PRED_dm_false'
+        elif policy == 'LAX':
+            dir_name = '../../comb_pred_4/' + app_mix_str + policy + \
+                    '_MEM_PRED_EWMA_0.25_dm_false'
+        else:
+            dir_name = '../../comb_4/' + app_mix_str + policy
+        dir_name += '/debug-trace.txt'
 
         value_found = False
 
@@ -75,16 +88,16 @@ add_plot(0,          dag_deadlines_met['GEDF_N'], 'GEDF_N', 'GEDF-N')
 add_plot(width,      dag_deadlines_met['LAX'],    'LAX',    'LAX')
 add_plot((width*2),  dag_deadlines_met['ELF'],    'ELF',    'ELF')
 
-#plt.xlabel('Application mix', fontsize=35)
-#plt.xticks(x, x_labels, fontsize=35, rotation='vertical')
-plt.xticks(x, x_labels, fontsize=35)
+#plt.xlabel('Application mix', fontsize=30)
+#plt.xticks(x, x_labels, fontsize=30, rotation='vertical')
+plt.xticks(x, x_labels, fontsize=30)
 
-plt.ylabel('DAG deadlines met (%)', fontsize=35)
-plt.yticks(fontsize=35)
+plt.ylabel('DAG deadlines met (%)', fontsize=30)
+plt.yticks(fontsize=30)
 plt.ylim([0, 130])
 plt.gca().yaxis.set_major_locator(plt.MultipleLocator(20))
 
-plt.legend(loc="upper left", ncol=5, fontsize=35)
+plt.legend(loc="upper left", ncol=5, fontsize=30)
 plt.grid(color='silver', linestyle='-', linewidth=1)
 plt.savefig('../plots/comb_4/percent_dag_deadlines_met.pdf',
         bbox_inches='tight')
@@ -103,16 +116,16 @@ add_plot(0,          node_deadlines_met['GEDF_N'], 'GEDF_N', 'GEDF-N')
 add_plot(width,      node_deadlines_met['LAX'],    'LAX',    'LAX')
 add_plot((width*2),  node_deadlines_met['ELF'],    'ELF',    'ELF')
 
-#plt.xlabel('Application mix', fontsize=35)
-#plt.xticks(x, x_labels, fontsize=35, rotation='vertical')
-plt.xticks(x, x_labels, fontsize=35)
+#plt.xlabel('Application mix', fontsize=30)
+#plt.xticks(x, x_labels, fontsize=30, rotation='vertical')
+plt.xticks(x, x_labels, fontsize=30)
 
-plt.ylabel('Node deadlines met (%)', fontsize=35)
-plt.yticks(fontsize=35)
+plt.ylabel('Node deadlines met (%)', fontsize=30)
+plt.yticks(fontsize=30)
 plt.ylim([0, 130])
 plt.gca().yaxis.set_major_locator(plt.MultipleLocator(20))
 
-plt.legend(loc="upper left", ncol=5, fontsize=35)
+plt.legend(loc="upper left", ncol=5, fontsize=30)
 plt.grid(color='silver', linestyle='-', linewidth=1)
 plt.savefig('../plots/comb_4/percent_node_deadlines_met.pdf',
         bbox_inches='tight')

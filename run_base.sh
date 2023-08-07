@@ -1,5 +1,4 @@
 #!/bin/bash
-#FLAGS="HWACC,CommInterface,LLVMInterface,StreamDma,NoncoherentDma,TickTimer,SchedulerStats,GIC,Interrupt,ExecEnable,ExecAll"
 FLAGS="HWACC,CommInterface,LLVMInterface,StreamDma,NoncoherentDma,TickTimer,SchedulerStats"
 BENCH=""
 DEBUG="false"

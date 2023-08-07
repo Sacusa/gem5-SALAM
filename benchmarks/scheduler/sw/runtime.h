@@ -33,6 +33,7 @@
 #endif
 //#define VERIFY
 //#define PRINT_SCHEDULE
+#define ENABLE_FORWARDING
 
 /* Enable gem5 timers for the following functions:
  * Timer 0: isr()

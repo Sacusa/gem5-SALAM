@@ -1,0 +1,196 @@
+gem5 Simulator System.  http://gem5.org
+gem5 is copyrighted software; use the --copyright option for details.
+
+gem5 compiled Jun 12 2023 18:40:01
+gem5 started Jul 24 2023 21:03:47
+gem5 executing on node4x10a.cs.rochester.edu, pid 76439
+command line: /u/sgupta45/gem5-SALAM/build/ARM/gem5_bus.opt --debug-flags=HWACC,CommInterface,LLVMInterface,StreamDma,NoncoherentDma,TickTimer,SchedulerStats --outdir=BM_ARM_OUT/solo_acc/convolution_ELF_MEM_PRED_NO_PRED_dm_false configs/SALAM/scheduler.py --mem-size=4GB --mem-type=LPDDR5_6400_1x16_BG_BL32 --kernel=/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/bin_solo_acc/convolution_ELF_MEM_PRED_NO_PRED_dm_false.elf --vans-config-path=/u/sgupta45/VANS/config --disk-image=/u/sgupta45/gem5-SALAM/baremetal/common/fake.iso --machine-type=VExpress_GEM5_V1 --dtb-file=none --bare-metal --cpu-type=ex5_LITTLE --cpu-clock=1.6GHz --accpath=/u/sgupta45/gem5-SALAM/benchmarks --caches --cacheline_size=64 --l1d_size=32kB --l1d_assoc=4 --l1i_size=32kB --l1i_assoc=2
+
+info: Standard input is not a terminal, disabling listeners.
+Global frequency set at 1000000000000 ticks per second
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+Cycle Counts Loaded!
+**** REAL SIMULATION ****
+502487500: global: Timer #4 started at tick 502487500
+502730625: global: Timer #4 stopped at tick 502730625. Duration: 243125
+502791250: global: Timer #5 started at tick 502791250
+502944375: global: Timer #5 stopped at tick 502944375. Duration: 153125
+504005625: global: Timer #2 started at tick 504005625
+504529375: global: Timer #2 stopped at tick 504529375. Duration: 523750
+518925875: system.acctest.convolution0_dma: SRC:0x00000000820001c0, DST:0x0000000022000020, LEN:65536
+519575625: global: Number of accelerators running = 1
+530849875: system.acctest.convolution0_dma: Transfer completed in 11.924 us
+531305625: global: Timer #0 started at tick 531305625
+532903750: global: Timer #1 started at tick 532903750
+533059375: global: Timer #1 stopped at tick 533059375. Duration: 155625
+535267375: system.acctest.convolution0_dma: SRC:0x00000000820201c0, DST:0x0000000022030020, LEN:100
+535308375: system.acctest.convolution0_dma: Transfer completed in 0.041 us
+535976875: global: Timer #0 stopped at tick 535976875. Duration: 4671250
+535995625: global: Number of accelerators running = 1
+536363125: global: Timer #0 started at tick 536363125
+538599375: global: Timer #0 stopped at tick 538599375. Duration: 2236250
+538613750: global: Number of accelerators running = 1
+********************************************************************************
+system.acctest.convolution0.compute
+   ========= Performance Analysis =============
+   Setup Time:                      0.222171seconds
+   Simulation Time:                 119.655seconds
+   System Clock:                    1GHz
+   Transistor Latency:              1ns
+   Runtime:                         1545605 cycles
+   Runtime:                         1545.61 us
+   Stalls:                          0 cycles
+   Executed Nodes:                  1545604 cycles
+
+********************************************************************************
+   ========= Performance Analysis =================
+   Setup Time:                      2.22171e+08ns
+   Simulation Time:                 1.19655e+11ns
+   System Clock:                    1GHz
+   Transistor Latency:              0ns
+   Runtime:                         1545605 cycles
+   Runtime:                         0.000154561 seconds
+   Stalls:                          0 cycles
+       Load Only:                   0 cycles
+       Store Only:                  0 cycles
+       Compute Only:                0 cycles
+       Compute & Store:             0 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              0 cycles
+       Load & Compute & Store:      0 cycles
+   Executed Nodes:                  1545604 cycles
+       Load Only:                   0 cycles
+       Store Only:                  0 cycles
+       Compute Only:                1127274 cycles
+       Compute & Store:             16374 cycles
+       Load & Store:                0 cycles
+       Load & Compute:              401946 cycles
+       Load & Compute & Store:      10 cycles
+
+   ========= Runtime FU's ========= (Max | Avg) ===
+   Counter FU's:                       3 | 0.112298
+   Integer Add/Sub FU's:               4 | 0.211564
+   Integer Mul/Div FU's:               1 | 0.052505
+   Integer Shifter FU's:              10 | 0.005268
+   Integer Bitwise FU's:               2 | 0.184266
+   Floating Point Float Add/Sub:       5 | 0.207991
+   Floating Point Double Add/Sub:      0 | 0.000000
+   Floating Point Float Mul/Div:       2 | 0.130117
+   Floating Point Double Mul/Div:      0 | 0.000000
+   0 Cycle Compare FU's:              40 | 0.145956
+   GEP Instruction FU's:               4 | 0.132683
+   Type Conversion FU's:               7 | 0.186618
+
+   ========= Static FU's ==========================
+   Counter FU's:                    0
+   Integer Add/Sub FU's:            0
+   Integer Mul/Div FU's:            0
+   Integer Shifter FU's:            0
+   Integer Bitwise FU's:            0
+   Floating Point Float Add/Sub:    0
+   Floating Point Double Add/Sub:   0
+   Floating Point Float Mul/Div:    0
+   Floating Point Double Mul/Div:   0
+   0 Cycle Compare FU's:            0
+   GEP Instruction FU's:            0
+   Type Conversion FU's:            0
+   Other:                           0
+
+   ========= Pipeline Register Usage =============
+   Total Number of Registers:       1702
+   Max Register Usage Per Cycle:    20
+   Avg Register Usage Per Cycle:    6.348199
+   Avg Register Size (Bytes):       5.569148
+
+   ========= Memory Configuration =================
+   Cache Bus Ports:                 0
+   Shared Cache Size:               0kB
+   Local Bus Ports:                 0
+   Private SPM Size:                192kB
+   Private Read Ports:              0
+   Private Write Ports:             0
+   Private Read Bus Width:          64
+   Private Write Bus Width:         64
+       Memory Reads:                0
+       Memory Writes:               0
+   ========= Power Analysis ======================
+   FU Leakage Power:                0.196912 mW 
+   FU Dynamic Power:                2743.028564 mW 
+   FU Total Power:                  2743.225586 mW 
+
+   Registers Leakage Power:          0.002459 mW 
+   Registers Dynamic Power:          75.251152 mW 
+       Register Reads (Bits):        9811808
+       Register Writes (Bits):       10049727
+   Registers Total Power:            75.253609 mW
+
+   SPM Leakage Power:               0.078311 mW
+   SPM Read Dynamic Power:          11.170319 mW
+   SPM Write Dynamic Power:         0.953321 mW
+   SPM Total Power:                 12.201951 mW
+
+   Cache Leakage Power:             0.000000 mW
+   Cache Read Dynamic Power:        0.000000 mW
+   Cache Write Dynamic Power:       0.000000 mW
+   Cache Total Power:               0.000000 mW
+
+   Accelerator Power:               2818.479248 mW
+   Accelerator Power (SPM):         2830.681199 mW
+   Accelerator Power (Cache):       2818.479248 mW
+
+   ========= Area Analysis =======================
+   FU Area:                         22931.867188 um^2 (0.022932 mm^2)
+   Register Area:                   199.868912 um^2 (0.000200 mm^2)
+   SPM Area:                        1748.188735 um^2 (0.001748 mm^2)
+   Cache Area:                      0.000000 um^2 (0.000000 mm^2)
+
+   Accelerator Area:                23131.736328 um^2 (0.023132 mm^2)
+   Accelerator Area (SPM):          24879.925063 um^2 (0.024880 mm^2)
+   Accelerator Area (Cache):        23131.736328 um^2 (0.023132 mm^2)
+
+   ========= SPM Resizing  =======================
+   SPM Optimized Leakage Power:     0.002053 mW
+   SPM Opt Area:                    145.024971 um^2
+
+2084040625: global: Timer #0 started at tick 2084040625
+2098019500: system.acctest.convolution0_dma: SRC:0x0000000022010020, DST:0x00000000820101c0, LEN:65536
+2098501875: global: Timer #0 stopped at tick 2098501875. Duration: 14461250
+2098516250: global: Number of accelerators running = 1
+2104304500: system.acctest.convolution0_dma: Transfer completed in 6.285 us
+2104380000: global: Timer #0 started at tick 2104380000
+2105319375: global: Timer #1 started at tick 2105319375
+2105432500: global: Timer #1 stopped at tick 2105432500. Duration: 113125
+2105962500: global: DAG ID = 0
+2106022500: global: Node ID = 0
+2106087500: global: DAG execution time = 1601
+2106105625: global: DAG deadline difference = 1601
+2106172500: global: Node deadline difference = 1601
+2106190625: global: Predicted memory time / byte = 7.27596e-05 us/byte
+2106208750: global: Predicted memory time = 0 us
+2106226875: global: Predicted memory time / byte = 7.27596e-05 us/byte
+2106246875: global: Predicted memory time = 0 us
+2106265000: global: Predicted memory time / byte = 0.000191498 us/byte
+2106283125: global: Predicted memory time = 12.55 us
+2106301250: global: Predicted memory time / byte = 9.76868e-05 us/byte
+2106319375: global: Predicted memory time = 6.402 us
+2106339375: global: Predicted memory access size = 0
+2106357500: global: Predicted memory access size = 3395010568
+2106375625: global: Predicted memory access size = 0
+2106393750: global: Predicted memory access size = 0
+2106546875: global: Timer #0 stopped at tick 2106546875. Duration: 2166875
+2106561250: global: Number of accelerators running = 0
+2106642500: global: Number of forwards = 0
+2106701250: global: Number of colocations = 0
+2106720625: global: Number of DAG deadlines met = 0
+2106740000: global: Number of node deadlines met = 0
+2106908125: global: Total predicted compute time = 0 us
+Exiting @ tick 2107072500 because m5_exit instruction encountered

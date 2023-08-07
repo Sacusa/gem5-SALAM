@@ -6,23 +6,27 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-hatch = {'FCFS': '*', 'GEDF_D': '.', 'LAX': 'xx', 'ELF': '/'}
-linestyle = {'FCFS': 'bo--', 'GEDF_D': 'g*--', 'GEDF_N': 'yX--',
-        'LAX': 'rP--', 'ELF': 'ks--'}
+hatch = {'FCFS': '*', 'GEDF_D': '/', 'GEDF_N': '.' , 'LAX': '\\', 'ELF': '++'}
+marker = {'FCFS': 'o', 'GEDF_D': '*', 'GEDF_N': 'X', 'LAX': 'P', 'ELF': 's'}
+
+colormap = matplotlib.cm.get_cmap("tab20").colors
+colors = {'FCFS': colormap[1], 'GEDF_D': colormap[3], 'GEDF_N': colormap[5],
+        'LAX': colormap[9], 'ELF':  colormap[7]}
+edgecolors = {'FCFS': colormap[0], 'GEDF_D': colormap[2],
+        'GEDF_N': colormap[4], 'LAX': colormap[8], 'ELF':  colormap[6]}
 
 avg = lambda l : sum(l) / len(l)
 
 def add_avg_plot(offset, policy, label):
-    if policy in hatch:
-        ax1.bar([i+offset for i in x], avg_latency[policy], edgecolor='k',
-                width=width, label=label, fc='w', hatch=hatch[policy],
-                zorder=3)
-    else:
-        ax1.bar([i+offset for i in x], avg_latency[policy], edgecolor='k',
-                width=width, label=label, fc='k', zorder=3)
+    ax1.bar([i+offset for i in x], avg_latency[policy],
+            edgecolor=edgecolors[policy], width=width, label=label,
+            fc=colors[policy], hatch=hatch[policy], zorder=3)
+    ax1.bar([i+offset for i in x], avg_latency[policy], fc='none',
+            edgecolor='k', width=width, zorder=4)
 
 def add_tail_plot(policy, label):
-    ax2.plot(x, tail_latency[policy], linestyle[policy], linewidth=2,
+    ax2.plot(x, tail_latency[policy], linestyle='--', linewidth=2,
+            marker=marker[policy], markerfacecolor=edgecolors[policy],
             markersize=25, markeredgecolor='k', label=label, zorder=3)
 
 applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
@@ -41,9 +45,12 @@ for app_mix in app_mixes:
         else:              app_mix_str += '0_'
 
     for policy in policies:
-        if policy in ['LAX', 'ELF']:
+        if policy == 'ELF':
             dir_name = '../../comb_pred_3/' + app_mix_str + policy + \
-                    '_MEM_PRED_AVERAGE_15'
+                    '_MEM_PRED_NO_PRED_dm_false'
+        elif policy == 'LAX':
+            dir_name = '../../comb_pred_3/' + app_mix_str + policy + \
+                    '_MEM_PRED_EWMA_0.25_dm_false'
         else:
             dir_name = '../../comb_3/' + app_mix_str + policy
         dir_name += '/debug-trace.txt'
@@ -84,39 +91,39 @@ for app_mix in app_mixes:
 x = [i for i in range(len(app_mixes))]
 x_labels = ["".join([a[0].upper() for a in app_mix]) for app_mix in app_mixes]
 
-fig, ax1 = plt.subplots(figsize=(24, 15), dpi=600)
+fig, ax1 = plt.subplots(figsize=(24, 12), dpi=600)
 ax2 = ax1.twinx()
 plt.rc('axes', axisbelow=False)
 
 width = 0.16
-add_avg_plot(-(width*2), 'FCFS',  'FCFS')
-add_avg_plot(-width,     'GEDF_D',  'GEDF-D')
+add_avg_plot(-(width*2), 'FCFS',   'Avg: FCFS')
+add_avg_plot(-width,     'GEDF_D', 'GEDF-D')
 add_avg_plot(0,          'GEDF_N', 'GEDF-N')
 add_avg_plot(width,      'LAX',    'LAX')
-add_avg_plot((width*2),  'ELF',    'ELF')
+add_avg_plot((width*2),  'ELF',    'RELIEF')
 
-add_tail_plot('FCFS',   'FCFS')
+add_tail_plot('FCFS',   'Tail: FCFS')
 add_tail_plot('GEDF_D', 'GEDF-D')
 add_tail_plot('GEDF_N', 'GEDF-N')
 add_tail_plot('LAX',    'LAX')
-add_tail_plot('ELF',    'ELF')
+add_tail_plot('ELF',    'RELIEF')
 
 ax1.set_xticks(x)
-ax1.set_xticklabels(x_labels, size=35)
-ax1.set_ylabel('Average latency (us)', size=35)
-ax1.set_ylim([0, 1.05])
+ax1.set_xticklabels(x_labels, size=30)
+ax1.set_ylabel('Average latency (us)', size=30)
+ax1.set_ylim([0, 1.20])
 ax1.yaxis.set_major_locator(plt.MultipleLocator(0.15))
-ax1.yaxis.set_tick_params(labelsize=35)
+ax1.yaxis.set_tick_params(labelsize=30)
 
-ax2.set_ylabel('Tail latency (us)', size=35)
-ax2.set_ylim([-1.5, 2])
-ax2.yaxis.set_major_locator(plt.MultipleLocator(0.5))
-ax2.yaxis.set_tick_params(labelsize=35)
+ax2.set_ylabel('Tail latency (us)', size=30)
+ax2.set_ylim([-4, 4])
+ax2.yaxis.set_major_locator(plt.MultipleLocator(1))
+ax2.yaxis.set_tick_params(labelsize=30)
 
 ax1.grid(zorder=0, color='silver', linestyle='-', linewidth=1)
 h1, l1 = ax1.get_legend_handles_labels()
 h2, l2 = ax2.get_legend_handles_labels()
-h = [x for z in zip(h1, h2) for x in z]
-l = [x for z in zip(l1, l2) for x in z]
-ax1.legend(h, l, loc="upper left", ncol=5, fontsize=35)
+h = [x for z in zip(h2, h1) for x in z]
+l = [x for z in zip(l2, l1) for x in z]
+ax1.legend(h, l, loc="upper left", ncol=5, fontsize=30)
 plt.savefig('../plots/comb_3/scheduler_latency.pdf', bbox_inches='tight')
