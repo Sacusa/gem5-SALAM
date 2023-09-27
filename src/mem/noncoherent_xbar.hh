@@ -85,10 +85,19 @@ class NoncoherentXBar : public BaseXBar
      * delay for transactions.
      */
     std::map<PacketPtr, Tick> packetRequestTime;
-    uint32_t numRequests;
+    uint32_t numRequestsVal;
     Tick totalQueuingDelay;
+    Stats::Scalar numRequests;
     Stats::Scalar averageQueuingDelay;
     Stats::Scalar tailQueuingDelay;
+
+    /**
+     * Stats for queue length. These stats capture the mean and max queue
+     * length for transactions.
+     */
+    uint32_t maxQueueLengthVal;
+    Stats::Average averageQueueLength;
+    Stats::Scalar maxQueueLength;
 
   protected:
 

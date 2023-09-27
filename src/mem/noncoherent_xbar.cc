@@ -59,8 +59,11 @@ NoncoherentXBar::NoncoherentXBar(const NoncoherentXBarParams *p) :
     lastPacketFinishTime(0),
     ADD_STAT(occupancy, "Network occupancy (ticks)"),
     ADD_STAT(utilization, "Network utilization (%)"),
+    ADD_STAT(numRequests, "Number of requests"),
     ADD_STAT(averageQueuingDelay, "Average queuing delay (ticks)"),
-    ADD_STAT(tailQueuingDelay, "Tail queuing delay (ticks)")
+    ADD_STAT(tailQueuingDelay, "Tail queuing delay (ticks)"),
+    ADD_STAT(averageQueueLength, "Average queue length"),
+    ADD_STAT(maxQueueLength, "Max queue length")
 {
     // create the ports based on the size of the master and slave
     // vector ports, and the presence of the default port, the ports
@@ -100,8 +103,9 @@ NoncoherentXBar::NoncoherentXBar(const NoncoherentXBarParams *p) :
                                            csprintf("respLayer%d", i)));
     }
 
-    numRequests = 0;
+    numRequestsVal = 0;
     totalQueuingDelay = 0;
+    maxQueueLengthVal = 0;
 
     // initialize statistics
     occupancy
@@ -118,6 +122,9 @@ NoncoherentXBar::NoncoherentXBar(const NoncoherentXBarParams *p) :
 
     tailQueuingDelay
         .flags(Stats::nozero);
+
+    averageQueueLength
+        .precision(2);
 }
 
 NoncoherentXBar::~NoncoherentXBar()
@@ -144,14 +151,22 @@ NoncoherentXBar::recvTimingReq(PacketPtr pkt, PortID slave_port_id)
     // test if the layer should be considered occupied for the current
     // port
     if (!reqLayers[req_layer_id]->tryTiming(src_port)) {
-        packetRequestTime[pkt] = curTick();
+        if (packetRequestTime.find(pkt) == packetRequestTime.end()) {
+            packetRequestTime[pkt] = curTick();
+
+            averageQueueLength = packetRequestTime.size();
+            maxQueueLengthVal = std::max((uint32_t) packetRequestTime.size(),
+                    maxQueueLengthVal);
+            maxQueueLength = maxQueueLengthVal;
+        }
         DPRINTF(NoncoherentXBar, "recvTimingReq: src %s %s 0x%x BUSY\n",
                 src_port->name(), pkt->cmdString(), pkt->getAddr());
         return false;
     }
 
     // Update queuing stats for the interconnect
-    numRequests++;
+    numRequestsVal++;
+    numRequests = numRequestsVal;
 
     auto pktPos = packetRequestTime.find(pkt);
     if (pktPos != packetRequestTime.end()) {
@@ -161,9 +176,11 @@ NoncoherentXBar::recvTimingReq(PacketPtr pkt, PortID slave_port_id)
             tailQueuingDelay = queuingDelay;
         }
         packetRequestTime.erase(pktPos);
+
+        averageQueueLength = packetRequestTime.size();
     }
     
-    averageQueuingDelay = totalQueuingDelay / numRequests;
+    averageQueuingDelay = totalQueuingDelay / numRequestsVal;
 
     DPRINTF(NoncoherentXBar, "recvTimingReq: src %s %s 0x%x\n",
             src_port->name(), pkt->cmdString(), pkt->getAddr());
@@ -250,14 +267,22 @@ NoncoherentXBar::recvTimingResp(PacketPtr pkt, PortID master_port_id)
     // test if the layer should be considered occupied for the current
     // port
     if (!respLayers[resp_layer_id]->tryTiming(src_port)) {
-        packetRequestTime[pkt] = curTick();
+        if (packetRequestTime.find(pkt) == packetRequestTime.end()) {
+            packetRequestTime[pkt] = curTick();
+
+            averageQueueLength = packetRequestTime.size();
+            maxQueueLengthVal = std::max((uint32_t) packetRequestTime.size(),
+                    maxQueueLengthVal);
+            maxQueueLength = maxQueueLengthVal;
+        }
         DPRINTF(NoncoherentXBar, "recvTimingResp: src %s %s 0x%x BUSY\n",
                 src_port->name(), pkt->cmdString(), pkt->getAddr());
         return false;
     }
 
     // Update queuing stats for the interconnect
-    numRequests++;
+    numRequestsVal++;
+    numRequests = numRequestsVal;
 
     auto pktPos = packetRequestTime.find(pkt);
     if (pktPos != packetRequestTime.end()) {
@@ -267,9 +292,11 @@ NoncoherentXBar::recvTimingResp(PacketPtr pkt, PortID master_port_id)
             tailQueuingDelay = queuingDelay;
         }
         packetRequestTime.erase(pktPos);
+
+        averageQueueLength = packetRequestTime.size();
     }
     
-    averageQueuingDelay = totalQueuingDelay / numRequests;
+    averageQueuingDelay = totalQueuingDelay / numRequestsVal;
 
     DPRINTF(NoncoherentXBar, "recvTimingResp: src %s %s 0x%x\n",
             src_port->name(), pkt->cmdString(), pkt->getAddr());
