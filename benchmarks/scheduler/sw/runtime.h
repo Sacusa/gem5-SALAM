@@ -109,8 +109,10 @@ enum scheduling_policy_t {
     FCFS = 0,
     GEDF_D,
     GEDF_N,
+    LL,
     LAX,
-    ELF
+    ELF,
+    ELFD
 };
 
 enum mem_predictor_t {

@@ -1045,6 +1045,59 @@ inline bool push_request(volatile task_struct_t *req, bool try_forward)
             break;
         }
 
+        case LL: {
+#ifdef ENABLE_STATS
+            float compute_time = get_compute_time(req);
+            float load_time = get_worst_case_load_time(req);
+            float store_time = get_worst_case_store_time(req);
+
+            req->runtime = compute_time + load_time + store_time;
+
+            req->stat_mem_time_per_byte_pred_load = mem_prediction;
+            req->stat_mem_time_per_byte_pred_store = mem_prediction;
+            req->stat_mem_time_pred_load = load_time;
+            req->stat_mem_time_pred_store = store_time;
+
+            stat_predicted_compute_time += compute_time;
+#else
+            req->runtime = get_worst_case_runtime(req);
+#endif
+
+            req->laxity = req->node_deadline + runtime_start_time - \
+                          req->runtime;
+
+            if (ready_queue_size[acc_id] == 0) {
+                ready_queue[acc_id][ready_queue_end[acc_id]] = req;
+                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                                          MAX_READY_QUEUE_SIZE;
+            }
+            else {
+                int pos = ready_queue_end[acc_id];
+                int pos_minus_1 = pos - 1;
+                if (pos_minus_1 == -1) {
+                    pos_minus_1 = MAX_READY_QUEUE_SIZE - 1;
+                }
+
+                while ((pos != ready_queue_start[acc_id]) && \
+                       (ready_queue[acc_id][pos_minus_1]->laxity > \
+                        req->laxity)) {
+                    ready_queue[acc_id][pos] =
+                        ready_queue[acc_id][pos_minus_1];
+                    pos = pos_minus_1;
+                    pos_minus_1 = pos - 1;
+                    if (pos_minus_1 == -1) {
+                        pos_minus_1 = MAX_READY_QUEUE_SIZE - 1;
+                    }
+                }
+
+                ready_queue[acc_id][pos] = req;
+                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                                          MAX_READY_QUEUE_SIZE;
+            }
+
+            break;
+        }
+
         case LAX: {
 #ifdef ENABLE_STATS
             float compute_time = get_compute_time(req);
@@ -1108,6 +1161,23 @@ inline bool push_request(volatile task_struct_t *req, bool try_forward)
             }
 
             break;
+        }
+
+        case ELFD: {
+            if ((req->laxity - ((int32_t)m5_get_time() / 1000)) <= 0) {
+                // De-prioritize a node if its laxity is negative. That is,
+                // the node is unlikely to finish before its deadline.
+                req->laxity = 0x7fffffff;
+
+                ready_queue[acc_id][ready_queue_end[acc_id]] = req;
+                ready_queue_end[acc_id] = (ready_queue_end[acc_id] + 1) % \
+                                          MAX_READY_QUEUE_SIZE;
+
+                req->priority_escalated = can_forward;
+                break;
+            }
+
+            // else, perform regular ELF insertion
         }
 
         case ELF: {
