@@ -65,6 +65,9 @@ volatile scheduling_policy_t scheduling_policy;
 volatile mem_predictor_t mem_predictor;
 volatile bool enable_dm_pred;
 volatile uint32_t runtime_start_time;
+volatile int num_dags;
+volatile int num_finished_dags[MAX_DAGS];
+volatile task_struct_t *early_exit_node;
 
 float mem_prediction = 0;
 
@@ -76,16 +79,6 @@ volatile uint32_t stat_dag_deadlines_met = 0;
 volatile uint32_t stat_node_deadlines_met = 0;
 volatile float stat_predicted_compute_time = 0;
 #endif
-
-inline void init_task_struct(task_struct_t *task_struct)
-{
-    for (int i = 0; i < MAX_ACC_ARGS; i++) {
-        task_struct->producer_forward[i] = 0;
-    }
-
-    task_struct->status = REQ_STATUS_WAITING;
-    task_struct->completed_parents = 0;
-}
 
 inline void assertf(bool cond, const char * format, ...)
 {
@@ -815,6 +808,10 @@ inline void run_isp(int device_id, volatile task_struct_t *req,
 inline void run_accelerator(int acc_id, int device_id,
         volatile task_struct_t *req)
 {
+#ifdef ENABLE_STATS
+    m5_timer_start(6);
+#endif
+
     volatile acc_state_t *acc = &acc_state[acc_id][device_id];
 
     // accelerator specific parsing and driver code
@@ -843,6 +840,10 @@ inline void run_accelerator(int acc_id, int device_id,
     }
 
     acc->running_req = req;
+
+#ifdef ENABLE_STATS
+    m5_timer_stop(6);
+#endif
 }
 
 /**
@@ -1275,9 +1276,11 @@ inline void launch_requests()
     }
 }
 
-void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
+void runtime(task_struct_t ***nodes, int num_dags_arg, int num_nodes[MAX_DAGS],
         scheduling_policy_t policy, mem_predictor_t predictor, bool dm_pred)
 {
+    num_dags = num_dags_arg;
+
     // Initialize structures
     for (int i = 0; i < NUM_ACCS; i++) {
         for (int j = 0; j < acc_instances[i]; j++) {
@@ -1307,10 +1310,13 @@ void runtime(task_struct_t ***nodes, int num_dags, int num_nodes[MAX_DAGS],
     mem_predictor = predictor;
     enable_dm_pred = dm_pred;
     init_mem_time_predictor();
+    early_exit_node = NULL;
 
     runtime_start_time = m5_get_time() / 1000;
 
     for (int i = 0; i < num_dags; i++) {
+        num_finished_dags[i] = 0;
+
         for (int j = 0; j < num_nodes[i]; j++) {
             volatile task_struct_t *req = nodes[i][j];
 
@@ -1447,6 +1453,27 @@ void isr(int i, int j)  // i = accelerator id, j = device id
             if (child->completed_parents == child->num_parents) {
                 child->status = REQ_STATUS_READY;
 
+#ifdef ENABLE_EARLY_EXIT
+                if (child->is_first_node) {
+                    num_finished_dags[req->dag_id]++;
+
+                    if (early_exit_node == NULL) {
+                        bool early_exit = true;
+
+                        for (int d = 0; d < num_dags; d++) {
+                            if (num_finished_dags[d] < MIN_REPEATS) {
+                                early_exit = false;
+                                break;
+                            }
+                        }
+
+                        if (early_exit) {
+                            early_exit_node = req;
+                        }
+                    }
+                }
+#endif
+
 #ifdef ENABLE_STATS
                 child->stat_mem_time_per_byte_truth_load = 0;
                 child->stat_mem_time_truth_load = 0;
@@ -1527,7 +1554,9 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                 uint8_t acc_id = child->acc_id;
 
                 bool is_forwarded = push_request(child,
-                        num_forwards[acc_id]<num_available_instances[acc_id]);
+                        (num_forwards[acc_id] < \
+                         num_available_instances[acc_id]) && \
+                        !child->is_first_node);
 
                 if (is_forwarded) {
                     num_forwards[acc_id]++;
@@ -1563,8 +1592,9 @@ void isr(int i, int j)  // i = accelerator id, j = device id
             for (int n = 0; (n < num_available_instances[child->acc_id]) && \
                     (ready_queue_index != ready_queue_end[child->acc_id]);
                     n++) {
-                if ((ready_queue[child->acc_id][ready_queue_index] == child) \
-                        || child->priority_escalated) {
+                if (((ready_queue[child->acc_id][ready_queue_index] == child) \
+                        || child->priority_escalated) && \
+                        !child->is_first_node) {
                     // The child node is among the next set of nodes to be
                     // scheduled, so update its metadata to receive data
                     // from the producer
@@ -1664,7 +1694,8 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         m5_print_stat(DAG_ID, req->dag_id);
         m5_print_stat(NODE_ID, req->node_id);
 
-        if (req->num_children == 0) {
+        if ((req->num_children == 0) || ((req->num_children == 1) && \
+                    req->children[0]->is_first_node)) {
             if (curr_time <= req->dag_deadline) {
                 stat_dag_deadlines_met++;
             }
@@ -1685,6 +1716,16 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         m5_print_stat(NODE_DEADLINE_DIFF, *((uint32_t*)(&deadline_diff)));
 
         print_pred_statistics(req);
+#endif
+
+#ifdef ENABLE_EARLY_EXIT
+        if (req == early_exit_node) {
+            for (int d = 0; d < num_dags; d++) {
+                m5_print_stat(DAG_EXEC_TIME, num_finished_dags[d]);
+            }
+
+            m5_exit();
+        }
 #endif
 
         acc->running_req = NULL;

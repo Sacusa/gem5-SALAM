@@ -42,11 +42,11 @@ int main(int argc, char *argv[])
     nodes_offset += num_canny;
 
     if (num_deblur > 0) { init_deblur(); }
-    add_deblur_dag(&nodes[nodes_offset], &num_nodes[nodes_offset], num_deblur, 5);
+    add_deblur_dag(&nodes[nodes_offset], &num_nodes[nodes_offset], num_deblur);
     nodes_offset += num_deblur;
 
     if (num_gru > 0) { init_gru(); }
-    add_gru_dag(&nodes[nodes_offset], &num_nodes[nodes_offset], num_gru, 8);
+    add_gru_dag(&nodes[nodes_offset], &num_nodes[nodes_offset], num_gru);
     nodes_offset += num_gru;
 
     if (num_harris > 0) { init_harris(); }
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     nodes_offset += num_harris;
 
     if (num_lstm > 0) { init_lstm(); }
-    add_lstm_dag(&nodes[nodes_offset], &num_nodes[nodes_offset], num_lstm, 8);
+    add_lstm_dag(&nodes[nodes_offset], &num_nodes[nodes_offset], num_lstm);
     nodes_offset += num_lstm;
 
     //add_scale_dag(&nodes[nodes_offset], &num_nodes[nodes_offset], num_scale);

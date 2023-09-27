@@ -7,7 +7,9 @@
 
 #include "runtime.h"
 
-#define DEBLUR_DEADLINE 16667
+#define DEBLUR_DEADLINE  16667
+#define DEBLUR_NUM_ITERS 5
+#define DEBLUR_NUM_NODES (2 + ((DEBLUR_NUM_ITERS) * 4))
 
 typedef struct {
     // ISP
@@ -59,7 +61,7 @@ void deblur_init_img(deblur_data_t *img)
 }
 
 void deblur_process_raw(deblur_data_t *img, task_struct_t **nodes,
-        uint32_t earliest_start)
+        uint32_t earliest_start, int rep_count)
 {
     task_struct_t *task = (task_struct_t*) get_memory(sizeof(task_struct_t));
     isp_args *args = (isp_args*) get_memory(sizeof(isp_args));
@@ -76,21 +78,31 @@ void deblur_process_raw(deblur_data_t *img, task_struct_t **nodes,
     task->acc_args = (void*) args;
     task->num_children = 1;
     task->num_parents = 1;
-    task->producer[0] = deblur_task_16900;
-    task->status = REQ_STATUS_READY;
-    task->completed_parents = 1;
 
+    if (rep_count == 0) {
+        task->producer[0] = deblur_task_16900;
+        task->status = REQ_STATUS_READY;
+        task->completed_parents = 1;
+    }
+    else {
+        task->producer[0] = nodes[(rep_count * DEBLUR_NUM_NODES) - 1];
+        task->status = REQ_STATUS_WAITING;
+        task->completed_parents = 0;
+        nodes[(rep_count * DEBLUR_NUM_NODES) - 1]->children[0] = task;
+    }
+
+    task->is_first_node = true;
     task->output_size = 49152;
     task->compute_time = RUNTIME_ISP;
-    task->dag_deadline = DEBLUR_DEADLINE;
-    task->node_deadline = earliest_start + 50;
+    task->dag_deadline = (rep_count + 1) * DEBLUR_DEADLINE;
+    task->node_deadline = (rep_count * DEBLUR_DEADLINE) + earliest_start + 50;
 
     deblur_retval[0] = task;
-    nodes[0] = task;
+    nodes[rep_count * DEBLUR_NUM_NODES] = task;
 }
 
 void deblur_convert_to_grayscale(deblur_data_t *img, task_struct_t **nodes,
-        int num_iters, uint32_t earliest_start)
+        uint32_t earliest_start, int rep_count)
 {
     task_struct_t *task = (task_struct_t*) get_memory(sizeof(task_struct_t));
     grayscale_args *args = (grayscale_args*)
@@ -104,7 +116,7 @@ void deblur_convert_to_grayscale(deblur_data_t *img, task_struct_t **nodes,
 
     task->acc_id = ACC_GRAYSCALE;
     task->acc_args = (void*) args;
-    task->num_children = num_iters + 1;
+    task->num_children = DEBLUR_NUM_ITERS + 1;
     task->num_parents = 1;
 #ifdef VERIFY
     task->producer[0] = deblur_task_49152;
@@ -116,20 +128,21 @@ void deblur_convert_to_grayscale(deblur_data_t *img, task_struct_t **nodes,
     task->completed_parents = 0;
 #endif
 
+    task->is_first_node = false;
     task->output_size = 65536;
     task->compute_time = RUNTIME_GRAYSCALE;
-    task->dag_deadline = DEBLUR_DEADLINE;
-    task->node_deadline = earliest_start + 87;
+    task->dag_deadline = (rep_count + 1) * DEBLUR_DEADLINE;
+    task->node_deadline = (rep_count * DEBLUR_DEADLINE) + earliest_start + 87;
 
 #ifndef VERIFY
     deblur_retval[0]->children[0] = task;
 #endif
     deblur_retval[1] = task;
-    nodes[1] = task;
+    nodes[(rep_count * DEBLUR_NUM_NODES) + 1] = task;
 }
 
 void deblur_run_conv_psf(deblur_data_t *img, task_struct_t **nodes,
-        int node_index, bool is_first, uint32_t earliest_start)
+        int node_index, bool is_first, uint32_t earliest_start, int rep_count)
 {
     task_struct_t *task = (task_struct_t*) get_memory(sizeof(task_struct_t));
     convolution_args *args = (convolution_args*)
@@ -163,17 +176,18 @@ void deblur_run_conv_psf(deblur_data_t *img, task_struct_t **nodes,
     task->status = REQ_STATUS_WAITING;
     task->completed_parents = 1;
 
+    task->is_first_node = false;
     task->output_size = 65536;
     task->compute_time = RUNTIME_CONVOLUTION_5;
-    task->dag_deadline = DEBLUR_DEADLINE;
-    task->node_deadline = earliest_start + 1576;
+    task->dag_deadline = (rep_count + 1) * DEBLUR_DEADLINE;
+    task->node_deadline = (rep_count*DEBLUR_DEADLINE) + earliest_start + 1576;
 
     deblur_retval[2] = task;
-    nodes[node_index] = task;
+    nodes[(rep_count * DEBLUR_NUM_NODES) + node_index] = task;
 }
 
 void deblur_run_div_ut_psf(deblur_data_t *img, task_struct_t **nodes,
-        int node_index, int iter_num, uint32_t earliest_start)
+        int node_index, int iter_num, uint32_t earliest_start, int rep_count)
 {
     task_struct_t *task = (task_struct_t*) get_memory(sizeof(task_struct_t));
     elem_matrix_args *args = (elem_matrix_args*)
@@ -194,19 +208,20 @@ void deblur_run_div_ut_psf(deblur_data_t *img, task_struct_t **nodes,
     task->status = REQ_STATUS_WAITING;
     task->completed_parents = 0;
 
+    task->is_first_node = false;
     task->output_size = 65536;
     task->compute_time = RUNTIME_ELEM_MATRIX_DIV;
-    task->dag_deadline = DEBLUR_DEADLINE;
-    task->node_deadline = earliest_start + 1633;
+    task->dag_deadline = (rep_count + 1) * DEBLUR_DEADLINE;
+    task->node_deadline = (rep_count*DEBLUR_DEADLINE) + earliest_start + 1633;
 
     deblur_retval[1]->children[iter_num + 1] = task;
     deblur_retval[2]->children[0] = task;
     deblur_retval[3] = task;
-    nodes[node_index] = task;
+    nodes[(rep_count * DEBLUR_NUM_NODES) + node_index] = task;
 }
 
 void deblur_run_conv_psf_flip(deblur_data_t *img, task_struct_t **nodes,
-        int node_index, uint32_t earliest_start)
+        int node_index, uint32_t earliest_start, int rep_count)
 {
     task_struct_t *task = (task_struct_t*) get_memory(sizeof(task_struct_t));
     convolution_args *args = (convolution_args*)
@@ -228,18 +243,20 @@ void deblur_run_conv_psf_flip(deblur_data_t *img, task_struct_t **nodes,
     task->status = REQ_STATUS_WAITING;
     task->completed_parents = 1;
 
+    task->is_first_node = false;
     task->output_size = 65536;
     task->compute_time = RUNTIME_CONVOLUTION_5;
-    task->dag_deadline = DEBLUR_DEADLINE;
-    task->node_deadline = earliest_start + 3210;
+    task->dag_deadline = (rep_count + 1) * DEBLUR_DEADLINE;
+    task->node_deadline = (rep_count*DEBLUR_DEADLINE) + earliest_start + 3210;
 
     deblur_retval[3]->children[0] = task;
     deblur_retval[4] = task;
-    nodes[node_index] = task;
+    nodes[(rep_count * DEBLUR_NUM_NODES) + node_index] = task;
 }
 
-void deblur_run_mult_psf_flip(deblur_data_t *img, bool is_first, bool has_child,
-        task_struct_t **nodes, int node_index, uint32_t earliest_start)
+void deblur_run_mult_psf_flip(deblur_data_t *img, bool is_first,
+        bool has_child, task_struct_t **nodes, int node_index,
+        uint32_t earliest_start, int rep_count, bool is_last_rep)
 {
     task_struct_t *task = (task_struct_t*) get_memory(sizeof(task_struct_t));
     elem_matrix_args *args = (elem_matrix_args*)
@@ -256,6 +273,9 @@ void deblur_run_mult_psf_flip(deblur_data_t *img, bool is_first, bool has_child,
 
     if (has_child) {
         task->num_children = 2;
+    }
+    else if (!is_last_rep) {
+        task->num_children = 1;
     }
     else {
         task->num_children = 0;
@@ -276,14 +296,15 @@ void deblur_run_mult_psf_flip(deblur_data_t *img, bool is_first, bool has_child,
     task->producer[1] = deblur_retval[4];
     task->status = REQ_STATUS_WAITING;
 
+    task->is_first_node = false;
     task->output_size = 65536;
     task->compute_time = RUNTIME_ELEM_MATRIX_MUL;
-    task->dag_deadline = DEBLUR_DEADLINE;
-    task->node_deadline = earliest_start + 3267;
+    task->dag_deadline = (rep_count + 1) * DEBLUR_DEADLINE;
+    task->node_deadline = (rep_count*DEBLUR_DEADLINE) + earliest_start + 3267;
 
     deblur_retval[4]->children[0] = task;
     deblur_retval[5] = task;
-    nodes[node_index] = task;
+    nodes[(rep_count * DEBLUR_NUM_NODES) + node_index] = task;
 }
 
 void init_deblur()
@@ -348,8 +369,7 @@ void init_deblur()
 #endif
 }
 
-void add_deblur_dag(task_struct_t ***nodes, int *num_nodes, int num_images,
-        int num_iters)
+void add_deblur_dag(task_struct_t ***nodes, int *num_nodes, int num_images)
 {
     deblur_data_t *imgs = (deblur_data_t*)
         get_memory(num_images * sizeof(deblur_data_t));
@@ -357,48 +377,51 @@ void add_deblur_dag(task_struct_t ***nodes, int *num_nodes, int num_images,
     const uint32_t iter_runtime = 3267;
 
     for (int i = 0; i < num_images; i++) {
-        uint32_t earliest_start = DEBLUR_DEADLINE - \
-                                  (iter_runtime * num_iters) - 87;
-
         deblur_init_img(&imgs[i]);
 
+        for (int rep = 0; rep < NUM_REPEATS; rep++) {
+            uint32_t earliest_start = DEBLUR_DEADLINE - \
+                                      (iter_runtime * DEBLUR_NUM_ITERS) - 87;
+
 #ifdef VERIFY
-        // Step 0: Link ISP output
-        imgs[i].isp_img = deblur_isp_output;
+            // Step 0: Link ISP output
+            imgs[i].isp_img = deblur_isp_output;
 #else
-        // Step 0: Run raw image through ISP
-        deblur_process_raw(&imgs[i], nodes[i], earliest_start);
+            // Step 0: Run raw image through ISP
+            deblur_process_raw(&imgs[i], nodes[i], earliest_start, rep);
 #endif
 
-        deblur_convert_to_grayscale(&imgs[i], nodes[i], num_iters,
-                earliest_start);
+            deblur_convert_to_grayscale(&imgs[i], nodes[i], earliest_start,
+                    rep);
 
-        earliest_start += 87;
+            earliest_start += 87;
 
-        for (int j = 0; j < num_iters; j++) {
-            int node_index = 2 + j*4;
+            for (int j = 0; j < DEBLUR_NUM_ITERS; j++) {
+                int node_index = 2 + j * 4;
 
-            deblur_run_conv_psf(&imgs[i], nodes[i], node_index, j == 0,
-                    earliest_start);
-            deblur_run_div_ut_psf(&imgs[i], nodes[i], node_index+1, j,
-                    earliest_start);
-            deblur_run_conv_psf_flip(&imgs[i], nodes[i], node_index+2,
-                    earliest_start);
-            deblur_run_mult_psf_flip(&imgs[i], j == 0, j != (num_iters-1),
-                    nodes[i], node_index+3, earliest_start);
+                deblur_run_conv_psf(&imgs[i], nodes[i], node_index, j == 0,
+                        earliest_start, rep);
+                deblur_run_div_ut_psf(&imgs[i], nodes[i], node_index + 1, j,
+                        earliest_start, rep);
+                deblur_run_conv_psf_flip(&imgs[i], nodes[i], node_index + 2,
+                        earliest_start, rep);
+                deblur_run_mult_psf_flip(&imgs[i], j == 0,
+                        j != (DEBLUR_NUM_ITERS - 1), nodes[i], node_index + 3,
+                        earliest_start, rep, rep == (NUM_REPEATS - 1));
 
-            earliest_start += iter_runtime;
+                earliest_start += iter_runtime;
+            }
         }
 
-        num_nodes[i] = 2 + (num_iters * 4);
+        num_nodes[i] = NUM_REPEATS * DEBLUR_NUM_NODES;
     }
 }
 
-void print_deblur_output(task_struct_t ***nodes, int num_images, int num_iters)
+void print_deblur_output(task_struct_t ***nodes, int num_images)
 {
     printf("Printing deblur results\n");
     printf("=======================\n");
-    int node_index = 1 + (4 * num_iters);
+    int node_index = 1 + (4 * DEBLUR_NUM_ITERS);
 
     for (int i = 0; i < num_images; i++) {
         float *final_img =

@@ -15,25 +15,30 @@
 
 //#define SCALE_EXPERIMENT
 #ifdef SCALE_EXPERIMENT
-    #define MAX_ACC_INSTANCES   10
-    #define MAX_ACC_ARGS        5
-    #define MAX_ACC_SPM_PARTS   5
-    #define MAX_CHILDREN        1500
-    #define MAX_DAGS            50
-    #define MAX_NODES           1500
+    #define MAX_ACC_INSTANCES    10
+    #define MAX_ACC_ARGS         5
+    #define MAX_ACC_SPM_PARTS    5
+    #define MAX_CHILDREN         1500
+    #define MAX_DAGS             50
+    #define MAX_NODES            1500
     #define MAX_READY_QUEUE_SIZE 1500
 #else
-    #define MAX_ACC_INSTANCES   10
-    #define MAX_ACC_ARGS        5
-    #define MAX_ACC_SPM_PARTS   5
-    #define MAX_CHILDREN        50
-    #define MAX_DAGS            50
-    #define MAX_NODES           500
+    #define MAX_ACC_INSTANCES    10
+    #define MAX_ACC_ARGS         5
+    #define MAX_ACC_SPM_PARTS    5
+    #define MAX_CHILDREN         50
+    #define MAX_DAGS             50
+    #define MAX_NODES            3000
     #define MAX_READY_QUEUE_SIZE 500
 #endif
 //#define VERIFY
 //#define PRINT_SCHEDULE
 #define ENABLE_FORWARDING
+
+//#define NUM_REPEATS 1
+#define NUM_REPEATS 10
+#define ENABLE_EARLY_EXIT
+#define MIN_REPEATS 3
 
 /* Enable gem5 timers for the following functions:
  * Timer 0: isr()
@@ -42,6 +47,7 @@
  * Timer 3 (ELF only): sorted insertion into pipeline queue
  * Timer 4 (ELF only): get_pred_load_size()
  * Timer 5 (ELF only): get_pred_store_size()
+ * Timer 6: run_accelerator()
  *
  * It also enables the collection and printing of other statistics using
  * structures and gem5 pseudo instructions.
@@ -154,6 +160,7 @@ struct task_struct_t {
     task_struct_t *children[MAX_CHILDREN];
     task_struct_t *producer[MAX_ACC_ARGS];
 
+    bool is_first_node;
     uint32_t output_size;
     uint32_t compute_time;
     uint32_t runtime;
