@@ -48,6 +48,8 @@
  * Timer 4 (ELF only): get_pred_load_size()
  * Timer 5 (ELF only): get_pred_store_size()
  * Timer 6: run_accelerator()
+ * Timer 7: driver()
+ * Timer 8: dcache_flush()
  *
  * It also enables the collection and printing of other statistics using
  * structures and gem5 pseudo instructions.
@@ -290,6 +292,7 @@ void runtime(task_struct_t ***, int, int [MAX_DAGS], scheduling_policy_t,
         mem_predictor_t, bool);
 
 // helper methods
+void dcache_flush(uint32_t, uint32_t);
 void assertf(bool, const char*, ...);
 void enable_interrupts();
 void disable_interrupts();

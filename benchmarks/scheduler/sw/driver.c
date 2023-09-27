@@ -4,45 +4,14 @@
 volatile uint32_t dma_start_time[NUM_ACCS][MAX_ACC_INSTANCES];
 volatile uint32_t dma_size[NUM_ACCS][MAX_ACC_INSTANCES];
 
-inline void dcache_flush(uint32_t addr, uint32_t num_bytes)
-{
-    // only flush lines in the cacheable region
-    // we assume here that the data would NOT be spread across cacheable and
-    // uncacheable regions, so it is okay to just check the start address
-    if (addr < UNCACHEABLE_END) {
-        return;
-    }
-
-    uint32_t num_lines = num_bytes / CACHELINE_SIZE;
-    if (num_bytes % CACHELINE_SIZE) {
-        num_lines += 1;
-    }
-
-    for (int i = 0; i < num_lines; i++) {
-        // Write-back the line if it is dirty
-        __asm__ ("mcr  p15, 0, %[addr], c7, c14, 1"
-                : /* no outputs */
-                : [addr] "r" (addr + (i * CACHELINE_SIZE))
-                : /* no clobbers */);
-
-        // Invalidate the cache line
-        __asm__ ("mcr  p15, 0, %[addr], c7, c6, 1"
-                : /* no outputs */
-                : [addr] "r" (addr + (i * CACHELINE_SIZE))
-                : /* no clobbers */);
-    }
-
-    // Data Memory Barrier (DMB)
-    __asm__ ("mcr  p15, 0, r0, c7, c10, 5"
-            : /* no outputs */
-            : /* no inputs */
-            : /* no clobbers */);
-}
-
 void canny_non_max_driver(
         int device_id, uint32_t img_height, uint32_t img_width,
         uint32_t hypo_addr, uint32_t theta_addr, uint32_t output_addr,
         uint32_t output_spm_addr, volatile acc_state_t *acc) {
+#ifdef ENABLE_STATS
+    m5_timer_start(7);
+#endif
+
     // accelerator offsets
     const uint32_t offset_dma = CNM0_DMA - CNM0_BASE;
     const uint32_t offset_hypo_spm = CNM0_HYPO_SPM - CNM0_BASE;
@@ -72,8 +41,6 @@ void canny_non_max_driver(
 
     if (acc->status == ACC_STATUS_IDLE) {
         // DMA transfer for hypotenuse
-        dcache_flush(hypo_addr, data_size);
-
         *DmaRdAddr  = hypo_addr;
         *DmaWrAddr  = hypo_spm_addr;
         *DmaCopyLen = data_size;
@@ -86,8 +53,6 @@ void canny_non_max_driver(
     }
     else if (acc->status == ACC_STATUS_DMA_ARG1) {
         // DMA transfer for theta
-        dcache_flush(theta_addr, data_size);
-
         *DmaRdAddr  = theta_addr;
         *DmaWrAddr  = theta_spm_addr;
         *DmaCopyLen = data_size;
@@ -108,8 +73,6 @@ void canny_non_max_driver(
     }
     else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output
-        dcache_flush(output_addr, data_size);
-
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
         *DmaCopyLen = data_size;
@@ -120,6 +83,10 @@ void canny_non_max_driver(
 
         acc->status = ACC_STATUS_DMA_OUT;
     }
+
+#ifdef ENABLE_STATS
+    m5_timer_stop(7);
+#endif
 }
 
 void convolution_driver(
@@ -128,6 +95,10 @@ void convolution_driver(
         uint32_t kern_width, uint8_t mod_and_floor, uint32_t output_addr,
         uint32_t input_spm_addr, uint32_t output_spm_addr,
         volatile acc_state_t *acc) {
+#ifdef ENABLE_STATS
+    m5_timer_start(7);
+#endif
+
     // accelerator offsets
     const uint32_t offset_dma = CONVOLUTION0_DMA - CONVOLUTION0_BASE;
     const uint32_t offset_kernel_spm =
@@ -163,8 +134,6 @@ void convolution_driver(
 
         // DMA transfer for input data
         if (input_addr != 0) {
-            dcache_flush(input_addr, data_size);
-
             *DmaRdAddr  = input_addr;
             *DmaWrAddr  = input_spm_addr;
             *DmaCopyLen = data_size;
@@ -174,6 +143,9 @@ void convolution_driver(
             dma_size[ACC_CONVOLUTION][device_id] = data_size;
 
             // Remain in this state only if we actually perform a DMA transfer
+#ifdef ENABLE_STATS
+            m5_timer_stop(7);
+#endif
             return;
         }
     }
@@ -181,7 +153,6 @@ void convolution_driver(
     if (acc->status == ACC_STATUS_DMA_ARG1) {
         // DMA transfer for kernel
         uint32_t data_size = kern_height * kern_width * 4;
-        dcache_flush(kernel_addr, data_size);
 
         *DmaRdAddr  = kernel_addr;
         *DmaWrAddr  = kernel_spm_addr;
@@ -209,7 +180,6 @@ void convolution_driver(
     else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output data
         uint32_t data_size = img_height * img_width * 4;
-        dcache_flush(output_addr, data_size);
 
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
@@ -221,6 +191,10 @@ void convolution_driver(
 
         acc->status = ACC_STATUS_DMA_OUT;
     }
+
+#ifdef ENABLE_STATS
+    m5_timer_stop(7);
+#endif
 }
 
 void edge_tracking_driver(
@@ -228,6 +202,10 @@ void edge_tracking_driver(
         uint32_t input_addr, float thr_weak_ratio, float thr_strong_ratio,
         uint32_t output_addr, uint32_t output_spm_addr,
         volatile acc_state_t *acc) {
+#ifdef ENABLE_STATS
+    m5_timer_start(7);
+#endif
+
     // accelerator offsets
     const uint32_t offset_dma = EDGE_TRACKING0_DMA - EDGE_TRACKING0_BASE;
     const uint32_t offset_input_spm =
@@ -259,7 +237,6 @@ void edge_tracking_driver(
     if (acc->status == ACC_STATUS_IDLE) {
         // DMA transfer for input data
         uint32_t data_size = num_elems * 4;
-        dcache_flush(input_addr, data_size);
 
         *DmaRdAddr  = input_addr;
         *DmaWrAddr  = input_spm_addr;
@@ -284,8 +261,6 @@ void edge_tracking_driver(
     }
     else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output data
-        dcache_flush(output_addr, num_elems);
-
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
         *DmaCopyLen = num_elems;
@@ -296,6 +271,10 @@ void edge_tracking_driver(
 
         acc->status = ACC_STATUS_DMA_OUT;
     }
+
+#ifdef ENABLE_STATS
+    m5_timer_stop(7);
+#endif
 }
 
 void elem_matrix_driver(
@@ -304,6 +283,10 @@ void elem_matrix_driver(
         uint8_t op, uint8_t do_one_minus, uint32_t output_addr,
         uint32_t arg1_spm_addr, uint32_t arg2_spm_addr,
         uint32_t output_spm_addr, volatile acc_state_t *acc) {
+#ifdef ENABLE_STATS
+    m5_timer_start(7);
+#endif
+
     // accelerator offsets
     const uint32_t offset_dma = ELEM_MATRIX0_DMA - ELEM_MATRIX0_BASE;
     const uint32_t offset_mmr = ELEM_MATRIX0_MMR - ELEM_MATRIX0_BASE;
@@ -336,8 +319,6 @@ void elem_matrix_driver(
 
         // DMA transfer for arg1
         if (arg1_addr != 0) {
-            dcache_flush(arg1_addr, data_size);
-
             *DmaRdAddr  = arg1_addr;
             *DmaWrAddr  = arg1_spm_addr;
             *DmaCopyLen = data_size;
@@ -347,6 +328,9 @@ void elem_matrix_driver(
             dma_size[ACC_ELEM_MATRIX][device_id] = data_size;
 
             // Remain in this state only if we actually perform a DMA transfer
+#ifdef ENABLE_STATS
+            m5_timer_stop(7);
+#endif
             return;
         }
     }
@@ -360,8 +344,6 @@ void elem_matrix_driver(
                 data_size = 4;
             }
 
-            dcache_flush(arg2_addr, data_size);
-
             *DmaRdAddr = arg2_addr;
             *DmaWrAddr = arg2_spm_addr;
             *DmaCopyLen = data_size;
@@ -371,6 +353,9 @@ void elem_matrix_driver(
             dma_size[ACC_ELEM_MATRIX][device_id] = data_size;
 
             // Remain in this state only if we actually perform a DMA transfer
+#ifdef ENABLE_STATS
+            m5_timer_stop(7);
+#endif
             return;
         }
     }
@@ -390,8 +375,6 @@ void elem_matrix_driver(
     }
     else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output
-        dcache_flush(output_addr, data_size);
-
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
         *DmaCopyLen = data_size;
@@ -402,12 +385,20 @@ void elem_matrix_driver(
 
         acc->status = ACC_STATUS_DMA_OUT;
     }
+
+#ifdef ENABLE_STATS
+    m5_timer_stop(7);
+#endif
 }
 
 void grayscale_driver(
         int device_id, uint32_t img_height, uint32_t img_width,
         uint32_t input_addr, uint32_t output_addr, uint32_t output_spm_addr,
         volatile acc_state_t *acc) {
+#ifdef ENABLE_STATS
+    m5_timer_start(7);
+#endif
+
     // accelerator offsets
     const uint32_t offset_dma = GRAYSCALE0_DMA - GRAYSCALE0_BASE;
     const uint32_t offset_input_spm = GRAYSCALE0_INPUT_SPM - GRAYSCALE0_BASE;
@@ -435,7 +426,6 @@ void grayscale_driver(
     if (acc->status == ACC_STATUS_IDLE) {
         // DMA transfer for input data
         uint32_t data_size = num_elems * 3;
-        dcache_flush(input_addr, data_size);
 
         *DmaRdAddr  = input_addr;
         *DmaWrAddr  = input_spm_addr;
@@ -458,7 +448,6 @@ void grayscale_driver(
     else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output data
         uint32_t data_size = num_elems * 4;
-        dcache_flush(output_addr, data_size);
 
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
@@ -470,12 +459,20 @@ void grayscale_driver(
 
         acc->status = ACC_STATUS_DMA_OUT;
     }
+
+#ifdef ENABLE_STATS
+    m5_timer_stop(7);
+#endif
 }
 
 void harris_non_max_driver(
         int device_id, uint32_t img_height, uint32_t img_width,
         uint32_t input_addr, uint32_t output_addr, uint32_t output_spm_addr,
         volatile acc_state_t *acc) {
+#ifdef ENABLE_STATS
+    m5_timer_start(7);
+#endif
+
     // accelerator offsets
     const uint32_t offset_dma = HNM0_DMA - HNM0_BASE;
     const uint32_t offset_input_spm = HNM0_INPUT_SPM - HNM0_BASE;
@@ -502,7 +499,6 @@ void harris_non_max_driver(
     if (acc->status == ACC_STATUS_IDLE) {
         // DMA transfer for input data
         uint32_t data_size = img_height * img_width * 4;
-        dcache_flush(input_addr, data_size);
 
         *DmaRdAddr  = input_addr;
         *DmaWrAddr  = input_spm_addr;
@@ -526,7 +522,6 @@ void harris_non_max_driver(
     else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output data
         uint32_t data_size = img_height * img_width;
-        dcache_flush(output_addr, data_size);
 
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
@@ -538,12 +533,20 @@ void harris_non_max_driver(
 
         acc->status = ACC_STATUS_DMA_OUT;
     }
+
+#ifdef ENABLE_STATS
+    m5_timer_stop(7);
+#endif
 }
 
 void isp_driver(int device_id,
         uint32_t img_height, uint32_t img_width, uint32_t input_addr,
         uint32_t output_addr, uint32_t output_spm_addr,
         volatile acc_state_t *acc) {
+#ifdef ENABLE_STATS
+    m5_timer_start(7);
+#endif
+
     // accelerator offsets
     const uint32_t offset_dma = ISP0_DMA - ISP0_BASE;
     const uint32_t offset_input_spm = ISP0_INPUT_SPM - ISP0_BASE;
@@ -570,7 +573,6 @@ void isp_driver(int device_id,
     if (acc->status == ACC_STATUS_IDLE) {
         // DMA transfer for input data
         uint32_t data_size = (img_height + 2) * (img_width + 2);
-        dcache_flush(input_addr, data_size);
 
         *DmaRdAddr  = input_addr;
         *DmaWrAddr  = input_spm_addr;
@@ -594,7 +596,6 @@ void isp_driver(int device_id,
     else if (acc->status == ACC_STATUS_RUNNING) {
         // DMA transfer for output data
         uint32_t data_size = img_height * img_width * 3;
-        dcache_flush(output_addr, data_size);
 
         *DmaRdAddr  = output_spm_addr;
         *DmaWrAddr  = output_addr;
@@ -606,4 +607,8 @@ void isp_driver(int device_id,
 
         acc->status = ACC_STATUS_DMA_OUT;
     }
+
+#ifdef ENABLE_STATS
+    m5_timer_stop(7);
+#endif
 }

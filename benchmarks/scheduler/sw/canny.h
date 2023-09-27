@@ -84,6 +84,9 @@ void canny_process_raw(canny_data_t *img, task_struct_t **nodes, int rep_count)
 
     canny_retval[0][0] = task;
     nodes[rep_count * CANNY_NUM_NODES] = task;
+
+    dcache_flush((uint32_t) img->raw_img, (IMG_HEIGHT+2) * (IMG_WIDTH+2));
+    dcache_flush((uint32_t) img->isp_img, NUM_PIXELS * 3);
 }
 
 void canny_convert_to_grayscale(canny_data_t *img, task_struct_t **nodes,
@@ -125,6 +128,8 @@ void canny_convert_to_grayscale(canny_data_t *img, task_struct_t **nodes,
 #endif
     canny_retval[1][0] = task;
     nodes[(rep_count * CANNY_NUM_NODES) + 1] = task;
+
+    dcache_flush((uint32_t) img->grayscale_img, NUM_PIXELS * 4);
 }
 
 void canny_noise_reduction(canny_data_t *img, task_struct_t **nodes,
@@ -179,6 +184,9 @@ void canny_noise_reduction(canny_data_t *img, task_struct_t **nodes,
     canny_retval[1][0]->children[0] = task;
     canny_retval[2][0] = task;
     nodes[(rep_count * CANNY_NUM_NODES) + 2] = task;
+
+    dcache_flush((uint32_t) (img->gauss_kernel), 100);
+    dcache_flush((uint32_t) (img->denoise_img),  NUM_PIXELS * 4);
 }
 
 void canny_gradient_calculation(canny_data_t *img, task_struct_t **nodes,
@@ -341,6 +349,16 @@ void canny_gradient_calculation(canny_data_t *img, task_struct_t **nodes,
     canny_retval[2][0]->children[1] = task[1];
     canny_retval[3][0] = task[3];
     canny_retval[3][1] = task[6];
+
+    dcache_flush((uint32_t) (img->K_x)      ,36);
+    dcache_flush((uint32_t) (img->K_y)      ,36);
+    dcache_flush((uint32_t) (img->I_x)      ,size);
+    dcache_flush((uint32_t) (img->I_y)      ,size);
+    dcache_flush((uint32_t) (img->I_xx)     ,size);
+    dcache_flush((uint32_t) (img->I_yy)     ,size);
+    dcache_flush((uint32_t) (img->I_xx_yy)  ,size);
+    dcache_flush((uint32_t) (img->gradient) ,size);
+    dcache_flush((uint32_t) (img->theta)    ,size);
 }
 
 void canny_non_max_suppression(canny_data_t *img, task_struct_t **nodes,
@@ -376,6 +394,8 @@ void canny_non_max_suppression(canny_data_t *img, task_struct_t **nodes,
     canny_retval[3][1]->children[0] = task;
     canny_retval[4][0] = task;
     nodes[(rep_count * CANNY_NUM_NODES) + 10] = task;
+
+    dcache_flush((uint32_t) (img->max_values), NUM_PIXELS * 4);
 }
 
 void canny_thr_and_edge_tracking(canny_data_t *img, task_struct_t **nodes,
@@ -413,6 +433,8 @@ void canny_thr_and_edge_tracking(canny_data_t *img, task_struct_t **nodes,
 
     canny_retval[4][0]->children[0] = task;
     nodes[(rep_count * CANNY_NUM_NODES) + 11] = task;
+
+    dcache_flush((uint32_t) (img->final_img), NUM_PIXELS);
 }
 
 void init_canny()
@@ -440,6 +462,8 @@ void init_canny()
     for (int i = 0; i < (NUM_PIXELS * 3); i++) {
         canny_isp_output[i] = i % 256;
     }
+
+    dcache_flush((uint32_t) (canny_isp_output), NUM_PIXELS * 3);
 #endif
 }
 

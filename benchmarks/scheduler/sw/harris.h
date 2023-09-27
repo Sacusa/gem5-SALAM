@@ -89,6 +89,9 @@ void harris_process_raw(harris_data_t *img, task_struct_t **nodes,
 
     harris_retval[0][0] = task;
     nodes[rep_count * HARRIS_NUM_NODES] = task;
+
+    dcache_flush((uint32_t) img->raw_img, (IMG_HEIGHT+2) * (IMG_WIDTH+2));
+    dcache_flush((uint32_t) img->isp_img, NUM_PIXELS * 3);
 }
 
 void harris_convert_to_grayscale(harris_data_t *img, task_struct_t **nodes,
@@ -130,6 +133,8 @@ void harris_convert_to_grayscale(harris_data_t *img, task_struct_t **nodes,
 #endif
     harris_retval[1][0] = task;
     nodes[(rep_count * HARRIS_NUM_NODES) + 1] = task;
+
+    dcache_flush((uint32_t) img->grayscale_img, NUM_PIXELS * 4);
 }
 
 void harris_spatial_derivative_calc(harris_data_t *img, task_struct_t **nodes,
@@ -191,6 +196,11 @@ void harris_spatial_derivative_calc(harris_data_t *img, task_struct_t **nodes,
         harris_retval[2][i] = task[i];
         nodes[(rep_count * HARRIS_NUM_NODES) + i + 2] = task[i];
     }
+
+    dcache_flush((uint32_t) img->K_x, 36);
+    dcache_flush((uint32_t) img->K_y, 36);
+    dcache_flush((uint32_t) img->I_x, size);
+    dcache_flush((uint32_t) img->I_y, size);
 }
 
 void harris_structure_tensor_setup(harris_data_t *img, task_struct_t **nodes,
@@ -347,6 +357,14 @@ void harris_structure_tensor_setup(harris_data_t *img, task_struct_t **nodes,
     harris_retval[2][0]->children[1] = task[1];
     harris_retval[2][1]->children[0] = task[1];
     harris_retval[2][1]->children[1] = task[2];
+
+    dcache_flush((uint32_t) img->I_xx,         size);
+    dcache_flush((uint32_t) img->I_xy,         size);
+    dcache_flush((uint32_t) img->I_yy,         size);
+    dcache_flush((uint32_t) img->I_xx_g,       size);
+    dcache_flush((uint32_t) img->I_xy_g,       size);
+    dcache_flush((uint32_t) img->I_yy_g,       size);
+    dcache_flush((uint32_t) img->gauss_kernel, 100);
 }
 
 void harris_response_calc(harris_data_t *img, task_struct_t **nodes,
@@ -499,6 +517,15 @@ void harris_response_calc(harris_data_t *img, task_struct_t **nodes,
     harris_retval[3][2]->children[0] = task[0];
     harris_retval[3][2]->children[1] = task[2];
     harris_retval[4][0] = task[6];
+
+    dcache_flush((uint32_t) img->detA1,           size);
+    dcache_flush((uint32_t) img->detA2,           size);
+    dcache_flush((uint32_t) img->detA,            size);
+    dcache_flush((uint32_t) img->traceA,          size);
+    dcache_flush((uint32_t) img->k,               4);
+    dcache_flush((uint32_t) img->hr1,             size);
+    dcache_flush((uint32_t) img->hr2,             size);
+    dcache_flush((uint32_t) img->harris_response, size);
 }
 
 void harris_non_max_suppression(harris_data_t *img, task_struct_t **nodes,
@@ -536,6 +563,8 @@ void harris_non_max_suppression(harris_data_t *img, task_struct_t **nodes,
 
     harris_retval[4][0]->children[0] = task;
     nodes[(rep_count * HARRIS_NUM_NODES) + 17] = task;
+
+    dcache_flush((uint32_t) img->final_img, NUM_PIXELS);
 }
 
 void init_harris()
@@ -567,6 +596,8 @@ void init_harris()
     for (int i = 0; i < (NUM_PIXELS * 3); i++) {
         harris_isp_output[i] = i % 256;
     }
+
+    dcache_flush((uint32_t) harris_isp_output, NUM_PIXELS * 3)
 #endif
 }
 

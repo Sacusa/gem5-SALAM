@@ -80,6 +80,52 @@ volatile uint32_t stat_node_deadlines_met = 0;
 volatile float stat_predicted_compute_time = 0;
 #endif
 
+void dcache_flush(uint32_t addr, uint32_t num_bytes)
+{
+#ifdef ENABLE_STATS
+    m5_timer_start(8);
+#endif
+
+    // only flush lines in the cacheable region
+    // we assume here that the data would NOT be spread across cacheable and
+    // uncacheable regions, so it is okay to just check the start address
+    if (addr < UNCACHEABLE_END) {
+#ifdef ENABLE_STATS
+        m5_timer_stop(8);
+#endif
+        return;
+    }
+
+    uint32_t num_lines = num_bytes / CACHELINE_SIZE;
+    if (num_bytes % CACHELINE_SIZE) {
+        num_lines += 1;
+    }
+
+    for (int i = 0; i < num_lines; i++) {
+        // Write-back the line if it is dirty
+        __asm__ ("mcr  p15, 0, %[addr], c7, c14, 1"
+                : /* no outputs */
+                : [addr] "r" (addr + (i * CACHELINE_SIZE))
+                : /* no clobbers */);
+
+        // Invalidate the cache line
+        __asm__ ("mcr  p15, 0, %[addr], c7, c6, 1"
+                : /* no outputs */
+                : [addr] "r" (addr + (i * CACHELINE_SIZE))
+                : /* no clobbers */);
+    }
+
+    // Data Memory Barrier (DMB)
+    __asm__ ("mcr  p15, 0, r0, c7, c10, 5"
+            : /* no outputs */
+            : /* no inputs */
+            : /* no clobbers */);
+
+#ifdef ENABLE_STATS
+    m5_timer_stop(8);
+#endif
+}
+
 inline void assertf(bool cond, const char * format, ...)
 {
     if (!cond) {

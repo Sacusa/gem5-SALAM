@@ -70,6 +70,9 @@ void lstm_init_cell_data(lstm_cell_data_t *cell, task_struct_t **nodes,
                 CACHELINE_SIZE);
         cell->hidden_state_input = (float*) get_memory_aligned(size,
                 CACHELINE_SIZE);
+
+        dcache_flush((uint32_t) cell->cell_state_input,   size);
+        dcache_flush((uint32_t) cell->hidden_state_input, size);
     }
     else {
         cell->cell_state_input = (float*)
@@ -505,6 +508,15 @@ void init_lstm()
     lstm_task_65536->output_size = 65536;
     lstm_task_65536->status = REQ_STATUS_COMPLETED;
 
+    dcache_flush((uint32_t) lstm_fg_weight,  size);
+    dcache_flush((uint32_t) lstm_fg_bias,    size);
+    dcache_flush((uint32_t) lstm_ig_weight1, size);
+    dcache_flush((uint32_t) lstm_ig_bias1,   size);
+    dcache_flush((uint32_t) lstm_ig_weight2, size);
+    dcache_flush((uint32_t) lstm_ig_bias2,   size);
+    dcache_flush((uint32_t) lstm_og_weight,  size);
+    dcache_flush((uint32_t) lstm_og_bias,    size);
+
 #ifdef VERIFY
     // the weight matter only if we are verifying the output
     for (int i = 0; i < NUM_PIXELS; i++) {
@@ -552,6 +564,8 @@ void add_lstm_dag(task_struct_t ***nodes, int *num_nodes, int num_frames)
                 lstm_output_gate(cell, nodes[i], node_index + 13,
                         j == (LSTM_SEQ_LENGTH - 1), earliest_start, rep,
                         rep == (NUM_REPEATS - 1));
+
+                dcache_flush((uint32_t) cell, sizeof(lstm_cell_data_t));
 
                 earliest_start += cell_runtime;
             }

@@ -63,6 +63,8 @@ void gru_cell_init(gru_cell_data_t *cell, task_struct_t **nodes,
     if (is_first) {
         cell->hidden_state_input = (float*) get_memory_aligned(NUM_PIXELS * 4,
                 CACHELINE_SIZE);
+
+        dcache_flush((uint32_t) (cell->hidden_state_input), NUM_PIXELS * 4);
     }
     else {
         cell->hidden_state_input = (float*)
@@ -470,6 +472,13 @@ void init_gru()
         gru_rg_bias2[i]   = ((i % IMG_WIDTH) + 2) / 100.0;
     }
 #endif
+
+    dcache_flush((uint32_t) gru_ug_weight  ,size);
+    dcache_flush((uint32_t) gru_ug_bias    ,size);
+    dcache_flush((uint32_t) gru_rg_weight1 ,size);
+    dcache_flush((uint32_t) gru_rg_bias1   ,size);
+    dcache_flush((uint32_t) gru_rg_weight2 ,size);
+    dcache_flush((uint32_t) gru_rg_bias2   ,size);
 }
 
 void add_gru_dag(task_struct_t ***nodes, int *num_nodes, int num_frames)
@@ -501,6 +510,8 @@ void add_gru_dag(task_struct_t ***nodes, int *num_nodes, int num_frames)
                 gru_cell_output(cell, nodes[i], node_index + 13,
                         j == (GRU_SEQ_LENGTH - 1), earliest_start, rep,
                         rep == (NUM_REPEATS - 1));
+
+                dcache_flush((uint32_t) cell, sizeof(gru_cell_data_t));
 
                 earliest_start += cell_runtime;
             }

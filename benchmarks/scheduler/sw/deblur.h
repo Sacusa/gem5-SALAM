@@ -58,6 +58,11 @@ void deblur_init_img(deblur_data_t *img)
     for (int i = 0; i < NUM_PIXELS; i++) {
         img->estimate[i] = 0.5;
     }
+
+    dcache_flush((uint32_t) img->conv_psf     , size);
+    dcache_flush((uint32_t) img->div_ut_psf   , size);
+    dcache_flush((uint32_t) img->conv_psf_flip, size);
+    dcache_flush((uint32_t) img->estimate     , size);
 }
 
 void deblur_process_raw(deblur_data_t *img, task_struct_t **nodes,
@@ -99,6 +104,9 @@ void deblur_process_raw(deblur_data_t *img, task_struct_t **nodes,
 
     deblur_retval[0] = task;
     nodes[rep_count * DEBLUR_NUM_NODES] = task;
+
+    dcache_flush((uint32_t) img->raw_img, (IMG_HEIGHT+2) * (IMG_WIDTH+2));
+    dcache_flush((uint32_t) img->isp_img, NUM_PIXELS * 3);
 }
 
 void deblur_convert_to_grayscale(deblur_data_t *img, task_struct_t **nodes,
@@ -139,6 +147,8 @@ void deblur_convert_to_grayscale(deblur_data_t *img, task_struct_t **nodes,
 #endif
     deblur_retval[1] = task;
     nodes[(rep_count * DEBLUR_NUM_NODES) + 1] = task;
+
+    dcache_flush((uint32_t) img->input_img, NUM_PIXELS * 4);
 }
 
 void deblur_run_conv_psf(deblur_data_t *img, task_struct_t **nodes,
@@ -355,6 +365,9 @@ void init_deblur()
     deblur_task_65536->output_size = 65536;
     deblur_task_65536->status = REQ_STATUS_COMPLETED;
 
+    dcache_flush((uint32_t) deblur_psf     , 100);
+    dcache_flush((uint32_t) deblur_psf_flip, 100);
+
 #ifdef VERIFY
     deblur_task_49152 = (task_struct_t*) get_memory(sizeof(task_struct_t));
     deblur_task_49152->output_size = 49152;
@@ -366,6 +379,8 @@ void init_deblur()
     for (int i = 0; i < (NUM_PIXELS * 3); i++) {
         deblur_isp_output[i] = i % 256;
     }
+
+    dcache_flush((uint32_t) deblur_isp_output, NUM_PIXELS * 3);
 #endif
 }
 
