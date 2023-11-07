@@ -33,7 +33,7 @@
 #endif
 //#define VERIFY
 //#define PRINT_SCHEDULE
-#define ENABLE_FORWARDING
+#define ENABLE_FORWARDING // DOES NOT WORK
 
 //#define NUM_REPEATS 1
 #define NUM_REPEATS 10
@@ -114,7 +114,8 @@ enum scheduling_policy_t {
     LL,
     LAX,
     ELF,
-    ELFD
+    ELFD,
+    HetSched
 };
 
 enum mem_predictor_t {
@@ -141,7 +142,10 @@ enum m5_stat_t {
     PREDICTED_COMPUTE_TIME,
     PREDICTED_MEMORY_TIME,
     PREDICTED_MEMORY_TIME_PER_BYTE,
-    PREDICTED_MEMORY_SIZE
+    PREDICTED_MEMORY_SIZE,
+    FINISHED_DAG_ITERS,
+    DRAM_DATA_MOVEMENT,
+    SPAD_DATA_MOVEMENT
 };
 
 typedef struct task_struct_t task_struct_t;
@@ -172,14 +176,6 @@ struct task_struct_t {
     uint32_t node_deadline;
 
     /**
-     * Scheduler sets the following fields
-     */
-    uint8_t producer_forward[MAX_ACC_ARGS]; // bit vector with value set to 1
-                                            // if the corresponding entry in
-                                            // arg_producer will forward data
-    uint8_t producer_data_ready[MAX_ACC_ARGS];
-
-    /**
      * The following fields are for use by the runtime
      */
     uint16_t dag_id;
@@ -188,6 +184,7 @@ struct task_struct_t {
     req_status_t status;
     int32_t laxity;
     bool priority_escalated;
+    uint32_t sd;  // used by HetSched
 
     uint16_t completed_parents;
     uint8_t producer_spm_part[MAX_ACC_ARGS];    // partition of the producer's
@@ -225,15 +222,18 @@ struct acc_state_t {
      */
     volatile uint8_t *flags;
     volatile uint8_t *dma;
-    uint32_t spm_part[MAX_ACC_SPM_PARTS];
+    uint32_t spm_addr[MAX_ACC_SPM_PARTS];
 
     /**
      * Bookkeeping structures
      */
     uint8_t status;
     volatile task_struct_t *running_req;
+
+    uint32_t curr_spm_in_addr[MAX_ACC_ARGS];
     uint8_t curr_spm_out_part;
-    uint8_t spm_pending_reads[MAX_ACC_SPM_PARTS];
+    uint8_t spm_ongoing_reads[MAX_ACC_SPM_PARTS];
+    volatile task_struct_t *spm_results[MAX_ACC_SPM_PARTS];
 };
 
 /**

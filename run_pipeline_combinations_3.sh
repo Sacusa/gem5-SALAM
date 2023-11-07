@@ -1,7 +1,8 @@
 #!/bin/bash
 
-declare -a policies=("FCFS" "GEDF_D" "GEDF_N" "LAX" "ELF")
-max_concurrent_policies=5
+declare -a policies=("FCFS" "GEDF_D" "GEDF_N" "LAX" "HetSched" "ELF")
+#declare -a policies=("LL" "ELFD")
+max_concurrent_policies=2
 num_concurrent_policies=0
 
 for policy in "${policies[@]}"
@@ -23,6 +24,7 @@ do
     then
         echo "Waiting..."
         wait
+        num_concurrent_policies=0
     fi
 done
 

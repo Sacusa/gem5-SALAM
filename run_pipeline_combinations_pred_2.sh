@@ -1,9 +1,7 @@
 #!/bin/bash
 
-#declare -a policies=("LAX" "ELF")
-declare -a policies=("ELF")
-#declare -a predictors=("NO_PRED" "AVERAGE_15" "EWMA_0.25")
-declare -a predictors=("NO_PRED")
+declare -a policies=("LAX" "ELF")
+declare -a predictors=("LAST_VAL" "AVERAGE_15" "EWMA_0.25")
 max_concurrent_policies=5
 num_concurrent_policies=0
 dm_pred="false"
@@ -29,6 +27,7 @@ do
         then
             echo "Waiting..."
             wait
+            num_concurrent_policies=0
         fi
     done
 done

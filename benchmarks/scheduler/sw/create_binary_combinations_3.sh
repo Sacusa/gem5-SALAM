@@ -1,4 +1,4 @@
-declare -a policies=("FCFS" "GEDF_D" "GEDF_N" "LAX" "ELF")
+declare -a policies=("FCFS" "GEDF_D" "GEDF_N" "LL" "LAX" "HetSched" "ELF" "ELFD")
 
 for policy in "${policies[@]}"
 do

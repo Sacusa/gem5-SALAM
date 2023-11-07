@@ -86,6 +86,7 @@ void harris_process_raw(harris_data_t *img, task_struct_t **nodes,
     task->compute_time = RUNTIME_ISP;
     task->dag_deadline = (rep_count + 1) * HARRIS_DEADLINE;
     task->node_deadline = (rep_count * HARRIS_DEADLINE) + 14026;
+    task->sd = (50.0 / 2691) * HARRIS_DEADLINE;
 
     harris_retval[0][0] = task;
     nodes[rep_count * HARRIS_NUM_NODES] = task;
@@ -127,6 +128,7 @@ void harris_convert_to_grayscale(harris_data_t *img, task_struct_t **nodes,
     task->compute_time = RUNTIME_GRAYSCALE;
     task->dag_deadline = (rep_count + 1) * HARRIS_DEADLINE;
     task->node_deadline = (rep_count * HARRIS_DEADLINE) + 14063;
+    task->sd = (37.0 / 2691) * HARRIS_DEADLINE;
 
 #ifndef VERIFY
     harris_retval[0][0]->children[0] = task;
@@ -191,6 +193,7 @@ void harris_spatial_derivative_calc(harris_data_t *img, task_struct_t **nodes,
         task[i]->compute_time = RUNTIME_CONVOLUTION_3;
         task[i]->dag_deadline = (rep_count + 1) * HARRIS_DEADLINE;
         task[i]->node_deadline = (rep_count * HARRIS_DEADLINE) + 14731;
+        task[i]->sd = (668.0 / 2691) * HARRIS_DEADLINE;
 
         harris_retval[1][0]->children[i] = task[i];
         harris_retval[2][i] = task[i];
@@ -314,6 +317,7 @@ void harris_structure_tensor_setup(harris_data_t *img, task_struct_t **nodes,
     task[0]->output_size = 65536;
     task[0]->compute_time = RUNTIME_ELEM_MATRIX_SQR;
     task[0]->node_deadline = (rep_count * HARRIS_DEADLINE) + 14771;
+    task[0]->sd = (40.0 / 2691) * HARRIS_DEADLINE;
 
     task[1]->num_children = 1;
     task[1]->children[0] = task[4];
@@ -323,6 +327,7 @@ void harris_structure_tensor_setup(harris_data_t *img, task_struct_t **nodes,
     task[1]->output_size = 65536;
     task[1]->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task[1]->node_deadline = (rep_count * HARRIS_DEADLINE) + 14812;
+    task[1]->sd = (42.0 / 1715) * ((2691.0 - 937) / 2691) * HARRIS_DEADLINE;
 
     task[2]->num_children = 1;
     task[2]->children[0] = task[5];
@@ -331,6 +336,7 @@ void harris_structure_tensor_setup(harris_data_t *img, task_struct_t **nodes,
     task[2]->output_size = 65536;
     task[2]->compute_time = RUNTIME_ELEM_MATRIX_SQR;
     task[2]->node_deadline = (rep_count * HARRIS_DEADLINE) + 14771;
+    task[2]->sd = (40.0 / 2691) * HARRIS_DEADLINE;
 
     task[3]->num_children = 2;
     task[3]->producer[0] = task[0];
@@ -338,6 +344,7 @@ void harris_structure_tensor_setup(harris_data_t *img, task_struct_t **nodes,
     task[3]->output_size = 65536;
     task[3]->compute_time = RUNTIME_CONVOLUTION_5;
     task[3]->node_deadline = (rep_count * HARRIS_DEADLINE) + 16347;
+    task[3]->sd = (1576.0 / 2691) * HARRIS_DEADLINE;
 
     task[4]->num_children = 1;
     task[4]->producer[0] = task[1];
@@ -345,6 +352,7 @@ void harris_structure_tensor_setup(harris_data_t *img, task_struct_t **nodes,
     task[4]->output_size = 65536;
     task[4]->compute_time = RUNTIME_CONVOLUTION_5;
     task[4]->node_deadline = (rep_count * HARRIS_DEADLINE) + 16389;
+    task[4]->sd = (1577.0 / 1715) * ((2691.0 - 937) / 2691) * HARRIS_DEADLINE;
 
     task[5]->num_children = 2;
     task[5]->producer[0] = task[2];
@@ -352,6 +360,7 @@ void harris_structure_tensor_setup(harris_data_t *img, task_struct_t **nodes,
     task[5]->output_size = 65536;
     task[5]->compute_time = RUNTIME_CONVOLUTION_5;
     task[5]->node_deadline = (rep_count * HARRIS_DEADLINE) + 16347;
+    task[5]->sd = (1576.0 / 2691) * HARRIS_DEADLINE;
 
     harris_retval[2][0]->children[0] = task[0];
     harris_retval[2][0]->children[1] = task[1];
@@ -458,6 +467,7 @@ void harris_response_calc(harris_data_t *img, task_struct_t **nodes,
     task[0]->output_size = 65536;
     task[0]->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task[0]->node_deadline = (rep_count * HARRIS_DEADLINE) + 16428;
+    task[0]->sd = (42.0 / 99) * ((2691.0 - 2553) / 2691) * HARRIS_DEADLINE;
 
     task[1]->num_children = 1;
     task[1]->children[0] = task[3];
@@ -466,6 +476,7 @@ void harris_response_calc(harris_data_t *img, task_struct_t **nodes,
     task[1]->output_size = 65536;
     task[1]->compute_time = RUNTIME_ELEM_MATRIX_SQR;
     task[1]->node_deadline = (rep_count * HARRIS_DEADLINE) + 16428;
+    task[1]->sd = (39.0 / 1715) * ((2691.0 - 937) / 2691) * HARRIS_DEADLINE;
 
     task[2]->num_children = 1;
     task[2]->children[0] = task[4];
@@ -475,6 +486,7 @@ void harris_response_calc(harris_data_t *img, task_struct_t **nodes,
     task[2]->output_size = 65536;
     task[2]->compute_time = RUNTIME_ELEM_MATRIX_ADD;
     task[2]->node_deadline = (rep_count * HARRIS_DEADLINE) + 16404;
+    task[2]->sd = (57.0 / 2691) * HARRIS_DEADLINE;
 
     task[3]->num_children = 1;
     task[3]->children[0] = task[6];
@@ -484,6 +496,7 @@ void harris_response_calc(harris_data_t *img, task_struct_t **nodes,
     task[3]->output_size = 65536;
     task[3]->compute_time = RUNTIME_ELEM_MATRIX_SUB;
     task[3]->node_deadline = (rep_count * HARRIS_DEADLINE) + 16485;
+    task[3]->sd = (57.0 / 99) * ((2691.0 - 2553) / 2691) * HARRIS_DEADLINE;
 
     task[4]->num_children = 1;
     task[4]->children[0] = task[5];
@@ -492,6 +505,7 @@ void harris_response_calc(harris_data_t *img, task_struct_t **nodes,
     task[4]->output_size = 65536;
     task[4]->compute_time = RUNTIME_ELEM_MATRIX_SQR;
     task[4]->node_deadline = (rep_count * HARRIS_DEADLINE) + 16443;
+    task[4]->sd = (39.0 / 2691) * HARRIS_DEADLINE;
 
     task[5]->num_children = 1;
     task[5]->children[0] = task[6];
@@ -502,6 +516,7 @@ void harris_response_calc(harris_data_t *img, task_struct_t **nodes,
     task[5]->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task[5]->completed_parents = 1;
     task[5]->node_deadline = (rep_count * HARRIS_DEADLINE) + 16485;
+    task[5]->sd = (42.0 / 2691) * HARRIS_DEADLINE;
 
     task[6]->num_children = 1;
     task[6]->num_parents = 2;
@@ -510,6 +525,7 @@ void harris_response_calc(harris_data_t *img, task_struct_t **nodes,
     task[6]->output_size = 65536;
     task[6]->compute_time = RUNTIME_ELEM_MATRIX_SUB;
     task[6]->node_deadline = (rep_count * HARRIS_DEADLINE) + 16542;
+    task[6]->sd = (57.0 / 2691) * HARRIS_DEADLINE;
 
     harris_retval[3][0]->children[0] = task[0];
     harris_retval[3][0]->children[1] = task[2];
@@ -560,6 +576,7 @@ void harris_non_max_suppression(harris_data_t *img, task_struct_t **nodes,
     task->compute_time = RUNTIME_HARRIS_NON_MAX;
     task->dag_deadline = (rep_count + 1) * HARRIS_DEADLINE;
     task->node_deadline = (rep_count * HARRIS_DEADLINE) + 16667;
+    task->sd = (125.0 / 2691) * HARRIS_DEADLINE;
 
     harris_retval[4][0]->children[0] = task;
     nodes[(rep_count * HARRIS_NUM_NODES) + 17] = task;

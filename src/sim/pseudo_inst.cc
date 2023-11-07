@@ -764,6 +764,9 @@ m5printstat(ThreadContext *tc, uint32_t stat, uint32_t value)
         PREDICTED_MEMORY_TIME,
         PREDICTED_MEMORY_TIME_PER_BYTE,
         PREDICTED_MEMORY_SIZE,
+        FINISHED_DAG_ITERS,
+        DRAM_DATA_MOVEMENT,
+        SPAD_DATA_MOVEMENT,
         NUM_STATS
     };
 
@@ -805,15 +808,17 @@ m5printstat(ThreadContext *tc, uint32_t stat, uint32_t value)
             break;
 
         case DAG_EXEC_TIME:
-            DPRINTF(SchedulerStats, "DAG execution time = %d\n", value);
+            DPRINTF(SchedulerStats, "DAG execution time = %d us\n", value);
             break;
 
         case DAG_DEADLINE_DIFF:
-            DPRINTF(SchedulerStats, "DAG deadline difference = %d\n", ivalue);
+            DPRINTF(SchedulerStats, "DAG deadline difference = %d us\n",
+                    ivalue);
             break;
 
         case NODE_DEADLINE_DIFF:
-            DPRINTF(SchedulerStats, "Node deadline difference = %d\n", ivalue);
+            DPRINTF(SchedulerStats, "Node deadline difference = %d us\n",
+                    ivalue);
             break;
 
         case PREDICTED_COMPUTE_TIME:
@@ -831,8 +836,20 @@ m5printstat(ThreadContext *tc, uint32_t stat, uint32_t value)
             break;
 
         case PREDICTED_MEMORY_SIZE:
-            DPRINTF(SchedulerStats, "Predicted memory access size = %d\n",
+            DPRINTF(SchedulerStats,"Predicted memory access size = %d bytes\n",
                     value);
+            break;
+
+        case FINISHED_DAG_ITERS:
+            DPRINTF(SchedulerStats, "Finished DAG iterations = %d\n", value);
+            break;
+
+        case DRAM_DATA_MOVEMENT:
+            DPRINTF(SchedulerStats, "DRAM data movement = %d bytes\n", value);
+            break;
+
+        case SPAD_DATA_MOVEMENT:
+            DPRINTF(SchedulerStats, "SPAD data movement = %d bytes\n", value);
             break;
     }
 }

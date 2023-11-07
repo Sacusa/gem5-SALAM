@@ -1372,6 +1372,27 @@ class LPDDR5_6400_1x16_BG_BL32(LPDDR5_5500_1x16_BG_BL32):
     # Default different rank bus delay to 2 CK, @687.5 MHz = 2.5 ns
     tCS = '2.5ns'
 
+    IDD0 = '2.8mA'
+    IDD02 = '32mA'
+    IDD2P1 = '1.2mA' 
+    IDD2P12 = '1.8mA'
+    IDD2N = '1.2mA'
+    IDD2N2 = '16mA'
+    IDD3P1 = '1.3mA' 
+    IDD3P12 = '4.8mA'
+    IDD3N = '1.6mA'
+    IDD3N2 = '23mA'
+    IDD4R = '7.1mA'
+    IDD4R2 = '360mA' 
+    IDD4W = '6.1mA'
+    IDD4W2 = '280mA' 
+    IDD5 = '20mA'
+    IDD52 = '160mA'
+    IDD6 = '0.25mA'
+    IDD62 = '0.6mA'
+    VDD = '1.8V'
+    VDD2 = '1.05V'
+
 # A single LPDDR5 x16 interface (one command/address bus)
 # for a single x16 channel with default timings based on initial
 # JEDEC specifcation

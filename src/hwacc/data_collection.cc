@@ -90,6 +90,9 @@ Results::print() {
     std::cout << "   SPM Write Dynamic Power:         " << spm_write_dynamic << " mW" << std::endl;
     std::cout << "   SPM Total Power:                 " << spm_total_power << " mW" << std::endl;
     std::cout << std::endl;
+    std::cout << "   SPM Energy Per Read Access:      " << spm_read_energy << " nJ" << std::endl;
+    std::cout << "   SPM Energy Per Write Access:     " << spm_write_energy << " nJ" << std::endl;
+    std::cout << std::endl;
     std::cout << "   Cache Leakage Power:             " << cache_leakage << " mW" << std::endl;
     std::cout << "   Cache Read Dynamic Power:        " << cache_read_dynamic << " mW" << std::endl;
     std::cout << "   Cache Write Dynamic Power:       " << cache_write_dynamic << " mW" << std::endl;

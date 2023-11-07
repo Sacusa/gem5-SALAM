@@ -43,6 +43,8 @@ class Results {
         double spm_leakage;
         double spm_read_dynamic;
         double spm_write_dynamic;
+        double spm_read_energy;
+        double spm_write_energy;
         double spm_area;
         double spm_opt_leakage;
         double spm_opt_area;
@@ -155,6 +157,8 @@ class Results {
                     double SPM_Leakage,
                     double SPM_Read_Dynamic,
                     double SPM_Write_Dynamic,
+                    double SPM_Read_Energy,
+                    double SPM_Write_Energy,
                     double SPM_Area,
                     double SPM_Opt_Leakage,
                     double SPM_Opt_Area,
@@ -252,6 +256,8 @@ class Results {
                     spm_leakage(SPM_Leakage),
                     spm_read_dynamic(SPM_Read_Dynamic),
                     spm_write_dynamic(SPM_Write_Dynamic),
+                    spm_read_energy(SPM_Read_Energy),
+                    spm_write_energy(SPM_Write_Energy),
                     spm_area(SPM_Area),
                     spm_opt_leakage(SPM_Opt_Leakage),
                     spm_opt_area(SPM_Opt_Area),

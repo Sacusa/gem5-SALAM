@@ -7,9 +7,10 @@
 
 #include "runtime.h"
 
-#define DEBLUR_DEADLINE  16667
-#define DEBLUR_NUM_ITERS 5
-#define DEBLUR_NUM_NODES (2 + ((DEBLUR_NUM_ITERS) * 4))
+#define DEBLUR_DEADLINE     16667
+#define DEBLUR_ITER_RUNTIME 3267
+#define DEBLUR_NUM_ITERS    5
+#define DEBLUR_NUM_NODES    (2 + ((DEBLUR_NUM_ITERS) * 4))
 
 typedef struct {
     // ISP
@@ -101,6 +102,8 @@ void deblur_process_raw(deblur_data_t *img, task_struct_t **nodes,
     task->compute_time = RUNTIME_ISP;
     task->dag_deadline = (rep_count + 1) * DEBLUR_DEADLINE;
     task->node_deadline = (rep_count * DEBLUR_DEADLINE) + earliest_start + 50;
+    task->sd = (50.0 / (87 + (DEBLUR_ITER_RUNTIME * DEBLUR_NUM_ITERS))) * \
+               DEBLUR_DEADLINE;
 
     deblur_retval[0] = task;
     nodes[rep_count * DEBLUR_NUM_NODES] = task;
@@ -141,6 +144,8 @@ void deblur_convert_to_grayscale(deblur_data_t *img, task_struct_t **nodes,
     task->compute_time = RUNTIME_GRAYSCALE;
     task->dag_deadline = (rep_count + 1) * DEBLUR_DEADLINE;
     task->node_deadline = (rep_count * DEBLUR_DEADLINE) + earliest_start + 87;
+    task->sd = (37.0 / (87 + (DEBLUR_ITER_RUNTIME * DEBLUR_NUM_ITERS))) * \
+               DEBLUR_DEADLINE;
 
 #ifndef VERIFY
     deblur_retval[0]->children[0] = task;
@@ -191,6 +196,8 @@ void deblur_run_conv_psf(deblur_data_t *img, task_struct_t **nodes,
     task->compute_time = RUNTIME_CONVOLUTION_5;
     task->dag_deadline = (rep_count + 1) * DEBLUR_DEADLINE;
     task->node_deadline = (rep_count*DEBLUR_DEADLINE) + earliest_start + 1576;
+    task->sd = (1576.0 / (87 + (DEBLUR_ITER_RUNTIME * DEBLUR_NUM_ITERS))) * \
+               DEBLUR_DEADLINE;
 
     deblur_retval[2] = task;
     nodes[(rep_count * DEBLUR_NUM_NODES) + node_index] = task;
@@ -223,6 +230,8 @@ void deblur_run_div_ut_psf(deblur_data_t *img, task_struct_t **nodes,
     task->compute_time = RUNTIME_ELEM_MATRIX_DIV;
     task->dag_deadline = (rep_count + 1) * DEBLUR_DEADLINE;
     task->node_deadline = (rep_count*DEBLUR_DEADLINE) + earliest_start + 1633;
+    task->sd = (57.0 / (87 + (DEBLUR_ITER_RUNTIME * DEBLUR_NUM_ITERS))) * \
+               DEBLUR_DEADLINE;
 
     deblur_retval[1]->children[iter_num + 1] = task;
     deblur_retval[2]->children[0] = task;
@@ -258,6 +267,8 @@ void deblur_run_conv_psf_flip(deblur_data_t *img, task_struct_t **nodes,
     task->compute_time = RUNTIME_CONVOLUTION_5;
     task->dag_deadline = (rep_count + 1) * DEBLUR_DEADLINE;
     task->node_deadline = (rep_count*DEBLUR_DEADLINE) + earliest_start + 3210;
+    task->sd = (1577.0 / (87 + (DEBLUR_ITER_RUNTIME * DEBLUR_NUM_ITERS))) * \
+               DEBLUR_DEADLINE;
 
     deblur_retval[3]->children[0] = task;
     deblur_retval[4] = task;
@@ -311,6 +322,8 @@ void deblur_run_mult_psf_flip(deblur_data_t *img, bool is_first,
     task->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task->dag_deadline = (rep_count + 1) * DEBLUR_DEADLINE;
     task->node_deadline = (rep_count*DEBLUR_DEADLINE) + earliest_start + 3267;
+    task->sd = (57.0 / (87 + (DEBLUR_ITER_RUNTIME * DEBLUR_NUM_ITERS))) * \
+               DEBLUR_DEADLINE;
 
     deblur_retval[4]->children[0] = task;
     deblur_retval[5] = task;
@@ -389,14 +402,12 @@ void add_deblur_dag(task_struct_t ***nodes, int *num_nodes, int num_images)
     deblur_data_t *imgs = (deblur_data_t*)
         get_memory(num_images * sizeof(deblur_data_t));
 
-    const uint32_t iter_runtime = 3267;
-
     for (int i = 0; i < num_images; i++) {
         deblur_init_img(&imgs[i]);
 
         for (int rep = 0; rep < NUM_REPEATS; rep++) {
             uint32_t earliest_start = DEBLUR_DEADLINE - \
-                                      (iter_runtime * DEBLUR_NUM_ITERS) - 87;
+                (DEBLUR_ITER_RUNTIME * DEBLUR_NUM_ITERS) - 87;
 
 #ifdef VERIFY
             // Step 0: Link ISP output
@@ -424,7 +435,7 @@ void add_deblur_dag(task_struct_t ***nodes, int *num_nodes, int num_images)
                         j != (DEBLUR_NUM_ITERS - 1), nodes[i], node_index + 3,
                         earliest_start, rep, rep == (NUM_REPEATS - 1));
 
-                earliest_start += iter_runtime;
+                earliest_start += DEBLUR_ITER_RUNTIME;
             }
         }
 

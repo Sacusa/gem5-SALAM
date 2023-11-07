@@ -769,6 +769,8 @@ LLVMInterface::printPerformanceResults() {
                             (_SPM.leakage.power.readOp.leakage+_SPM.leakage.power.writeOp.leakage)*leak,
                             _SPM.dyn_read.power.readOp.dynamic*exponential,
                             _SPM.dyn_write.power.writeOp.dynamic*exponential,
+                            _SPM.leakage.power.readOp.dynamic*exponential,
+                            _SPM.leakage.power.writeOp.dynamic*exponential,
                             _SPM.leakage.area,
                             (_SPM.opt.power.readOp.leakage+_SPM.opt.power.writeOp.leakage)*leak,
                             _SPM.opt.area,
