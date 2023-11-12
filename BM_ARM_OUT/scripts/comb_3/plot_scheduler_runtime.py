@@ -6,14 +6,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-hatch = {'FCFS': '*', 'GEDF_D': '/', 'GEDF_N': '.' , 'LAX': '\\', 'ELF': '++'}
-marker = {'FCFS': 'o', 'GEDF_D': '*', 'GEDF_N': 'X', 'LAX': 'P', 'ELF': 's'}
+hatch = {'FCFS': '*', 'GEDF_D': '/', 'GEDF_N': '.' , 'LAX': '\\',
+        'HetSched': '||', 'ELF': '++'}
+marker = {'FCFS': 'o', 'GEDF_D': '*', 'GEDF_N': 'X', 'LAX': 'P',
+        'HetSched': 'D', 'ELF': 's'}
 
 colormap = matplotlib.cm.get_cmap("tab20").colors
 colors = {'FCFS': colormap[1], 'GEDF_D': colormap[3], 'GEDF_N': colormap[5],
-        'LAX': colormap[9], 'ELF':  colormap[7]}
+        'LAX': colormap[9], 'HetSched': colormap[11], 'ELF':  colormap[7]}
 edgecolors = {'FCFS': colormap[0], 'GEDF_D': colormap[2],
-        'GEDF_N': colormap[4], 'LAX': colormap[8], 'ELF':  colormap[6]}
+        'GEDF_N': colormap[4], 'LAX': colormap[8], 'HetSched': colormap[10],
+        'ELF':  colormap[6]}
+
+label = {'GEDF_D': 'GEDF-D', 'GEDF_N': 'GEDF-N', 'ELF': 'RELIEF'}
 
 avg = lambda l : sum(l) / len(l)
 
@@ -30,7 +35,7 @@ def add_tail_plot(policy, label):
             markersize=25, markeredgecolor='k', label=label, zorder=3)
 
 applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
-policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'ELF']
+policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'HetSched', 'ELF']
 
 app_mixes = sorted([c for c in itertools.combinations(applications, 3)])
 
@@ -46,13 +51,13 @@ for app_mix in app_mixes:
 
     for policy in policies:
         if policy == 'ELF':
-            dir_name = '../../comb_pred_3/' + app_mix_str + policy + \
-                    '_MEM_PRED_NO_PRED_dm_false'
+            dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
+                    policy + '_MEM_PRED_NO_PRED_dm_false'
         elif policy == 'LAX':
-            dir_name = '../../comb_pred_3/' + app_mix_str + policy + \
-                    '_MEM_PRED_EWMA_0.25_dm_false'
+            dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
+                    policy + '_MEM_PRED_EWMA_0.25_dm_false'
         else:
-            dir_name = '../../comb_3/' + app_mix_str + policy
+            dir_name = '../../comb_3_opt_flush_opt_fwd/' + app_mix_str + policy
         dir_name += '/debug-trace.txt'
 
         warmup_finished = False
@@ -95,18 +100,25 @@ fig, ax1 = plt.subplots(figsize=(24, 12), dpi=600)
 ax2 = ax1.twinx()
 plt.rc('axes', axisbelow=False)
 
-width = 0.16
-add_avg_plot(-(width*2), 'FCFS',   'Avg: FCFS')
-add_avg_plot(-width,     'GEDF_D', 'GEDF-D')
-add_avg_plot(0,          'GEDF_N', 'GEDF-N')
-add_avg_plot(width,      'LAX',    'LAX')
-add_avg_plot((width*2),  'ELF',    'RELIEF')
+width = 0.8 / len(policies)
+if len(policies) % 2 == 0:
+    offset = -width * (0.5 + ((len(policies) / 2) - 1))
+else:
+    offset = -width * ((len(policies) - 1) / 2)
+for policy in policies:
+    #plabel = 'ACCL: ' if policy == 'FCFS' else ''
+    #plabel += label[policy] if policy in label else policy
+    #add_accl_plot(offset, policy, plabel)
+    
+    plabel = 'Avg: ' if policy == 'FCFS' else ''
+    plabel += label[policy] if policy in label else policy
+    add_avg_plot(offset, policy, plabel)
 
-add_tail_plot('FCFS',   'Tail: FCFS')
-add_tail_plot('GEDF_D', 'GEDF-D')
-add_tail_plot('GEDF_N', 'GEDF-N')
-add_tail_plot('LAX',    'LAX')
-add_tail_plot('ELF',    'RELIEF')
+    plabel = 'Tail: ' if policy == 'FCFS' else ''
+    plabel += label[policy] if policy in label else policy
+    add_tail_plot(policy, plabel)
+
+    offset += width
 
 ax1.set_xticks(x)
 ax1.set_xticklabels(x_labels, size=30)
@@ -125,5 +137,5 @@ h1, l1 = ax1.get_legend_handles_labels()
 h2, l2 = ax2.get_legend_handles_labels()
 h = [x for z in zip(h2, h1) for x in z]
 l = [x for z in zip(l2, l1) for x in z]
-ax1.legend(h, l, loc="upper left", ncol=5, fontsize=30)
+ax1.legend(h, l, loc="upper left", ncol=len(policies), fontsize=25)
 plt.savefig('../plots/comb_3/scheduler_latency.pdf', bbox_inches='tight')

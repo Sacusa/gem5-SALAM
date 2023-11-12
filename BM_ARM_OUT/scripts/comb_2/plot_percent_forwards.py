@@ -6,13 +6,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-hatch = {'FCFS': '*', 'GEDF_D': '/', 'GEDF_N': '.' , 'LAX': '\\', 'ELF': '++'}
+hatch = {'FCFS': '*', 'GEDF_D': '/', 'GEDF_N': '.' , 'LAX': '\\',
+        'HetSched': '||', 'ELF': '++'}
 
 colormap = matplotlib.cm.get_cmap("tab20").colors
 colors = {'FCFS': colormap[1], 'GEDF_D': colormap[3], 'GEDF_N': colormap[5],
-        'LAX': colormap[9], 'ELF':  colormap[7]}
+        'LAX': colormap[9], 'HetSched': colormap[11], 'ELF':  colormap[7]}
 edgecolors = {'FCFS': colormap[0], 'GEDF_D': colormap[2],
-        'GEDF_N': colormap[4], 'LAX': colormap[8], 'ELF':  colormap[6]}
+        'GEDF_N': colormap[4], 'LAX': colormap[8], 'HetSched': colormap[10],
+        'ELF':  colormap[6]}
+
+label = {'GEDF_D': 'GEDF-D', 'GEDF_N': 'GEDF-N', 'ELF': 'RELIEF'}
 
 def geo_mean(iterable):
     a = np.array(iterable)
@@ -44,20 +48,20 @@ for app_mix in app_mixes:
 
     for policy in policies:
         if policy == 'ELF':
-            dir_name = '../../comb_pred_2/' + app_mix_str + policy + \
-                    '_MEM_PRED_NO_PRED_dm_false'
+            dir_name = '../../comb_pred_2_opt_flush_opt_fwd/' + app_mix_str + \
+                    policy + '_MEM_PRED_NO_PRED_dm_false'
         elif policy == 'LAX':
-            dir_name = '../../comb_pred_2/' + app_mix_str + policy + \
-                    '_MEM_PRED_EWMA_0.25_dm_false'
+            dir_name = '../../comb_pred_2_opt_flush_opt_fwd/' + app_mix_str + \
+                    policy + '_MEM_PRED_EWMA_0.25_dm_false'
         else:
-            dir_name = '../../comb_2/' + app_mix_str + policy
+            dir_name = '../../comb_2_opt_flush_opt_fwd/' + app_mix_str + policy
         dir_name += '/debug-trace.txt'
 
         num_forwards[policy].append(0)
 
         for line in open(dir_name):
             if 'Number of forwards' in line:
-                num_forwards[policy][-1] = int(line.split()[6])
+                num_forwards[policy][-1] += int(line.split()[6])
 
     # normalize the values
     norm_value = sum([num_edges[app] for app in app_mix])

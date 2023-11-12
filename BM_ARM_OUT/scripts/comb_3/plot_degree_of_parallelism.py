@@ -6,13 +6,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-hatch = {'FCFS': '*', 'GEDF_D': '/', 'GEDF_N': '.' , 'LAX': '\\', 'ELF': '++'}
+hatch = {'FCFS': '*', 'GEDF_D': '/', 'GEDF_N': '.' , 'LAX': '\\',
+        'HetSched': '||', 'ELF': '++'}
 
 colormap = matplotlib.cm.get_cmap("tab20").colors
 colors = {'FCFS': colormap[1], 'GEDF_D': colormap[3], 'GEDF_N': colormap[5],
-        'LAX': colormap[9], 'ELF':  colormap[7]}
+        'LAX': colormap[9], 'HetSched': colormap[11], 'ELF':  colormap[7]}
 edgecolors = {'FCFS': colormap[0], 'GEDF_D': colormap[2],
-        'GEDF_N': colormap[4], 'LAX': colormap[8], 'ELF':  colormap[6]}
+        'GEDF_N': colormap[4], 'LAX': colormap[8], 'HetSched': colormap[10],
+        'ELF':  colormap[6]}
+
+label = {'GEDF_D': 'GEDF-D', 'GEDF_N': 'GEDF-N', 'ELF': 'RELIEF'}
 
 avg = lambda l : sum(l) / len(l)
 
@@ -28,7 +32,7 @@ def add_plot(offset, policy, label):
             edgecolor='k', width=width, zorder=2)
 
 applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
-policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'ELF']
+policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'HetSched', 'ELF']
 
 app_mixes = sorted([c for c in itertools.combinations(applications, 3)])
 
@@ -49,13 +53,13 @@ for app_mix in app_mixes:
         last_parallelism = 0
 
         if policy == 'ELF':
-            dir_name = '../../comb_pred_3/' + app_mix_str + policy + \
-                    '_MEM_PRED_NO_PRED_dm_false'
+            dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
+                    policy + '_MEM_PRED_NO_PRED_dm_false'
         elif policy == 'LAX':
-            dir_name = '../../comb_pred_3/' + app_mix_str + policy + \
-                    '_MEM_PRED_EWMA_0.25_dm_false'
+            dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
+                    policy + '_MEM_PRED_EWMA_0.25_dm_false'
         else:
-            dir_name = '../../comb_3/' + app_mix_str + policy
+            dir_name = '../../comb_3_opt_flush_opt_fwd/' + app_mix_str + policy
         dir_name += '/debug-trace.txt'
 
         for line in open(dir_name):
@@ -88,22 +92,20 @@ for policy in policies:
 
 x = [i for i in range(len(app_mixes) + 1)]
 x_labels = ["".join([a[0].upper() for a in app_mix])
-        for app_mix in app_mixes] + ['Mean']
+        for app_mix in app_mixes] + ['Amean']
 
 plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
 
-#width = 0.20
-#add_plot(-((3*width)/2), 'FCFS',   'FCFS')
-#add_plot(-(width/2),     'GEDF_D', 'GEDF-D')
-#add_plot((width/2),      'GEDF_N', 'GEDF-N')
-#add_plot((3*width)/2,    'ELF',    'RELIEF')
-width = 0.16
-add_plot(-(width*2), 'FCFS',   'FCFS')
-add_plot(-width,     'GEDF_D', 'GEDF-D')
-add_plot(0,          'GEDF_N', 'GEDF-N')
-add_plot(width,      'LAX',    'LAX')
-add_plot((width*2),  'ELF',    'RELIEF')
+width = 0.8 / len(policies)
+if len(policies) % 2 == 0:
+    offset = -width * (0.5 + ((len(policies) / 2) - 1))
+else:
+    offset = -width * ((len(policies) - 1) / 2)
+for policy in policies:
+    plabel = label[policy] if policy in label else policy
+    add_plot(offset, policy, plabel)
+    offset += width
 
 plt.xticks(x, x_labels, fontsize=30)
 
@@ -113,6 +115,7 @@ plt.yticks(fontsize=30)
 plt.ylim([0, 2.5])
 #plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.2))
 
-plt.legend(loc="upper left", ncol=5, fontsize=30)
+plt.legend(loc="upper left", ncol=len(policies), fontsize=25)
 plt.grid(color='silver', linestyle='-', linewidth=1)
-plt.savefig('../plots/comb_3/avg_degree_of_parallelism.pdf', bbox_inches='tight')
+plt.savefig('../plots/comb_3/avg_degree_of_parallelism.pdf',
+        bbox_inches='tight')

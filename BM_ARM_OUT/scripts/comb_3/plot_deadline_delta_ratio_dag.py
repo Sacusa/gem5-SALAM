@@ -6,15 +6,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-hatch = {'FCFS': '*', 'GEDF_D': '/', 'GEDF_N': '.' , 'LAX': '\\', 'ELF': '++',
-         'ELF-dep': 'x'}
+hatch = {'FCFS': '*', 'GEDF_D': '/', 'GEDF_N': '.' , 'LAX': '\\',
+        'HetSched': '||', 'ELF': '++', 'ELFD': 'xx', 'LL': '--'}
 
 colormap = matplotlib.cm.get_cmap("tab20").colors
 colors = {'FCFS': colormap[1], 'GEDF_D': colormap[3], 'GEDF_N': colormap[5],
-        'LAX': colormap[9], 'ELF':  colormap[7], 'ELF-dep': colormap[11]}
+        'LAX': colormap[9], 'HetSched': colormap[11], 'ELF':  colormap[7],
+        'ELFD': colormap[13], 'LL':  colormap[19]}
 edgecolors = {'FCFS': colormap[0], 'GEDF_D': colormap[2],
-        'GEDF_N': colormap[4], 'LAX': colormap[8], 'ELF':  colormap[6],
-        'ELF-dep': colormap[10]}
+        'GEDF_N': colormap[4], 'LAX': colormap[8], 'HetSched': colormap[10],
+        'ELF':  colormap[6], 'ELFD': colormap[12], 'LL': colormap[18]}
+
+label = {'GEDF_D': 'GEDF-D', 'GEDF_N': 'GEDF-N', 'ELF': 'RELIEF',
+        'ELFD': 'RELIEF-dep'}
 
 def geo_mean(iterable):
     a = np.array(iterable)
@@ -28,7 +32,8 @@ def add_plot(offset, policy, label):
             edgecolor='k', width=width, zorder=2)
 
 applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
-policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'ELF', 'ELF-dep']
+policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'LL', 'HetSched', 'ELFD', 'ELF']
+#policies = ['FCFS', 'LL', 'GEDF_D', 'HetSched', 'GEDF_N', 'ELFD', 'LAX', 'ELF']
 deadline = {'canny': 16667, 'deblur': 16667, 'gru': 8000, 'harris': 16667,
         'lstm': 8000}
 
@@ -43,26 +48,19 @@ for app_mix in app_mixes:
         if app in app_mix: app_mix_str += '1_'
         else:              app_mix_str += '0_'
 
-    #print(app_mix_str)
-
     for policy in policies:
-        if policy == 'ELF':
-            dir_name = '../../comb_pred_3/' + app_mix_str + policy + \
-                    '_MEM_PRED_NO_PRED_dm_false'
-        elif policy == 'ELF-dep':
-            dir_name = '../../comb_pred_3_deprioritize/' + app_mix_str + \
-                    'ELF_MEM_PRED_NO_PRED_dm_false'
+        if 'ELF' in policy:
+            dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
+                    policy + '_MEM_PRED_NO_PRED_dm_false'
         elif policy == 'LAX':
-            dir_name = '../../comb_pred_3/' + app_mix_str + policy + \
-                    '_MEM_PRED_EWMA_0.25_dm_false'
+            dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
+                    policy + '_MEM_PRED_EWMA_0.25_dm_false'
         else:
-            dir_name = '../../comb_3/' + app_mix_str + policy
+            dir_name = '../../comb_3_opt_flush_opt_fwd/' + app_mix_str + policy
         dir_name += '/debug-trace.txt'
 
         delta[policy].append([])
         dag_id = ''
-
-        #print('  ' + policy)
 
         for line in open(dir_name):
             if 'DAG ID' in line:
@@ -73,54 +71,54 @@ for app_mix in app_mixes:
                         (dag_deadline + float(line.split()[6])) / \
                          dag_deadline)
 
-                #print('    ' + app_mix[dag_id] + ': ' + \
-                #        str(delta[policy][-1][-1]))
-
         delta[policy][-1] = np.quantile(delta[policy][-1],
                 [0, 0.25, 0.5, 0.75, 1])[4]
 
-    # normalize the values
-    #norm_value = delta['LAX'][-1]
-    #for policy in policies:
-    #    delta[policy][-1] /= norm_value
+#for policy in policies:
+#    delta[policy].append(max(delta[policy]))
 
-for policy in policies:
-    delta[policy].append(max(delta[policy]))
+for i in range(len(app_mixes)):
+    print(abs(delta['LAX'][i] - delta['ELF'][i]) / delta['LAX'][i])
+print()
+for i in range(len(app_mixes)):
+    print(abs(delta['HetSched'][i] - delta['ELF'][i]) / delta['HetSched'][i])
 
 max_elf = 0
 max_others = 0
 for i in range(len(app_mixes)):
     max_elf = max(max_elf, delta['ELF'][i])
     for policy in policies:
-        if policy == 'ELF': continue
+        if 'ELF' in policy: continue
         max_others = max(max_others, delta[policy][i])
 max_elf -= 1
 max_others -= 1
 print((max_others - max_elf) / max_others)
 
-x = [i for i in range(len(app_mixes) + 1)]
+x = [i for i in range(len(app_mixes))]
 x_labels = ["".join([a[0].upper() for a in app_mix])
-        for app_mix in app_mixes] + ['Max']
+        for app_mix in app_mixes]
 
 plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
 
-width = 0.13
-add_plot(-((5*width)/2), 'FCFS',   'FCFS')
-add_plot((width/2),      'LAX',    'LAX')
-add_plot(-((3*width)/2), 'GEDF_D', 'GEDF-D')
-add_plot((3*width)/2,    'ELF',    'RELIEF')
-add_plot(-(width/2),     'GEDF_N', 'GEDF-N')
-add_plot((5*width)/2,    'ELF-dep','RELIEF-dep')
+width = 0.8 / len(policies)
+if len(policies) % 2 == 0:
+    offset = -width * (0.5 + ((len(policies) / 2) - 1))
+else:
+    offset = -width * ((len(policies) - 1) / 2)
+for policy in policies:
+    plabel = label[policy] if policy in label else policy
+    add_plot(offset, policy, plabel)
+    offset += width
 
 plt.xticks(x, x_labels, fontsize=30)
 
 plt.ylabel('Maximum slowdown', fontsize=30)
 plt.yticks(fontsize=30)
-plt.ylim([0, 4])
-plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.5))
+plt.ylim([0, 2.5])
+plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.25))
 
-plt.legend(loc="upper left", ncol=3, fontsize=30)
+plt.legend(loc="upper left", ncol=4, fontsize=30)
 plt.grid(color='silver', linestyle='-', linewidth=1)
 plt.savefig('../plots/comb_3/deadline_delta_ratio_dag.pdf',
         bbox_inches='tight')

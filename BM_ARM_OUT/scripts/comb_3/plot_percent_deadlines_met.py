@@ -6,16 +6,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-hatch = {'FCFS': '*', 'GEDF_D': '/', 'GEDF_N': '.' , 'LAX': '\\', 'ELF': '++'}
+hatch = {'FCFS': '*', 'GEDF_D': '/', 'GEDF_N': '.' , 'LAX': '\\',
+        'HetSched': '||', 'ELF': '++'}
 
 colormap = matplotlib.cm.get_cmap("tab20").colors
 colors = {'FCFS': colormap[1], 'GEDF_D': colormap[3], 'GEDF_N': colormap[5],
-        'LAX': colormap[9], 'ELF':  colormap[7]}
+        'LAX': colormap[9], 'HetSched': colormap[11], 'ELF':  colormap[7]}
 edgecolors = {'FCFS': colormap[0], 'GEDF_D': colormap[2],
-        'GEDF_N': colormap[4], 'LAX': colormap[8], 'ELF':  colormap[6]}
+        'GEDF_N': colormap[4], 'LAX': colormap[8], 'HetSched': colormap[10],
+        'ELF':  colormap[6]}
+
+label = {'GEDF_D': 'GEDF-D', 'GEDF_N': 'GEDF-N', 'ELF': 'RELIEF'}
 
 def geo_mean(iterable):
-    a = np.array(iterable)
+    a = np.array([i if i > 0 else 1 for i in iterable])
     return a.prod()**(1.0/len(a))
 
 def add_plot(offset, stat_value, policy, label):
@@ -26,7 +30,7 @@ def add_plot(offset, stat_value, policy, label):
             edgecolor='k', width=width, zorder=2)
 
 applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
-policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'ELF']
+policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'HetSched', 'ELF']
 
 tot_num_nodes = {'canny': 12, 'deblur': 22, 'gru': 120, 'harris': 18,
         'lstm': 144}
@@ -45,27 +49,23 @@ for app_mix in app_mixes:
 
     for policy in policies:
         if policy == 'ELF':
-            dir_name = '../../comb_pred_3/' + app_mix_str + policy + \
-                    '_MEM_PRED_NO_PRED_dm_false'
+            dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
+                    policy + '_MEM_PRED_NO_PRED_dm_false'
         elif policy == 'LAX':
-            dir_name = '../../comb_pred_3/' + app_mix_str + policy + \
-                    '_MEM_PRED_EWMA_0.25_dm_false'
+            dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
+                    policy + '_MEM_PRED_EWMA_0.25_dm_false'
         else:
-            dir_name = '../../comb_3/' + app_mix_str + policy
+            dir_name = '../../comb_3_opt_flush_opt_fwd/' + app_mix_str + policy
         dir_name += '/debug-trace.txt'
 
-        value_found = False
+        dag_deadlines_met[policy].append(0)
+        node_deadlines_met[policy].append(0)
 
         for line in open(dir_name):
             if 'Number of DAG deadlines met' in line:
-                dag_deadlines_met[policy].append(int(line.split()[8]))
+                dag_deadlines_met[policy][-1] += int(line.split()[8])
             elif 'Number of node deadlines met' in line:
-                node_deadlines_met[policy].append(int(line.split()[8]))
-                value_found = True
-
-        if not value_found:
-            dag_deadlines_met[policy].append(0)
-            node_deadlines_met[policy].append(0)
+                node_deadlines_met[policy][-1] += int(line.split()[8])
 
     norm_value_dag = 3
     norm_value_node = sum([tot_num_nodes[app] for app in app_mix])
@@ -80,6 +80,9 @@ for policy in policies:
     dag_deadlines_met[policy].append(geo_mean(dag_deadlines_met[policy]))
     node_deadlines_met[policy].append(geo_mean(node_deadlines_met[policy]))
 
+print((node_deadlines_met['ELF'][-1] - node_deadlines_met['HetSched'][-1]) / \
+        node_deadlines_met['HetSched'][-1])
+
 x = [i for i in range(len(app_mixes) + 1)]
 x_labels = ["".join([a[0].upper() for a in app_mix])
         for app_mix in app_mixes] + ['Gmean']
@@ -90,12 +93,15 @@ DAG deadlines met
 plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
 
-width = 0.16
-add_plot(-(width*2), dag_deadlines_met['FCFS'],   'FCFS',   'FCFS')
-add_plot(-width,     dag_deadlines_met['GEDF_D'], 'GEDF_D', 'GEDF-D')
-add_plot(0,          dag_deadlines_met['GEDF_N'], 'GEDF_N', 'GEDF-N')
-add_plot(width,      dag_deadlines_met['LAX'],    'LAX',    'LAX')
-add_plot((width*2),  dag_deadlines_met['ELF'],    'ELF',    'RELIEF')
+width = 0.8 / len(policies)
+if len(policies) % 2 == 0:
+    offset = -width * (0.5 + ((len(policies) / 2) - 1))
+else:
+    offset = -width * ((len(policies) - 1) / 2)
+for policy in policies:
+    plabel = label[policy] if policy in label else policy
+    add_plot(offset, dag_deadlines_met[policy], policy, plabel)
+    offset += width
 
 #plt.xlabel('Application mix', fontsize=30)
 #plt.xticks(x, x_labels, fontsize=30, rotation='vertical')
@@ -106,7 +112,7 @@ plt.yticks(fontsize=30)
 plt.ylim([0, 130])
 plt.gca().yaxis.set_major_locator(plt.MultipleLocator(20))
 
-plt.legend(loc="upper left", ncol=5, fontsize=30)
+plt.legend(loc="upper left", ncol=len(policies), fontsize=25)
 plt.grid(color='silver', linestyle='-', linewidth=1)
 plt.savefig('../plots/comb_3/percent_dag_deadlines_met.pdf',
         bbox_inches='tight')
@@ -118,12 +124,15 @@ plt.clf()
 plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
 
-width = 0.16
-add_plot(-(width*2), node_deadlines_met['FCFS'],   'FCFS',   'FCFS')
-add_plot(-width,     node_deadlines_met['GEDF_D'], 'GEDF_D', 'GEDF-D')
-add_plot(0,          node_deadlines_met['GEDF_N'], 'GEDF_N', 'GEDF-N')
-add_plot(width,      node_deadlines_met['LAX'],    'LAX',    'LAX')
-add_plot((width*2),  node_deadlines_met['ELF'],    'ELF',    'RELIEF')
+width = 0.8 / len(policies)
+if len(policies) % 2 == 0:
+    offset = -width * (0.5 + ((len(policies) / 2) - 1))
+else:
+    offset = -width * ((len(policies) - 1) / 2)
+for policy in policies:
+    plabel = label[policy] if policy in label else policy
+    add_plot(offset, node_deadlines_met[policy], policy, plabel)
+    offset += width
 
 #plt.xlabel('Application mix', fontsize=30)
 #plt.xticks(x, x_labels, fontsize=30, rotation='vertical')
@@ -134,7 +143,7 @@ plt.yticks(fontsize=30)
 plt.ylim([0, 130])
 plt.gca().yaxis.set_major_locator(plt.MultipleLocator(20))
 
-plt.legend(loc="upper left", ncol=5, fontsize=30)
+plt.legend(loc="upper left", ncol=len(policies), fontsize=25)
 plt.grid(color='silver', linestyle='-', linewidth=1)
 plt.savefig('../plots/comb_3/percent_node_deadlines_met.pdf',
         bbox_inches='tight')

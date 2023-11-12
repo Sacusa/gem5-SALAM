@@ -44,13 +44,13 @@ for app_mix in app_mixes:
 
     for policy in policies:
         if policy == 'ELF':
-            dir_name = '../../comb_pred_3/' + app_mix_str + policy + \
-                    '_MEM_PRED_NO_PRED_dm_false'
+            dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
+                    policy + '_MEM_PRED_NO_PRED_dm_false'
         elif policy == 'LAX':
-            dir_name = '../../comb_pred_3/' + app_mix_str + policy + \
-                    '_MEM_PRED_EWMA_0.25_dm_false'
+            dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
+                    policy + '_MEM_PRED_EWMA_0.25_dm_false'
         else:
-            dir_name = '../../comb_3/' + app_mix_str + policy
+            dir_name = '../../comb_3_opt_flush_opt_fwd/' + app_mix_str + policy
         dir_name += '/debug-trace.txt'
 
         num_forwards[policy].append(0)

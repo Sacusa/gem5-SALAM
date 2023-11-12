@@ -1,10 +1,10 @@
 gem5 Simulator System.  http://gem5.org
 gem5 is copyrighted software; use the --copyright option for details.
 
-gem5 compiled Jun 12 2023 18:40:01
-gem5 started Jul 15 2023 00:37:42
-gem5 executing on node4x10a.cs.rochester.edu, pid 79683
-command line: /u/sgupta45/gem5-SALAM/build/ARM/gem5_bus.opt --debug-flags=HWACC,CommInterface,LLVMInterface,StreamDma,NoncoherentDma,TickTimer,SchedulerStats --outdir=BM_ARM_OUT/comb_pred_1/canny_0_deblur_0_gru_0_harris_1_lstm_0_LAX_MEM_PRED_EWMA_0.25_dm_false configs/SALAM/scheduler.py --mem-size=4GB --mem-type=LPDDR5_6400_1x16_BG_BL32 --kernel=/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/bin_comb_pred_1/canny_0_deblur_0_gru_0_harris_1_lstm_0_LAX_MEM_PRED_EWMA_0.25_dm_false.elf --vans-config-path=/u/sgupta45/VANS/config --disk-image=/u/sgupta45/gem5-SALAM/baremetal/common/fake.iso --machine-type=VExpress_GEM5_V1 --dtb-file=none --bare-metal --cpu-type=ex5_LITTLE --cpu-clock=1.6GHz --accpath=/u/sgupta45/gem5-SALAM/benchmarks --caches --cacheline_size=64 --l1d_size=32kB --l1d_assoc=4 --l1i_size=32kB --l1i_assoc=2
+gem5 compiled Oct  4 2023 20:26:28
+gem5 started Oct  6 2023 11:14:51
+gem5 executing on node4x10a.cs.rochester.edu, pid 55592
+command line: /u/sgupta45/gem5-SALAM/build/ARM/gem5_bus.opt --debug-flags=HWACC,CommInterface,LLVMInterface,StreamDma,NoncoherentDma,TickTimer,SchedulerStats --outdir=BM_ARM_OUT/comb_pred_1_opt_flush_opt_fwd/canny_0_deblur_0_gru_0_harris_1_lstm_0_LAX_MEM_PRED_EWMA_0.25_dm_false configs/SALAM/scheduler.py --mem-size=4GB --mem-type=LPDDR5_6400_1x16_BG_BL32 --kernel=/u/sgupta45/gem5-SALAM/benchmarks/scheduler/sw/bin_comb_pred_1/canny_0_deblur_0_gru_0_harris_1_lstm_0_LAX_MEM_PRED_EWMA_0.25_dm_false.elf --vans-config-path=/u/sgupta45/VANS/config --disk-image=/u/sgupta45/gem5-SALAM/baremetal/common/fake.iso --machine-type=VExpress_GEM5_V1 --dtb-file=none --bare-metal --cpu-type=ex5_LITTLE --cpu-clock=1.6GHz --accpath=/u/sgupta45/gem5-SALAM/benchmarks --caches --cacheline_size=64 --l1d_size=32kB --l1d_assoc=4 --l1i_size=32kB --l1i_assoc=2
 
 Global frequency set at 1000000000000 ticks per second
 Cycle Counts Loaded!
@@ -19,21 +19,75 @@ Cycle Counts Loaded!
 Cycle Counts Loaded!
 Cycle Counts Loaded!
 **** REAL SIMULATION ****
-14925625: global: Timer #2 started at tick 14925625
-15932500: global: Timer #2 stopped at tick 15932500. Duration: 1006875
-21328750: system.acctest.isp0_dma: SRC:0x0000000082018ec0, DST:0x0000000027000020, LEN:16900
-21861875: global: Number of accelerators running = 1
-24555750: system.acctest.isp0_dma: Transfer completed in 3.227 us
-25074375: global: Timer #0 started at tick 25074375
-26542500: global: Timer #1 started at tick 26542500
-27364375: global: Timer #1 stopped at tick 27364375. Duration: 821875
-29320625: global: Timer #0 stopped at tick 29320625. Duration: 4246250
-29382500: global: Number of accelerators running = 1
+4605625: global: Timer #8 started at tick 4605625
+8035625: global: Timer #8 stopped at tick 8035625. Duration: 3430000
+8104375: global: Timer #8 started at tick 8104375
+17466250: global: Timer #8 stopped at tick 17466250. Duration: 9361875
+17868750: global: Timer #8 started at tick 17868750
+30319375: global: Timer #8 stopped at tick 30319375. Duration: 12450625
+31761250: global: Timer #8 started at tick 31761250
+31804375: global: Timer #8 stopped at tick 31804375. Duration: 43125
+31831250: global: Timer #8 started at tick 31831250
+31860625: global: Timer #8 stopped at tick 31860625. Duration: 29375
+31877500: global: Timer #8 started at tick 31877500
+44337500: global: Timer #8 stopped at tick 44337500. Duration: 12460000
+44356250: global: Timer #8 started at tick 44356250
+56814375: global: Timer #8 stopped at tick 56814375. Duration: 12458125
+59608750: global: Timer #8 started at tick 59608750
+72067500: global: Timer #8 stopped at tick 72067500. Duration: 12458750
+72085625: global: Timer #8 started at tick 72085625
+84542500: global: Timer #8 stopped at tick 84542500. Duration: 12456875
+84559375: global: Timer #8 started at tick 84559375
+97021250: global: Timer #8 stopped at tick 97021250. Duration: 12461875
+97038750: global: Timer #8 started at tick 97038750
+109491875: global: Timer #8 stopped at tick 109491875. Duration: 12453125
+109508750: global: Timer #8 started at tick 109508750
+121962500: global: Timer #8 stopped at tick 121962500. Duration: 12453750
+121980000: global: Timer #8 started at tick 121980000
+134435625: global: Timer #8 stopped at tick 134435625. Duration: 12455625
+134452500: global: Timer #8 started at tick 134452500
+134506875: global: Timer #8 stopped at tick 134506875. Duration: 54375
+137175000: global: Timer #8 started at tick 137175000
+149635625: global: Timer #8 stopped at tick 149635625. Duration: 12460625
+149683125: global: Timer #8 started at tick 149683125
+162141250: global: Timer #8 stopped at tick 162141250. Duration: 12458125
+162200625: global: Timer #8 started at tick 162200625
+174652500: global: Timer #8 stopped at tick 174652500. Duration: 12451875
+174670625: global: Timer #8 started at tick 174670625
+187122500: global: Timer #8 stopped at tick 187122500. Duration: 12451875
+187139375: global: Timer #8 started at tick 187139375
+187174375: global: Timer #8 stopped at tick 187174375. Duration: 35000
+187193125: global: Timer #8 started at tick 187193125
+199657500: global: Timer #8 stopped at tick 199657500. Duration: 12464375
+199675000: global: Timer #8 started at tick 199675000
+212130625: global: Timer #8 stopped at tick 212130625. Duration: 12455625
+212147500: global: Timer #8 started at tick 212147500
+224601250: global: Timer #8 stopped at tick 224601250. Duration: 12453750
+224948750: global: Timer #8 started at tick 224948750
+228079375: global: Timer #8 stopped at tick 228079375. Duration: 3130625
+231773750: global: Timer #2 started at tick 231773750
+232833750: global: Timer #2 stopped at tick 232833750. Duration: 1060000
+233588750: global: Timer #6 started at tick 233588750
+233978750: global: Timer #7 started at tick 233978750
+234700875: system.acctest.isp0_dma: SRC:0x0000000082093000, DST:0x0000000027000020, LEN:16900
+235021875: global: Timer #7 stopped at tick 235021875. Duration: 1043125
+235179375: global: Timer #6 stopped at tick 235179375. Duration: 1590625
+235314375: global: Number of accelerators running = 1
+237916875: system.acctest.isp0_dma: Transfer completed in 3.216 us
+238419375: global: Timer #0 started at tick 238419375
+239978750: global: Timer #1 started at tick 239978750
+240629375: global: Timer #1 stopped at tick 240629375. Duration: 650625
+241283125: global: Timer #6 started at tick 241283125
+241580625: global: Timer #7 started at tick 241580625
+242107500: global: Timer #7 stopped at tick 242107500. Duration: 526875
+242399375: global: Timer #6 stopped at tick 242399375. Duration: 1116250
+242716875: global: Timer #0 stopped at tick 242716875. Duration: 4297500
+242735625: global: Number of accelerators running = 1
 ********************************************************************************
 system.acctest.isp0.compute
    ========= Performance Analysis =============
-   Setup Time:                      0.250824seconds
-   Simulation Time:                 661.817seconds
+   Setup Time:                      0.24968seconds
+   Simulation Time:                 637.137seconds
    System Clock:                    1GHz
    Transistor Latency:              1ns
    Runtime:                         34882 cycles
@@ -43,8 +97,8 @@ system.acctest.isp0.compute
 
 ********************************************************************************
    ========= Performance Analysis =================
-   Setup Time:                      2.50824e+08ns
-   Simulation Time:                 6.61817e+11ns
+   Setup Time:                      2.4968e+08ns
+   Simulation Time:                 6.37137e+11ns
    System Clock:                    1GHz
    Transistor Latency:              0ns
    Runtime:                         34882 cycles
@@ -128,6 +182,9 @@ system.acctest.isp0.compute
    SPM Write Dynamic Power:         7.385230 mW
    SPM Total Power:                 18.550041 mW
 
+   SPM Energy Per Read Access:      0.142059 nJ
+   SPM Energy Per Write Access:     0.255513 nJ
+
    Cache Leakage Power:             0.000000 mW
    Cache Read Dynamic Power:        0.000000 mW
    Cache Write Dynamic Power:       0.000000 mW
@@ -151,38 +208,46 @@ system.acctest.isp0.compute
    SPM Optimized Leakage Power:     0.005964 mW
    SPM Opt Area:                    422.108128 um^2
 
-63785625: global: Timer #0 started at tick 63785625
-64131250: global: Timer #2 started at tick 64131250
-65134375: global: Timer #2 stopped at tick 65134375. Duration: 1003125
-65863125: global: DAG ID = 0
-65882500: global: Node ID = 0
-65900625: global: Node deadline difference = -13977
-65962500: global: Predicted memory time / byte = 7.27596e-05 us/byte
-65980625: global: Predicted memory time = 1.22964 us
-65998750: global: Predicted memory time / byte = 7.27596e-05 us/byte
-66016875: global: Predicted memory time = 3.57628 us
-66035000: global: Predicted memory time / byte = 0.000229231 us/byte
-66096250: global: Predicted memory time = 3.874 us
-66114375: global: Predicted memory time / byte = 0 us/byte
-66132500: global: Predicted memory time = 0 us
-66150625: global: Predicted memory access size = 0
-66168750: global: Predicted memory access size = 16900
-66231250: global: Predicted memory access size = 0
-66250000: global: Predicted memory access size = 0
-67468750: system.acctest.grayscale0_dma: SRC:0x0000000027004224, DST:0x0000000025000020, LEN:49152
-67931875: global: Timer #0 stopped at tick 67931875. Duration: 4146250
-67948125: global: Number of accelerators running = 1
-75169750: system.acctest.grayscale0_dma: Transfer completed in 7.701 us
-75264375: global: Timer #0 started at tick 75264375
-75879375: global: Timer #1 started at tick 75879375
-76565625: global: Timer #1 stopped at tick 76565625. Duration: 686250
-78073125: global: Timer #0 stopped at tick 78073125. Duration: 2808750
-78131875: global: Number of accelerators running = 1
+276958125: global: Timer #0 started at tick 276958125
+277180625: global: Timer #2 started at tick 277180625
+278114375: global: Timer #2 stopped at tick 278114375. Duration: 933750
+278901250: global: DAG ID = 0
+278919375: global: Node ID = 0
+278982500: global: Node deadline difference = -13981
+279000625: global: Predicted memory time / byte = 7.27596e-05 us/byte
+279018750: global: Predicted memory time = 1.22964 us
+279036875: global: Predicted memory time / byte = 7.27596e-05 us/byte
+279055000: global: Predicted memory time = 3.57628 us
+279117500: global: Predicted memory time / byte = 0.000230178 us/byte
+279135625: global: Predicted memory time = 3.89 us
+279153750: global: Predicted memory time / byte = 0 us/byte
+279171875: global: Predicted memory time = 0 us
+279190000: global: Predicted memory access size = 0
+279208125: global: Predicted memory access size = 16900
+279270000: global: Predicted memory access size = 0
+279288750: global: Predicted memory access size = 0
+279510625: global: Timer #6 started at tick 279510625
+279983750: global: Timer #7 started at tick 279983750
+280661625: system.acctest.grayscale0_dma: SRC:0x0000000027010224, DST:0x0000000025000020, LEN:49152
+280921875: global: Timer #7 stopped at tick 280921875. Duration: 938125
+281072500: global: Timer #6 stopped at tick 281072500. Duration: 1561875
+281190625: global: Timer #0 stopped at tick 281190625. Duration: 4232500
+281205000: global: Number of accelerators running = 1
+288362625: system.acctest.grayscale0_dma: Transfer completed in 7.701 us
+288456875: global: Timer #0 started at tick 288456875
+288905000: global: Timer #1 started at tick 288905000
+289276875: global: Timer #1 stopped at tick 289276875. Duration: 371875
+289586250: global: Timer #6 started at tick 289586250
+289718750: global: Timer #7 started at tick 289718750
+290162500: global: Timer #7 stopped at tick 290162500. Duration: 443750
+290378750: global: Timer #6 stopped at tick 290378750. Duration: 792500
+290500000: global: Timer #0 stopped at tick 290500000. Duration: 2043125
+290514375: global: Number of accelerators running = 1
 ********************************************************************************
 system.acctest.grayscale0.compute
    ========= Performance Analysis =============
-   Setup Time:                      0.009058seconds
-   Simulation Time:                 177.811481seconds
+   Setup Time:                      0.011180seconds
+   Simulation Time:                 167.269383seconds
    System Clock:                    1.000000GHz
    Transistor Latency:              1ns
    Runtime:                         10263 cycles
@@ -192,8 +257,8 @@ system.acctest.grayscale0.compute
 
 ********************************************************************************
    ========= Performance Analysis =================
-   Setup Time:                      9057953.000000ns
-   Simulation Time:                 177811481411.000000ns
+   Setup Time:                      11180452.000000ns
+   Simulation Time:                 167269382555.000000ns
    System Clock:                    1.000000GHz
    Transistor Latency:              0ns
    Runtime:                         10263 cycles
@@ -277,6 +342,9 @@ system.acctest.grayscale0.compute
    SPM Write Dynamic Power:         2.062375 mW
    SPM Total Power:                 9.149552 mW
 
+   SPM Energy Per Read Access:      0.161778 nJ
+   SPM Energy Per Write Access:     0.205661 nJ
+
    Cache Leakage Power:             0.000000 mW
    Cache Read Dynamic Power:        0.000000 mW
    Cache Write Dynamic Power:       0.000000 mW
@@ -300,52 +368,66 @@ system.acctest.grayscale0.compute
    SPM Optimized Leakage Power:     0.003633 mW
    SPM Opt Area:                    364.024374 um^2
 
-87964375: global: Timer #0 started at tick 87964375
-88173125: global: Timer #2 started at tick 88173125
-88584375: global: Timer #2 stopped at tick 88584375. Duration: 411250
-88617500: global: Timer #2 started at tick 88617500
-89151250: global: Timer #2 stopped at tick 89151250. Duration: 533750
-102650875: system.acctest.grayscale0_dma: SRC:0x000000002500c020, DST:0x0000000082029280, LEN:65536
-104393000: system.acctest.convolution0_dma: SRC:0x000000002500c020, DST:0x0000000022000020, LEN:65536
-104817500: global: Timer #0 stopped at tick 104817500. Duration: 16853125
-104833750: global: Number of accelerators running = 2
-113595875: system.acctest.grayscale0_dma: Transfer completed in 10.945 us
-113766875: global: Timer #0 started at tick 113766875
-114469375: global: Timer #1 started at tick 114469375
-115033750: global: Timer #1 stopped at tick 115033750. Duration: 564375
-115449375: global: DAG ID = 0
-115513125: global: Node ID = 1
-115587500: global: Node deadline difference = -13964
-115605625: global: Predicted memory time / byte = 0.000229231 us/byte
-115623750: global: Predicted memory time = 11.2672 us
-115643750: global: Predicted memory time / byte = 0.000229231 us/byte
-115661875: global: Predicted memory time = 15.0229 us
-115680000: global: Predicted memory time / byte = 0.000157654 us/byte
-115698125: global: Predicted memory time = 7.749 us
-115716250: global: Predicted memory time / byte = 0.000170319 us/byte
-115734375: global: Predicted memory time = 11.162 us
-115754375: global: Predicted memory access size = 0
-115772500: global: Predicted memory access size = 49152
-115790625: global: Predicted memory access size = 0
-115808750: global: Predicted memory access size = 65536
-115964375: global: Timer #0 stopped at tick 115964375. Duration: 2197500
-115980625: global: Number of accelerators running = 1
-117851000: system.acctest.convolution0_dma: Transfer completed in 13.458 us
-117991250: global: Timer #0 started at tick 117991250
-118450625: global: Timer #1 started at tick 118450625
-118840000: global: Timer #1 stopped at tick 118840000. Duration: 389375
-120339500: system.acctest.convolution0_dma: SRC:0x0000000082039580, DST:0x0000000022030020, LEN:36
-120372500: system.acctest.convolution0_dma: Transfer completed in 0.033 us
-120687500: global: Timer #0 stopped at tick 120687500. Duration: 2696250
-120746875: global: Number of accelerators running = 1
-121080625: global: Timer #0 started at tick 121080625
-122891875: global: Timer #0 stopped at tick 122891875. Duration: 1811250
-122908125: global: Number of accelerators running = 1
+300334375: global: Timer #0 started at tick 300334375
+300543125: global: Timer #2 started at tick 300543125
+300880625: global: Timer #2 stopped at tick 300880625. Duration: 337500
+300914375: global: Timer #2 started at tick 300914375
+301457500: global: Timer #2 stopped at tick 301457500. Duration: 543125
+301716250: global: Timer #7 started at tick 301716250
+302358750: system.acctest.grayscale0_dma: SRC:0x000000002501c020, DST:0x00000000820a33c0, LEN:65536
+302511250: global: Timer #7 stopped at tick 302511250. Duration: 795000
+302773125: global: Timer #6 started at tick 302773125
+303335625: global: Timer #7 started at tick 303335625
+304113000: system.acctest.convolution0_dma: SRC:0x000000002501c020, DST:0x0000000022000020, LEN:65536
+304421875: global: Timer #7 stopped at tick 304421875. Duration: 1086250
+304451875: global: Timer #6 stopped at tick 304451875. Duration: 1678750
+304571875: global: Timer #0 stopped at tick 304571875. Duration: 4237500
+304586250: global: Number of accelerators running = 2
+313243750: system.acctest.grayscale0_dma: Transfer completed in 10.885 us
+313319375: global: Timer #0 started at tick 313319375
+313954375: global: Timer #1 started at tick 313954375
+314347500: global: Timer #1 stopped at tick 314347500. Duration: 393125
+314677500: global: DAG ID = 0
+314695625: global: Node ID = 1
+314762500: global: Node deadline difference = -13982
+314780625: global: Predicted memory time / byte = 0.000230178 us/byte
+314798750: global: Predicted memory time = 11.3137 us
+314816875: global: Predicted memory time / byte = 0.000230178 us/byte
+314835000: global: Predicted memory time = 15.0849 us
+314853125: global: Predicted memory time / byte = 0.000155863 us/byte
+314871250: global: Predicted memory time = 7.661 us
+314889375: global: Predicted memory time / byte = 0.000167252 us/byte
+314907500: global: Predicted memory time = 10.961 us
+314925625: global: Predicted memory access size = 0
+314943750: global: Predicted memory access size = 49152
+314961875: global: Predicted memory access size = 0
+314980000: global: Predicted memory access size = 65536
+315119375: global: Timer #0 stopped at tick 315119375. Duration: 1800000
+315133750: global: Number of accelerators running = 1
+317595000: system.acctest.convolution0_dma: Transfer completed in 13.482 us
+317688750: global: Timer #0 started at tick 317688750
+318013750: global: Timer #1 started at tick 318013750
+318150625: global: Timer #1 stopped at tick 318150625. Duration: 136875
+318385000: global: Timer #6 started at tick 318385000
+318573125: global: Timer #7 started at tick 318573125
+319219500: system.acctest.convolution0_dma: SRC:0x00000000820b36c0, DST:0x0000000022030020, LEN:36
+319306500: system.acctest.convolution0_dma: Transfer completed in 0.087 us
+319408750: global: Timer #7 stopped at tick 319408750. Duration: 835625
+319442500: global: Timer #6 stopped at tick 319442500. Duration: 1057500
+319546875: global: Timer #0 stopped at tick 319546875. Duration: 1858125
+319561250: global: Number of accelerators running = 1
+319678125: global: Timer #0 started at tick 319678125
+320156250: global: Timer #6 started at tick 320156250
+320215000: global: Timer #7 started at tick 320215000
+321278750: global: Timer #7 stopped at tick 321278750. Duration: 1063750
+321333750: global: Timer #6 stopped at tick 321333750. Duration: 1177500
+321424375: global: Timer #0 stopped at tick 321424375. Duration: 1746250
+321438750: global: Number of accelerators running = 1
 ********************************************************************************
 system.acctest.convolution0.compute
    ========= Performance Analysis =============
-   Setup Time:                      0.581958seconds
-   Simulation Time:                 108.831542seconds
+   Setup Time:                      0.792341seconds
+   Simulation Time:                 132.278600seconds
    System Clock:                    1.000000GHz
    Transistor Latency:              1ns
    Runtime:                         637329 cycles
@@ -355,8 +437,8 @@ system.acctest.convolution0.compute
 
 ********************************************************************************
    ========= Performance Analysis =================
-   Setup Time:                      581958125.000000ns
-   Simulation Time:                 108831542098.000000ns
+   Setup Time:                      792340774.000000ns
+   Simulation Time:                 132278599635.000000ns
    System Clock:                    1.000000GHz
    Transistor Latency:              0ns
    Runtime:                         637329 cycles
@@ -440,6 +522,9 @@ system.acctest.convolution0.compute
    SPM Write Dynamic Power:         0.953321 mW
    SPM Total Power:                 8.313304 mW
 
+   SPM Energy Per Read Access:      0.130935 nJ
+   SPM Energy Per Write Access:     0.166637 nJ
+
    Cache Leakage Power:             0.000000 mW
    Cache Read Dynamic Power:        0.000000 mW
    Cache Write Dynamic Power:       0.000000 mW
@@ -463,46 +548,70 @@ system.acctest.convolution0.compute
    SPM Optimized Leakage Power:     0.002053 mW
    SPM Opt Area:                    145.024971 um^2
 
-760078125: global: Timer #0 started at tick 760078125
-760246875: global: Timer #2 started at tick 760246875
-760778750: global: Timer #2 stopped at tick 760778750. Duration: 531875
-774257375: system.acctest.convolution0_dma: SRC:0x0000000022010020, DST:0x0000000082039600, LEN:65536
-775853000: system.acctest.elem_matrix0_dma: SRC:0x0000000022010020, DST:0x0000000024000020, LEN:65536
-776208125: global: Timer #0 stopped at tick 776208125. Duration: 16130000
-776224375: global: Number of accelerators running = 2
-786004375: system.acctest.convolution0_dma: Transfer completed in 11.747 us
-786123125: global: Timer #0 started at tick 786123125
-786481875: global: Timer #1 started at tick 786481875
-786840625: global: Timer #1 stopped at tick 786840625. Duration: 358750
-787072500: global: DAG ID = 0
-787086250: global: Node ID = 2
-787104375: global: Node deadline difference = -13960
-787116875: global: Predicted memory time / byte = 0.000211337 us/byte
-787129375: global: Predicted memory time = 13.8578 us
-787141875: global: Predicted memory time / byte = 0.000211337 us/byte
-787154375: global: Predicted memory time = 13.8502 us
-787166875: global: Predicted memory time / byte = 0.000206192 us/byte
-787179375: global: Predicted memory time = 13.513 us
-787191875: global: Predicted memory time / byte = 0.000180328 us/byte
-787204375: global: Predicted memory time = 11.818 us
-787216875: global: Predicted memory access size = 0
-787229375: global: Predicted memory access size = 65572
-787241875: global: Predicted memory access size = 0
-787254375: global: Predicted memory access size = 65536
-789259000: system.acctest.elem_matrix0_dma: Transfer completed in 13.406 us
-800825875: system.acctest.convolution0_dma: SRC:0x0000000082029280, DST:0x0000000022000020, LEN:65536
-801072500: global: Timer #0 stopped at tick 801072500. Duration: 14949375
-801088750: global: Number of accelerators running = 2
-801345000: global: Timer #0 started at tick 801345000
-801801875: global: Timer #1 started at tick 801801875
-802241250: global: Timer #1 stopped at tick 802241250. Duration: 439375
-804483750: global: Timer #0 stopped at tick 804483750. Duration: 3138750
-804500000: global: Number of accelerators running = 2
+958559375: global: Timer #0 started at tick 958559375
+958728125: global: Timer #2 started at tick 958728125
+959045000: global: Timer #2 stopped at tick 959045000. Duration: 316875
+959328750: global: Timer #7 started at tick 959328750
+959967375: system.acctest.convolution0_dma: SRC:0x0000000022020020, DST:0x00000000820b3740, LEN:65536
+960116250: global: Timer #7 stopped at tick 960116250. Duration: 787500
+960385000: global: Timer #6 started at tick 960385000
+961003750: global: Timer #7 started at tick 961003750
+961791000: system.acctest.elem_matrix0_dma: SRC:0x0000000022020020, DST:0x0000000024000020, LEN:65536
+962048750: global: Timer #7 stopped at tick 962048750. Duration: 1045000
+962077500: global: Timer #6 stopped at tick 962077500. Duration: 1692500
+962176875: global: Timer #0 stopped at tick 962176875. Duration: 3617500
+962191250: global: Number of accelerators running = 2
+971432375: system.acctest.convolution0_dma: Transfer completed in 11.465 us
+971508125: global: Timer #0 started at tick 971508125
+971847500: global: Timer #1 started at tick 971847500
+971992500: global: Timer #1 stopped at tick 971992500. Duration: 145000
+972203750: global: DAG ID = 0
+972216250: global: Node ID = 2
+972235625: global: Node deadline difference = -13992
+972248125: global: Predicted memory time / byte = 0.000211599 us/byte
+972260625: global: Predicted memory time = 13.875 us
+972273125: global: Predicted memory time / byte = 0.000211599 us/byte
+972285625: global: Predicted memory time = 13.8674 us
+972298125: global: Predicted memory time / byte = 0.000205154 us/byte
+972310625: global: Predicted memory time = 13.445 us
+972323125: global: Predicted memory time / byte = 0.000174728 us/byte
+972335625: global: Predicted memory time = 11.451 us
+972348125: global: Predicted memory access size = 0
+972360625: global: Predicted memory access size = 65536
+972373125: global: Predicted memory access size = 0
+972385625: global: Predicted memory access size = 65536
+972459375: global: Timer #6 started at tick 972459375
+972579375: global: Timer #7 started at tick 972579375
+973227000: system.acctest.convolution0_dma: SRC:0x000000002501c020, DST:0x0000000022000020, LEN:65536
+973363125: global: Timer #7 stopped at tick 973363125. Duration: 783750
+973388750: global: Timer #6 stopped at tick 973388750. Duration: 929375
+973527500: global: Timer #0 stopped at tick 973527500. Duration: 2019375
+973541875: global: Number of accelerators running = 2
+976320000: system.acctest.elem_matrix0_dma: Transfer completed in 14.529 us
+976412500: global: Timer #0 started at tick 976412500
+976749375: global: Timer #1 started at tick 976749375
+976881250: global: Timer #1 stopped at tick 976881250. Duration: 131875
+977129375: global: Timer #6 started at tick 977129375
+977293750: global: Timer #7 started at tick 977293750
+978357500: global: Timer #7 stopped at tick 978357500. Duration: 1063750
+978572500: global: Timer #6 stopped at tick 978572500. Duration: 1443125
+978681875: global: Timer #0 stopped at tick 978681875. Duration: 2269375
+978696250: global: Number of accelerators running = 2
+984790000: system.acctest.convolution0_dma: Transfer completed in 11.563 us
+984880000: global: Timer #0 started at tick 984880000
+985208750: global: Timer #1 started at tick 985208750
+985330625: global: Timer #1 stopped at tick 985330625. Duration: 121875
+985556875: global: Timer #6 started at tick 985556875
+985605625: global: Timer #7 started at tick 985605625
+986245875: system.acctest.convolution0_dma: SRC:0x00000000820b3700, DST:0x0000000022030020, LEN:36
+986332875: system.acctest.convolution0_dma: Transfer completed in 0.087 us
+986370000: global: Timer #7 stopped at tick 986370000. Duration: 764375
+986393750: global: Timer #6 stopped at tick 986393750. Duration: 836875
 ********************************************************************************
 system.acctest.elem_matrix0.compute
    ========= Performance Analysis =============
-   Setup Time:                      5.010990seconds
-   Simulation Time:                 105.862062seconds
+   Setup Time:                      4.387415seconds
+   Simulation Time:                 81.885859seconds
    System Clock:                    1.000000GHz
    Transistor Latency:              1ns
    Runtime:                         8199 cycles
@@ -512,8 +621,8 @@ system.acctest.elem_matrix0.compute
 
 ********************************************************************************
    ========= Performance Analysis =================
-   Setup Time:                      5010989758.000000ns
-   Simulation Time:                 105862062303.000000ns
+   Setup Time:                      4387414648.000000ns
+   Simulation Time:                 81885859280.000000ns
    System Clock:                    1.000000GHz
    Transistor Latency:              0ns
    Runtime:                         8199 cycles
@@ -597,6 +706,9 @@ system.acctest.elem_matrix0.compute
    SPM Write Dynamic Power:         0.953321 mW
    SPM Total Power:                 1.963046 mW
 
+   SPM Energy Per Read Access:      0.170493 nJ
+   SPM Energy Per Write Access:     0.218190 nJ
+
    Cache Leakage Power:             0.000000 mW
    Cache Read Dynamic Power:        0.000000 mW
    Cache Write Dynamic Power:       0.000000 mW
@@ -620,49 +732,49 @@ system.acctest.elem_matrix0.compute
    SPM Optimized Leakage Power:     0.003237 mW
    SPM Opt Area:                    162.973445 um^2
 
-812465000: global: Timer #0 started at tick 812465000
-812715625: global: Timer #2 started at tick 812715625
-812803875: system.acctest.convolution0_dma: Transfer completed in 11.978 us
-813004375: global: Timer #2 stopped at tick 813004375. Duration: 288750
-826210875: system.acctest.elem_matrix0_dma: SRC:0x0000000024010020, DST:0x0000000082059ec0, LEN:65536
-826590000: global: Timer #0 stopped at tick 826590000. Duration: 14125000
-826606250: global: Number of accelerators running = 2
-826730000: global: Timer #0 started at tick 826730000
-827186875: global: Timer #1 started at tick 827186875
-827519375: global: Timer #1 stopped at tick 827519375. Duration: 332500
-828610000: system.acctest.convolution0_dma: SRC:0x00000000820395c0, DST:0x0000000022030020, LEN:36
-828765000: system.acctest.convolution0_dma: Transfer completed in 0.155 us
-828876250: global: Timer #0 stopped at tick 828876250. Duration: 2146250
-828892500: global: Number of accelerators running = 2
-829225625: global: Timer #0 started at tick 829225625
-831096875: global: Timer #0 stopped at tick 831096875. Duration: 1871250
-831113125: global: Number of accelerators running = 2
-832599875: system.acctest.elem_matrix0_dma: Transfer completed in 6.389 us
-832685625: global: Timer #0 started at tick 832685625
-832998750: global: Timer #1 started at tick 832998750
-833464375: global: Timer #1 stopped at tick 833464375. Duration: 465625
-833684375: global: DAG ID = 0
-833698125: global: Node ID = 4
-833716250: global: Node deadline difference = -13954
-833728750: global: Predicted memory time / byte = 0.00020236 us/byte
-833741250: global: Predicted memory time = 13.2618 us
-833753750: global: Predicted memory time / byte = 0.00020236 us/byte
-833766250: global: Predicted memory time = 13.2618 us
-833778750: global: Predicted memory time / byte = 0.000388306 us/byte
-833791250: global: Predicted memory time = 25.448 us
-833803750: global: Predicted memory time / byte = 9.73358e-05 us/byte
-833816250: global: Predicted memory time = 6.379 us
-833828750: global: Predicted memory access size = 0
-833841250: global: Predicted memory access size = 65536
-833853750: global: Predicted memory access size = 0
-833866250: global: Predicted memory access size = 65536
-833979375: global: Timer #0 stopped at tick 833979375. Duration: 1293750
-833995625: global: Number of accelerators running = 1
+986490000: global: Timer #0 stopped at tick 986490000. Duration: 1610000
+986504375: global: Number of accelerators running = 2
+986613125: global: Timer #0 started at tick 986613125
+987087500: global: Timer #6 started at tick 987087500
+987138125: global: Timer #7 started at tick 987138125
+988142500: global: Timer #7 stopped at tick 988142500. Duration: 1004375
+988184375: global: Timer #6 stopped at tick 988184375. Duration: 1096875
+988273750: global: Timer #0 stopped at tick 988273750. Duration: 1660625
+988288125: global: Number of accelerators running = 2
+988406250: global: Timer #0 started at tick 988406250
+988653750: global: Timer #2 started at tick 988653750
+988939375: global: Timer #2 stopped at tick 988939375. Duration: 285625
+989057500: global: Timer #7 started at tick 989057500
+989699500: system.acctest.elem_matrix0_dma: SRC:0x0000000024030020, DST:0x00000000820d4000, LEN:65536
+989848125: global: Timer #7 stopped at tick 989848125. Duration: 790625
+990102500: global: Timer #0 stopped at tick 990102500. Duration: 1696250
+990116875: global: Number of accelerators running = 2
+996072500: system.acctest.elem_matrix0_dma: Transfer completed in 6.373 us
+996148125: global: Timer #0 started at tick 996148125
+996473125: global: Timer #1 started at tick 996473125
+996614375: global: Timer #1 stopped at tick 996614375. Duration: 141250
+996813750: global: DAG ID = 0
+996826250: global: Node ID = 4
+996860625: global: Node deadline difference = -14008
+996873125: global: Predicted memory time / byte = 0.000201673 us/byte
+996885625: global: Predicted memory time = 13.2168 us
+996898125: global: Predicted memory time / byte = 0.000201673 us/byte
+996910625: global: Predicted memory time = 13.2168 us
+996923125: global: Predicted memory time / byte = 0.000221085 us/byte
+996935625: global: Predicted memory time = 14.489 us
+996948125: global: Predicted memory time / byte = 9.68781e-05 us/byte
+996960625: global: Predicted memory time = 6.349 us
+996973125: global: Predicted memory access size = 0
+996985625: global: Predicted memory access size = 65536
+996998125: global: Predicted memory access size = 0
+997010625: global: Predicted memory access size = 65536
+997125625: global: Timer #0 stopped at tick 997125625. Duration: 977500
+997140000: global: Number of accelerators running = 1
 ********************************************************************************
 system.acctest.convolution0.compute
    ========= Performance Analysis =============
-   Setup Time:                      0.732425seconds
-   Simulation Time:                 119.172117seconds
+   Setup Time:                      0.671559seconds
+   Simulation Time:                 119.223326seconds
    System Clock:                    1.000000GHz
    Transistor Latency:              1ns
    Runtime:                         637329 cycles
@@ -672,8 +784,8 @@ system.acctest.convolution0.compute
 
 ********************************************************************************
    ========= Performance Analysis =================
-   Setup Time:                      732424523.000000ns
-   Simulation Time:                 119172117037.000000ns
+   Setup Time:                      671558692.000000ns
+   Simulation Time:                 119223325615.000000ns
    System Clock:                    1.000000GHz
    Transistor Latency:              0ns
    Runtime:                         637329 cycles
@@ -757,6 +869,9 @@ system.acctest.convolution0.compute
    SPM Write Dynamic Power:         2.044305 mW
    SPM Total Power:                 11.896606 mW
 
+   SPM Energy Per Read Access:      0.130935 nJ
+   SPM Energy Per Write Access:     0.166637 nJ
+
    Cache Leakage Power:             0.000000 mW
    Cache Read Dynamic Power:        0.000000 mW
    Cache Write Dynamic Power:       0.000000 mW
@@ -780,93 +895,120 @@ system.acctest.convolution0.compute
    SPM Optimized Leakage Power:     0.002053 mW
    SPM Opt Area:                    145.024971 um^2
 
-1468280000: global: Timer #0 started at tick 1468280000
-1468533750: global: Timer #2 started at tick 1468533750
-1468830000: global: Timer #2 stopped at tick 1468830000. Duration: 296250
-1468871875: global: Timer #2 started at tick 1468871875
-1469211875: global: Timer #2 stopped at tick 1469211875. Duration: 340000
-1482460875: system.acctest.convolution0_dma: SRC:0x0000000022010020, DST:0x0000000082049600, LEN:65536
-1483624000: system.acctest.elem_matrix0_dma: SRC:0x0000000022010020, DST:0x0000000024000020, LEN:65536
-1483851875: global: Timer #0 stopped at tick 1483851875. Duration: 15571875
-1483868125: global: Number of accelerators running = 2
-1494211875: system.acctest.convolution0_dma: Transfer completed in 11.751 us
-1494330000: global: Timer #0 started at tick 1494330000
-1494640625: global: Timer #1 started at tick 1494640625
-1494808750: global: Timer #1 stopped at tick 1494808750. Duration: 168125
-1495078750: global: DAG ID = 0
-1495092500: global: Node ID = 3
-1495110625: global: Node deadline difference = -13252
-1495123125: global: Predicted memory time / byte = 0.000211337 us/byte
-1495135625: global: Predicted memory time = 13.8578 us
-1495148125: global: Predicted memory time / byte = 0.000211337 us/byte
-1495160625: global: Predicted memory time = 13.8502 us
-1495173125: global: Predicted memory time / byte = 0.000395355 us/byte
-1495185625: global: Predicted memory time = 25.91 us
-1495198125: global: Predicted memory time / byte = 0.000179688 us/byte
-1495210625: global: Predicted memory time = 11.776 us
-1495223125: global: Predicted memory access size = 0
-1495235625: global: Predicted memory access size = 65572
-1495248125: global: Predicted memory access size = 0
-1495260625: global: Predicted memory access size = 65536
-1497524000: system.acctest.elem_matrix0_dma: Transfer completed in 13.9 us
-1508568750: system.acctest.convolution0_dma: SRC:0x0000000082059ec0, DST:0x0000000022000020, LEN:65536
-1508825625: global: Timer #0 stopped at tick 1508825625. Duration: 14495625
-1508841875: global: Number of accelerators running = 2
-1509050000: global: Timer #0 started at tick 1509050000
-1509543750: global: Timer #1 started at tick 1509543750
-1509926875: global: Timer #1 stopped at tick 1509926875. Duration: 383125
-1511406875: global: Timer #0 stopped at tick 1511406875. Duration: 2356875
-1511423125: global: Number of accelerators running = 2
+1625443750: global: Timer #0 started at tick 1625443750
+1625695625: global: Timer #2 started at tick 1625695625
+1625988750: global: Timer #2 stopped at tick 1625988750. Duration: 293125
+1626025625: global: Timer #2 started at tick 1626025625
+1626375625: global: Timer #2 stopped at tick 1626375625. Duration: 350000
+1626608125: global: Timer #7 started at tick 1626608125
+1627250875: system.acctest.convolution0_dma: SRC:0x0000000022010020, DST:0x00000000820c3740, LEN:65536
+1627386875: global: Timer #7 stopped at tick 1627386875. Duration: 778750
+1627605000: global: Timer #6 started at tick 1627605000
+1627740000: global: Timer #7 started at tick 1627740000
+1628405000: system.acctest.elem_matrix0_dma: SRC:0x0000000022010020, DST:0x0000000024000020, LEN:65536
+1628540000: global: Timer #7 stopped at tick 1628540000. Duration: 800000
+1628562500: global: Timer #6 stopped at tick 1628562500. Duration: 957500
+1628658750: global: Timer #0 stopped at tick 1628658750. Duration: 3215000
+1628673125: global: Number of accelerators running = 2
+1638832875: system.acctest.convolution0_dma: Transfer completed in 11.582 us
+1638909375: global: Timer #0 started at tick 1638909375
+1639234375: global: Timer #1 started at tick 1639234375
+1639370000: global: Timer #1 stopped at tick 1639370000. Duration: 135625
+1639571875: global: DAG ID = 0
+1639584375: global: Node ID = 3
+1639611250: global: Node deadline difference = -13325
+1639623750: global: Predicted memory time / byte = 0.000211599 us/byte
+1639636250: global: Predicted memory time = 13.875 us
+1639648750: global: Predicted memory time / byte = 0.000211599 us/byte
+1639661250: global: Predicted memory time = 13.8674 us
+1639673750: global: Predicted memory time / byte = 0.000176437 us/byte
+1639686250: global: Predicted memory time = 11.563 us
+1639698750: global: Predicted memory time / byte = 0.000176468 us/byte
+1639711250: global: Predicted memory time = 11.565 us
+1639723750: global: Predicted memory access size = 0
+1639736250: global: Predicted memory access size = 65536
+1639748750: global: Predicted memory access size = 0
+1639761250: global: Predicted memory access size = 65536
+1639826875: global: Timer #6 started at tick 1639826875
+1639903750: global: Timer #7 started at tick 1639903750
+1640540000: system.acctest.convolution0_dma: SRC:0x0000000024030020, DST:0x0000000022000020, LEN:65536
+1640671875: global: Timer #7 stopped at tick 1640671875. Duration: 768125
+1640697500: global: Timer #6 stopped at tick 1640697500. Duration: 870625
+1640832500: global: Timer #0 stopped at tick 1640832500. Duration: 1923125
+1640846875: global: Number of accelerators running = 2
+1643917000: system.acctest.elem_matrix0_dma: Transfer completed in 15.512 us
+1644001875: global: Timer #0 started at tick 1644001875
+1644326250: global: Timer #1 started at tick 1644326250
+1644462500: global: Timer #1 stopped at tick 1644462500. Duration: 136250
+1644688750: global: Timer #6 started at tick 1644688750
+1644743125: global: Timer #7 started at tick 1644743125
+1645792500: global: Timer #7 stopped at tick 1645792500. Duration: 1049375
+1645880000: global: Timer #6 stopped at tick 1645880000. Duration: 1191250
+1646003750: global: Timer #0 stopped at tick 1646003750. Duration: 2001875
+1646018125: global: Number of accelerators running = 2
+1652447000: system.acctest.convolution0_dma: Transfer completed in 11.907 us
+1652531875: global: Timer #0 started at tick 1652531875
+1652860625: global: Timer #1 started at tick 1652860625
+1652992500: global: Timer #1 stopped at tick 1652992500. Duration: 131875
+1653216250: global: Timer #6 started at tick 1653216250
+1653265000: global: Timer #7 started at tick 1653265000
+1653908750: system.acctest.convolution0_dma: SRC:0x0000000082134000, DST:0x0000000022030020, LEN:100
+1654033125: global: Timer #7 stopped at tick 1654033125. Duration: 768125
+1654038750: system.acctest.convolution0_dma: Transfer completed in 0.13 us
+1654053125: global: Timer #6 stopped at tick 1654053125. Duration: 836875
+1654151250: global: Timer #0 stopped at tick 1654151250. Duration: 1619375
+1654165625: global: Number of accelerators running = 2
+1654274375: global: Timer #0 started at tick 1654274375
 ********************************************************************************
 system.acctest.elem_matrix0.compute
    ========= Performance Analysis =============
-   Setup Time:                      5.241415seconds
-   Simulation Time:                 107.398839seconds
+   Setup Time:                      4.951460seconds
+   Simulation Time:                 105.513351seconds
    System Clock:                    1.000000GHz
    Transistor Latency:              1ns
-   Runtime:                         8199 cycles
-   Runtime:                         8.199000 us
-   Stalls:                          2729 cycles
-   Executed Nodes:                  5469 cycles
+   Runtime:                         8624 cycles
+   Runtime:                         8.624000 us
+   Stalls:                          2546 cycles
+   Executed Nodes:                  6077 cycles
 
 ********************************************************************************
    ========= Performance Analysis =================
-   Setup Time:                      5241414810.000000ns
-   Simulation Time:                 107398838779.000000ns
+   Setup Time:                      4951460495.000000ns
+   Simulation Time:                 105513350831.000000ns
    System Clock:                    1.000000GHz
    Transistor Latency:              0ns
-   Runtime:                         8199 cycles
+   Runtime:                         8624 cycles
    Runtime:                         0.000001 seconds
-   Stalls:                          2729 cycles
+   Stalls:                          2546 cycles
        Load Only:                   0 cycles
-       Store Only:                  2729 cycles
+       Store Only:                  2546 cycles
        Compute Only:                0 cycles
        Compute & Store:             0 cycles
        Load & Store:                0 cycles
        Load & Compute:              0 cycles
        Load & Compute & Store:      0 cycles
-   Executed Nodes:                  5469 cycles
+   Executed Nodes:                  6077 cycles
        Load Only:                   0 cycles
-       Store Only:                  4 cycles
-       Compute Only:                1 cycles
-       Compute & Store:             11 cycles
+       Store Only:                  497 cycles
+       Compute Only:                4 cycles
+       Compute & Store:             123 cycles
        Load & Store:                0 cycles
-       Load & Compute:              6 cycles
-       Load & Compute & Store:      5447 cycles
+       Load & Compute:              611 cycles
+       Load & Compute & Store:      4842 cycles
 
    ========= Runtime FU's ========= (Max | Avg) ===
-   Counter FU's:                      32 | 0.062450
+   Counter FU's:                      32 | 0.059373
    Integer Add/Sub FU's:               0 | 0.000000
    Integer Mul/Div FU's:               0 | 0.000000
    Integer Shifter FU's:               0 | 0.000000
-   Integer Bitwise FU's:               1 | 0.000122
+   Integer Bitwise FU's:               1 | 0.000116
    Floating Point Float Add/Sub:       0 | 0.000000
    Floating Point Double Add/Sub:      0 | 0.000000
-   Floating Point Float Mul/Div:      35 | 0.057652
+   Floating Point Float Mul/Div:      35 | 0.060751
    Floating Point Double Mul/Div:      0 | 0.000000
-   0 Cycle Compare FU's:              15 | 0.025182
-   GEP Instruction FU's:              64 | 0.062447
-   Type Conversion FU's:               7 | 0.009043
+   0 Cycle Compare FU's:              15 | 0.023941
+   GEP Instruction FU's:              64 | 0.059369
+   Type Conversion FU's:               7 | 0.008597
 
    ========= Static FU's ==========================
    Counter FU's:                    0
@@ -886,7 +1028,7 @@ system.acctest.elem_matrix0.compute
    ========= Pipeline Register Usage =============
    Total Number of Registers:       5641
    Max Register Usage Per Cycle:    104
-   Avg Register Usage Per Cycle:    10.117331
+   Avg Register Usage Per Cycle:    9.618738
    Avg Register Size (Bytes):       6.376398
 
    ========= Memory Configuration =================
@@ -902,100 +1044,112 @@ system.acctest.elem_matrix0.compute
        Memory Writes:               0
    ========= Power Analysis ======================
    FU Leakage Power:                0.045377 mW 
-   FU Dynamic Power:                0.051978 mW 
-   FU Total Power:                  0.097355 mW 
+   FU Dynamic Power:                0.054680 mW 
+   FU Total Power:                  0.100057 mW 
 
-   Registers Leakage Power:          0.004692 mW 
-   Registers Dynamic Power:          0.006422 mW 
+   Registers Leakage Power:          0.004223 mW 
+   Registers Dynamic Power:          0.006080 mW 
        Register Reads (Bits):        82952
        Register Writes (Bits):       84505
-   Registers Total Power:            0.011115 mW
+   Registers Total Power:            0.010303 mW
 
    SPM Leakage Power:               0.104100 mW
    SPM Read Dynamic Power:          1.997266 mW
    SPM Write Dynamic Power:         2.044305 mW
    SPM Total Power:                 4.145671 mW
 
+   SPM Energy Per Read Access:      0.170493 nJ
+   SPM Energy Per Write Access:     0.218190 nJ
+
    Cache Leakage Power:             0.000000 mW
    Cache Read Dynamic Power:        0.000000 mW
    Cache Write Dynamic Power:       0.000000 mW
    Cache Total Power:               0.000000 mW
 
-   Accelerator Power:               0.108470 mW
-   Accelerator Power (SPM):         4.254141 mW
-   Accelerator Power (Cache):       0.108470 mW
+   Accelerator Power:               0.110359 mW
+   Accelerator Power (SPM):         4.256031 mW
+   Accelerator Power (Cache):       0.110359 mW
 
    ========= Area Analysis =======================
    FU Area:                         5472.068359 um^2 (0.005472 mm^2)
-   Register Area:                   381.399994 um^2 (0.000381 mm^2)
+   Register Area:                   343.259979 um^2 (0.000343 mm^2)
    SPM Area:                        2177.365505 um^2 (0.002177 mm^2)
    Cache Area:                      0.000000 um^2 (0.000000 mm^2)
 
-   Accelerator Area:                5853.468262 um^2 (0.005853 mm^2)
-   Accelerator Area (SPM):          8030.833767 um^2 (0.008031 mm^2)
-   Accelerator Area (Cache):        5853.468262 um^2 (0.005853 mm^2)
+   Accelerator Area:                5815.328125 um^2 (0.005815 mm^2)
+   Accelerator Area (SPM):          7992.693630 um^2 (0.007993 mm^2)
+   Accelerator Area (Cache):        5815.328125 um^2 (0.005815 mm^2)
 
    ========= SPM Resizing  =======================
    SPM Optimized Leakage Power:     0.003237 mW
    SPM Opt Area:                    162.973445 um^2
 
-1519414375: global: Timer #0 started at tick 1519414375
-1519653750: global: Timer #2 started at tick 1519653750
-1519921875: global: Timer #2 stopped at tick 1519921875. Duration: 268125
-1520568750: system.acctest.convolution0_dma: Transfer completed in 12 us
-1533114500: system.acctest.elem_matrix0_dma: SRC:0x0000000024010020, DST:0x0000000082079ec0, LEN:65536
-1533515625: global: Timer #0 stopped at tick 1533515625. Duration: 14101250
-1533531875: global: Number of accelerators running = 2
-1533668125: global: Timer #0 started at tick 1533668125
-1534162500: global: Timer #1 started at tick 1534162500
-1534449375: global: Timer #1 stopped at tick 1534449375. Duration: 286875
-1535527000: system.acctest.convolution0_dma: SRC:0x00000000820b9ec0, DST:0x0000000022030020, LEN:100
-1535689000: system.acctest.convolution0_dma: Transfer completed in 0.162 us
-1535822500: global: Timer #0 stopped at tick 1535822500. Duration: 2154375
-1535838750: global: Number of accelerators running = 2
-1536170625: global: Timer #0 started at tick 1536170625
-1537962500: global: Timer #0 stopped at tick 1537962500. Duration: 1791875
-1537978750: global: Number of accelerators running = 2
-1539487500: system.acctest.elem_matrix0_dma: Transfer completed in 6.373 us
-1539573750: global: Timer #0 started at tick 1539573750
-1539882500: global: Timer #1 started at tick 1539882500
-1540298750: global: Timer #1 stopped at tick 1540298750. Duration: 416250
-1540562500: global: DAG ID = 0
-1540576250: global: Node ID = 6
-1540594375: global: Node deadline difference = -13247
-1540606875: global: Predicted memory time / byte = 0.000236115 us/byte
-1540619375: global: Predicted memory time = 15.4741 us
-1540631875: global: Predicted memory time / byte = 0.000236115 us/byte
-1540644375: global: Predicted memory time = 15.4741 us
-1540656875: global: Predicted memory time / byte = 0.000387955 us/byte
-1540669375: global: Predicted memory time = 25.425 us
-1540681875: global: Predicted memory time / byte = 9.7168e-05 us/byte
-1540694375: global: Predicted memory time = 6.368 us
-1540706875: global: Predicted memory access size = 0
-1540719375: global: Predicted memory access size = 65536
-1540731875: global: Predicted memory access size = 0
-1540744375: global: Predicted memory access size = 65536
-1554283750: system.acctest.elem_matrix0_dma: SRC:0x0000000082039600, DST:0x0000000024000020, LEN:65536
-1554508125: global: Timer #0 stopped at tick 1554508125. Duration: 14934375
-1554524375: global: Number of accelerators running = 2
-1566287750: system.acctest.elem_matrix0_dma: Transfer completed in 12.004 us
-1566494375: global: Timer #0 started at tick 1566494375
-1566938125: global: Timer #1 started at tick 1566938125
-1567368750: global: Timer #1 stopped at tick 1567368750. Duration: 430625
-1580871625: system.acctest.elem_matrix0_dma: SRC:0x0000000082049600, DST:0x0000000024010020, LEN:65536
-1581140625: global: Timer #0 stopped at tick 1581140625. Duration: 14646250
-1581156875: global: Number of accelerators running = 2
-1592865625: system.acctest.elem_matrix0_dma: Transfer completed in 11.994 us
-1592941250: global: Timer #0 started at tick 1592941250
-1593438125: global: Timer #1 started at tick 1593438125
-1593731250: global: Timer #1 stopped at tick 1593731250. Duration: 293125
-1595267500: global: Timer #0 stopped at tick 1595267500. Duration: 2326250
-1595283750: global: Number of accelerators running = 2
+1654748750: global: Timer #6 started at tick 1654748750
+1654799375: global: Timer #7 started at tick 1654799375
+1655802500: global: Timer #7 stopped at tick 1655802500. Duration: 1003125
+1655844375: global: Timer #6 stopped at tick 1655844375. Duration: 1095625
+1655941250: global: Timer #0 stopped at tick 1655941250. Duration: 1666875
+1655955625: global: Number of accelerators running = 2
+1656073125: global: Timer #0 started at tick 1656073125
+1656315000: global: Timer #2 started at tick 1656315000
+1656599375: global: Timer #2 stopped at tick 1656599375. Duration: 284375
+1656703750: global: Timer #7 started at tick 1656703750
+1657340875: system.acctest.elem_matrix0_dma: SRC:0x0000000024020020, DST:0x00000000820f4000, LEN:65536
+1657476875: global: Timer #7 stopped at tick 1657476875. Duration: 773125
+1657745625: global: Timer #0 stopped at tick 1657745625. Duration: 1672500
+1657760000: global: Number of accelerators running = 2
+1663704875: system.acctest.elem_matrix0_dma: Transfer completed in 6.364 us
+1663780000: global: Timer #0 started at tick 1663780000
+1664100625: global: Timer #1 started at tick 1664100625
+1664236250: global: Timer #1 stopped at tick 1664236250. Duration: 135625
+1664435625: global: DAG ID = 0
+1664448125: global: Node ID = 6
+1664470625: global: Node deadline difference = -13340
+1664483125: global: Predicted memory time / byte = 0.00017063 us/byte
+1664495625: global: Predicted memory time = 11.1824 us
+1664508125: global: Predicted memory time / byte = 0.00017063 us/byte
+1664520625: global: Predicted memory time = 11.1824 us
+1664533125: global: Predicted memory time / byte = 0.000236664 us/byte
+1664545625: global: Predicted memory time = 15.51 us
+1664558125: global: Predicted memory time / byte = 9.68323e-05 us/byte
+1664570625: global: Predicted memory time = 6.346 us
+1664583125: global: Predicted memory access size = 0
+1664595625: global: Predicted memory access size = 65536
+1664608125: global: Predicted memory access size = 0
+1664620625: global: Predicted memory access size = 65536
+1664718750: global: Timer #6 started at tick 1664718750
+1664840625: global: Timer #7 started at tick 1664840625
+1665476625: system.acctest.elem_matrix0_dma: SRC:0x00000000820b3740, DST:0x0000000024000020, LEN:65536
+1665600000: global: Timer #7 stopped at tick 1665600000. Duration: 759375
+1665615000: global: Timer #6 stopped at tick 1665615000. Duration: 896250
+1665691250: global: Timer #0 stopped at tick 1665691250. Duration: 1911250
+1665705625: global: Number of accelerators running = 2
+1677563625: system.acctest.elem_matrix0_dma: Transfer completed in 12.087 us
+1677639375: global: Timer #0 started at tick 1677639375
+1677962500: global: Timer #1 started at tick 1677962500
+1678079375: global: Timer #1 stopped at tick 1678079375. Duration: 116875
+1678303125: global: Timer #6 started at tick 1678303125
+1678686250: global: Timer #7 started at tick 1678686250
+1679328750: system.acctest.elem_matrix0_dma: SRC:0x0000000022010020, DST:0x0000000024010020, LEN:65536
+1679457500: global: Timer #7 stopped at tick 1679457500. Duration: 771250
+1679483125: global: Timer #6 stopped at tick 1679483125. Duration: 1180000
+1679578125: global: Timer #0 stopped at tick 1679578125. Duration: 1938750
+1679592500: global: Number of accelerators running = 2
+1689589750: system.acctest.elem_matrix0_dma: Transfer completed in 10.261 us
+1689665000: global: Timer #0 started at tick 1689665000
+1689990000: global: Timer #1 started at tick 1689990000
+1690106875: global: Timer #1 stopped at tick 1690106875. Duration: 116875
+1690433125: global: Timer #6 started at tick 1690433125
+1690548125: global: Timer #7 started at tick 1690548125
+1691552500: global: Timer #7 stopped at tick 1691552500. Duration: 1004375
+1691658750: global: Timer #6 stopped at tick 1691658750. Duration: 1225625
+1691749375: global: Timer #0 stopped at tick 1691749375. Duration: 2084375
+1691763750: global: Number of accelerators running = 2
 ********************************************************************************
 system.acctest.elem_matrix0.compute
    ========= Performance Analysis =============
-   Setup Time:                      6.094685seconds
-   Simulation Time:                 170.708200seconds
+   Setup Time:                      5.253943seconds
+   Simulation Time:                 168.949583seconds
    System Clock:                    1.000000GHz
    Transistor Latency:              1ns
    Runtime:                         10932 cycles
@@ -1005,8 +1159,8 @@ system.acctest.elem_matrix0.compute
 
 ********************************************************************************
    ========= Performance Analysis =================
-   Setup Time:                      6094685328.000000ns
-   Simulation Time:                 170708200327.000000ns
+   Setup Time:                      5253942834.000000ns
+   Simulation Time:                 168949582788.000000ns
    System Clock:                    1.000000GHz
    Transistor Latency:              0ns
    Runtime:                         10932 cycles
@@ -1090,6 +1244,9 @@ system.acctest.elem_matrix0.compute
    SPM Write Dynamic Power:         2.457440 mW
    SPM Total Power:                 5.346829 mW
 
+   SPM Energy Per Read Access:      0.170493 nJ
+   SPM Energy Per Write Access:     0.218190 nJ
+
    Cache Leakage Power:             0.000000 mW
    Cache Read Dynamic Power:        0.000000 mW
    Cache Write Dynamic Power:       0.000000 mW
@@ -1113,38 +1270,40 @@ system.acctest.elem_matrix0.compute
    SPM Optimized Leakage Power:     0.004248 mW
    SPM Opt Area:                    178.524902 um^2
 
-1606034375: global: Timer #0 started at tick 1606034375
-1606199375: global: Timer #2 started at tick 1606199375
-1606498125: global: Timer #2 stopped at tick 1606498125. Duration: 298750
-1619692375: system.acctest.elem_matrix0_dma: SRC:0x0000000024020020, DST:0x0000000082069ec0, LEN:65536
-1620055000: global: Timer #0 stopped at tick 1620055000. Duration: 14020625
-1620071250: global: Number of accelerators running = 2
-1625979375: system.acctest.elem_matrix0_dma: Transfer completed in 6.287 us
-1626055000: global: Timer #0 started at tick 1626055000
-1626361250: global: Timer #1 started at tick 1626361250
-1626483750: global: Timer #1 stopped at tick 1626483750. Duration: 122500
-1626714375: global: DAG ID = 0
-1626728125: global: Node ID = 5
-1626746250: global: Node deadline difference = -13202
-1626758750: global: Predicted memory time / byte = 0.000236115 us/byte
-1626771250: global: Predicted memory time = 30.9481 us
-1626783750: global: Predicted memory time / byte = 0.000236115 us/byte
-1626796250: global: Predicted memory time = 15.4741 us
-1626808750: global: Predicted memory time / byte = 0.000184883 us/byte
-1626821250: global: Predicted memory time = 24.233 us
-1626833750: global: Predicted memory time / byte = 9.56421e-05 us/byte
-1626846250: global: Predicted memory time = 6.268 us
-1626858750: global: Predicted memory access size = 0
-1626871250: global: Predicted memory access size = 131072
-1626883750: global: Predicted memory access size = 0
-1626896250: global: Predicted memory access size = 65536
-1626991875: global: Timer #0 stopped at tick 1626991875. Duration: 936875
-1627008125: global: Number of accelerators running = 1
+1702456250: global: Timer #0 started at tick 1702456250
+1702622500: global: Timer #2 started at tick 1702622500
+1702905000: global: Timer #2 stopped at tick 1702905000. Duration: 282500
+1703005000: global: Timer #7 started at tick 1703005000
+1703645875: system.acctest.elem_matrix0_dma: SRC:0x0000000024030020, DST:0x00000000820e4000, LEN:65536
+1703773750: global: Timer #7 stopped at tick 1703773750. Duration: 768750
+1703998125: global: Timer #0 stopped at tick 1703998125. Duration: 1541875
+1704012500: global: Number of accelerators running = 2
+1710005875: system.acctest.elem_matrix0_dma: Transfer completed in 6.36 us
+1710082500: global: Timer #0 started at tick 1710082500
+1710389375: global: Timer #1 started at tick 1710389375
+1710533750: global: Timer #1 stopped at tick 1710533750. Duration: 144375
+1710731875: global: DAG ID = 0
+1710744375: global: Node ID = 5
+1710778750: global: Node deadline difference = -13335
+1710791250: global: Predicted memory time / byte = 0.00017063 us/byte
+1710803750: global: Predicted memory time = 22.3649 us
+1710816250: global: Predicted memory time / byte = 0.00017063 us/byte
+1710828750: global: Predicted memory time = 11.1824 us
+1710841250: global: Predicted memory time / byte = 0.000170334 us/byte
+1710853750: global: Predicted memory time = 22.326 us
+1710866250: global: Predicted memory time / byte = 9.67865e-05 us/byte
+1710878750: global: Predicted memory time = 6.343 us
+1710891250: global: Predicted memory access size = 0
+1710903750: global: Predicted memory access size = 131072
+1710916250: global: Predicted memory access size = 0
+1710928750: global: Predicted memory access size = 65536
+1711035000: global: Timer #0 stopped at tick 1711035000. Duration: 952500
+1711049375: global: Number of accelerators running = 1
 ********************************************************************************
 system.acctest.convolution0.compute
    ========= Performance Analysis =============
-   Setup Time:                      0.689382seconds
-   Simulation Time:                 483.728519seconds
+   Setup Time:                      0.688112seconds
+   Simulation Time:                 433.684775seconds
    System Clock:                    1.000000GHz
    Transistor Latency:              1ns
    Runtime:                         1545612 cycles
@@ -1154,8 +1313,8 @@ system.acctest.convolution0.compute
 
 ********************************************************************************
    ========= Performance Analysis =================
-   Setup Time:                      689382402.000000ns
-   Simulation Time:                 483728519130.000000ns
+   Setup Time:                      688112394.000000ns
+   Simulation Time:                 433684775299.000000ns
    System Clock:                    1.000000GHz
    Transistor Latency:              0ns
    Runtime:                         1545612 cycles
@@ -1171,11 +1330,11 @@ system.acctest.convolution0.compute
    Executed Nodes:                  1545608 cycles
        Load Only:                   0 cycles
        Store Only:                  1 cycles
-       Compute Only:                1142524 cycles
-       Compute & Store:             1127 cycles
+       Compute Only:                1142500 cycles
+       Compute & Store:             1150 cycles
        Load & Store:                0 cycles
-       Load & Compute:              386700 cycles
-       Load & Compute & Store:      15256 cycles
+       Load & Compute:              386724 cycles
+       Load & Compute & Store:      15233 cycles
 
    ========= Runtime FU's ========= (Max | Avg) ===
    Counter FU's:                       3 | 0.112298
@@ -1183,13 +1342,13 @@ system.acctest.convolution0.compute
    Integer Mul/Div FU's:               1 | 0.052505
    Integer Shifter FU's:              10 | 0.005268
    Integer Bitwise FU's:               2 | 0.184265
-   Floating Point Float Add/Sub:       5 | 0.195738
+   Floating Point Float Add/Sub:       5 | 0.195775
    Floating Point Double Add/Sub:      0 | 0.000000
-   Floating Point Float Mul/Div:       2 | 0.130033
+   Floating Point Float Mul/Div:       4 | 0.065017
    Floating Point Double Mul/Div:      0 | 0.000000
-   0 Cycle Compare FU's:              40 | 0.144068
+   0 Cycle Compare FU's:              40 | 0.144064
    GEP Instruction FU's:               2 | 0.265363
-   Type Conversion FU's:              11 | 0.138856
+   Type Conversion FU's:              11 | 0.138855
 
    ========= Static FU's ==========================
    Counter FU's:                    0
@@ -1225,8 +1384,8 @@ system.acctest.convolution0.compute
        Memory Writes:               0
    ========= Power Analysis ======================
    FU Leakage Power:                0.196912 mW 
-   FU Dynamic Power:                2658.054443 mW 
-   FU Total Power:                  2658.251465 mW 
+   FU Dynamic Power:                2658.305176 mW 
+   FU Total Power:                  2658.502197 mW 
 
    Registers Leakage Power:          0.002459 mW 
    Registers Dynamic Power:          75.875725 mW 
@@ -1239,14 +1398,17 @@ system.acctest.convolution0.compute
    SPM Write Dynamic Power:         2.457440 mW
    SPM Total Power:                 17.425076 mW
 
+   SPM Energy Per Read Access:      0.130935 nJ
+   SPM Energy Per Write Access:     0.166637 nJ
+
    Cache Leakage Power:             0.000000 mW
    Cache Read Dynamic Power:        0.000000 mW
    Cache Write Dynamic Power:       0.000000 mW
    Cache Total Power:               0.000000 mW
 
-   Accelerator Power:               2734.129639 mW
-   Accelerator Power (SPM):         2751.554715 mW
-   Accelerator Power (Cache):       2734.129639 mW
+   Accelerator Power:               2734.380371 mW
+   Accelerator Power (SPM):         2751.805448 mW
+   Accelerator Power (Cache):       2734.380371 mW
 
    ========= Area Analysis =======================
    FU Area:                         22931.867188 um^2 (0.022932 mm^2)
@@ -1262,48 +1424,62 @@ system.acctest.convolution0.compute
    SPM Optimized Leakage Power:     0.002053 mW
    SPM Opt Area:                    145.024971 um^2
 
-3083448750: global: Timer #0 started at tick 3083448750
-3096807375: system.acctest.convolution0_dma: SRC:0x0000000022010020, DST:0x0000000082089ec0, LEN:65536
-3097157500: global: Timer #0 stopped at tick 3097157500. Duration: 13708750
-3097173750: global: Number of accelerators running = 1
-3103151375: system.acctest.convolution0_dma: Transfer completed in 6.344 us
-3103227500: global: Timer #0 started at tick 3103227500
-3103533750: global: Timer #1 started at tick 3103533750
-3103656250: global: Timer #1 stopped at tick 3103656250. Duration: 122500
-3103895625: global: DAG ID = 0
-3103909375: global: Node ID = 7
-3103927500: global: Node deadline difference = -13260
-3103940000: global: Predicted memory time / byte = 0.000244715 us/byte
-3103952500: global: Predicted memory time = 16.0621 us
-3103965000: global: Predicted memory time / byte = 0.000244715 us/byte
-3103977500: global: Predicted memory time = 16.0377 us
-3103990000: global: Predicted memory time / byte = 0.000383057 us/byte
-3104002500: global: Predicted memory time = 25.104 us
-3104015000: global: Predicted memory time / byte = 9.65271e-05 us/byte
-3104027500: global: Predicted memory time = 6.326 us
-3104040000: global: Predicted memory access size = 0
-3104052500: global: Predicted memory access size = 65636
-3104065000: global: Predicted memory access size = 0
-3104077500: global: Predicted memory access size = 65536
-3117363750: system.acctest.convolution0_dma: SRC:0x0000000082079ec0, DST:0x0000000022000020, LEN:65536
-3117600625: global: Timer #0 stopped at tick 3117600625. Duration: 14373125
-3117616875: global: Number of accelerators running = 1
-3129413750: system.acctest.convolution0_dma: Transfer completed in 12.05 us
-3129579375: global: Timer #0 started at tick 3129579375
-3130064375: global: Timer #1 started at tick 3130064375
-3130442500: global: Timer #1 stopped at tick 3130442500. Duration: 378125
-3131530875: system.acctest.convolution0_dma: SRC:0x00000000820b9ec0, DST:0x0000000022030020, LEN:100
-3131645875: system.acctest.convolution0_dma: Transfer completed in 0.115 us
-3131780000: global: Timer #0 stopped at tick 3131780000. Duration: 2200625
-3131796250: global: Number of accelerators running = 1
-3132130625: global: Timer #0 started at tick 3132130625
-3133920625: global: Timer #0 stopped at tick 3133920625. Duration: 1790000
-3133936875: global: Number of accelerators running = 1
+3201388125: global: Timer #0 started at tick 3201388125
+3201688125: global: Timer #7 started at tick 3201688125
+3202328750: system.acctest.convolution0_dma: SRC:0x0000000022020020, DST:0x0000000082104000, LEN:65536
+3202465000: global: Timer #7 stopped at tick 3202465000. Duration: 776875
+3202696250: global: Timer #0 stopped at tick 3202696250. Duration: 1308125
+3202710625: global: Number of accelerators running = 1
+3208715750: system.acctest.convolution0_dma: Transfer completed in 6.387 us
+3208792500: global: Timer #0 started at tick 3208792500
+3209103750: global: Timer #1 started at tick 3209103750
+3209250625: global: Timer #1 stopped at tick 3209250625. Duration: 146875
+3209456875: global: DAG ID = 0
+3209469375: global: Node ID = 7
+3209488750: global: Node deadline difference = -13371
+3209501250: global: Predicted memory time / byte = 0.000195215 us/byte
+3209513750: global: Predicted memory time = 12.8131 us
+3209526250: global: Predicted memory time / byte = 0.000195215 us/byte
+3209538750: global: Predicted memory time = 12.7936 us
+3209551250: global: Predicted memory time / byte = 0.000181686 us/byte
+3209563750: global: Predicted memory time = 11.907 us
+3209576250: global: Predicted memory time / byte = 9.71985e-05 us/byte
+3209588750: global: Predicted memory time = 6.37 us
+3209601250: global: Predicted memory access size = 0
+3209613750: global: Predicted memory access size = 65536
+3209626250: global: Predicted memory access size = 0
+3209638750: global: Predicted memory access size = 65536
+3209704375: global: Timer #6 started at tick 3209704375
+3209781250: global: Timer #7 started at tick 3209781250
+3210409500: system.acctest.convolution0_dma: SRC:0x0000000024020020, DST:0x0000000022000020, LEN:65536
+3210545000: global: Timer #7 stopped at tick 3210545000. Duration: 763750
+3210567500: global: Timer #6 stopped at tick 3210567500. Duration: 863125
+3210676250: global: Timer #0 stopped at tick 3210676250. Duration: 1883750
+3210690625: global: Number of accelerators running = 1
+3220670500: system.acctest.convolution0_dma: Transfer completed in 10.261 us
+3220746250: global: Timer #0 started at tick 3220746250
+3221067500: global: Timer #1 started at tick 3221067500
+3221195625: global: Timer #1 stopped at tick 3221195625. Duration: 128125
+3221430000: global: Timer #6 started at tick 3221430000
+3221480625: global: Timer #7 started at tick 3221480625
+3222124500: system.acctest.convolution0_dma: SRC:0x0000000082134000, DST:0x0000000022030020, LEN:100
+3222248750: global: Timer #7 stopped at tick 3222248750. Duration: 768125
+3222273750: global: Timer #6 stopped at tick 3222273750. Duration: 843750
+3222366500: system.acctest.convolution0_dma: Transfer completed in 0.242 us
+3222370625: global: Timer #0 stopped at tick 3222370625. Duration: 1624375
+3222385000: global: Number of accelerators running = 1
+3222493125: global: Timer #0 started at tick 3222493125
+3222964375: global: Timer #6 started at tick 3222964375
+3223015000: global: Timer #7 started at tick 3223015000
+3224022500: global: Timer #7 stopped at tick 3224022500. Duration: 1007500
+3224058750: global: Timer #6 stopped at tick 3224058750. Duration: 1094375
+3224151250: global: Timer #0 stopped at tick 3224151250. Duration: 1658125
+3224165625: global: Number of accelerators running = 1
 ********************************************************************************
 system.acctest.convolution0.compute
    ========= Performance Analysis =============
-   Setup Time:                      0.523249seconds
-   Simulation Time:                 204.081806seconds
+   Setup Time:                      0.318566seconds
+   Simulation Time:                 196.400563seconds
    System Clock:                    1.000000GHz
    Transistor Latency:              1ns
    Runtime:                         1545612 cycles
@@ -1313,8 +1489,8 @@ system.acctest.convolution0.compute
 
 ********************************************************************************
    ========= Performance Analysis =================
-   Setup Time:                      523248850.000000ns
-   Simulation Time:                 204081805672.000000ns
+   Setup Time:                      318565576.000000ns
+   Simulation Time:                 196400563100.000000ns
    System Clock:                    1.000000GHz
    Transistor Latency:              0ns
    Runtime:                         1545612 cycles
@@ -1398,6 +1574,9 @@ system.acctest.convolution0.compute
    SPM Write Dynamic Power:         2.880682 mW
    SPM Total Power:                 21.753539 mW
 
+   SPM Energy Per Read Access:      0.130935 nJ
+   SPM Energy Per Write Access:     0.166637 nJ
+
    Cache Leakage Power:             0.000000 mW
    Cache Read Dynamic Power:        0.000000 mW
    Cache Write Dynamic Power:       0.000000 mW
@@ -1421,111 +1600,128 @@ system.acctest.convolution0.compute
    SPM Optimized Leakage Power:     0.002053 mW
    SPM Opt Area:                    145.024971 um^2
 
-4679408125: global: Timer #0 started at tick 4679408125
-4679564375: global: Timer #2 started at tick 4679564375
-4680066875: global: Timer #2 stopped at tick 4680066875. Duration: 502500
-4680168125: global: Timer #2 started at tick 4680168125
-4680472500: global: Timer #2 stopped at tick 4680472500. Duration: 304375
-4693722375: system.acctest.convolution0_dma: SRC:0x0000000022010020, DST:0x00000000820a9ec0, LEN:65536
-4700429375: system.acctest.convolution0_dma: Transfer completed in 6.707 us
-4707777375: system.acctest.elem_matrix0_dma: SRC:0x0000000082089ec0, DST:0x0000000024000020, LEN:65536
-4707981875: global: Timer #0 stopped at tick 4707981875. Duration: 28573750
-4707998125: global: Number of accelerators running = 2
-4708278125: global: Timer #0 started at tick 4708278125
-4708595625: global: Timer #1 started at tick 4708595625
-4708938750: global: Timer #1 stopped at tick 4708938750. Duration: 343125
-4709206250: global: DAG ID = 0
-4709220000: global: Node ID = 9
-4709238125: global: Node deadline difference = -11654
-4709250625: global: Predicted memory time / byte = 0.000263495 us/byte
-4709263125: global: Predicted memory time = 17.2948 us
-4709275625: global: Predicted memory time / byte = 0.000263495 us/byte
-4709288125: global: Predicted memory time = 17.2684 us
-4709300625: global: Predicted memory time / byte = 0.000186401 us/byte
-4709313125: global: Predicted memory time = 12.216 us
-4709325625: global: Predicted memory time / byte = 0.000220673 us/byte
-4709338125: global: Predicted memory time = 14.462 us
-4709350625: global: Predicted memory access size = 0
-4709363125: global: Predicted memory access size = 65636
-4709375625: global: Predicted memory access size = 0
-4709388125: global: Predicted memory access size = 65536
-4719759375: system.acctest.elem_matrix0_dma: Transfer completed in 11.982 us
-4722682375: system.acctest.convolution0_dma: SRC:0x0000000082069ec0, DST:0x0000000022000020, LEN:65536
-4722921250: global: Timer #0 stopped at tick 4722921250. Duration: 14643125
-4722937500: global: Number of accelerators running = 2
-4723100625: global: Timer #0 started at tick 4723100625
-4723601250: global: Timer #1 started at tick 4723601250
-4723941875: global: Timer #1 stopped at tick 4723941875. Duration: 340625
-4724952375: system.acctest.elem_matrix0_dma: SRC:0x0000000022010020, DST:0x0000000024010020, LEN:65536
-4725208750: global: Timer #0 stopped at tick 4725208750. Duration: 2108125
-4725225000: global: Number of accelerators running = 2
-4735166375: system.acctest.convolution0_dma: Transfer completed in 12.484 us
-4735253125: global: Timer #0 started at tick 4735253125
-4735746250: global: Timer #1 started at tick 4735746250
-4736035000: global: Timer #1 stopped at tick 4736035000. Duration: 288750
-4737054000: system.acctest.convolution0_dma: SRC:0x00000000820b9ec0, DST:0x0000000022030020, LEN:100
-4737161000: system.acctest.convolution0_dma: Transfer completed in 0.107 us
-4737331875: global: Timer #0 stopped at tick 4737331875. Duration: 2078750
-4737348125: global: Number of accelerators running = 2
-4737680625: global: Timer #0 started at tick 4737680625
-4739509375: global: Timer #0 stopped at tick 4739509375. Duration: 1828750
-4739525625: global: Number of accelerators running = 2
-4741155375: system.acctest.elem_matrix0_dma: Transfer completed in 16.203 us
-4741241875: global: Timer #0 started at tick 4741241875
-4741581875: global: Timer #1 started at tick 4741581875
-4742043750: global: Timer #1 stopped at tick 4742043750. Duration: 461875
-4743614375: global: Timer #0 stopped at tick 4743614375. Duration: 2372500
-4743630625: global: Number of accelerators running = 2
+4769599375: global: Timer #0 started at tick 4769599375
+4769755000: global: Timer #2 started at tick 4769755000
+4770056250: global: Timer #2 stopped at tick 4770056250. Duration: 301250
+4770153125: global: Timer #2 started at tick 4770153125
+4770476250: global: Timer #2 stopped at tick 4770476250. Duration: 323125
+4770651875: global: Timer #7 started at tick 4770651875
+4771290875: system.acctest.convolution0_dma: SRC:0x0000000022010020, DST:0x0000000082124000, LEN:65536
+4771418750: global: Timer #7 stopped at tick 4771418750. Duration: 766875
+4771631875: global: Timer #6 started at tick 4771631875
+4771736250: global: Timer #7 started at tick 4771736250
+4772394000: system.acctest.elem_matrix0_dma: SRC:0x0000000022020020, DST:0x0000000024000020, LEN:65536
+4772521875: global: Timer #7 stopped at tick 4772521875. Duration: 785625
+4772536875: global: Timer #6 stopped at tick 4772536875. Duration: 905000
+4772623125: global: Timer #0 stopped at tick 4772623125. Duration: 3023750
+4772637500: global: Number of accelerators running = 2
+4783645875: system.acctest.convolution0_dma: Transfer completed in 12.355 us
+4783722500: global: Timer #0 started at tick 4783722500
+4784033750: global: Timer #1 started at tick 4784033750
+4784168750: global: Timer #1 stopped at tick 4784168750. Duration: 135000
+4784378750: global: DAG ID = 0
+4784391250: global: Node ID = 9
+4784410625: global: Node deadline difference = -11796
+4784423125: global: Predicted memory time / byte = 0.000186597 us/byte
+4784435625: global: Predicted memory time = 12.2475 us
+4784448125: global: Predicted memory time / byte = 0.000186597 us/byte
+4784460625: global: Predicted memory time = 12.2288 us
+4784473125: global: Predicted memory time / byte = 0.000156326 us/byte
+4784485625: global: Predicted memory time = 10.245 us
+4784498125: global: Predicted memory time / byte = 0.000188263 us/byte
+4784510625: global: Predicted memory time = 12.338 us
+4784523125: global: Predicted memory access size = 0
+4784535625: global: Predicted memory access size = 65536
+4784548125: global: Predicted memory access size = 0
+4784560625: global: Predicted memory access size = 65536
+4784626250: global: Timer #6 started at tick 4784626250
+4784673750: global: Timer #6 stopped at tick 4784673750. Duration: 47500
+4784774375: global: Timer #0 stopped at tick 4784774375. Duration: 1051875
+4784788750: global: Number of accelerators running = 1
+4786138000: system.acctest.elem_matrix0_dma: Transfer completed in 13.744 us
+4786223125: global: Timer #0 started at tick 4786223125
+4786548750: global: Timer #1 started at tick 4786548750
+4786672500: global: Timer #1 stopped at tick 4786672500. Duration: 123750
+4786920000: global: Timer #6 started at tick 4786920000
+4787007500: global: Timer #7 started at tick 4787007500
+4787654500: system.acctest.elem_matrix0_dma: SRC:0x0000000022010020, DST:0x0000000024010020, LEN:65536
+4787790000: global: Timer #7 stopped at tick 4787790000. Duration: 782500
+4787815000: global: Timer #6 stopped at tick 4787815000. Duration: 895000
+4787868750: global: Timer #6 started at tick 4787868750
+4787916875: global: Timer #6 stopped at tick 4787916875. Duration: 48125
+4788004375: global: Timer #0 stopped at tick 4788004375. Duration: 1781250
+4788018750: global: Number of accelerators running = 1
+4797915500: system.acctest.elem_matrix0_dma: Transfer completed in 10.261 us
+4797991250: global: Timer #0 started at tick 4797991250
+4798315625: global: Timer #1 started at tick 4798315625
+4798448125: global: Timer #1 stopped at tick 4798448125. Duration: 132500
+4798751875: global: Timer #6 started at tick 4798751875
+4798815000: global: Timer #7 started at tick 4798815000
+4799823125: global: Timer #7 stopped at tick 4799823125. Duration: 1008125
+4799895000: global: Timer #6 stopped at tick 4799895000. Duration: 1143125
+4799935625: global: Timer #6 started at tick 4799935625
+4800017500: global: Timer #7 started at tick 4800017500
+4800647375: system.acctest.convolution0_dma: SRC:0x0000000024030020, DST:0x0000000022000020, LEN:65536
+4800783125: global: Timer #7 stopped at tick 4800783125. Duration: 765625
+4800805625: global: Timer #6 stopped at tick 4800805625. Duration: 870000
+4800934375: global: Timer #0 stopped at tick 4800934375. Duration: 2943125
+4800948750: global: Number of accelerators running = 2
+4810908375: system.acctest.convolution0_dma: Transfer completed in 10.261 us
+4810993125: global: Timer #0 started at tick 4810993125
+4811318750: global: Timer #1 started at tick 4811318750
+4811443750: global: Timer #1 stopped at tick 4811443750. Duration: 125000
+4811666875: global: Timer #6 started at tick 4811666875
+4811717500: global: Timer #7 started at tick 4811717500
 ********************************************************************************
 system.acctest.elem_matrix0.compute
    ========= Performance Analysis =============
-   Setup Time:                      5.011539seconds
-   Simulation Time:                 148.970116seconds
+   Setup Time:                      4.736739seconds
+   Simulation Time:                 142.735802seconds
    System Clock:                    1.000000GHz
    Transistor Latency:              1ns
-   Runtime:                         10932 cycles
-   Runtime:                         10.932000 us
-   Stalls:                          0 cycles
-   Executed Nodes:                  10931 cycles
+   Runtime:                         12038 cycles
+   Runtime:                         12.038000 us
+   Stalls:                          42 cycles
+   Executed Nodes:                  11995 cycles
 
 ********************************************************************************
    ========= Performance Analysis =================
-   Setup Time:                      5011538930.000000ns
-   Simulation Time:                 148970115662.000000ns
+   Setup Time:                      4736739381.000000ns
+   Simulation Time:                 142735801920.000000ns
    System Clock:                    1.000000GHz
    Transistor Latency:              0ns
-   Runtime:                         10932 cycles
+   Runtime:                         12038 cycles
    Runtime:                         0.000001 seconds
-   Stalls:                          0 cycles
+   Stalls:                          42 cycles
        Load Only:                   0 cycles
-       Store Only:                  0 cycles
+       Store Only:                  1 cycles
        Compute Only:                0 cycles
        Compute & Store:             0 cycles
-       Load & Store:                0 cycles
-       Load & Compute:              0 cycles
-       Load & Compute & Store:      0 cycles
-   Executed Nodes:                  10931 cycles
+       Load & Store:                5 cycles
+       Load & Compute:              2 cycles
+       Load & Compute & Store:      34 cycles
+   Executed Nodes:                  11995 cycles
        Load Only:                   0 cycles
-       Store Only:                  5 cycles
-       Compute Only:                1 cycles
-       Compute & Store:             21 cycles
+       Store Only:                  50 cycles
+       Compute Only:                25 cycles
+       Compute & Store:             1016 cycles
        Load & Store:                0 cycles
-       Load & Compute:              7 cycles
-       Load & Compute & Store:      10897 cycles
+       Load & Compute:              1047 cycles
+       Load & Compute & Store:      9857 cycles
 
    ========= Runtime FU's ========= (Max | Avg) ===
-   Counter FU's:                      32 | 0.046838
+   Counter FU's:                      32 | 0.042535
    Integer Add/Sub FU's:               0 | 0.000000
    Integer Mul/Div FU's:               0 | 0.000000
    Integer Shifter FU's:               0 | 0.000000
-   Integer Bitwise FU's:               1 | 0.000091
-   Floating Point Float Add/Sub:      34 | 0.044252
+   Integer Bitwise FU's:               1 | 0.000083
+   Floating Point Float Add/Sub:      34 | 0.042537
    Floating Point Double Add/Sub:      0 | 0.000000
    Floating Point Float Mul/Div:       0 | 0.000000
    Floating Point Double Mul/Div:      0 | 0.000000
-   0 Cycle Compare FU's:             102 | 0.046974
-   GEP Instruction FU's:              96 | 0.046835
-   Type Conversion FU's:               7 | 0.006782
+   0 Cycle Compare FU's:             102 | 0.043078
+   GEP Instruction FU's:              96 | 0.042532
+   Type Conversion FU's:               7 | 0.006159
 
    ========= Static FU's ==========================
    Counter FU's:                    0
@@ -1545,7 +1741,7 @@ system.acctest.elem_matrix0.compute
    ========= Pipeline Register Usage =============
    Total Number of Registers:       5641
    Max Register Usage Per Cycle:    138
-   Avg Register Usage Per Cycle:    12.130992
+   Avg Register Usage Per Cycle:    11.016448
    Avg Register Size (Bytes):       5.980606
 
    ========= Memory Configuration =================
@@ -1561,89 +1757,119 @@ system.acctest.elem_matrix0.compute
        Memory Writes:               0
    ========= Power Analysis ======================
    FU Leakage Power:                0.519269 mW 
-   FU Dynamic Power:                0.154621 mW 
-   FU Total Power:                  0.673890 mW 
+   FU Dynamic Power:                0.178035 mW 
+   FU Total Power:                  0.697305 mW 
 
-   Registers Leakage Power:          0.005281 mW 
-   Registers Dynamic Power:          0.015326 mW 
+   Registers Leakage Power:          0.004841 mW 
+   Registers Dynamic Power:          0.015470 mW 
        Register Reads (Bits):        132616
        Register Writes (Bits):       133658
-   Registers Total Power:            0.020607 mW
+   Registers Total Power:            0.020311 mW
 
    SPM Leakage Power:               0.104100 mW
    SPM Read Dynamic Power:          3.776796 mW
    SPM Write Dynamic Power:         2.880682 mW
    SPM Total Power:                 6.761578 mW
 
+   SPM Energy Per Read Access:      0.170493 nJ
+   SPM Energy Per Write Access:     0.218190 nJ
+
    Cache Leakage Power:             0.000000 mW
    Cache Read Dynamic Power:        0.000000 mW
    Cache Write Dynamic Power:       0.000000 mW
    Cache Total Power:               0.000000 mW
 
-   Accelerator Power:               0.694497 mW
-   Accelerator Power (SPM):         7.456075 mW
-   Accelerator Power (Cache):       0.694497 mW
+   Accelerator Power:               0.717616 mW
+   Accelerator Power (SPM):         7.479194 mW
+   Accelerator Power (Cache):       0.717616 mW
 
    ========= Area Analysis =======================
    FU Area:                         70212.562500 um^2 (0.070213 mm^2)
-   Register Area:                   429.271088 um^2 (0.000429 mm^2)
+   Register Area:                   393.498505 um^2 (0.000393 mm^2)
    SPM Area:                        2177.365505 um^2 (0.002177 mm^2)
    Cache Area:                      0.000000 um^2 (0.000000 mm^2)
 
-   Accelerator Area:                70641.835938 um^2 (0.070642 mm^2)
-   Accelerator Area (SPM):          72819.201442 um^2 (0.072819 mm^2)
-   Accelerator Area (Cache):        70641.835938 um^2 (0.070642 mm^2)
+   Accelerator Area:                70606.062500 um^2 (0.070606 mm^2)
+   Accelerator Area (SPM):          72783.428005 um^2 (0.072783 mm^2)
+   Accelerator Area (Cache):        70606.062500 um^2 (0.070606 mm^2)
 
    ========= SPM Resizing  =======================
    SPM Optimized Leakage Power:     0.004248 mW
    SPM Opt Area:                    178.524902 um^2
 
-4754353125: global: Timer #0 started at tick 4754353125
-4754512500: global: Timer #2 started at tick 4754512500
-4754823125: global: Timer #2 stopped at tick 4754823125. Duration: 310625
-4768017375: system.acctest.elem_matrix0_dma: SRC:0x0000000024020020, DST:0x00000000820ea980, LEN:65536
-4768372500: global: Timer #0 stopped at tick 4768372500. Duration: 14019375
-4768388750: global: Number of accelerators running = 2
-4774308375: system.acctest.elem_matrix0_dma: Transfer completed in 6.291 us
-4774393125: global: Timer #0 started at tick 4774393125
-4774710625: global: Timer #1 started at tick 4774710625
-4774835000: global: Timer #1 stopped at tick 4774835000. Duration: 124375
-4775055625: global: DAG ID = 0
-4775069375: global: Node ID = 12
-4775087500: global: Node deadline difference = -11645
-4775100000: global: Predicted memory time / byte = 0.000170233 us/byte
-4775112500: global: Predicted memory time = 22.3127 us
-4775125000: global: Predicted memory time / byte = 0.000170233 us/byte
-4775137500: global: Predicted memory time = 11.1564 us
-4775150000: global: Predicted memory time / byte = 0.000240578 us/byte
-4775162500: global: Predicted memory time = 31.533 us
-4775175000: global: Predicted memory time / byte = 9.58862e-05 us/byte
-4775187500: global: Predicted memory time = 6.284 us
-4775200000: global: Predicted memory access size = 0
-4775212500: global: Predicted memory access size = 131072
-4775225000: global: Predicted memory access size = 0
-4775237500: global: Predicted memory access size = 65536
-4788663750: system.acctest.elem_matrix0_dma: SRC:0x0000000082089ec0, DST:0x0000000024000020, LEN:65536
-4788868125: global: Timer #0 stopped at tick 4788868125. Duration: 14475000
-4788884375: global: Number of accelerators running = 2
-4800625750: system.acctest.elem_matrix0_dma: Transfer completed in 11.962 us
-4800788125: global: Timer #0 started at tick 4800788125
-4801240000: global: Timer #1 started at tick 4801240000
-4801618125: global: Timer #1 stopped at tick 4801618125. Duration: 378125
-4815060875: system.acctest.elem_matrix0_dma: SRC:0x00000000820a9ec0, DST:0x0000000024010020, LEN:65536
-4815288125: global: Timer #0 stopped at tick 4815288125. Duration: 14500000
-4815304375: global: Number of accelerators running = 2
-4827016875: system.acctest.elem_matrix0_dma: Transfer completed in 11.956 us
-4827092500: global: Timer #0 started at tick 4827092500
-4827583125: global: Timer #1 started at tick 4827583125
-4827872500: global: Timer #1 stopped at tick 4827872500. Duration: 289375
-4829353125: global: Timer #0 stopped at tick 4829353125. Duration: 2260625
-4829369375: global: Number of accelerators running = 2
+4812360875: system.acctest.convolution0_dma: SRC:0x0000000082134000, DST:0x0000000022030020, LEN:100
+4812457875: system.acctest.convolution0_dma: Transfer completed in 0.097 us
+4812485000: global: Timer #7 stopped at tick 4812485000. Duration: 767500
+4812510000: global: Timer #6 stopped at tick 4812510000. Duration: 843125
+4812611875: global: Timer #0 stopped at tick 4812611875. Duration: 1618750
+4812626250: global: Number of accelerators running = 2
+4812750000: global: Timer #0 started at tick 4812750000
+4812909375: global: Timer #2 started at tick 4812909375
+4813211250: global: Timer #2 stopped at tick 4813211250. Duration: 301875
+4813332500: global: Timer #7 started at tick 4813332500
+4813972375: system.acctest.elem_matrix0_dma: SRC:0x0000000024020020, DST:0x0000000082164ac0, LEN:65536
+4814101250: global: Timer #7 stopped at tick 4814101250. Duration: 768750
+4814331875: global: Timer #0 stopped at tick 4814331875. Duration: 1581875
+4814346250: global: Number of accelerators running = 2
+4814461875: global: Timer #0 started at tick 4814461875
+4814962500: global: Timer #6 started at tick 4814962500
+4815013125: global: Timer #7 started at tick 4815013125
+4816062500: global: Timer #7 stopped at tick 4816062500. Duration: 1049375
+4816098750: global: Timer #6 stopped at tick 4816098750. Duration: 1136250
+4816195625: global: Timer #0 stopped at tick 4816195625. Duration: 1733750
+4816210000: global: Number of accelerators running = 2
+4820263375: system.acctest.elem_matrix0_dma: Transfer completed in 6.291 us
+4820348125: global: Timer #0 started at tick 4820348125
+4820664375: global: Timer #1 started at tick 4820664375
+4820799375: global: Timer #1 stopped at tick 4820799375. Duration: 135000
+4821006875: global: DAG ID = 0
+4821019375: global: Node ID = 12
+4821048750: global: Node deadline difference = -11817
+4821061250: global: Predicted memory time / byte = 0.000140942 us/byte
+4821073750: global: Predicted memory time = 18.4736 us
+4821086250: global: Predicted memory time / byte = 0.000140942 us/byte
+4821098750: global: Predicted memory time = 9.23679 us
+4821111250: global: Predicted memory time / byte = 0.000183029 us/byte
+4821123750: global: Predicted memory time = 23.99 us
+4821136250: global: Predicted memory time / byte = 9.58862e-05 us/byte
+4821148750: global: Predicted memory time = 6.284 us
+4821161250: global: Predicted memory access size = 0
+4821173750: global: Predicted memory access size = 131072
+4821186250: global: Predicted memory access size = 0
+4821198750: global: Predicted memory access size = 65536
+4821278750: global: Timer #6 started at tick 4821278750
+4821387500: global: Timer #7 started at tick 4821387500
+4822016625: system.acctest.elem_matrix0_dma: SRC:0x0000000082104000, DST:0x0000000024000020, LEN:65536
+4822140000: global: Timer #7 stopped at tick 4822140000. Duration: 752500
+4822155000: global: Timer #6 stopped at tick 4822155000. Duration: 876250
+4822232500: global: Timer #0 stopped at tick 4822232500. Duration: 1884375
+4822246875: global: Number of accelerators running = 2
+4834013625: system.acctest.elem_matrix0_dma: Transfer completed in 11.997 us
+4834089375: global: Timer #0 started at tick 4834089375
+4834416250: global: Timer #1 started at tick 4834416250
+4834532500: global: Timer #1 stopped at tick 4834532500. Duration: 116250
+4834756250: global: Timer #6 started at tick 4834756250
+4834843750: global: Timer #7 started at tick 4834843750
+4835480875: system.acctest.elem_matrix0_dma: SRC:0x0000000022010020, DST:0x0000000024010020, LEN:65536
+4835616250: global: Timer #7 stopped at tick 4835616250. Duration: 772500
+4835641250: global: Timer #6 stopped at tick 4835641250. Duration: 885000
+4835731875: global: Timer #0 stopped at tick 4835731875. Duration: 1642500
+4835746250: global: Number of accelerators running = 2
+4845741875: system.acctest.elem_matrix0_dma: Transfer completed in 10.261 us
+4845817500: global: Timer #0 started at tick 4845817500
+4846141875: global: Timer #1 started at tick 4846141875
+4846258125: global: Timer #1 stopped at tick 4846258125. Duration: 116250
+4846546250: global: Timer #6 started at tick 4846546250
+4846609375: global: Timer #7 started at tick 4846609375
+4847618125: global: Timer #7 stopped at tick 4847618125. Duration: 1008750
+4847670000: global: Timer #6 stopped at tick 4847670000. Duration: 1123750
+4847758125: global: Timer #0 stopped at tick 4847758125. Duration: 1940625
+4847772500: global: Number of accelerators running = 2
 ********************************************************************************
 system.acctest.elem_matrix0.compute
    ========= Performance Analysis =============
-   Setup Time:                      6.429577seconds
-   Simulation Time:                 158.124223seconds
+   Setup Time:                      6.371203seconds
+   Simulation Time:                 138.764352seconds
    System Clock:                    1.000000GHz
    Transistor Latency:              1ns
    Runtime:                         10932 cycles
@@ -1653,8 +1879,8 @@ system.acctest.elem_matrix0.compute
 
 ********************************************************************************
    ========= Performance Analysis =================
-   Setup Time:                      6429577219.000000ns
-   Simulation Time:                 158124223207.000000ns
+   Setup Time:                      6371202597.000000ns
+   Simulation Time:                 138764351846.000000ns
    System Clock:                    1.000000GHz
    Transistor Latency:              0ns
    Runtime:                         10932 cycles
@@ -1738,6 +1964,9 @@ system.acctest.elem_matrix0.compute
    SPM Write Dynamic Power:         3.448926 mW
    SPM Total Power:                 8.132371 mW
 
+   SPM Energy Per Read Access:      0.170493 nJ
+   SPM Energy Per Write Access:     0.218190 nJ
+
    Cache Leakage Power:             0.000000 mW
    Cache Read Dynamic Power:        0.000000 mW
    Cache Write Dynamic Power:       0.000000 mW
@@ -1761,43 +1990,53 @@ system.acctest.elem_matrix0.compute
    SPM Optimized Leakage Power:     0.004248 mW
    SPM Opt Area:                    178.524902 um^2
 
-4840149375: global: Timer #0 started at tick 4840149375
-4853487375: system.acctest.elem_matrix0_dma: SRC:0x0000000024020020, DST:0x00000000820ba980, LEN:65536
-4853840625: global: Timer #0 stopped at tick 4853840625. Duration: 13691250
-4853856875: global: Number of accelerators running = 2
-4859774375: system.acctest.elem_matrix0_dma: Transfer completed in 6.287 us
-4859850000: global: Timer #0 started at tick 4859850000
-4860159375: global: Timer #1 started at tick 4860159375
-4860283750: global: Timer #1 stopped at tick 4860283750. Duration: 124375
-4860504375: global: DAG ID = 0
-4860518125: global: Node ID = 10
-4860536250: global: Node deadline difference = -11584
-4860548750: global: Predicted memory time / byte = 0.000170233 us/byte
-4860561250: global: Predicted memory time = 22.3127 us
-4860573750: global: Predicted memory time / byte = 0.000170233 us/byte
-4860586250: global: Predicted memory time = 11.1564 us
-4860598750: global: Predicted memory time / byte = 0.00018399 us/byte
-4860611250: global: Predicted memory time = 24.116 us
-4860623750: global: Predicted memory time / byte = 9.56421e-05 us/byte
-4860636250: global: Predicted memory time = 6.268 us
-4860648750: global: Predicted memory access size = 0
-4860661250: global: Predicted memory access size = 131072
-4860673750: global: Predicted memory access size = 0
-4860686250: global: Predicted memory access size = 65536
-4874033750: system.acctest.elem_matrix0_dma: SRC:0x00000000820ea980, DST:0x0000000024000020, LEN:65536
-4874248125: global: Timer #0 stopped at tick 4874248125. Duration: 14398125
-4874264375: global: Number of accelerators running = 2
-4886051750: system.acctest.elem_matrix0_dma: Transfer completed in 12.018 us
-4886223125: global: Timer #0 started at tick 4886223125
-4886716250: global: Timer #1 started at tick 4886716250
-4887105625: global: Timer #1 stopped at tick 4887105625. Duration: 389375
-4888545625: global: Timer #0 stopped at tick 4888545625. Duration: 2322500
-4888561875: global: Number of accelerators running = 2
+4858511250: global: Timer #0 started at tick 4858511250
+4858775625: global: Timer #7 started at tick 4858775625
+4859410875: system.acctest.elem_matrix0_dma: SRC:0x0000000024030020, DST:0x0000000082134ac0, LEN:65536
+4859546875: global: Timer #7 stopped at tick 4859546875. Duration: 771250
+4859775625: global: Timer #0 stopped at tick 4859775625. Duration: 1264375
+4859790000: global: Number of accelerators running = 2
+4865764875: system.acctest.elem_matrix0_dma: Transfer completed in 6.354 us
+4865840000: global: Timer #0 started at tick 4865840000
+4866146875: global: Timer #1 started at tick 4866146875
+4866291875: global: Timer #1 stopped at tick 4866291875. Duration: 145000
+4866491875: global: DAG ID = 0
+4866504375: global: Node ID = 10
+4866533750: global: Node deadline difference = -11795
+4866546250: global: Predicted memory time / byte = 0.000140942 us/byte
+4866558750: global: Predicted memory time = 18.4736 us
+4866571250: global: Predicted memory time / byte = 0.000140942 us/byte
+4866583750: global: Predicted memory time = 9.23679 us
+4866596250: global: Predicted memory time / byte = 0.000169624 us/byte
+4866608750: global: Predicted memory time = 22.233 us
+4866621250: global: Predicted memory time / byte = 9.66797e-05 us/byte
+4866633750: global: Predicted memory time = 6.336 us
+4866646250: global: Predicted memory access size = 0
+4866658750: global: Predicted memory access size = 131072
+4866671250: global: Predicted memory access size = 0
+4866683750: global: Predicted memory access size = 65536
+4866770625: global: Timer #6 started at tick 4866770625
+4866881250: global: Timer #7 started at tick 4866881250
+4867511625: system.acctest.elem_matrix0_dma: SRC:0x0000000082164ac0, DST:0x0000000024000020, LEN:65536
+4867635625: global: Timer #7 stopped at tick 4867635625. Duration: 754375
+4867650625: global: Timer #6 stopped at tick 4867650625. Duration: 880000
+4867736250: global: Timer #0 stopped at tick 4867736250. Duration: 1896250
+4867750625: global: Number of accelerators running = 2
+4879523625: system.acctest.elem_matrix0_dma: Transfer completed in 12.012 us
+4879599375: global: Timer #0 started at tick 4879599375
+4879920625: global: Timer #1 started at tick 4879920625
+4880036875: global: Timer #1 stopped at tick 4880036875. Duration: 116250
+4880260000: global: Timer #6 started at tick 4880260000
+4880323125: global: Timer #7 started at tick 4880323125
+4881332500: global: Timer #7 stopped at tick 4881332500. Duration: 1009375
+4881368125: global: Timer #6 stopped at tick 4881368125. Duration: 1108125
+4881473750: global: Timer #0 stopped at tick 4881473750. Duration: 1874375
+4881488125: global: Number of accelerators running = 2
 ********************************************************************************
 system.acctest.elem_matrix0.compute
    ========= Performance Analysis =============
-   Setup Time:                      6.245656seconds
-   Simulation Time:                 108.384991seconds
+   Setup Time:                      7.301809seconds
+   Simulation Time:                 116.415170seconds
    System Clock:                    1.000000GHz
    Transistor Latency:              1ns
    Runtime:                         8199 cycles
@@ -1807,8 +2046,8 @@ system.acctest.elem_matrix0.compute
 
 ********************************************************************************
    ========= Performance Analysis =================
-   Setup Time:                      6245655814.000000ns
-   Simulation Time:                 108384991050.000000ns
+   Setup Time:                      7301809331.000000ns
+   Simulation Time:                 116415170477.000000ns
    System Clock:                    1.000000GHz
    Transistor Latency:              0ns
    Runtime:                         8199 cycles
@@ -1892,6 +2131,9 @@ system.acctest.elem_matrix0.compute
    SPM Write Dynamic Power:         3.846212 mW
    SPM Total Power:                 8.734419 mW
 
+   SPM Energy Per Read Access:      0.170493 nJ
+   SPM Energy Per Write Access:     0.218190 nJ
+
    Cache Leakage Power:             0.000000 mW
    Cache Read Dynamic Power:        0.000000 mW
    Cache Write Dynamic Power:       0.000000 mW
@@ -1915,36 +2157,44 @@ system.acctest.elem_matrix0.compute
    SPM Optimized Leakage Power:     0.003237 mW
    SPM Opt Area:                    162.973445 um^2
 
-4896584375: global: Timer #0 started at tick 4896584375
-4896741250: global: Timer #2 started at tick 4896741250
-4897005000: global: Timer #2 stopped at tick 4897005000. Duration: 263750
-4897263750: global: DAG ID = 0
-4897277500: global: Node ID = 14
-4897290625: global: Node deadline difference = -11562
-4897303125: global: Predicted memory time / byte = 0.000207824 us/byte
-4897315625: global: Predicted memory time = 13.62 us
-4897328125: global: Predicted memory time / byte = 0.000207824 us/byte
-4897340625: global: Predicted memory time = 13.62 us
-4897353125: global: Predicted memory time / byte = 0.000186066 us/byte
-4897365625: global: Predicted memory time = 12.194 us
-4897378125: global: Predicted memory time / byte = 0 us/byte
-4897390625: global: Predicted memory time = 0 us
-4897403125: global: Predicted memory access size = 0
-4897415625: global: Predicted memory access size = 65536
-4897428125: global: Predicted memory access size = 0
-4897440625: global: Predicted memory access size = 0
-4898440875: system.acctest.elem_matrix0_dma: SRC:0x00000000820fa980, DST:0x0000000024000020, LEN:4
-4898470875: system.acctest.elem_matrix0_dma: Transfer completed in 0.03 us
-4898665625: global: Timer #0 stopped at tick 4898665625. Duration: 2081250
-4898681875: global: Number of accelerators running = 2
-4898923125: global: Timer #0 started at tick 4898923125
-4900808750: global: Timer #0 stopped at tick 4900808750. Duration: 1885625
-4900825000: global: Number of accelerators running = 2
+4889495000: global: Timer #0 started at tick 4889495000
+4889732500: global: Timer #2 started at tick 4889732500
+4890007500: global: Timer #2 stopped at tick 4890007500. Duration: 275000
+4890256250: global: DAG ID = 0
+4890268750: global: Node ID = 14
+4890281875: global: Node deadline difference = -11786
+4890294375: global: Predicted memory time / byte = 0.000162385 us/byte
+4890306875: global: Predicted memory time = 10.6421 us
+4890319375: global: Predicted memory time / byte = 0.000162385 us/byte
+4890331875: global: Predicted memory time = 10.6421 us
+4890344375: global: Predicted memory time / byte = 0.000183121 us/byte
+4890356875: global: Predicted memory time = 12.001 us
+4890369375: global: Predicted memory time / byte = 0 us/byte
+4890381875: global: Predicted memory time = 0 us
+4890394375: global: Predicted memory access size = 0
+4890406875: global: Predicted memory access size = 65536
+4890419375: global: Predicted memory access size = 0
+4890431875: global: Predicted memory access size = 0
+4890514375: global: Timer #6 started at tick 4890514375
+4890671250: global: Timer #7 started at tick 4890671250
+4891324500: system.acctest.elem_matrix0_dma: SRC:0x0000000082174ac0, DST:0x0000000024010020, LEN:4
+4891455000: global: Timer #7 stopped at tick 4891455000. Duration: 783750
+4891480625: global: Timer #6 stopped at tick 4891480625. Duration: 966250
+4891573750: global: Timer #0 stopped at tick 4891573750. Duration: 2078750
+4891588125: global: Number of accelerators running = 2
+4891632500: system.acctest.elem_matrix0_dma: Transfer completed in 0.308 us
+4891707500: global: Timer #0 started at tick 4891707500
+4892185625: global: Timer #6 started at tick 4892185625
+4892265625: global: Timer #7 started at tick 4892265625
+4893270000: global: Timer #7 stopped at tick 4893270000. Duration: 1004375
+4893415625: global: Timer #6 stopped at tick 4893415625. Duration: 1230000
+4893516250: global: Timer #0 stopped at tick 4893516250. Duration: 1808750
+4893530625: global: Number of accelerators running = 2
 ********************************************************************************
 system.acctest.elem_matrix0.compute
    ========= Performance Analysis =============
-   Setup Time:                      8.124859seconds
-   Simulation Time:                 162.514628seconds
+   Setup Time:                      7.960683seconds
+   Simulation Time:                 166.934664seconds
    System Clock:                    1.000000GHz
    Transistor Latency:              1ns
    Runtime:                         8199 cycles
@@ -1954,8 +2204,8 @@ system.acctest.elem_matrix0.compute
 
 ********************************************************************************
    ========= Performance Analysis =================
-   Setup Time:                      8124858864.000000ns
-   Simulation Time:                 162514628105.000000ns
+   Setup Time:                      7960682520.000000ns
+   Simulation Time:                 166934663618.000000ns
    System Clock:                    1.000000GHz
    Transistor Latency:              0ns
    Runtime:                         8199 cycles
@@ -2039,6 +2289,9 @@ system.acctest.elem_matrix0.compute
    SPM Write Dynamic Power:         4.937352 mW
    SPM Total Power:                 10.033053 mW
 
+   SPM Energy Per Read Access:      0.170493 nJ
+   SPM Energy Per Write Access:     0.218190 nJ
+
    Cache Leakage Power:             0.000000 mW
    Cache Read Dynamic Power:        0.000000 mW
    Cache Write Dynamic Power:       0.000000 mW
@@ -2062,36 +2315,38 @@ system.acctest.elem_matrix0.compute
    SPM Optimized Leakage Power:     0.004248 mW
    SPM Opt Area:                    178.524902 um^2
 
-4908834375: global: Timer #0 started at tick 4908834375
-4922187375: system.acctest.elem_matrix0_dma: SRC:0x0000000024020020, DST:0x000000008210a9c0, LEN:65536
-4922545625: global: Timer #0 stopped at tick 4922545625. Duration: 13711250
-4922561875: global: Number of accelerators running = 2
-4928598375: system.acctest.elem_matrix0_dma: Transfer completed in 6.411 us
-4928674375: global: Timer #0 started at tick 4928674375
-4928993750: global: Timer #1 started at tick 4928993750
-4929376250: global: Timer #1 stopped at tick 4929376250. Duration: 382500
-4929611875: global: DAG ID = 0
-4929625625: global: Node ID = 15
-4929643750: global: Node deadline difference = -11572
-4929656250: global: Predicted memory time / byte = 0.000166617 us/byte
-4929668750: global: Predicted memory time = 10.9201 us
-4929681250: global: Predicted memory time / byte = 0.000166617 us/byte
-4929693750: global: Predicted memory time = 10.9194 us
-4929706250: global: Predicted memory time / byte = 0 us/byte
-4929718750: global: Predicted memory time = 0 us
-4929731250: global: Predicted memory time / byte = 9.75494e-05 us/byte
-4929743750: global: Predicted memory time = 6.393 us
-4929756250: global: Predicted memory access size = 0
-4929768750: global: Predicted memory access size = 4
-4929781250: global: Predicted memory access size = 0
-4929793750: global: Predicted memory access size = 65536
-4929897500: global: Timer #0 stopped at tick 4929897500. Duration: 1223125
-4929913750: global: Number of accelerators running = 1
+4901449375: global: Timer #0 started at tick 4901449375
+4901711250: global: Timer #7 started at tick 4901711250
+4902348750: system.acctest.elem_matrix0_dma: SRC:0x0000000024030020, DST:0x0000000082184b00, LEN:65536
+4902476875: global: Timer #7 stopped at tick 4902476875. Duration: 765625
+4902699375: global: Timer #0 stopped at tick 4902699375. Duration: 1250000
+4902713750: global: Number of accelerators running = 2
+4908712750: system.acctest.elem_matrix0_dma: Transfer completed in 6.364 us
+4908789375: global: Timer #0 started at tick 4908789375
+4909110625: global: Timer #1 started at tick 4909110625
+4909245625: global: Timer #1 stopped at tick 4909245625. Duration: 135000
+4909445000: global: DAG ID = 0
+4909457500: global: Node ID = 15
+4909480000: global: Node deadline difference = -11809
+4909492500: global: Predicted memory time / byte = 0.000151304 us/byte
+4909505000: global: Predicted memory time = 9.91648 us
+4909517500: global: Predicted memory time / byte = 0.000151304 us/byte
+4909530000: global: Predicted memory time = 9.91587 us
+4909542500: global: Predicted memory time / byte = 0 us/byte
+4909555000: global: Predicted memory time = 0 us
+4909567500: global: Predicted memory time / byte = 9.68475e-05 us/byte
+4909580000: global: Predicted memory time = 6.347 us
+4909592500: global: Predicted memory access size = 0
+4909605000: global: Predicted memory access size = 4
+4909617500: global: Predicted memory access size = 0
+4909630000: global: Predicted memory access size = 65536
+4909729375: global: Timer #0 stopped at tick 4909729375. Duration: 940000
+4909743750: global: Number of accelerators running = 1
 ********************************************************************************
 system.acctest.convolution0.compute
    ========= Performance Analysis =============
-   Setup Time:                      0.494804seconds
-   Simulation Time:                 822.500720seconds
+   Setup Time:                      0.674549seconds
+   Simulation Time:                 709.863078seconds
    System Clock:                    1.000000GHz
    Transistor Latency:              1ns
    Runtime:                         1545612 cycles
@@ -2101,8 +2356,8 @@ system.acctest.convolution0.compute
 
 ********************************************************************************
    ========= Performance Analysis =================
-   Setup Time:                      494804028.000000ns
-   Simulation Time:                 822500720476.000000ns
+   Setup Time:                      674549038.000000ns
+   Simulation Time:                 709863078157.000000ns
    System Clock:                    1.000000GHz
    Transistor Latency:              0ns
    Runtime:                         1545612 cycles
@@ -2118,11 +2373,11 @@ system.acctest.convolution0.compute
    Executed Nodes:                  1545608 cycles
        Load Only:                   0 cycles
        Store Only:                  1 cycles
-       Compute Only:                1142524 cycles
-       Compute & Store:             1127 cycles
+       Compute Only:                1142508 cycles
+       Compute & Store:             1145 cycles
        Load & Store:                0 cycles
-       Load & Compute:              386700 cycles
-       Load & Compute & Store:      15256 cycles
+       Load & Compute:              386716 cycles
+       Load & Compute & Store:      15238 cycles
 
    ========= Runtime FU's ========= (Max | Avg) ===
    Counter FU's:                       3 | 0.112298
@@ -2130,13 +2385,13 @@ system.acctest.convolution0.compute
    Integer Mul/Div FU's:               1 | 0.052505
    Integer Shifter FU's:              10 | 0.005268
    Integer Bitwise FU's:               2 | 0.184265
-   Floating Point Float Add/Sub:       5 | 0.195738
+   Floating Point Float Add/Sub:       5 | 0.195769
    Floating Point Double Add/Sub:      0 | 0.000000
-   Floating Point Float Mul/Div:       2 | 0.130033
+   Floating Point Float Mul/Div:       3 | 0.086690
    Floating Point Double Mul/Div:      0 | 0.000000
-   0 Cycle Compare FU's:              40 | 0.144068
+   0 Cycle Compare FU's:              40 | 0.144065
    GEP Instruction FU's:               2 | 0.265363
-   Type Conversion FU's:              11 | 0.138856
+   Type Conversion FU's:              11 | 0.138855
 
    ========= Static FU's ==========================
    Counter FU's:                    0
@@ -2172,8 +2427,8 @@ system.acctest.convolution0.compute
        Memory Writes:               0
    ========= Power Analysis ======================
    FU Leakage Power:                0.196912 mW 
-   FU Dynamic Power:                2658.054443 mW 
-   FU Total Power:                  2658.251465 mW 
+   FU Dynamic Power:                2658.262207 mW 
+   FU Total Power:                  2658.459229 mW 
 
    Registers Leakage Power:          0.002459 mW 
    Registers Dynamic Power:          75.875725 mW 
@@ -2186,14 +2441,17 @@ system.acctest.convolution0.compute
    SPM Write Dynamic Power:         3.448926 mW
    SPM Total Power:                 24.602807 mW
 
+   SPM Energy Per Read Access:      0.130935 nJ
+   SPM Energy Per Write Access:     0.166637 nJ
+
    Cache Leakage Power:             0.000000 mW
    Cache Read Dynamic Power:        0.000000 mW
    Cache Write Dynamic Power:       0.000000 mW
    Cache Total Power:               0.000000 mW
 
-   Accelerator Power:               2734.129639 mW
-   Accelerator Power (SPM):         2758.732446 mW
-   Accelerator Power (Cache):       2734.129639 mW
+   Accelerator Power:               2734.337402 mW
+   Accelerator Power (SPM):         2758.940209 mW
+   Accelerator Power (Cache):       2734.337402 mW
 
    ========= Area Analysis =======================
    FU Area:                         22931.867188 um^2 (0.022932 mm^2)
@@ -2209,38 +2467,46 @@ system.acctest.convolution0.compute
    SPM Optimized Leakage Power:     0.002053 mW
    SPM Opt Area:                    145.024971 um^2
 
-6284990625: global: Timer #0 started at tick 6284990625
-6285156250: global: Timer #2 started at tick 6285156250
-6285440000: global: Timer #2 stopped at tick 6285440000. Duration: 283750
-6285696875: global: DAG ID = 0
-6285710625: global: Node ID = 8
-6285723750: global: Node deadline difference = -10120
-6285736250: global: Predicted memory time / byte = 0.000218272 us/byte
-6285748750: global: Predicted memory time = 14.3265 us
-6285761250: global: Predicted memory time / byte = 0.000218272 us/byte
-6285773750: global: Predicted memory time = 14.3047 us
-6285786250: global: Predicted memory time / byte = 0.000191895 us/byte
-6285798750: global: Predicted memory time = 12.576 us
-6285811250: global: Predicted memory time / byte = 0 us/byte
-6285823750: global: Predicted memory time = 0 us
-6285836250: global: Predicted memory access size = 0
-6285848750: global: Predicted memory access size = 65636
-6285861250: global: Predicted memory access size = 0
-6285873750: global: Predicted memory access size = 0
-6286715875: system.acctest.elem_matrix0_dma: SRC:0x0000000022020020, DST:0x0000000024000020, LEN:65536
-6286939375: global: Timer #0 stopped at tick 6286939375. Duration: 1948750
-6286955625: global: Number of accelerators running = 1
-6296976875: system.acctest.elem_matrix0_dma: Transfer completed in 10.261 us
-6297105625: global: Timer #0 started at tick 6297105625
-6297598125: global: Timer #1 started at tick 6297598125
-6297939375: global: Timer #1 stopped at tick 6297939375. Duration: 341250
-6299405625: global: Timer #0 stopped at tick 6299405625. Duration: 2300000
-6299421875: global: Number of accelerators running = 1
+6361641875: global: Timer #0 started at tick 6361641875
+6361882500: global: Timer #2 started at tick 6361882500
+6362168125: global: Timer #2 stopped at tick 6362168125. Duration: 285625
+6362407500: global: DAG ID = 0
+6362420000: global: Node ID = 8
+6362433125: global: Node deadline difference = -10260
+6362445625: global: Predicted memory time / byte = 0.000165986 us/byte
+6362458125: global: Predicted memory time = 10.8947 us
+6362470625: global: Predicted memory time / byte = 0.000165986 us/byte
+6362483125: global: Predicted memory time = 10.8781 us
+6362495625: global: Predicted memory time / byte = 0.000156509 us/byte
+6362508125: global: Predicted memory time = 10.257 us
+6362520625: global: Predicted memory time / byte = 0 us/byte
+6362533125: global: Predicted memory time = 0 us
+6362545625: global: Predicted memory access size = 0
+6362558125: global: Predicted memory access size = 65536
+6362570625: global: Predicted memory access size = 0
+6362583125: global: Predicted memory access size = 0
+6362665625: global: Timer #6 started at tick 6362665625
+6362771875: global: Timer #7 started at tick 6362771875
+6363401625: system.acctest.elem_matrix0_dma: SRC:0x0000000022020020, DST:0x0000000024000020, LEN:65536
+6363530625: global: Timer #7 stopped at tick 6363530625. Duration: 758750
+6363545625: global: Timer #6 stopped at tick 6363545625. Duration: 880000
+6363621250: global: Timer #0 stopped at tick 6363621250. Duration: 1979375
+6363635625: global: Number of accelerators running = 1
+6373662625: system.acctest.elem_matrix0_dma: Transfer completed in 10.261 us
+6373748125: global: Timer #0 started at tick 6373748125
+6374072500: global: Timer #1 started at tick 6374072500
+6374188750: global: Timer #1 stopped at tick 6374188750. Duration: 116250
+6374411875: global: Timer #6 started at tick 6374411875
+6374469375: global: Timer #7 started at tick 6374469375
+6375475000: global: Timer #7 stopped at tick 6375475000. Duration: 1005625
+6375523125: global: Timer #6 stopped at tick 6375523125. Duration: 1111250
+6375634375: global: Timer #0 stopped at tick 6375634375. Duration: 1886250
+6375648750: global: Number of accelerators running = 1
 ********************************************************************************
 system.acctest.elem_matrix0.compute
    ========= Performance Analysis =============
-   Setup Time:                      4.568999seconds
-   Simulation Time:                 103.751068seconds
+   Setup Time:                      5.017247seconds
+   Simulation Time:                 97.091437seconds
    System Clock:                    1.000000GHz
    Transistor Latency:              1ns
    Runtime:                         8199 cycles
@@ -2250,8 +2516,8 @@ system.acctest.elem_matrix0.compute
 
 ********************************************************************************
    ========= Performance Analysis =================
-   Setup Time:                      4568999110.000000ns
-   Simulation Time:                 103751068106.000000ns
+   Setup Time:                      5017246712.000000ns
+   Simulation Time:                 97091437032.000000ns
    System Clock:                    1.000000GHz
    Transistor Latency:              0ns
    Runtime:                         8199 cycles
@@ -2335,6 +2601,9 @@ system.acctest.elem_matrix0.compute
    SPM Write Dynamic Power:         4.673423 mW
    SPM Total Power:                 9.973938 mW
 
+   SPM Energy Per Read Access:      0.170493 nJ
+   SPM Energy Per Write Access:     0.218190 nJ
+
    Cache Leakage Power:             0.000000 mW
    Cache Read Dynamic Power:        0.000000 mW
    Cache Write Dynamic Power:       0.000000 mW
@@ -2358,38 +2627,46 @@ system.acctest.elem_matrix0.compute
    SPM Optimized Leakage Power:     0.003237 mW
    SPM Opt Area:                    162.973445 um^2
 
-6307440000: global: Timer #0 started at tick 6307440000
-6307604375: global: Timer #2 started at tick 6307604375
-6307890000: global: Timer #2 stopped at tick 6307890000. Duration: 285625
-6308142500: global: DAG ID = 0
-6308156250: global: Node ID = 11
-6308169375: global: Node deadline difference = -10136
-6308181875: global: Predicted memory time / byte = 0.00014935 us/byte
-6308194375: global: Predicted memory time = 9.78782 us
-6308206875: global: Predicted memory time / byte = 0.00014935 us/byte
-6308219375: global: Predicted memory time = 9.78782 us
-6308231875: global: Predicted memory time / byte = 0.000158508 us/byte
-6308244375: global: Predicted memory time = 10.388 us
-6308256875: global: Predicted memory time / byte = 0 us/byte
-6308269375: global: Predicted memory time = 0 us
-6308281875: global: Predicted memory access size = 0
-6308294375: global: Predicted memory access size = 65536
-6308306875: global: Predicted memory access size = 0
-6308319375: global: Predicted memory access size = 0
-6321680875: system.acctest.elem_matrix0_dma: SRC:0x00000000820ba980, DST:0x0000000024000020, LEN:65536
-6321905000: global: Timer #0 stopped at tick 6321905000. Duration: 14465000
-6321921250: global: Number of accelerators running = 1
-6333658875: system.acctest.elem_matrix0_dma: Transfer completed in 11.978 us
-6333821250: global: Timer #0 started at tick 6333821250
-6334311250: global: Timer #1 started at tick 6334311250
-6334695000: global: Timer #1 stopped at tick 6334695000. Duration: 383750
-6336166250: global: Timer #0 stopped at tick 6336166250. Duration: 2345000
-6336182500: global: Number of accelerators running = 1
+6383639375: global: Timer #0 started at tick 6383639375
+6383801250: global: Timer #2 started at tick 6383801250
+6384075625: global: Timer #2 stopped at tick 6384075625. Duration: 274375
+6384325000: global: DAG ID = 0
+6384337500: global: Node ID = 11
+6384350625: global: Node deadline difference = -10277
+6384363125: global: Predicted memory time / byte = 0.00013769 us/byte
+6384375625: global: Predicted memory time = 9.02365 us
+6384388125: global: Predicted memory time / byte = 0.00013769 us/byte
+6384400625: global: Predicted memory time = 9.02365 us
+6384413125: global: Predicted memory time / byte = 0.000156525 us/byte
+6384425625: global: Predicted memory time = 10.258 us
+6384438125: global: Predicted memory time / byte = 0 us/byte
+6384450625: global: Predicted memory time = 0 us
+6384463125: global: Predicted memory access size = 0
+6384475625: global: Predicted memory access size = 65536
+6384488125: global: Predicted memory access size = 0
+6384500625: global: Predicted memory access size = 0
+6384575625: global: Timer #6 started at tick 6384575625
+6384668125: global: Timer #7 started at tick 6384668125
+6385299500: system.acctest.elem_matrix0_dma: SRC:0x0000000082134ac0, DST:0x0000000024000020, LEN:65536
+6385422500: global: Timer #7 stopped at tick 6385422500. Duration: 754375
+6385437500: global: Timer #6 stopped at tick 6385437500. Duration: 861875
+6385513750: global: Timer #0 stopped at tick 6385513750. Duration: 1874375
+6385528125: global: Number of accelerators running = 1
+6397294500: system.acctest.elem_matrix0_dma: Transfer completed in 11.995 us
+6397370000: global: Timer #0 started at tick 6397370000
+6397691250: global: Timer #1 started at tick 6397691250
+6397807500: global: Timer #1 stopped at tick 6397807500. Duration: 116250
+6398031250: global: Timer #6 started at tick 6398031250
+6398293125: global: Timer #7 started at tick 6398293125
+6399297500: global: Timer #7 stopped at tick 6399297500. Duration: 1004375
+6399361875: global: Timer #6 stopped at tick 6399361875. Duration: 1330625
+6399463125: global: Timer #0 stopped at tick 6399463125. Duration: 2093125
+6399477500: global: Number of accelerators running = 1
 ********************************************************************************
 system.acctest.elem_matrix0.compute
    ========= Performance Analysis =============
-   Setup Time:                      8.027602seconds
-   Simulation Time:                 182.548692seconds
+   Setup Time:                      7.035318seconds
+   Simulation Time:                 167.365848seconds
    System Clock:                    1.000000GHz
    Transistor Latency:              1ns
    Runtime:                         10932 cycles
@@ -2399,8 +2676,8 @@ system.acctest.elem_matrix0.compute
 
 ********************************************************************************
    ========= Performance Analysis =================
-   Setup Time:                      8027602330.000001ns
-   Simulation Time:                 182548692124.000000ns
+   Setup Time:                      7035317752.000000ns
+   Simulation Time:                 167365847821.000000ns
    System Clock:                    1.000000GHz
    Transistor Latency:              0ns
    Runtime:                         10932 cycles
@@ -2484,6 +2761,9 @@ system.acctest.elem_matrix0.compute
    SPM Write Dynamic Power:         4.890273 mW
    SPM Total Power:                 10.600463 mW
 
+   SPM Energy Per Read Access:      0.170493 nJ
+   SPM Energy Per Write Access:     0.218190 nJ
+
    Cache Leakage Power:             0.000000 mW
    Cache Read Dynamic Power:        0.000000 mW
    Cache Write Dynamic Power:       0.000000 mW
@@ -2507,38 +2787,46 @@ system.acctest.elem_matrix0.compute
    SPM Optimized Leakage Power:     0.004248 mW
    SPM Opt Area:                    178.524902 um^2
 
-6346947500: global: Timer #0 started at tick 6346947500
-6347360000: global: Timer #2 started at tick 6347360000
-6347645000: global: Timer #2 stopped at tick 6347645000. Duration: 285000
-6347888750: global: DAG ID = 0
-6347902500: global: Node ID = 13
-6347915625: global: Node deadline difference = -10154
-6347928125: global: Predicted memory time / byte = 0.00015164 us/byte
-6347940625: global: Predicted memory time = 19.8757 us
-6347953125: global: Predicted memory time / byte = 0.00015164 us/byte
-6347965625: global: Predicted memory time = 9.93787 us
-6347978125: global: Predicted memory time / byte = 0.000185287 us/byte
-6347990625: global: Predicted memory time = 12.143 us
-6348003125: global: Predicted memory time / byte = 0 us/byte
-6348015625: global: Predicted memory time = 0 us
-6348028125: global: Predicted memory access size = 0
-6348040625: global: Predicted memory access size = 65536
-6348053125: global: Predicted memory access size = 0
-6348065625: global: Predicted memory access size = 0
-6361455875: system.acctest.elem_matrix0_dma: SRC:0x000000008210a9c0, DST:0x0000000024000020, LEN:65536
-6361664375: global: Timer #0 stopped at tick 6361664375. Duration: 14716875
-6361680625: global: Number of accelerators running = 1
-6373361875: system.acctest.elem_matrix0_dma: Transfer completed in 11.906 us
-6373524375: global: Timer #0 started at tick 6373524375
-6373979375: global: Timer #1 started at tick 6373979375
-6374357500: global: Timer #1 stopped at tick 6374357500. Duration: 378125
-6375811250: global: Timer #0 stopped at tick 6375811250. Duration: 2286875
-6375827500: global: Number of accelerators running = 1
+6410194375: global: Timer #0 started at tick 6410194375
+6410426250: global: Timer #2 started at tick 6410426250
+6410686875: global: Timer #2 stopped at tick 6410686875. Duration: 260625
+6410924375: global: DAG ID = 0
+6410936875: global: Node ID = 13
+6410950000: global: Node deadline difference = -10308
+6410962500: global: Predicted memory time / byte = 0.000142399 us/byte
+6410975000: global: Predicted memory time = 18.6645 us
+6410987500: global: Predicted memory time / byte = 0.000142399 us/byte
+6411000000: global: Predicted memory time = 9.33224 us
+6411012500: global: Predicted memory time / byte = 0.000182877 us/byte
+6411025000: global: Predicted memory time = 11.985 us
+6411037500: global: Predicted memory time / byte = 0 us/byte
+6411050000: global: Predicted memory time = 0 us
+6411062500: global: Predicted memory access size = 0
+6411075000: global: Predicted memory access size = 65536
+6411087500: global: Predicted memory access size = 0
+6411100000: global: Predicted memory access size = 0
+6411175000: global: Timer #6 started at tick 6411175000
+6411294375: global: Timer #7 started at tick 6411294375
+6411940875: system.acctest.elem_matrix0_dma: SRC:0x0000000082184b00, DST:0x0000000024010020, LEN:65536
+6412072500: global: Timer #7 stopped at tick 6412072500. Duration: 778125
+6412095000: global: Timer #6 stopped at tick 6412095000. Duration: 920000
+6412171250: global: Timer #0 stopped at tick 6412171250. Duration: 1976875
+6412185625: global: Number of accelerators running = 1
+6423859875: system.acctest.elem_matrix0_dma: Transfer completed in 11.919 us
+6423935000: global: Timer #0 started at tick 6423935000
+6424260000: global: Timer #1 started at tick 6424260000
+6424376250: global: Timer #1 stopped at tick 6424376250. Duration: 116250
+6424600000: global: Timer #6 started at tick 6424600000
+6424670625: global: Timer #7 started at tick 6424670625
+6425670000: global: Timer #7 stopped at tick 6425670000. Duration: 999375
+6425735625: global: Timer #6 stopped at tick 6425735625. Duration: 1135625
+6425836875: global: Timer #0 stopped at tick 6425836875. Duration: 1901875
+6425851250: global: Number of accelerators running = 1
 ********************************************************************************
 system.acctest.elem_matrix0.compute
    ========= Performance Analysis =============
-   Setup Time:                      8.251571seconds
-   Simulation Time:                 158.282100seconds
+   Setup Time:                      7.578607seconds
+   Simulation Time:                 141.133672seconds
    System Clock:                    1.000000GHz
    Transistor Latency:              1ns
    Runtime:                         10932 cycles
@@ -2548,8 +2836,8 @@ system.acctest.elem_matrix0.compute
 
 ********************************************************************************
    ========= Performance Analysis =================
-   Setup Time:                      8251571300.000000ns
-   Simulation Time:                 158282099743.000000ns
+   Setup Time:                      7578606584.000000ns
+   Simulation Time:                 141133671614.000000ns
    System Clock:                    1.000000GHz
    Transistor Latency:              0ns
    Runtime:                         10932 cycles
@@ -2633,6 +2921,9 @@ system.acctest.elem_matrix0.compute
    SPM Write Dynamic Power:         5.103456 mW
    SPM Total Power:                 11.223364 mW
 
+   SPM Energy Per Read Access:      0.170493 nJ
+   SPM Energy Per Write Access:     0.218190 nJ
+
    Cache Leakage Power:             0.000000 mW
    Cache Read Dynamic Power:        0.000000 mW
    Cache Write Dynamic Power:       0.000000 mW
@@ -2656,38 +2947,46 @@ system.acctest.elem_matrix0.compute
    SPM Optimized Leakage Power:     0.004248 mW
    SPM Opt Area:                    178.524902 um^2
 
-6386587500: global: Timer #0 started at tick 6386587500
-6386744375: global: Timer #2 started at tick 6386744375
-6387014375: global: Timer #2 stopped at tick 6387014375. Duration: 270000
-6387266875: global: DAG ID = 0
-6387280625: global: Node ID = 16
-6387293750: global: Node deadline difference = -10171
-6387306250: global: Predicted memory time / byte = 0.000160052 us/byte
-6387318750: global: Predicted memory time = 20.9783 us
-6387331250: global: Predicted memory time / byte = 0.000160052 us/byte
-6387343750: global: Predicted memory time = 10.4892 us
-6387356250: global: Predicted memory time / byte = 0.000183533 us/byte
-6387368750: global: Predicted memory time = 12.028 us
-6387381250: global: Predicted memory time / byte = 0 us/byte
-6387393750: global: Predicted memory time = 0 us
-6387406250: global: Predicted memory access size = 0
-6387418750: global: Predicted memory access size = 65536
-6387431250: global: Predicted memory access size = 0
-6387443750: global: Predicted memory access size = 0
-6388270875: system.acctest.harris_non_max0_dma: SRC:0x0000000024010020, DST:0x0000000026000020, LEN:65536
-6388522500: global: Timer #0 stopped at tick 6388522500. Duration: 1935000
-6388538750: global: Number of accelerators running = 1
-6398531875: system.acctest.harris_non_max0_dma: Transfer completed in 10.261 us
-6398629375: global: Timer #0 started at tick 6398629375
-6399125625: global: Timer #1 started at tick 6399125625
-6399509375: global: Timer #1 stopped at tick 6399509375. Duration: 383750
-6400865625: global: Timer #0 stopped at tick 6400865625. Duration: 2236250
-6400967500: global: Number of accelerators running = 1
+6436574375: global: Timer #0 started at tick 6436574375
+6436740000: global: Timer #2 started at tick 6436740000
+6437008125: global: Timer #2 stopped at tick 6437008125. Duration: 268125
+6437236250: global: DAG ID = 0
+6437248750: global: Node ID = 16
+6437261875: global: Node deadline difference = -10338
+6437274375: global: Predicted memory time / byte = 0.000152518 us/byte
+6437286875: global: Predicted memory time = 19.9909 us
+6437299375: global: Predicted memory time / byte = 0.000152518 us/byte
+6437311875: global: Predicted memory time = 9.99543 us
+6437324375: global: Predicted memory time / byte = 0.000181732 us/byte
+6437336875: global: Predicted memory time = 11.91 us
+6437349375: global: Predicted memory time / byte = 0 us/byte
+6437361875: global: Predicted memory time = 0 us
+6437374375: global: Predicted memory access size = 0
+6437386875: global: Predicted memory access size = 65536
+6437399375: global: Predicted memory access size = 0
+6437411875: global: Predicted memory access size = 0
+6437509375: global: Timer #6 started at tick 6437509375
+6437647500: global: Timer #7 started at tick 6437647500
+6438323750: system.acctest.harris_non_max0_dma: SRC:0x0000000024020020, DST:0x0000000026000020, LEN:65536
+6438508750: global: Timer #7 stopped at tick 6438508750. Duration: 861250
+6438531250: global: Timer #6 stopped at tick 6438531250. Duration: 1021875
+6438605000: global: Timer #0 stopped at tick 6438605000. Duration: 2030625
+6438619375: global: Number of accelerators running = 1
+6448584750: system.acctest.harris_non_max0_dma: Transfer completed in 10.261 us
+6448679375: global: Timer #0 started at tick 6448679375
+6449009375: global: Timer #1 started at tick 6449009375
+6449130625: global: Timer #1 stopped at tick 6449130625. Duration: 121250
+6449353750: global: Timer #6 started at tick 6449353750
+6449496250: global: Timer #7 started at tick 6449496250
+6450007500: global: Timer #7 stopped at tick 6450007500. Duration: 511250
+6450068125: global: Timer #6 stopped at tick 6450068125. Duration: 714375
+6450169375: global: Timer #0 stopped at tick 6450169375. Duration: 1490000
+6450183750: global: Number of accelerators running = 1
 ********************************************************************************
 system.acctest.harris_non_max0.compute
    ========= Performance Analysis =============
-   Setup Time:                      0.012516seconds
-   Simulation Time:                 4.077620seconds
+   Setup Time:                      0.011812seconds
+   Simulation Time:                 3.269489seconds
    System Clock:                    1.000000GHz
    Transistor Latency:              1ns
    Runtime:                         105010 cycles
@@ -2697,8 +2996,8 @@ system.acctest.harris_non_max0.compute
 
 ********************************************************************************
    ========= Performance Analysis =================
-   Setup Time:                      12515776.000000ns
-   Simulation Time:                 4077619637.000000ns
+   Setup Time:                      11811716.000000ns
+   Simulation Time:                 3269488860.000000ns
    System Clock:                    1.000000GHz
    Transistor Latency:              0ns
    Runtime:                         105010 cycles
@@ -2782,6 +3081,9 @@ system.acctest.harris_non_max0.compute
    SPM Write Dynamic Power:         0.561696 mW
    SPM Total Power:                 1.152287 mW
 
+   SPM Energy Per Read Access:      0.108255 nJ
+   SPM Energy Per Write Access:     0.137710 nJ
+
    Cache Leakage Power:             0.000000 mW
    Cache Read Dynamic Power:        0.000000 mW
    Cache Write Dynamic Power:       0.000000 mW
@@ -2805,36 +3107,38 @@ system.acctest.harris_non_max0.compute
    SPM Optimized Leakage Power:     0.001770 mW
    SPM Opt Area:                    77.453784 um^2
 
-6505518750: global: Timer #0 started at tick 6505518750
-6509654500: system.acctest.harris_non_max0_dma: SRC:0x0000000026010020, DST:0x000000008212ab40, LEN:16384
-6510024375: global: Timer #0 stopped at tick 6510024375. Duration: 4505625
-6510040625: global: Number of accelerators running = 1
-6511356500: system.acctest.harris_non_max0_dma: Transfer completed in 1.702 us
-6511432500: global: Timer #0 started at tick 6511432500
-6511762500: global: Timer #1 started at tick 6511762500
-6511969375: global: Timer #1 stopped at tick 6511969375. Duration: 206875
-6512181250: global: DAG ID = 0
-6512195000: global: Node ID = 17
-6512223125: global: DAG execution time = 6496
-6512241250: global: DAG deadline difference = -10171
-6512258750: global: Node deadline difference = -10171
-6512271250: global: Predicted memory time / byte = 0.000165922 us/byte
-6512283750: global: Predicted memory time = 10.8739 us
-6512296250: global: Predicted memory time / byte = 0.000165922 us/byte
-6512308750: global: Predicted memory time = 2.71847 us
-6512321250: global: Predicted memory time / byte = 0.000157379 us/byte
-6512333750: global: Predicted memory time = 10.314 us
-6512346250: global: Predicted memory time / byte = 0.000102966 us/byte
-6512358750: global: Predicted memory time = 1.687 us
-6512371250: global: Predicted memory access size = 0
-6512383750: global: Predicted memory access size = 65536
-6512396250: global: Predicted memory access size = 0
-6512408750: global: Predicted memory access size = 16384
-6512512500: global: Timer #0 stopped at tick 6512512500. Duration: 1080000
-6512528750: global: Number of accelerators running = 0
-6512608125: global: Number of forwards = 10
-6512667500: global: Number of colocations = 3
-6512686875: global: Number of DAG deadlines met = 1
-6512706250: global: Number of node deadlines met = 18
-6512868125: global: Total predicted compute time = 6160 us
-Exiting @ tick 6513073750 because m5_exit instruction encountered
+6554972500: global: Timer #0 started at tick 6554972500
+6555303750: global: Timer #7 started at tick 6555303750
+6555941625: system.acctest.harris_non_max0_dma: SRC:0x0000000026020020, DST:0x00000000821a4c80, LEN:16384
+6556094375: global: Timer #7 stopped at tick 6556094375. Duration: 790625
+6556378125: global: Timer #0 stopped at tick 6556378125. Duration: 1405625
+6556392500: global: Number of accelerators running = 1
+6557628625: system.acctest.harris_non_max0_dma: Transfer completed in 1.687 us
+6557704375: global: Timer #0 started at tick 6557704375
+6558034375: global: Timer #1 started at tick 6558034375
+6558169375: global: Timer #1 stopped at tick 6558169375. Duration: 135000
+6558368750: global: DAG ID = 0
+6558381250: global: Node ID = 17
+6558409375: global: DAG execution time = 6325
+6558428750: global: DAG deadline difference = -10342
+6558453750: global: Node deadline difference = -10342
+6558466250: global: Predicted memory time / byte = 0.000159822 us/byte
+6558478750: global: Predicted memory time = 10.4741 us
+6558491250: global: Predicted memory time / byte = 0.000159822 us/byte
+6558503750: global: Predicted memory time = 2.61852 us
+6558516250: global: Predicted memory time / byte = 0.000155991 us/byte
+6558528750: global: Predicted memory time = 10.223 us
+6558541250: global: Predicted memory time / byte = 0.000102112 us/byte
+6558553750: global: Predicted memory time = 1.673 us
+6558566250: global: Predicted memory access size = 0
+6558578750: global: Predicted memory access size = 65536
+6558591250: global: Predicted memory access size = 0
+6558603750: global: Predicted memory access size = 16384
+6558710625: global: Timer #0 stopped at tick 6558710625. Duration: 1006250
+6558725000: global: Number of accelerators running = 0
+6558804375: global: Number of forwards = 17
+6558863125: global: Number of colocations = 3
+6558881875: global: Number of DAG deadlines met = 1
+6558900625: global: Number of node deadlines met = 18
+6558934375: global: Total predicted compute time = 6160 us
+Exiting @ tick 6559013750 because m5_exit instruction encountered
