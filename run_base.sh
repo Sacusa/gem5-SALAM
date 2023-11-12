@@ -2,7 +2,6 @@
 FLAGS="HWACC,CommInterface,LLVMInterface,StreamDma,NoncoherentDma,TickTimer,SchedulerStats"
 BENCH=""
 DEBUG="false"
-INTERCONNECT="bus"
 PRINT_TO_FILE="false"
 
 while getopts ":b:f:dpx" opt
@@ -19,9 +18,6 @@ while getopts ":b:f:dpx" opt
                 ;;
             f )
                 FLAGS+=",${OPTARG}"
-                ;;
-            x )
-                INTERCONNECT="xbar"
                 ;;
             * )
                 echo "Invalid argument: ${OPTARG}"
@@ -42,9 +38,9 @@ run_gem5() {
     OUTDIR=$2
 
     if [ "${DEBUG}" == "true" ]; then
-        BINARY="gdb --args ${M5_PATH}/build/ARM/gem5_${INTERCONNECT}.debug"
+        BINARY="gdb --args ${M5_PATH}/build/ARM/gem5.debug"
     else
-        BINARY="${M5_PATH}/build/ARM/gem5_${INTERCONNECT}.opt"
+        BINARY="${M5_PATH}/build/ARM/gem5.opt"
     fi
 
     # Possible CPU types
