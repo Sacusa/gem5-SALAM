@@ -35,10 +35,10 @@
 //#define PRINT_SCHEDULE
 #define ENABLE_FORWARDING // DOES NOT WORK
 
-//#define NUM_REPEATS 1
-#define NUM_REPEATS 10
-#define ENABLE_EARLY_EXIT
-#define MIN_REPEATS 3
+#define NUM_REPEATS 1
+//#define NUM_REPEATS 10
+//#define ENABLE_EARLY_EXIT
+//#define MIN_REPEATS 3
 
 /* Enable gem5 timers for the following functions:
  * Timer 0: isr()

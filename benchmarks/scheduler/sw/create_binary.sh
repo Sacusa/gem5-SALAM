@@ -49,7 +49,11 @@ sed -i '/int num_lstm/c\    int num_lstm = '"${num_lstm};" main.c
 
 # create the runtime call
 num_dags=$(($num_canny + $num_deblur + $num_gru + $num_harris + $num_lstm))
-sed -i '/runtime_call/c\    runtime(nodes, '"${num_dags}"', num_nodes, '"${policy}"', MEM_PRED_NO_PRED, false);' main.c
+if [ "$policy" = "LAX" ]; then
+    sed -i '/runtime_call/c\    runtime(nodes, '"${num_dags}"', num_nodes, '"${policy}"', MEM_PRED_EWMA, false);' main.c
+else
+    sed -i '/runtime_call/c\    runtime(nodes, '"${num_dags}"', num_nodes, '"${policy}"', MEM_PRED_NO_PRED, false);' main.c
+fi
 
 # compile and rename binary
 make main.elf &> /dev/null
