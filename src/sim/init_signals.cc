@@ -66,7 +66,9 @@
 using namespace std;
 
 // Use an separate stack for fatal signal handlers
-static uint8_t fatalSigStack[2 * SIGSTKSZ];
+#define SIGSTKSZ_old 32768  // SIGSTKSZ is a runtime variable in new glibc
+                            // distributions, so setting it to an older value
+static uint8_t fatalSigStack[2 * SIGSTKSZ_old];
 
 static bool
 setupAltStack()
