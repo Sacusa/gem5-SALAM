@@ -202,6 +202,8 @@ inline void print_final_stats()
 
     m5_print_stat(PREDICTED_COMPUTE_TIME,
             (uint32_t)stat_predicted_compute_time);
+
+    m5_print_stat(TOTAL_RUNTIME, (m5_get_time() / 1000) - runtime_start_time);
 }
 #endif
 
@@ -501,8 +503,23 @@ inline void run_canny_non_max(int device_id, volatile task_struct_t *req,
                 req->producer_acc[1]->spm_addr[req->producer_spm_part[1]];
             req->producer_acc[1]->spm_ongoing_reads[\
                 req->producer_spm_part[1]]++;
+
+#ifdef ENABLE_STATS
+            int dag_id = req->dag_id;
+            int dag_inst = num_finished_dags[dag_id];
+            stat_num_forwards[dag_id][dag_inst]++;
+            stat_spad_data_movement[dag_id][dag_inst] += \
+                req->producer[1]->output_size;
+#endif
         } else {
             theta_addr = (uint32_t) args->theta;
+
+#ifdef ENABLE_STATS
+            int dag_id = req->dag_id;
+            int dag_inst = num_finished_dags[dag_id];
+            stat_dram_data_movement[dag_id][dag_inst] += \
+                req->producer[1]->output_size;
+#endif
         }
 
 #ifdef ENABLE_STATS
@@ -602,6 +619,16 @@ inline void run_convolution(int device_id, volatile task_struct_t *req,
             req->stat_mem_size_truth_load = 0;
 #endif
         }
+    }
+
+    if ((acc->status == ACC_STATUS_DMA_ARG1) || \
+        ((acc->status == ACC_STATUS_IDLE) && (input_addr == 0))) {
+#ifdef ENABLE_STATS
+        int dag_id = req->dag_id;
+        int dag_inst = num_finished_dags[dag_id];
+        stat_dram_data_movement[dag_id][dag_inst] += \
+            args->kern_height * args->kern_width * 4;
+#endif
     }
 
     convolution_driver(device_id, IMG_HEIGHT, IMG_WIDTH, input_addr,
@@ -1969,11 +1996,6 @@ void isr(int i, int j)  // i = accelerator id, j = device id
             acc->running_req = NULL;
             num_running--;
         }
-
-#ifdef SCALE_EXPERIMENT
-        num_running = 0;
-        return;
-#endif
     }
 
     else if (acc->status == ACC_STATUS_DMA_OUT) {
@@ -2028,6 +2050,12 @@ void isr(int i, int j)  // i = accelerator id, j = device id
 
         if (req->num_children == 0) {
             num_finished_dags[req->dag_id]++;
+
+#ifdef ENABLE_EARLY_EXIT
+            // One of the DAGs finished all its iterations, so we MUST exit now
+            print_final_stats();
+            m5_exit();
+#endif
         }
 
         // else
@@ -2036,22 +2064,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
 
             if ((child->status != REQ_STATUS_WAITING) && child->is_first_node){
                 num_finished_dags[req->dag_id]++;
-
-#ifdef ENABLE_EARLY_EXIT
-                bool early_exit = true;
-
-                for (int d = 0; d < num_dags; d++) {
-                    if (num_finished_dags[d] < MIN_REPEATS) {
-                        early_exit = false;
-                        break;
-                    }
-                }
-
-                if (early_exit) {
-                    print_final_stats();
-                    m5_exit();
-                }
-#endif
+                break;
             }
         }
 
@@ -2065,6 +2078,14 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                 " ACC_ID=%d, DEV_ID=%d\n", i, j);
         m5_exit();
     }
+
+#ifdef ENABLE_EARLY_EXIT
+    uint32_t curr_time = (m5_get_time() / 1000) - runtime_start_time;
+    if (curr_time >= MAX_RUNTIME) {
+        print_final_stats();
+        m5_exit();
+    }
+#endif
 
     launch_requests();
 

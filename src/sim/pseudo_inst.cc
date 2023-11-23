@@ -767,6 +767,7 @@ m5printstat(ThreadContext *tc, uint32_t stat, uint32_t value)
         FINISHED_DAG_ITERS,
         DRAM_DATA_MOVEMENT,
         SPAD_DATA_MOVEMENT,
+        TOTAL_RUNTIME,
         NUM_STATS
     };
 
@@ -850,6 +851,10 @@ m5printstat(ThreadContext *tc, uint32_t stat, uint32_t value)
 
         case SPAD_DATA_MOVEMENT:
             DPRINTF(SchedulerStats, "SPAD data movement = %d bytes\n", value);
+            break;
+
+        case TOTAL_RUNTIME:
+            DPRINTF(SchedulerStats, "Total runtime = %d us\n", value);
             break;
     }
 }

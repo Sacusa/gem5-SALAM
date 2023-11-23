@@ -13,32 +13,23 @@
 
 #include "../defines.h"
 
-//#define SCALE_EXPERIMENT
-#ifdef SCALE_EXPERIMENT
-    #define MAX_ACC_INSTANCES    10
-    #define MAX_ACC_ARGS         5
-    #define MAX_ACC_SPM_PARTS    5
-    #define MAX_CHILDREN         1500
-    #define MAX_DAGS             50
-    #define MAX_NODES            1500
-    #define MAX_READY_QUEUE_SIZE 1500
-#else
-    #define MAX_ACC_INSTANCES    10
-    #define MAX_ACC_ARGS         5
-    #define MAX_ACC_SPM_PARTS    5
-    #define MAX_CHILDREN         50
-    #define MAX_DAGS             50
-    #define MAX_NODES            3000
-    #define MAX_READY_QUEUE_SIZE 500
-#endif
+#define MAX_ACC_INSTANCES    10
+#define MAX_ACC_ARGS         5
+#define MAX_ACC_SPM_PARTS    5
+#define MAX_CHILDREN         50
+#define MAX_DAGS             50
+#define MAX_NODES            10000
+#define MAX_READY_QUEUE_SIZE 500
+
 //#define VERIFY
 //#define PRINT_SCHEDULE
 #define ENABLE_FORWARDING // DOES NOT WORK
 
-#define NUM_REPEATS 1
-//#define NUM_REPEATS 10
-//#define ENABLE_EARLY_EXIT
-//#define MIN_REPEATS 3
+//#define NUM_REPEATS 1
+#define NUM_REPEATS 50
+
+#define MAX_RUNTIME 150000
+#define ENABLE_EARLY_EXIT
 
 /* Enable gem5 timers for the following functions:
  * Timer 0: isr()
@@ -145,7 +136,8 @@ enum m5_stat_t {
     PREDICTED_MEMORY_SIZE,
     FINISHED_DAG_ITERS,
     DRAM_DATA_MOVEMENT,
-    SPAD_DATA_MOVEMENT
+    SPAD_DATA_MOVEMENT,
+    TOTAL_RUNTIME
 };
 
 typedef struct task_struct_t task_struct_t;
