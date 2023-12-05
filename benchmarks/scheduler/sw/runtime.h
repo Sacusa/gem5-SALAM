@@ -26,9 +26,9 @@
 #define ENABLE_FORWARDING // DOES NOT WORK
 
 //#define NUM_REPEATS 1
-#define NUM_REPEATS 50
+#define NUM_REPEATS 20
 
-#define MAX_RUNTIME 150000
+#define MAX_RUNTIME 50000
 #define ENABLE_EARLY_EXIT
 
 /* Enable gem5 timers for the following functions:

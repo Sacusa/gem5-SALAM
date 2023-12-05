@@ -81,7 +81,7 @@ void canny_process_raw(canny_data_t *img, task_struct_t **nodes, int rep_count)
     task->compute_time = RUNTIME_ISP;
     task->dag_deadline = (rep_count + 1) * CANNY_DEADLINE;
     task->node_deadline = (rep_count * CANNY_DEADLINE) + 13564;
-    task->sd = 0.01494 * CANNY_DEADLINE;
+    task->sd = 0.01494 * task->dag_deadline;
 
     canny_retval[0][0] = task;
     nodes[rep_count * CANNY_NUM_NODES] = task;
@@ -123,7 +123,7 @@ void canny_convert_to_grayscale(canny_data_t *img, task_struct_t **nodes,
     task->compute_time = RUNTIME_GRAYSCALE;
     task->dag_deadline = (rep_count + 1) * CANNY_DEADLINE;
     task->node_deadline = (rep_count * CANNY_DEADLINE) + 13601;
-    task->sd = 0.01176 * CANNY_DEADLINE;
+    task->sd = 0.01176 * task->dag_deadline;
 
 #ifndef VERIFY
     canny_retval[0][0]->children[0] = task;
@@ -182,7 +182,7 @@ void canny_noise_reduction(canny_data_t *img, task_struct_t **nodes,
     task->compute_time = RUNTIME_CONVOLUTION_5;
     task->dag_deadline = (rep_count + 1) * CANNY_DEADLINE;
     task->node_deadline = (rep_count * CANNY_DEADLINE) + 15177;
-    task->sd = 0.49952 * CANNY_DEADLINE;
+    task->sd = 0.49952 * task->dag_deadline;
 
     canny_retval[1][0]->children[0] = task;
     canny_retval[2][0] = task;
@@ -306,14 +306,14 @@ void canny_gradient_calculation(canny_data_t *img, task_struct_t **nodes,
     task[0]->output_size = 65536;
     task[0]->compute_time = RUNTIME_CONVOLUTION_3;
     task[0]->node_deadline = (rep_count * CANNY_DEADLINE) + 15846;
-    task[0]->sd = 0.21272 * CANNY_DEADLINE;
+    task[0]->sd = 0.21272 * task[0]->dag_deadline;
 
     task[1]->children[0] = task[3];
     task[1]->children[1] = task[4];
     task[1]->output_size = 65536;
     task[1]->compute_time = RUNTIME_CONVOLUTION_3;
     task[1]->node_deadline = (rep_count * CANNY_DEADLINE) + 15846;
-    task[1]->sd = 0.21272 * CANNY_DEADLINE;
+    task[1]->sd = 0.21272 * task[1]->dag_deadline;
 
     task[2]->children[0] = task[5];
     task[2]->num_parents = 1;
@@ -321,7 +321,7 @@ void canny_gradient_calculation(canny_data_t *img, task_struct_t **nodes,
     task[2]->output_size = 65536;
     task[2]->compute_time = RUNTIME_ELEM_MATRIX_SQR;
     task[2]->node_deadline = (rep_count * CANNY_DEADLINE) + 15885;
-    task[2]->sd = 0.0124 * CANNY_DEADLINE;
+    task[2]->sd = 0.0124 * task[2]->dag_deadline;
 
     task[3]->num_parents = 2;
     task[3]->producer[0] = task[0];
@@ -329,7 +329,7 @@ void canny_gradient_calculation(canny_data_t *img, task_struct_t **nodes,
     task[3]->output_size = 65536;
     task[3]->compute_time = RUNTIME_ELEM_MATRIX_ATAN2;
     task[3]->node_deadline = (rep_count * CANNY_DEADLINE) + 15981;
-    task[3]->sd = 0.0124 * CANNY_DEADLINE;
+    task[3]->sd = 0.0124 * task[3]->dag_deadline;
 
     task[4]->children[0] = task[5];
     task[4]->num_parents = 1;
@@ -337,7 +337,7 @@ void canny_gradient_calculation(canny_data_t *img, task_struct_t **nodes,
     task[4]->output_size = 65536;
     task[4]->compute_time = RUNTIME_ELEM_MATRIX_SQR;
     task[4]->node_deadline = (rep_count * CANNY_DEADLINE) + 15885;
-    task[4]->sd = 0.0124 * CANNY_DEADLINE;
+    task[4]->sd = 0.0124 * task[4]->dag_deadline;
 
     task[5]->children[0] = task[6];
     task[5]->num_parents = 2;
@@ -346,14 +346,14 @@ void canny_gradient_calculation(canny_data_t *img, task_struct_t **nodes,
     task[5]->output_size = 65536;
     task[5]->compute_time = RUNTIME_ELEM_MATRIX_ADD;
     task[5]->node_deadline = (rep_count * CANNY_DEADLINE) + 15942;
-    task[5]->sd = 0.01812 * CANNY_DEADLINE;
+    task[5]->sd = 0.01812 * task[5]->dag_deadline;
 
     task[6]->num_parents = 1;
     task[6]->producer[0] = task[5];
     task[6]->output_size = 65536;
     task[6]->compute_time = RUNTIME_ELEM_MATRIX_SQRT;
     task[6]->node_deadline = (rep_count * CANNY_DEADLINE) + 15981;
-    task[6]->sd = 0.0124 * CANNY_DEADLINE;
+    task[6]->sd = 0.0124 * task[6]->dag_deadline;
 
     canny_retval[2][0]->children[0] = task[0];
     canny_retval[2][0]->children[1] = task[1];
@@ -399,7 +399,7 @@ void canny_non_max_suppression(canny_data_t *img, task_struct_t **nodes,
     task->compute_time = RUNTIME_CANNY_NON_MAX;
     task->dag_deadline = (rep_count + 1) * CANNY_DEADLINE;
     task->node_deadline = (rep_count * CANNY_DEADLINE) + 16427;
-    task->sd = 0.14181 * CANNY_DEADLINE;
+    task->sd = 0.14181 * task->dag_deadline;
 
     canny_retval[3][0]->children[0] = task;
     canny_retval[3][1]->children[0] = task;
@@ -441,7 +441,7 @@ void canny_thr_and_edge_tracking(canny_data_t *img, task_struct_t **nodes,
     task->compute_time = RUNTIME_EDGE_TRACKING;
     task->dag_deadline = (rep_count + 1) * CANNY_DEADLINE;
     task->node_deadline = (rep_count * CANNY_DEADLINE) + 16667;
-    task->sd = 0.07631 * CANNY_DEADLINE;
+    task->sd = 0.07631 * task->dag_deadline;
 
     canny_retval[4][0]->children[0] = task;
     nodes[(rep_count * CANNY_NUM_NODES) + 11] = task;

@@ -121,7 +121,8 @@ void lstm_init_cell_data(lstm_cell_data_t *cell, task_struct_t **nodes,
     task->compute_time = RUNTIME_ELEM_MATRIX_ADD;
     task->dag_deadline = (rep_count + 1) * LSTM_DEADLINE;
     task->node_deadline = (rep_count * LSTM_DEADLINE) + earliest_start + 55;
-    task->sd = (55.0 / (LSTM_CELL_RUNTIME * LSTM_SEQ_LENGTH)) * LSTM_DEADLINE;
+    task->sd = (55.0 / (LSTM_CELL_RUNTIME * LSTM_SEQ_LENGTH)) * \
+               task->dag_deadline;
 
     nodes[(rep_count * LSTM_NUM_NODES) + node_index] = task;
 
@@ -188,7 +189,7 @@ void lstm_forget_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
     task[0]->completed_parents = 1;
     task[0]->node_deadline = (rep_count*LSTM_DEADLINE) + earliest_start + 112;
     task[0]->sd = (57.0 / (LSTM_CELL_RUNTIME * LSTM_SEQ_LENGTH)) * \
-                  LSTM_DEADLINE;
+                  task[0]->dag_deadline;
 
     task[1]->num_parents = 2;
     task[1]->children[0] = task[2];
@@ -199,7 +200,7 @@ void lstm_forget_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
     task[1]->completed_parents = 1;
     task[1]->node_deadline = (rep_count*LSTM_DEADLINE) + earliest_start + 169;
     task[1]->sd = (57.0 / (LSTM_CELL_RUNTIME * LSTM_SEQ_LENGTH)) * \
-                  LSTM_DEADLINE;
+                  task[1]->dag_deadline;
 
     task[2]->num_parents = 1;
     task[2]->children[0] = task[3];
@@ -209,7 +210,7 @@ void lstm_forget_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
     task[2]->completed_parents = 0;
     task[2]->node_deadline = (rep_count*LSTM_DEADLINE) + earliest_start + 209;
     task[2]->sd = (40.0 / (LSTM_CELL_RUNTIME * LSTM_SEQ_LENGTH)) * \
-                  LSTM_DEADLINE;
+                  task[2]->dag_deadline;
 
     task[3]->num_parents = 2;
     if (is_first) {
@@ -226,7 +227,7 @@ void lstm_forget_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
     task[3]->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task[3]->node_deadline = (rep_count*LSTM_DEADLINE) + earliest_start + 266;
     task[3]->sd = (57.0 / (LSTM_CELL_RUNTIME * LSTM_SEQ_LENGTH)) * \
-                  LSTM_DEADLINE;
+                  task[3]->dag_deadline;
 
     lstm_retval[0]->children[0] = task[0];
     lstm_retval[1] = task[3];
@@ -319,7 +320,7 @@ void lstm_input_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
     task[0]->completed_parents = 1;
     task[0]->node_deadline = (rep_count*LSTM_DEADLINE) + earliest_start + 112;
     task[0]->sd = (57.0 / (LSTM_CELL_RUNTIME * LSTM_SEQ_LENGTH)) * \
-                  LSTM_DEADLINE;
+                  task[0]->dag_deadline;
 
     task[1]->num_parents = 2;
     task[1]->children[0] = task[2];
@@ -330,7 +331,7 @@ void lstm_input_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
     task[1]->completed_parents = 1;
     task[1]->node_deadline = (rep_count*LSTM_DEADLINE) + earliest_start + 169;
     task[1]->sd = (57.0 / (LSTM_CELL_RUNTIME * LSTM_SEQ_LENGTH)) * \
-                  LSTM_DEADLINE;
+                  task[1]->dag_deadline;
 
     task[2]->num_parents = 1;
     task[2]->children[0] = task[6];
@@ -340,7 +341,7 @@ void lstm_input_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
     task[2]->completed_parents = 0;
     task[2]->node_deadline = (rep_count*LSTM_DEADLINE) + earliest_start + 209;
     task[2]->sd = (40.0 / (LSTM_CELL_RUNTIME * LSTM_SEQ_LENGTH)) * \
-                  LSTM_DEADLINE;
+                  task[2]->dag_deadline;
 
     task[3]->num_parents = 2;
     task[3]->children[0] = task[4];
@@ -351,7 +352,7 @@ void lstm_input_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
     task[3]->completed_parents = 1;
     task[3]->node_deadline = (rep_count*LSTM_DEADLINE) + earliest_start + 112;
     task[3]->sd = (57.0 / (LSTM_CELL_RUNTIME * LSTM_SEQ_LENGTH)) * \
-                  LSTM_DEADLINE;
+                  task[3]->dag_deadline;
 
     task[4]->num_parents = 2;
     task[4]->children[0] = task[5];
@@ -362,7 +363,7 @@ void lstm_input_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
     task[4]->completed_parents = 1;
     task[4]->node_deadline = (rep_count*LSTM_DEADLINE) + earliest_start + 169;
     task[4]->sd = (57.0 / (LSTM_CELL_RUNTIME * LSTM_SEQ_LENGTH)) * \
-                  LSTM_DEADLINE;
+                  task[4]->dag_deadline;
 
     task[5]->num_parents = 1;
     task[5]->children[0] = task[6];
@@ -372,7 +373,7 @@ void lstm_input_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
     task[5]->completed_parents = 0;
     task[5]->node_deadline = (rep_count*LSTM_DEADLINE) + earliest_start + 209;
     task[5]->sd = (40.0 / (LSTM_CELL_RUNTIME * LSTM_SEQ_LENGTH)) * \
-                  LSTM_DEADLINE;
+                  task[5]->dag_deadline;
 
     task[6]->num_parents = 2;
     task[6]->children[0] = task[7];
@@ -383,7 +384,7 @@ void lstm_input_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
     task[6]->completed_parents = 0;
     task[6]->node_deadline = (rep_count*LSTM_DEADLINE) + earliest_start + 266;
     task[6]->sd = (57.0 / (LSTM_CELL_RUNTIME * LSTM_SEQ_LENGTH)) * \
-                  LSTM_DEADLINE;
+                  task[6]->dag_deadline;
 
     task[7]->num_parents = 2;
     if (is_last) {
@@ -399,7 +400,7 @@ void lstm_input_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
     task[7]->completed_parents = 0;
     task[7]->node_deadline = (rep_count*LSTM_DEADLINE) + earliest_start + 323;
     task[7]->sd = (57.0 / (LSTM_CELL_RUNTIME * LSTM_SEQ_LENGTH)) * \
-                  LSTM_DEADLINE;
+                  task[7]->dag_deadline;
 
     lstm_retval[0]->children[1] = task[0];
     lstm_retval[0]->children[2] = task[3];
@@ -472,7 +473,7 @@ void lstm_output_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
     task[0]->compute_time = RUNTIME_ELEM_MATRIX_MUL;
     task[0]->completed_parents = 1;
     task[0]->node_deadline = (rep_count*LSTM_DEADLINE) + earliest_start + 266;
-    task[0]->sd = (57.0 / 154) * (1.0 / LSTM_SEQ_LENGTH) * LSTM_DEADLINE;
+    task[0]->sd = (57.0 / 154) * (1.0/LSTM_SEQ_LENGTH) * task[0]->dag_deadline;
 
     task[1]->num_parents = 2;
     task[1]->children[0] = task[2];
@@ -482,7 +483,7 @@ void lstm_output_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
     task[1]->compute_time = RUNTIME_ELEM_MATRIX_ADD;
     task[1]->completed_parents = 1;
     task[1]->node_deadline = (rep_count*LSTM_DEADLINE) + earliest_start + 323;
-    task[1]->sd = (57.0 / 154) * (1.0 / LSTM_SEQ_LENGTH) * LSTM_DEADLINE;
+    task[1]->sd = (57.0 / 154) * (1.0/LSTM_SEQ_LENGTH) * task[1]->dag_deadline;
 
     task[2]->num_parents = 1;
     task[2]->children[0] = task[4];
@@ -491,7 +492,7 @@ void lstm_output_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
     task[2]->compute_time = RUNTIME_ELEM_MATRIX_SIGMOID;
     task[2]->completed_parents = 0;
     task[2]->node_deadline = (rep_count*LSTM_DEADLINE) + earliest_start + 362;
-    task[2]->sd = (40.0 / 154) * (1.0 / LSTM_SEQ_LENGTH) * LSTM_DEADLINE;
+    task[2]->sd = (40.0 / 154) * (1.0/LSTM_SEQ_LENGTH) * task[2]->dag_deadline;
 
     task[3]->num_parents = 1;
     task[3]->children[0] = task[4];
@@ -501,7 +502,7 @@ void lstm_output_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
     task[3]->completed_parents = 0;
     task[3]->node_deadline = (rep_count*LSTM_DEADLINE) + earliest_start + 362;
     task[3]->sd = (40.0 / (LSTM_CELL_RUNTIME * LSTM_SEQ_LENGTH)) * \
-                  LSTM_DEADLINE;
+                  task[3]->dag_deadline;
 
     if (is_last && is_last_rep) {
         task[4]->num_children = 0;
@@ -517,7 +518,7 @@ void lstm_output_gate(lstm_cell_data_t *cell, task_struct_t **nodes,
     task[4]->completed_parents = 0;
     task[4]->node_deadline = (rep_count*LSTM_DEADLINE) + earliest_start + 421;
     task[4]->sd = (58.0 / (LSTM_CELL_RUNTIME * LSTM_SEQ_LENGTH)) * \
-                  LSTM_DEADLINE;
+                  task[4]->dag_deadline;
 
     lstm_retval[0]->children[3] = task[0];
     lstm_retval[2]->children[0] = task[3];

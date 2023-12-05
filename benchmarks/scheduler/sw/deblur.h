@@ -103,7 +103,7 @@ void deblur_process_raw(deblur_data_t *img, task_struct_t **nodes,
     task->dag_deadline = (rep_count + 1) * DEBLUR_DEADLINE;
     task->node_deadline = (rep_count * DEBLUR_DEADLINE) + earliest_start + 50;
     task->sd = (50.0 / (87 + (DEBLUR_ITER_RUNTIME * DEBLUR_NUM_ITERS))) * \
-               DEBLUR_DEADLINE;
+               task->dag_deadline;
 
     deblur_retval[0] = task;
     nodes[rep_count * DEBLUR_NUM_NODES] = task;
@@ -145,7 +145,7 @@ void deblur_convert_to_grayscale(deblur_data_t *img, task_struct_t **nodes,
     task->dag_deadline = (rep_count + 1) * DEBLUR_DEADLINE;
     task->node_deadline = (rep_count * DEBLUR_DEADLINE) + earliest_start + 87;
     task->sd = (37.0 / (87 + (DEBLUR_ITER_RUNTIME * DEBLUR_NUM_ITERS))) * \
-               DEBLUR_DEADLINE;
+               task->dag_deadline;
 
 #ifndef VERIFY
     deblur_retval[0]->children[0] = task;
@@ -197,7 +197,7 @@ void deblur_run_conv_psf(deblur_data_t *img, task_struct_t **nodes,
     task->dag_deadline = (rep_count + 1) * DEBLUR_DEADLINE;
     task->node_deadline = (rep_count*DEBLUR_DEADLINE) + earliest_start + 1576;
     task->sd = (1576.0 / (87 + (DEBLUR_ITER_RUNTIME * DEBLUR_NUM_ITERS))) * \
-               DEBLUR_DEADLINE;
+               task->dag_deadline;
 
     deblur_retval[2] = task;
     nodes[(rep_count * DEBLUR_NUM_NODES) + node_index] = task;
@@ -231,7 +231,7 @@ void deblur_run_div_ut_psf(deblur_data_t *img, task_struct_t **nodes,
     task->dag_deadline = (rep_count + 1) * DEBLUR_DEADLINE;
     task->node_deadline = (rep_count*DEBLUR_DEADLINE) + earliest_start + 1633;
     task->sd = (57.0 / (87 + (DEBLUR_ITER_RUNTIME * DEBLUR_NUM_ITERS))) * \
-               DEBLUR_DEADLINE;
+               task->dag_deadline;
 
     deblur_retval[1]->children[iter_num + 1] = task;
     deblur_retval[2]->children[0] = task;
@@ -268,7 +268,7 @@ void deblur_run_conv_psf_flip(deblur_data_t *img, task_struct_t **nodes,
     task->dag_deadline = (rep_count + 1) * DEBLUR_DEADLINE;
     task->node_deadline = (rep_count*DEBLUR_DEADLINE) + earliest_start + 3210;
     task->sd = (1577.0 / (87 + (DEBLUR_ITER_RUNTIME * DEBLUR_NUM_ITERS))) * \
-               DEBLUR_DEADLINE;
+               task->dag_deadline;
 
     deblur_retval[3]->children[0] = task;
     deblur_retval[4] = task;
@@ -323,7 +323,7 @@ void deblur_run_mult_psf_flip(deblur_data_t *img, bool is_first,
     task->dag_deadline = (rep_count + 1) * DEBLUR_DEADLINE;
     task->node_deadline = (rep_count*DEBLUR_DEADLINE) + earliest_start + 3267;
     task->sd = (57.0 / (87 + (DEBLUR_ITER_RUNTIME * DEBLUR_NUM_ITERS))) * \
-               DEBLUR_DEADLINE;
+               task->dag_deadline;
 
     deblur_retval[4]->children[0] = task;
     deblur_retval[5] = task;
