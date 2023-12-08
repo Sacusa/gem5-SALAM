@@ -2,6 +2,7 @@
 import itertools
 import matplotlib
 matplotlib.use('Agg')
+matplotlib.rcParams['pdf.fonttype'] = 42
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
@@ -58,21 +59,12 @@ for app_mix in app_mixes:
         else:              app_mix_str += '0_'
 
     for policy in policies:
-        #if policy == 'ELF':
-        #    dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
-        #            policy + '_MEM_PRED_NO_PRED_dm_false'
-        #elif policy == 'LAX':
-        if policy == 'LAX':
-            dir_name = '../../comb_pred_3_opt_repeat_10_min_3/' + \
-                    app_mix_str + policy + '_MEM_PRED_EWMA_0.25_dm_false'
-        else:
-            dir_name = '../../comb_3_opt_repeat_10_min_3/' + \
-                    app_mix_str + policy
-        dir_name += '/debug-trace.txt'
-
         iterations = []
         forwards = []
         colocations = []
+
+        dir_name = '../../comb_3_repeat_time_50000/' + \
+                app_mix_str + policy + '/debug-trace.txt'
 
         for line in open(dir_name):
             if 'Finished DAG iterations' in line:
@@ -85,22 +77,6 @@ for app_mix in app_mixes:
             elif 'Number of colocations' in line:
                 value = int(line.split()[6])
                 colocations[-1].append(value)
-
-        # normalize the values
-        #for i, app in enumerate(app_mix):
-        #    norm_value = num_edges[app]
-        #    
-        #    forwards[i] = (sum(forwards[i]) / (norm_value * \
-        #            iterations[i])) * 100
-        #    colocations[i] = (sum(colocations[i]) / (norm_value * \
-        #            iterations[i])) * 100
-
-        #print(app_mix, policy, forwards)
-
-        #num_forwards[policy].append(geo_mean(forwards))
-        #num_colocations[policy].append(geo_mean(colocations))
-        #forwards_only[policy].append(num_forwards[policy][-1] - \
-        #        num_colocations[policy][-1])
 
         norm_value = 0
         for i, app in enumerate(app_mix):
@@ -161,5 +137,5 @@ plt.ylim([0, 140])
 plt.gca().yaxis.set_major_locator(plt.MultipleLocator(20))
 
 plt.legend(loc="upper left", ncol=len(policies), fontsize=25)
-plt.grid(color='silver', linestyle='-', linewidth=1)
+plt.grid(axis='y', color='silver', linestyle='-', linewidth=1)
 plt.savefig('../plots/comb_3_repeat/percent_forwards.pdf', bbox_inches='tight')

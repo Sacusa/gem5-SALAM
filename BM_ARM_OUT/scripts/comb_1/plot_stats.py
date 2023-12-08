@@ -2,6 +2,7 @@
 import itertools
 import matplotlib
 matplotlib.use('Agg')
+matplotlib.rcParams['pdf.fonttype'] = 42
 import matplotlib.pyplot as plt
 import numpy as np
 import re
@@ -47,13 +48,13 @@ def get_stat(app_mix, stat):
 
         # Get the stat for all policies
         if policy == 'ELF':
-            dir_name = '../../comb_pred_1_opt_flush_opt_fwd/' + app_mix_str + \
+            dir_name = '../../comb_pred_1/' + app_mix_str + \
                     policy + '_MEM_PRED_NO_PRED_dm_false'
         elif policy == 'LAX':
-            dir_name = '../../comb_pred_1_opt_flush_opt_fwd/' + app_mix_str + \
+            dir_name = '../../comb_pred_1/' + app_mix_str + \
                     policy + '_MEM_PRED_EWMA_0.25_dm_false'
         else:
-            dir_name = '../../comb_1_opt_flush_opt_fwd/' + app_mix_str + policy
+            dir_name = '../../comb_1/' + app_mix_str + policy
 
         for line in open(dir_name + '/stats.txt'):
             if stat in line:
@@ -104,7 +105,8 @@ x = np.arange(len(applications) + 1)
 plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
 
-plot_policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'HetSched', 'ELF']
+#plot_policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'HetSched', 'ELF']
+plot_policies = policies
 width = 0.8 / len(plot_policies)
 if len(plot_policies) % 2 == 0:
     offset = -width * (0.5 + ((len(plot_policies) / 2) - 1))
@@ -118,13 +120,13 @@ for policy in plot_policies:
 x_labels = [app[0].upper() for app in applications] + ['Gmean']
 plt.xticks(x, x_labels, fontsize=30)
 
-plt.ylabel(y_label + '\n(norm. to LAX)', fontsize=30)
+plt.ylabel(y_label + ' (norm. to LAX)', fontsize=30)
 plt.yticks(fontsize=30)
 plt.ylim([0, 1.8])
 plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.2))
 
 plt.legend(loc="upper left", ncol=len(plot_policies), fontsize=25)
-plt.grid(color='silver', linestyle='-', linewidth=1)
+plt.grid(axis='y', color='silver', linestyle='-', linewidth=1)
 
 # save the image
 filename = '_'.join([re.sub('[^A-Za-z0-9]+', '', t.lower())

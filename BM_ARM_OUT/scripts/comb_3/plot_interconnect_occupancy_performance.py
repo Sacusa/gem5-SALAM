@@ -2,12 +2,13 @@
 import itertools
 import matplotlib
 matplotlib.use('Agg')
+matplotlib.rcParams['pdf.fonttype'] = 42
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
 hatch = {'LAX': '\\', 'ELF': '++', 'ELF-xbar': 'x'}
-marker = {'ELF': 's', 'ELF-xbar': 'd'}
+marker = {'LAX': 'P', 'ELF': 's', 'ELF-xbar': 'd'}
 
 colormap = matplotlib.cm.get_cmap("tab20").colors
 colors = {'LAX': colormap[9], 'ELF':  colormap[7], 'ELF-xbar': colormap[11]}
@@ -47,13 +48,13 @@ for app_mix in app_mixes:
 
     for policy in policies:
         if policy == 'LAX':
-            dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
+            dir_name = '../../comb_pred_3/' + app_mix_str + \
                     policy + '_MEM_PRED_EWMA_0.25_dm_false'
         elif policy == 'ELF':
-            dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
+            dir_name = '../../comb_pred_3/' + app_mix_str + \
                     policy + '_MEM_PRED_NO_PRED_dm_false'
         else:
-            dir_name = '../../comb_pred_3_xbar_opt_flush_opt_fwd/' + \
+            dir_name = '../../comb_pred_3_xbar/' + \
                     app_mix_str + 'ELF_MEM_PRED_NO_PRED_dm_false'
         dir_name += '/stats.txt'
 
@@ -90,7 +91,8 @@ add_bar_plot(-width, 'LAX',      'Occupancy: LAX')
 add_bar_plot(0,      'ELF',      'RELIEF-Bus')
 add_bar_plot(width,  'ELF-xbar', 'RELIEF-XBar')
 
-add_line_plot('ELF',      'Exec. time: RELIEF-Bus')
+add_line_plot('LAX',      'Exec. time: LAX')
+add_line_plot('ELF',      'RELIEF-Bus')
 add_line_plot('ELF-xbar', 'RELIEF-XBar')
 
 ax1.set_xticks(x)

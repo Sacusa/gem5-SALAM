@@ -3,6 +3,7 @@ from matplotlib.cm import get_cmap
 import itertools
 import matplotlib
 matplotlib.use('Agg')
+matplotlib.rcParams['pdf.fonttype'] = 42
 import matplotlib.pyplot as plt
 import numpy as np
 import re
@@ -43,7 +44,7 @@ def get_stat(app_mix):
     for policy in policies:
         value = 0
 
-        dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
+        dir_name = '../../comb_pred_3/' + app_mix_str + \
                 'ELF_MEM_PRED_'
         if 'max_bw' in policy:
             dir_name += 'NO_PRED'
@@ -115,7 +116,7 @@ plt.ylim([0, 1.3])
 plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.2))
 
 plt.legend(loc="upper left", ncol=5, fontsize=25)
-plt.grid(color='silver', axis='y', linestyle='-', linewidth=1)
+plt.grid(axis='y', color='silver', linestyle='-', linewidth=1)
 
 # save the image
 plt.savefig('../plots/comb_3/predictor_incremental_performance.pdf',

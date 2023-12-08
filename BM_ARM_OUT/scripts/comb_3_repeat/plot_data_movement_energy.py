@@ -84,16 +84,8 @@ for app_mix in app_mixes:
         accl_power = {a:0 for a in accelerators}
         accl_exec_time = {a:0 for a in accelerators}
 
-        #if policy == 'ELF':
-        #    dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
-        #            policy + '_MEM_PRED_NO_PRED_dm_false'
-        #elif policy == 'LAX':
-        if policy == 'LAX':
-            dir_name = '../../comb_pred_3_opt_repeat_10_min_3/' + \
-                    app_mix_str + policy + '_MEM_PRED_EWMA_0.25_dm_false'
-        else:
-            dir_name = '../../comb_3_opt_repeat_10_min_3/' + \
-                    app_mix_str + policy
+        dir_name = '../../comb_3_repeat_time_50000/' + \
+                app_mix_str + policy
 
         curr_accelerator = ''
 

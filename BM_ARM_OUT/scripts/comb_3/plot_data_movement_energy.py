@@ -3,6 +3,7 @@ from matplotlib.cm import get_cmap
 import itertools
 import matplotlib
 matplotlib.use('Agg')
+matplotlib.rcParams['pdf.fonttype'] = 42
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
@@ -83,13 +84,13 @@ for app_mix in app_mixes:
         accl_exec_time = {a:0 for a in accelerators}
 
         if policy == 'ELF':
-            dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
+            dir_name = '../../comb_pred_3/' + app_mix_str + \
                     policy + '_MEM_PRED_NO_PRED_dm_false'
         elif policy == 'LAX':
-            dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
+            dir_name = '../../comb_pred_3/' + app_mix_str + \
                     policy + '_MEM_PRED_EWMA_0.25_dm_false'
         else:
-            dir_name = '../../comb_3_opt_flush_opt_fwd/' + app_mix_str + policy
+            dir_name = '../../comb_3/' + app_mix_str + policy
 
         curr_accelerator = ''
 
@@ -216,5 +217,5 @@ plt.ylim([0, 1.8])
 plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.2))
 
 plt.legend(loc="upper left", ncol=len(policies), fontsize=25)
-plt.grid(color='silver', linestyle='-', linewidth=1)
+plt.grid(axis='y', color='silver', linestyle='-', linewidth=1)
 plt.savefig('../plots/comb_3/data_movement_energy.pdf', bbox_inches='tight')

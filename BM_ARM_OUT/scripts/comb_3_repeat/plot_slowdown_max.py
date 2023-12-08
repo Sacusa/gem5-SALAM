@@ -2,22 +2,24 @@
 import itertools
 import matplotlib
 matplotlib.use('Agg')
+matplotlib.rcParams['pdf.fonttype'] = 42
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
 hatch = {'FCFS': '*', 'GEDF_D': '/', 'GEDF_N': '.' , 'LAX': '\\',
-        'HetSched': '||', 'ELF': '++', 'ELFD': 'x'}
+        'HetSched': '||', 'ELF': '++', 'ELFD': 'xx', 'LL': '--'}
 
 colormap = matplotlib.cm.get_cmap("tab20").colors
 colors = {'FCFS': colormap[1], 'GEDF_D': colormap[3], 'GEDF_N': colormap[5],
         'LAX': colormap[9], 'HetSched': colormap[11], 'ELF':  colormap[7],
-        'ELFD': colormap[13]}
+        'ELFD': colormap[13], 'LL':  colormap[19]}
 edgecolors = {'FCFS': colormap[0], 'GEDF_D': colormap[2],
         'GEDF_N': colormap[4], 'LAX': colormap[8], 'HetSched': colormap[10],
-        'ELF':  colormap[6], 'ELFD': colormap[12]}
+        'ELF':  colormap[6], 'ELFD': colormap[12], 'LL': colormap[18]}
 
-label = {'GEDF_D': 'GEDF-D', 'GEDF_N': 'GEDF-N', 'ELF': 'RELIEF'}
+label = {'GEDF_D': 'GEDF-D', 'GEDF_N': 'GEDF-N', 'ELF': 'RELIEF',
+        'ELFD': 'RELIEF-dep'}
 
 def geo_mean(iterable):
     a = np.array(iterable)
@@ -31,8 +33,7 @@ def add_plot(offset, policy, label):
             edgecolor='k', width=width, zorder=2)
 
 applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
-#policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LL', 'LAX', 'ELF', 'ELFD', 'HetSched']
-policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'HetSched', 'ELF']
+policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'LL', 'HetSched', 'ELFD', 'ELF']
 init_deadline = {'canny': 16667, 'deblur': 16667, 'gru': 8000, 'harris': 16667,
         'lstm': 8000}
 
@@ -48,21 +49,12 @@ for app_mix in app_mixes:
         else:              app_mix_str += '0_'
 
     for policy in policies:
-        #if policy == 'ELF':
-        #    dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
-        #            policy + '_MEM_PRED_NO_PRED_dm_false'
-        #elif policy == 'LAX':
-        if policy == 'LAX':
-            dir_name = '../../comb_pred_3_opt_repeat_10_min_3/' + \
-                    app_mix_str + policy + '_MEM_PRED_EWMA_0.25_dm_false'
-        else:
-            dir_name = '../../comb_3_opt_repeat_10_min_3/' + \
-                    app_mix_str + policy
-        dir_name += '/debug-trace.txt'
-
         deadline = init_deadline.copy()
         delta[policy].append([])
         dag_id = ''
+
+        dir_name = '../../comb_3_repeat_time_50000/' + \
+                app_mix_str + policy + '/debug-trace.txt'
 
         for line in open(dir_name):
             if 'DAG ID' in line:
@@ -106,7 +98,6 @@ policy_offset = {}
 for policy in policies:
     policy_offset[policy] = offset
     offset += width
-#for policy in ['FCFS', 'ELF', 'GEDF_D', 'ELFD', 'GEDF_N', 'LL', 'LAX']:
 for policy in policies:
     plabel = label[policy] if policy in label else policy
     add_plot(policy_offset[policy], policy, plabel)
@@ -115,10 +106,10 @@ plt.xticks(x, x_labels, fontsize=30)
 
 plt.ylabel('Maximum slowdown', fontsize=30)
 plt.yticks(fontsize=30)
-plt.ylim([0, 9])
-plt.gca().yaxis.set_major_locator(plt.MultipleLocator(1))
+plt.ylim([0, 3.5])
+plt.gca().yaxis.set_major_locator(plt.MultipleLocator(0.5))
 
-plt.legend(loc="upper left", ncol=6, fontsize=25)
+plt.legend(loc="upper left", ncol=4, fontsize=25)
 plt.grid(axis='y', color='silver', linestyle='-', linewidth=1)
 plt.axhline(y=1, color='r', linestyle='-', linewidth=2)
 plt.savefig('../plots/comb_3_repeat/slowdown_max.pdf', bbox_inches='tight')

@@ -2,6 +2,7 @@
 import itertools
 import matplotlib
 matplotlib.use('Agg')
+matplotlib.rcParams['pdf.fonttype'] = 42
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
@@ -30,16 +31,12 @@ def add_plot(offset, stat_value, policy, label):
             edgecolor='k', width=width, zorder=2)
 
 applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
-#policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'HetSched', 'ELF']
-policies = ['FCFS', 'LAX', 'ELF']
+policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'HetSched', 'ELF']
 
 tot_num_nodes = {'canny': 12, 'deblur': 22, 'gru': 120, 'harris': 18,
         'lstm': 144}
 
-#app_mixes = sorted([c for c in itertools.combinations(applications, 3)])
-app_mixes = [('canny', 'deblur', 'gru'), ('canny', 'deblur', 'harris'),
-        ('canny', 'gru', 'harris'), ('canny', 'gru', 'lstm'),
-        ('deblur', 'gru', 'harris')]
+app_mixes = sorted([c for c in itertools.combinations(applications, 3)])
 
 dag_deadlines_met = {p:[] for p in policies}
 node_deadlines_met = {p:[] for p in policies}
@@ -52,40 +49,25 @@ for app_mix in app_mixes:
         else:              app_mix_str += '0_'
 
     for policy in policies:
-        #if policy == 'ELF':
-        #    dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
-        #            policy + '_MEM_PRED_NO_PRED_dm_false'
-        #elif policy == 'LAX':
-        #    dir_name = '../../comb_pred_3_opt_flush_opt_fwd/' + app_mix_str + \
-        #            policy + '_MEM_PRED_EWMA_0.25_dm_false'
-        #else:
-        #    dir_name = '../../comb_3_opt_flush_opt_fwd/' + app_mix_str + policy
-        dir_name = '../../comb_3_opt_repeat_10_min_3/' + app_mix_str + policy
-        dir_name += '/debug-trace.txt'
-
-        iterations = [0, 0, 0]
-        num_nodes = [0, 0, 0]
+        num_dags = []
         dag_deadlines_met[policy].append(0)
         node_deadlines_met[policy].append(0)
 
-        for line in open(dir_name):
-            if 'DAG ID' in line:
-                dag_id = int(line.split()[5])
-            elif 'DAG deadline difference' in line:
-                iterations[dag_id] += 1
-                deadline_violation = int(line.split()[6])
-                if deadline_violation <= 0:
-                    dag_deadlines_met[policy][-1] += 1
-            elif 'Node deadline difference' in line:
-                num_nodes[dag_id] += 1
-                deadline_violation = int(line.split()[6])
-                if deadline_violation <= 0:
-                    node_deadlines_met[policy][-1] += 1
+        dir_name = '../../comb_3_repeat_time_50000/' + \
+                app_mix_str + policy + '/debug-trace.txt'
 
-        norm_value_dag = sum(iterations)
-        #norm_value_node = sum([tot_num_nodes[app] * iterations[i]
-        #    for i, app in enumerate(app_mix)])
-        norm_value_node = sum(num_nodes)
+        for line in open(dir_name):
+            if 'Finished DAG iterations' in line:
+                num_dags.append(int(line.split()[6]))
+            elif 'Number of DAG deadlines met' in line:
+                dag_deadlines_met[policy][-1] += min(int(line.split()[8]),
+                        num_dags[-1])
+            elif 'Number of node deadlines met' in line:
+                node_deadlines_met[policy][-1] += int(line.split()[8])
+
+        norm_value_dag = sum(num_dags)
+        norm_value_node = sum([num_dags[i] * tot_num_nodes[app]
+            for i, app in enumerate(app_mix)])
 
         dag_deadlines_met[policy][-1] = \
                 (dag_deadlines_met[policy][-1] * 100) / norm_value_dag
@@ -96,8 +78,10 @@ for policy in policies:
     dag_deadlines_met[policy].append(geo_mean(dag_deadlines_met[policy]))
     node_deadlines_met[policy].append(geo_mean(node_deadlines_met[policy]))
 
-#print((node_deadlines_met['ELF'][-1] - node_deadlines_met['HetSched'][-1]) / \
-#        node_deadlines_met['HetSched'][-1])
+print('HetSched', (node_deadlines_met['HetSched'][-1] - node_deadlines_met['ELF'][-1]) / \
+        node_deadlines_met['ELF'][-1])
+print('LAX', (node_deadlines_met['ELF'][-1] - node_deadlines_met['LAX'][-1]) / \
+        node_deadlines_met['LAX'][-1])
 
 x = [i for i in range(len(app_mixes) + 1)]
 x_labels = ["".join([a[0].upper() for a in app_mix])
@@ -129,7 +113,7 @@ plt.ylim([0, 130])
 plt.gca().yaxis.set_major_locator(plt.MultipleLocator(20))
 
 plt.legend(loc="upper left", ncol=len(policies), fontsize=25)
-plt.grid(color='silver', linestyle='-', linewidth=1)
+plt.grid(axis='y', color='silver', linestyle='-', linewidth=1)
 plt.savefig('../plots/comb_3_repeat/percent_dag_deadlines_met.pdf',
         bbox_inches='tight')
 
@@ -160,6 +144,6 @@ plt.ylim([0, 130])
 plt.gca().yaxis.set_major_locator(plt.MultipleLocator(20))
 
 plt.legend(loc="upper left", ncol=len(policies), fontsize=25)
-plt.grid(color='silver', linestyle='-', linewidth=1)
+plt.grid(axis='y', color='silver', linestyle='-', linewidth=1)
 plt.savefig('../plots/comb_3_repeat/percent_node_deadlines_met.pdf',
         bbox_inches='tight')

@@ -2,6 +2,7 @@
 import itertools
 import matplotlib
 matplotlib.use('Agg')
+matplotlib.rcParams['pdf.fonttype'] = 42
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
@@ -49,13 +50,13 @@ for app_mix in app_mixes:
 
     for policy in policies:
         if policy == 'ELF':
-            dir_name = '../../comb_pred_2_opt_flush_opt_fwd/' + app_mix_str + \
+            dir_name = '../../comb_pred_2/' + app_mix_str + \
                     policy + '_MEM_PRED_NO_PRED_dm_false'
         elif policy == 'LAX':
-            dir_name = '../../comb_pred_2_opt_flush_opt_fwd/' + app_mix_str + \
+            dir_name = '../../comb_pred_2/' + app_mix_str + \
                     policy + '_MEM_PRED_EWMA_0.25_dm_false'
         else:
-            dir_name = '../../comb_2_opt_flush_opt_fwd/' + app_mix_str + policy
+            dir_name = '../../comb_2/' + app_mix_str + policy
         dir_name += '/debug-trace.txt'
 
         dag_deadlines_met[policy].append(0)
@@ -80,8 +81,10 @@ for policy in policies:
     dag_deadlines_met[policy].append(geo_mean(dag_deadlines_met[policy]))
     node_deadlines_met[policy].append(geo_mean(node_deadlines_met[policy]))
 
-print((node_deadlines_met['ELF'][-1] - node_deadlines_met['HetSched'][-1]) / \
+print('HetSched', (node_deadlines_met['ELF'][-1] - node_deadlines_met['HetSched'][-1]) / \
         node_deadlines_met['HetSched'][-1])
+print('LAX', (node_deadlines_met['ELF'][-1] - node_deadlines_met['LAX'][-1]) / \
+        node_deadlines_met['LAX'][-1])
 
 x = [i for i in range(len(app_mixes) + 1)]
 x_labels = ["".join([a[0].upper() for a in app_mix])
@@ -113,7 +116,7 @@ plt.ylim([0, 130])
 plt.gca().yaxis.set_major_locator(plt.MultipleLocator(20))
 
 plt.legend(loc="upper left", ncol=len(policies), fontsize=25)
-plt.grid(color='silver', linestyle='-', linewidth=1)
+plt.grid(axis='y', color='silver', linestyle='-', linewidth=1)
 plt.savefig('../plots/comb_2/percent_dag_deadlines_met.pdf',
         bbox_inches='tight')
 
@@ -144,6 +147,6 @@ plt.ylim([0, 130])
 plt.gca().yaxis.set_major_locator(plt.MultipleLocator(20))
 
 plt.legend(loc="upper left", ncol=len(policies), fontsize=25)
-plt.grid(color='silver', linestyle='-', linewidth=1)
+plt.grid(axis='y', color='silver', linestyle='-', linewidth=1)
 plt.savefig('../plots/comb_2/percent_node_deadlines_met.pdf',
         bbox_inches='tight')
