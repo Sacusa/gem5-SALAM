@@ -1,4 +1,4 @@
-# RELIEF
+# RELIEF: Relieving Memory Pressure In SoCs Via Data Movement-Aware Accelerator Scheduling
 
 This README describes the installation of gem5-SALAM for the reproduction of the results in the following paper:
 
