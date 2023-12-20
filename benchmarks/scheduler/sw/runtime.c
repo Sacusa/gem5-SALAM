@@ -1440,7 +1440,8 @@ bool push_request(volatile task_struct_t *req, bool try_forward)
             // else, perform regular ELF insertion
         }
 
-        case ELF: {
+        case ELF:
+        case HetSched_FWD: {
             int pos = ready_queue_end[acc_id];
             int pos_minus_1 = pos - 1;
 
@@ -1835,34 +1836,63 @@ void isr(int i, int j)  // i = accelerator id, j = device id
 #endif
 
 #ifdef ENABLE_FORWARDING
-                if (scheduling_policy == ELF) {
+                if ((scheduling_policy == ELF) || \
+                        (scheduling_policy == HetSched_FWD)) {
     #ifdef ENABLE_STATS
                     m5_timer_start(3);
     #endif
-                    float compute_time = get_compute_time(child);
 
-                    child->pred_load_size = get_pred_load_size(child, req);
-                    child->pred_store_size = get_pred_store_size(child);
+                    if (scheduling_policy == ELF) {
+                        float compute_time = get_compute_time(child);
 
-                    float pred_load_time = child->pred_load_size * \
-                                           mem_prediction;
-                    float pred_store_time = child->pred_store_size * \
-                                            mem_prediction;
+                        child->pred_load_size = get_pred_load_size(child, req);
+                        child->pred_store_size = get_pred_store_size(child);
 
-                    child->runtime = compute_time + pred_load_time + \
-                                     pred_store_time;
+                        float pred_load_time = child->pred_load_size * \
+                                               mem_prediction;
+                        float pred_store_time = child->pred_store_size * \
+                                                mem_prediction;
+
+                        child->runtime = compute_time + pred_load_time + \
+                                         pred_store_time;
 
     #ifdef ENABLE_STATS
-                    child->stat_mem_time_per_byte_pred_load = mem_prediction;
-                    child->stat_mem_time_per_byte_pred_store = mem_prediction;
-                    child->stat_mem_time_pred_load = pred_load_time;
-                    child->stat_mem_time_pred_store = pred_store_time;
+                        child->stat_mem_time_per_byte_pred_load = \
+                                mem_prediction;
+                        child->stat_mem_time_per_byte_pred_store = \
+                                mem_prediction;
+                        child->stat_mem_time_pred_load = pred_load_time;
+                        child->stat_mem_time_pred_store = pred_store_time;
 
-                    stat_predicted_compute_time += compute_time;
+                        stat_predicted_compute_time += compute_time;
     #endif
 
-                    child->laxity = child->node_deadline + \
-                                    runtime_start_time - child->runtime;
+                        child->laxity = child->node_deadline + \
+                                        runtime_start_time - child->runtime;
+                    }
+
+                    else {
+    #ifdef ENABLE_STATS
+                        float compute_time = get_compute_time(child);
+                        float load_time = get_worst_case_load_time(child);
+                        float store_time = get_worst_case_store_time(child);
+
+                        child->runtime = compute_time + load_time + store_time;
+
+                        child->stat_mem_time_per_byte_pred_load = \
+                                mem_prediction;
+                        child->stat_mem_time_per_byte_pred_store = \
+                                mem_prediction;
+                        child->stat_mem_time_pred_load = load_time;
+                        child->stat_mem_time_pred_store = store_time;
+
+                        stat_predicted_compute_time += compute_time;
+    #else
+                        child->runtime = get_worst_case_runtime(child);
+    #endif
+
+                        child->laxity = child->sd - child->runtime;
+                    }
 
                     if (pipeline_queue_size == 0) {
                         pipeline_queue[0] = child;
@@ -1898,7 +1928,7 @@ void isr(int i, int j)  // i = accelerator id, j = device id
         num_available_instances[i]++;
 
 #ifdef ENABLE_FORWARDING
-        if (scheduling_policy == ELF) {
+        if ((scheduling_policy == ELF) || (scheduling_policy == HetSched_FWD)){
             int num_forwards[NUM_ACCS] = {0, 0, 0, 0, 0, 0, 0};
 
             for (int n = 0; n < pipeline_queue_size; n++) {
@@ -1913,18 +1943,20 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                 if (is_forwarded) {
                     num_forwards[acc_id]++;
                 } else {
-                    child->pred_load_size = get_pred_load_size(child, NULL);
-                    float memory_time = (child->pred_load_size + \
-                                         child->pred_store_size) * \
-                                        mem_prediction;
-                    child->runtime = get_compute_time(child) + memory_time;
-                    child->laxity = child->node_deadline + \
-                                    runtime_start_time - child->runtime;
+                    if (scheduling_policy == ELF) {
+                        child->pred_load_size = get_pred_load_size(child,NULL);
+                        float memory_time = (child->pred_load_size + \
+                                             child->pred_store_size) * \
+                                            mem_prediction;
+                        child->runtime = get_compute_time(child) + memory_time;
+                        child->laxity = child->node_deadline + \
+                                        runtime_start_time - child->runtime;
 
-    #ifdef ENABLE_STATS
-                    child->stat_mem_time_pred_load = child->pred_load_size * \
-                                                     mem_prediction;
-    #endif
+        #ifdef ENABLE_STATS
+                        child->stat_mem_time_pred_load = \
+                                child->pred_load_size * mem_prediction;
+        #endif
+                    }
                 }
             }
         }

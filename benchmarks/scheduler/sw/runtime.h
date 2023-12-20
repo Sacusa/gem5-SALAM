@@ -25,11 +25,11 @@
 //#define PRINT_SCHEDULE
 #define ENABLE_FORWARDING // DOES NOT WORK
 
-//#define NUM_REPEATS 1
-#define NUM_REPEATS 20
-
-#define MAX_RUNTIME 50000
-#define ENABLE_EARLY_EXIT
+#define NUM_REPEATS 1
+//#define NUM_REPEATS 20
+//
+//#define MAX_RUNTIME 50000
+//#define ENABLE_EARLY_EXIT
 
 /* Enable gem5 timers for the following functions:
  * Timer 0: isr()
@@ -106,7 +106,8 @@ enum scheduling_policy_t {
     LAX,
     ELF,
     ELFD,
-    HetSched
+    HetSched,
+    HetSched_FWD
 };
 
 enum mem_predictor_t {
