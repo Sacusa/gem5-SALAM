@@ -99,9 +99,16 @@ for app_mix in app_mixes:
 for policy in policies:
     stat_values[policy].append(geo_mean(stat_values[policy]))
 
-print(abs(stat_values['FCFS'][-1] - stat_values['LAX'][-1]) / stat_values['LAX'][-1])
-print(stat_values['ELF'])
-print(stat_values['HetSched'])
+max_gain = 0
+for i in range(len(app_mixes)):
+    print(i, (stat_values['ELF'][i] - \
+            stat_values['HetSched'][i]) / stat_values['ELF'][i])
+    max_gain = max(max_gain, (stat_values['ELF'][i] - \
+            stat_values['HetSched'][i]) / stat_values['ELF'][i])
+print(max_gain)
+
+print(abs(stat_values['ELF'][-1] - stat_values['HetSched'][-1]) / \
+        stat_values['ELF'][-1])
 
 # plot parameters
 x = np.arange(len(app_mixes) + 1)

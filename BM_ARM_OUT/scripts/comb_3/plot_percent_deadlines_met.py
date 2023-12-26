@@ -8,16 +8,18 @@ import numpy as np
 import sys
 
 hatch = {'FCFS': '*', 'GEDF_D': '/', 'GEDF_N': '.' , 'LAX': '\\',
-        'HetSched': '||', 'ELF': '++'}
+        'HetSched': '||', 'ELF': '++', 'ELFD': 'xx', 'LL': '--'}
 
 colormap = matplotlib.cm.get_cmap("tab20").colors
 colors = {'FCFS': colormap[1], 'GEDF_D': colormap[3], 'GEDF_N': colormap[5],
-        'LAX': colormap[9], 'HetSched': colormap[11], 'ELF':  colormap[7]}
+        'LAX': colormap[9], 'HetSched': colormap[11], 'ELF':  colormap[7],
+        'ELFD': colormap[13], 'LL':  colormap[19]}
 edgecolors = {'FCFS': colormap[0], 'GEDF_D': colormap[2],
         'GEDF_N': colormap[4], 'LAX': colormap[8], 'HetSched': colormap[10],
-        'ELF':  colormap[6]}
+        'ELF':  colormap[6], 'ELFD': colormap[12], 'LL': colormap[18]}
 
-label = {'GEDF_D': 'GEDF-D', 'GEDF_N': 'GEDF-N', 'ELF': 'RELIEF'}
+label = {'GEDF_D': 'GEDF-D', 'GEDF_N': 'GEDF-N', 'ELF': 'RELIEF',
+        'ELFD': 'RELIEF-LAX'}
 
 def geo_mean(iterable):
     a = np.array([i if i > 0 else 1 for i in iterable])
@@ -31,7 +33,7 @@ def add_plot(offset, stat_value, policy, label):
             edgecolor='k', width=width, zorder=2)
 
 applications = ['canny', 'deblur', 'gru', 'harris', 'lstm']
-policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'HetSched', 'ELF']
+policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'ELFD', 'LL', 'HetSched', 'ELF']
 
 tot_num_nodes = {'canny': 12, 'deblur': 22, 'gru': 120, 'harris': 18,
         'lstm': 144}
@@ -78,21 +80,27 @@ for app_mix in app_mixes:
                 (node_deadlines_met[policy][-1] * 100) / norm_value_node
 
 for policy in policies:
-    dag_deadlines_met[policy].append(geo_mean(dag_deadlines_met[policy]))
+    #dag_deadlines_met[policy].append(geo_mean(dag_deadlines_met[policy]))
     node_deadlines_met[policy].append(geo_mean(node_deadlines_met[policy]))
 
 print('HetSched', (node_deadlines_met['ELF'][-1] - node_deadlines_met['HetSched'][-1]) / \
         node_deadlines_met['HetSched'][-1])
+max_gain = 0
+for i in range(len(app_mixes)):
+    max_gain = max(max_gain, (node_deadlines_met['ELF'][i] - \
+            node_deadlines_met['HetSched'][i]) / \
+            node_deadlines_met['HetSched'][i])
+print(max_gain)
 print('LAX', (node_deadlines_met['ELF'][-1] - node_deadlines_met['LAX'][-1]) / \
         node_deadlines_met['LAX'][-1])
-
-x = [i for i in range(len(app_mixes) + 1)]
-x_labels = ["".join([a[0].upper() for a in app_mix])
-        for app_mix in app_mixes] + ['Gmean']
 
 '''
 DAG deadlines met
 '''
+x = [i for i in range(len(app_mixes))]
+x_labels = ["".join([a[0].upper() for a in app_mix])
+        for app_mix in app_mixes]
+
 plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
 
@@ -115,7 +123,7 @@ plt.yticks(fontsize=30)
 plt.ylim([0, 130])
 plt.gca().yaxis.set_major_locator(plt.MultipleLocator(20))
 
-plt.legend(loc="upper left", ncol=len(policies), fontsize=25)
+plt.legend(loc="upper left", ncol=4, fontsize=25)
 plt.grid(axis='y', color='silver', linestyle='-', linewidth=1)
 plt.savefig('../plots/comb_3/percent_dag_deadlines_met.pdf',
         bbox_inches='tight')
@@ -123,16 +131,21 @@ plt.savefig('../plots/comb_3/percent_dag_deadlines_met.pdf',
 '''
 Node deadlines met
 '''
+x = [i for i in range(len(app_mixes) + 1)]
+x_labels = ["".join([a[0].upper() for a in app_mix])
+        for app_mix in app_mixes] + ['Gmean']
+
 plt.clf()
 plt.figure(figsize=(24, 8), dpi=600)
 plt.rc('axes', axisbelow=True)
 
-width = 0.8 / len(policies)
-if len(policies) % 2 == 0:
-    offset = -width * (0.5 + ((len(policies) / 2) - 1))
+print_policies = ['FCFS', 'GEDF_D', 'GEDF_N', 'LAX', 'HetSched', 'ELF']
+width = 0.8 / len(print_policies)
+if len(print_policies) % 2 == 0:
+    offset = -width * (0.5 + ((len(print_policies) / 2) - 1))
 else:
-    offset = -width * ((len(policies) - 1) / 2)
-for policy in policies:
+    offset = -width * ((len(print_policies) - 1) / 2)
+for policy in print_policies:
     plabel = label[policy] if policy in label else policy
     add_plot(offset, node_deadlines_met[policy], policy, plabel)
     offset += width

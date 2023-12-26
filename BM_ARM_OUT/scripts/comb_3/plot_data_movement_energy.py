@@ -171,15 +171,21 @@ print((dram_energy['HetSched'][-1] - dram_energy['ELF'][-1]) / dram_energy['HetS
 print((spad_energy['HetSched'][-1] - spad_energy['ELF'][-1]) / spad_energy['HetSched'][-1])
 max_gain = 0
 for i in range(len(app_mixes)):
-    for policy in policies:
-        max_gain = max(max_gain, (dram_energy[policy][i] - \
-                dram_energy['ELF'][i]) / dram_energy[policy][i])
+    #for policy in policies:
+    #    max_gain = max(max_gain, (dram_energy[policy][i] - \
+    #            dram_energy['ELF'][i]) / dram_energy[policy][i])
+    policy = 'HetSched'
+    max_gain = max(max_gain, (dram_energy[policy][i] - \
+            dram_energy['ELF'][i]) / dram_energy[policy][i])
 print(max_gain)
 max_gain = 0
 for i in range(len(app_mixes)):
-    for policy in policies:
-        max_gain = max(max_gain, (spad_energy[policy][i] - \
-                spad_energy['ELF'][i]) / spad_energy[policy][i])
+    #for policy in policies:
+    #    max_gain = max(max_gain, (spad_energy[policy][i] - \
+    #            spad_energy['ELF'][i]) / spad_energy[policy][i])
+    policy = 'HetSched'
+    max_gain = max(max_gain, (spad_energy[policy][i] - \
+            spad_energy['ELF'][i]) / spad_energy[policy][i])
 print(max_gain)
 
 x = [i for i in range(len(app_mixes) + 1)]

@@ -98,9 +98,12 @@ print((dram_dm['LAX'][-1] - dram_dm['ELF'][-1]) / dram_dm['LAX'][-1])
 print((dram_dm['HetSched'][-1] - dram_dm['ELF'][-1]) / dram_dm['HetSched'][-1])
 max_gain = 0
 for i in range(len(app_mixes)):
-    for policy in policies:
-        max_gain = max(max_gain, (dram_dm[policy][i] - dram_dm['ELF'][i]) / \
-                dram_dm[policy][i])
+    #for policy in policies:
+    #    max_gain = max(max_gain, (dram_dm[policy][i] - dram_dm['ELF'][i]) / \
+    #            dram_dm[policy][i])
+    policy = 'HetSched'
+    max_gain = max(max_gain, (dram_dm[policy][i] - dram_dm['ELF'][i]) / \
+            dram_dm[policy][i])
 print(max_gain)
 
 x = [i for i in range(len(app_mixes) + 1)]
