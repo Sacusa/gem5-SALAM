@@ -5,8 +5,8 @@ if [ "$#" -ne 1  ]; then
     exit -1
 fi
 
-declare -a policies=("FCFS" "GEDF_D" "GEDF_N" "LAX" "HetSched" "ELF")
-#declare -a policies=("LL" "ELFD")
+declare -a policies=("FCFS" "GEDF_D" "GEDF_N" "LL" "LAX" "HetSched"
+    "ELF" "ELFD")
 let max_concurrent_policies=$1/10
 max_concurrent_policies=$(( max_concurrent_policies > 0 ? max_concurrent_policies : 1 ))
 num_concurrent_policies=0
