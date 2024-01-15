@@ -1463,12 +1463,22 @@ bool push_request(volatile task_struct_t *req, bool try_forward)
             if (try_forward) {
                 for (int i = ready_queue_start[acc_id]; i != pos;
                         i = (i + 1) % MAX_READY_QUEUE_SIZE) {
+                    if (ready_queue[acc_id][i]->priority_escalated) {continue;}
+
                     int32_t laxity = ready_queue[acc_id][i]->laxity - \
                                      (m5_get_time() / 1000);
 
                     if (laxity > 0) {
                         can_forward = laxity >= ((int32_t)req->runtime);
                         break;
+#ifdef LIMIT_ESCALATIONS
+                    } else {
+                        if (ready_queue[acc_id][i]->num_escalations >= \
+                                MAX_ESCALATIONS) {
+                            can_forward = false;
+                            break;
+                        }
+#endif
                     }
                 }
             }
@@ -1479,6 +1489,14 @@ bool push_request(volatile task_struct_t *req, bool try_forward)
                 // Reduce node laxities
                 for (int i = ready_queue_start[acc_id]; i != pos;
                      i = (i + 1) % MAX_READY_QUEUE_SIZE) {
+#ifdef LIMIT_ESCALATIONS
+                    int32_t laxity = ready_queue[acc_id][i]->laxity - \
+                                     (m5_get_time() / 1000);
+                    if (laxity <= 0) {
+                        ready_queue[acc_id][i]->num_escalations++;
+                    }
+#endif
+
                     ready_queue[acc_id][i]->laxity -= req->runtime;
 
                     if (ready_queue[acc_id][i]->priority_escalated) {
@@ -1535,7 +1553,7 @@ bool push_request(volatile task_struct_t *req, bool try_forward)
             req->runtime = get_worst_case_runtime(req);
 #endif
 
-            req->laxity = req->sd - req->runtime;
+            req->laxity = req->sd + runtime_start_time - req->runtime;
 
             if (ready_queue_size[acc_id] == 0) {
                 ready_queue[acc_id][ready_queue_end[acc_id]] = req;
@@ -1745,6 +1763,8 @@ void runtime(task_struct_t ***nodes, int num_dags_arg, int num_nodes[MAX_DAGS],
 
                 push_request(req, false);
             }
+
+            req->num_escalations = 0;
         }
     }
 
@@ -1891,7 +1911,8 @@ void isr(int i, int j)  // i = accelerator id, j = device id
                         child->runtime = get_worst_case_runtime(child);
     #endif
 
-                        child->laxity = child->sd - child->runtime;
+                        child->laxity = child->sd + runtime_start_time - \
+                                        child->runtime;
                     }
 
                     if (pipeline_queue_size == 0) {

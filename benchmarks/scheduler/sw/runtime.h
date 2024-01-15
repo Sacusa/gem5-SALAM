@@ -20,16 +20,21 @@
 #define MAX_DAGS             50
 #define MAX_NODES            10000
 #define MAX_READY_QUEUE_SIZE 500
+#define MAX_ESCALATIONS      -1
 
 //#define VERIFY
 //#define PRINT_SCHEDULE
 #define ENABLE_FORWARDING // DOES NOT WORK
 
-#define NUM_REPEATS 1
-//#define NUM_REPEATS 20
-//
-//#define MAX_RUNTIME 50000
-//#define ENABLE_EARLY_EXIT
+#if MAX_ESCALATIONS > -1
+    #define LIMIT_ESCALATIONS
+#endif
+
+//#define NUM_REPEATS 1
+#define NUM_REPEATS 20
+
+#define MAX_RUNTIME 50000
+#define ENABLE_EARLY_EXIT
 
 /* Enable gem5 timers for the following functions:
  * Timer 0: isr()
@@ -183,6 +188,8 @@ struct task_struct_t {
     uint8_t producer_spm_part[MAX_ACC_ARGS];    // partition of the producer's
                                                 // output SPM to read from
     volatile acc_state_t *producer_acc[MAX_ACC_ARGS];   // producer accelerator
+
+    uint8_t num_escalations;
 
     // The following two fields don't count as "statistics" because they are
     // required for ELF's functionality
